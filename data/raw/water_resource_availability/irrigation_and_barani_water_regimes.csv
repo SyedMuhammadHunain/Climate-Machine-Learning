@@ -1,0 +1,2449 @@
+District,Province,Crop_Year,Season,Barani_Rainfed_Area_Pct,Canal_Irrigated_Area_Pct,Canal_Water_Supply_Index,Tubewell_Density_Index
+Rawalpindi,Punjab,2000,Kharif,75.6,24.4,34.0,34.4
+Rawalpindi,Punjab,2000,Rabi,75.6,24.4,25.0,29.8
+Rawalpindi,Punjab,2001,Kharif,75.6,24.4,14.2,35.5
+Rawalpindi,Punjab,2001,Rabi,75.6,24.4,23.8,27.7
+Rawalpindi,Punjab,2002,Kharif,75.6,24.4,23.2,33.3
+Rawalpindi,Punjab,2002,Rabi,75.6,24.4,20.3,32.4
+Rawalpindi,Punjab,2003,Kharif,75.6,24.4,25.1,33.4
+Rawalpindi,Punjab,2003,Rabi,75.6,24.4,22.9,26.2
+Rawalpindi,Punjab,2004,Kharif,75.6,24.4,23.3,35.1
+Rawalpindi,Punjab,2004,Rabi,75.6,24.4,27.5,29.2
+Rawalpindi,Punjab,2005,Kharif,75.6,24.4,27.6,29.5
+Rawalpindi,Punjab,2005,Rabi,75.6,24.4,22.1,33.9
+Rawalpindi,Punjab,2006,Kharif,75.6,24.4,22.4,29.0
+Rawalpindi,Punjab,2006,Rabi,75.6,24.4,21.0,29.3
+Rawalpindi,Punjab,2007,Kharif,75.6,24.4,12.2,32.6
+Rawalpindi,Punjab,2007,Rabi,75.6,24.4,24.4,27.8
+Rawalpindi,Punjab,2008,Kharif,75.6,24.4,18.1,34.4
+Rawalpindi,Punjab,2008,Rabi,75.6,24.4,27.4,28.4
+Rawalpindi,Punjab,2009,Kharif,75.6,24.4,28.3,31.2
+Rawalpindi,Punjab,2009,Rabi,75.6,24.4,16.8,31.1
+Rawalpindi,Punjab,2010,Kharif,75.6,24.4,24.2,30.5
+Rawalpindi,Punjab,2010,Rabi,75.6,24.4,18.1,27.5
+Rawalpindi,Punjab,2011,Kharif,75.6,24.4,22.5,32.3
+Rawalpindi,Punjab,2011,Rabi,75.6,24.4,27.6,29.3
+Rawalpindi,Punjab,2012,Kharif,75.6,24.4,21.7,28.9
+Rawalpindi,Punjab,2012,Rabi,75.6,24.4,29.3,30.0
+Rawalpindi,Punjab,2013,Kharif,75.6,24.4,28.1,32.2
+Rawalpindi,Punjab,2013,Rabi,75.6,24.4,22.9,34.5
+Rawalpindi,Punjab,2014,Kharif,75.6,24.4,29.7,31.3
+Rawalpindi,Punjab,2014,Rabi,75.6,24.4,18.2,29.2
+Rawalpindi,Punjab,2015,Kharif,75.6,24.4,31.8,29.9
+Rawalpindi,Punjab,2015,Rabi,75.6,24.4,15.9,34.1
+Rawalpindi,Punjab,2016,Kharif,75.6,24.4,19.9,27.1
+Rawalpindi,Punjab,2016,Rabi,75.6,24.4,29.5,29.6
+Rawalpindi,Punjab,2017,Kharif,75.6,24.4,30.2,29.6
+Rawalpindi,Punjab,2017,Rabi,75.6,24.4,16.2,30.0
+Rawalpindi,Punjab,2018,Kharif,75.6,24.4,25.1,31.0
+Rawalpindi,Punjab,2018,Rabi,75.6,24.4,24.9,33.3
+Rawalpindi,Punjab,2019,Kharif,75.6,24.4,28.4,23.1
+Rawalpindi,Punjab,2019,Rabi,75.6,24.4,23.2,40.2
+Rawalpindi,Punjab,2020,Kharif,75.6,24.4,16.4,30.7
+Rawalpindi,Punjab,2020,Rabi,75.6,24.4,22.3,25.3
+Rawalpindi,Punjab,2021,Kharif,75.6,24.4,22.8,32.6
+Rawalpindi,Punjab,2021,Rabi,75.6,24.4,21.8,25.8
+Rawalpindi,Punjab,2022,Kharif,75.6,24.4,21.6,29.9
+Rawalpindi,Punjab,2022,Rabi,75.6,24.4,20.7,34.1
+Rawalpindi,Punjab,2023,Kharif,75.6,24.4,27.5,32.1
+Rawalpindi,Punjab,2023,Rabi,75.6,24.4,18.8,29.1
+Chakwal,Punjab,2000,Kharif,90.1,9.9,0.0,34.8
+Chakwal,Punjab,2000,Rabi,90.1,9.9,3.2,36.8
+Chakwal,Punjab,2001,Kharif,90.1,9.9,6.8,36.6
+Chakwal,Punjab,2001,Rabi,90.1,9.9,5.7,32.7
+Chakwal,Punjab,2002,Kharif,90.1,9.9,9.8,34.5
+Chakwal,Punjab,2002,Rabi,90.1,9.9,3.9,38.6
+Chakwal,Punjab,2003,Kharif,90.1,9.9,14.8,35.9
+Chakwal,Punjab,2003,Rabi,90.1,9.9,7.3,33.0
+Chakwal,Punjab,2004,Kharif,90.1,9.9,10.1,35.5
+Chakwal,Punjab,2004,Rabi,90.1,9.9,18.0,38.3
+Chakwal,Punjab,2005,Kharif,90.1,9.9,1.9,33.2
+Chakwal,Punjab,2005,Rabi,90.1,9.9,12.5,32.0
+Chakwal,Punjab,2006,Kharif,90.1,9.9,16.6,33.0
+Chakwal,Punjab,2006,Rabi,90.1,9.9,0.6,38.5
+Chakwal,Punjab,2007,Kharif,90.1,9.9,11.4,39.7
+Chakwal,Punjab,2007,Rabi,90.1,9.9,11.1,32.5
+Chakwal,Punjab,2008,Kharif,90.1,9.9,6.9,35.4
+Chakwal,Punjab,2008,Rabi,90.1,9.9,11.6,35.4
+Chakwal,Punjab,2009,Kharif,90.1,9.9,10.7,40.3
+Chakwal,Punjab,2009,Rabi,90.1,9.9,18.6,32.0
+Chakwal,Punjab,2010,Kharif,90.1,9.9,14.3,34.0
+Chakwal,Punjab,2010,Rabi,90.1,9.9,19.0,35.4
+Chakwal,Punjab,2011,Kharif,90.1,9.9,4.2,37.4
+Chakwal,Punjab,2011,Rabi,90.1,9.9,11.5,38.5
+Chakwal,Punjab,2012,Kharif,90.1,9.9,11.4,37.5
+Chakwal,Punjab,2012,Rabi,90.1,9.9,8.2,37.4
+Chakwal,Punjab,2013,Kharif,90.1,9.9,6.3,32.0
+Chakwal,Punjab,2013,Rabi,90.1,9.9,6.0,31.3
+Chakwal,Punjab,2014,Kharif,90.1,9.9,11.5,34.1
+Chakwal,Punjab,2014,Rabi,90.1,9.9,8.3,34.9
+Chakwal,Punjab,2015,Kharif,90.1,9.9,14.3,31.9
+Chakwal,Punjab,2015,Rabi,90.1,9.9,12.0,36.9
+Chakwal,Punjab,2016,Kharif,90.1,9.9,7.7,38.6
+Chakwal,Punjab,2016,Rabi,90.1,9.9,4.8,36.3
+Chakwal,Punjab,2017,Kharif,90.1,9.9,14.5,32.4
+Chakwal,Punjab,2017,Rabi,90.1,9.9,3.8,33.5
+Chakwal,Punjab,2018,Kharif,90.1,9.9,7.3,34.5
+Chakwal,Punjab,2018,Rabi,90.1,9.9,8.9,33.5
+Chakwal,Punjab,2019,Kharif,90.1,9.9,5.9,32.6
+Chakwal,Punjab,2019,Rabi,90.1,9.9,7.6,34.1
+Chakwal,Punjab,2020,Kharif,90.1,9.9,14.5,38.2
+Chakwal,Punjab,2020,Rabi,90.1,9.9,2.1,35.2
+Chakwal,Punjab,2021,Kharif,90.1,9.9,9.8,39.2
+Chakwal,Punjab,2021,Rabi,90.1,9.9,16.1,39.4
+Chakwal,Punjab,2022,Kharif,90.1,9.9,5.4,31.6
+Chakwal,Punjab,2022,Rabi,90.1,9.9,5.4,31.9
+Chakwal,Punjab,2023,Kharif,90.1,9.9,12.3,37.6
+Chakwal,Punjab,2023,Rabi,90.1,9.9,4.8,32.7
+Attock,Punjab,2000,Kharif,88.7,11.3,14.6,34.0
+Attock,Punjab,2000,Rabi,88.7,11.3,12.0,32.2
+Attock,Punjab,2001,Kharif,88.7,11.3,17.4,33.5
+Attock,Punjab,2001,Rabi,88.7,11.3,14.7,37.3
+Attock,Punjab,2002,Kharif,88.7,11.3,8.3,36.8
+Attock,Punjab,2002,Rabi,88.7,11.3,8.6,30.0
+Attock,Punjab,2003,Kharif,88.7,11.3,16.1,33.9
+Attock,Punjab,2003,Rabi,88.7,11.3,9.9,38.3
+Attock,Punjab,2004,Kharif,88.7,11.3,9.3,35.7
+Attock,Punjab,2004,Rabi,88.7,11.3,10.2,37.6
+Attock,Punjab,2005,Kharif,88.7,11.3,14.7,30.1
+Attock,Punjab,2005,Rabi,88.7,11.3,11.7,38.6
+Attock,Punjab,2006,Kharif,88.7,11.3,15.7,33.3
+Attock,Punjab,2006,Rabi,88.7,11.3,9.5,30.5
+Attock,Punjab,2007,Kharif,88.7,11.3,12.0,34.1
+Attock,Punjab,2007,Rabi,88.7,11.3,15.9,37.9
+Attock,Punjab,2008,Kharif,88.7,11.3,1.4,37.4
+Attock,Punjab,2008,Rabi,88.7,11.3,10.1,35.9
+Attock,Punjab,2009,Kharif,88.7,11.3,4.8,29.5
+Attock,Punjab,2009,Rabi,88.7,11.3,12.9,38.9
+Attock,Punjab,2010,Kharif,88.7,11.3,15.6,33.3
+Attock,Punjab,2010,Rabi,88.7,11.3,19.6,28.0
+Attock,Punjab,2011,Kharif,88.7,11.3,0.6,34.0
+Attock,Punjab,2011,Rabi,88.7,11.3,14.8,35.2
+Attock,Punjab,2012,Kharif,88.7,11.3,16.7,35.8
+Attock,Punjab,2012,Rabi,88.7,11.3,19.3,30.3
+Attock,Punjab,2013,Kharif,88.7,11.3,16.3,33.5
+Attock,Punjab,2013,Rabi,88.7,11.3,13.0,31.1
+Attock,Punjab,2014,Kharif,88.7,11.3,8.4,34.3
+Attock,Punjab,2014,Rabi,88.7,11.3,7.5,33.8
+Attock,Punjab,2015,Kharif,88.7,11.3,16.5,36.8
+Attock,Punjab,2015,Rabi,88.7,11.3,14.0,29.6
+Attock,Punjab,2016,Kharif,88.7,11.3,7.9,30.9
+Attock,Punjab,2016,Rabi,88.7,11.3,12.6,38.7
+Attock,Punjab,2017,Kharif,88.7,11.3,9.8,30.8
+Attock,Punjab,2017,Rabi,88.7,11.3,14.6,34.7
+Attock,Punjab,2018,Kharif,88.7,11.3,21.3,30.1
+Attock,Punjab,2018,Rabi,88.7,11.3,7.2,40.4
+Attock,Punjab,2019,Kharif,88.7,11.3,11.8,35.7
+Attock,Punjab,2019,Rabi,88.7,11.3,10.5,34.0
+Attock,Punjab,2020,Kharif,88.7,11.3,9.8,35.5
+Attock,Punjab,2020,Rabi,88.7,11.3,8.8,34.1
+Attock,Punjab,2021,Kharif,88.7,11.3,6.0,37.8
+Attock,Punjab,2021,Rabi,88.7,11.3,9.0,41.2
+Attock,Punjab,2022,Kharif,88.7,11.3,12.8,37.2
+Attock,Punjab,2022,Rabi,88.7,11.3,6.2,36.7
+Attock,Punjab,2023,Kharif,88.7,11.3,13.6,35.9
+Attock,Punjab,2023,Rabi,88.7,11.3,7.6,36.5
+Jhelum,Punjab,2000,Kharif,86.4,13.6,8.3,32.0
+Jhelum,Punjab,2000,Rabi,86.4,13.6,15.6,34.2
+Jhelum,Punjab,2001,Kharif,86.4,13.6,16.5,33.0
+Jhelum,Punjab,2001,Rabi,86.4,13.6,20.4,30.1
+Jhelum,Punjab,2002,Kharif,86.4,13.6,13.1,31.2
+Jhelum,Punjab,2002,Rabi,86.4,13.6,14.9,38.8
+Jhelum,Punjab,2003,Kharif,86.4,13.6,14.5,37.4
+Jhelum,Punjab,2003,Rabi,86.4,13.6,16.2,35.0
+Jhelum,Punjab,2004,Kharif,86.4,13.6,18.3,35.0
+Jhelum,Punjab,2004,Rabi,86.4,13.6,13.7,33.8
+Jhelum,Punjab,2005,Kharif,86.4,13.6,16.5,30.5
+Jhelum,Punjab,2005,Rabi,86.4,13.6,18.8,28.1
+Jhelum,Punjab,2006,Kharif,86.4,13.6,13.1,36.4
+Jhelum,Punjab,2006,Rabi,86.4,13.6,10.2,35.4
+Jhelum,Punjab,2007,Kharif,86.4,13.6,10.2,33.0
+Jhelum,Punjab,2007,Rabi,86.4,13.6,19.3,36.4
+Jhelum,Punjab,2008,Kharif,86.4,13.6,10.5,32.0
+Jhelum,Punjab,2008,Rabi,86.4,13.6,16.9,32.1
+Jhelum,Punjab,2009,Kharif,86.4,13.6,15.6,34.8
+Jhelum,Punjab,2009,Rabi,86.4,13.6,10.5,36.6
+Jhelum,Punjab,2010,Kharif,86.4,13.6,24.3,28.4
+Jhelum,Punjab,2010,Rabi,86.4,13.6,9.6,33.2
+Jhelum,Punjab,2011,Kharif,86.4,13.6,10.2,38.5
+Jhelum,Punjab,2011,Rabi,86.4,13.6,12.8,35.9
+Jhelum,Punjab,2012,Kharif,86.4,13.6,15.7,38.4
+Jhelum,Punjab,2012,Rabi,86.4,13.6,7.3,33.5
+Jhelum,Punjab,2013,Kharif,86.4,13.6,7.7,27.8
+Jhelum,Punjab,2013,Rabi,86.4,13.6,3.6,32.0
+Jhelum,Punjab,2014,Kharif,86.4,13.6,10.5,39.0
+Jhelum,Punjab,2014,Rabi,86.4,13.6,14.6,34.0
+Jhelum,Punjab,2015,Kharif,86.4,13.6,7.8,30.9
+Jhelum,Punjab,2015,Rabi,86.4,13.6,16.3,39.6
+Jhelum,Punjab,2016,Kharif,86.4,13.6,8.7,34.5
+Jhelum,Punjab,2016,Rabi,86.4,13.6,13.9,32.5
+Jhelum,Punjab,2017,Kharif,86.4,13.6,21.4,40.7
+Jhelum,Punjab,2017,Rabi,86.4,13.6,20.4,39.5
+Jhelum,Punjab,2018,Kharif,86.4,13.6,17.3,29.9
+Jhelum,Punjab,2018,Rabi,86.4,13.6,11.5,33.9
+Jhelum,Punjab,2019,Kharif,86.4,13.6,13.9,38.3
+Jhelum,Punjab,2019,Rabi,86.4,13.6,11.1,42.4
+Jhelum,Punjab,2020,Kharif,86.4,13.6,13.4,35.9
+Jhelum,Punjab,2020,Rabi,86.4,13.6,22.9,37.3
+Jhelum,Punjab,2021,Kharif,86.4,13.6,10.2,34.0
+Jhelum,Punjab,2021,Rabi,86.4,13.6,13.8,28.0
+Jhelum,Punjab,2022,Kharif,86.4,13.6,13.3,33.2
+Jhelum,Punjab,2022,Rabi,86.4,13.6,12.8,35.6
+Jhelum,Punjab,2023,Kharif,86.4,13.6,22.1,39.6
+Jhelum,Punjab,2023,Rabi,86.4,13.6,16.4,32.2
+Bhakkar,Punjab,2000,Kharif,69.1,30.9,36.0,25.4
+Bhakkar,Punjab,2000,Rabi,69.1,30.9,30.2,26.8
+Bhakkar,Punjab,2001,Kharif,69.1,30.9,31.5,26.4
+Bhakkar,Punjab,2001,Rabi,69.1,30.9,35.1,26.5
+Bhakkar,Punjab,2002,Kharif,69.1,30.9,39.3,29.6
+Bhakkar,Punjab,2002,Rabi,69.1,30.9,33.0,29.0
+Bhakkar,Punjab,2003,Kharif,69.1,30.9,25.6,32.4
+Bhakkar,Punjab,2003,Rabi,69.1,30.9,33.4,22.2
+Bhakkar,Punjab,2004,Kharif,69.1,30.9,38.1,27.7
+Bhakkar,Punjab,2004,Rabi,69.1,30.9,32.8,25.3
+Bhakkar,Punjab,2005,Kharif,69.1,30.9,38.8,24.5
+Bhakkar,Punjab,2005,Rabi,69.1,30.9,37.3,30.7
+Bhakkar,Punjab,2006,Kharif,69.1,30.9,28.7,27.7
+Bhakkar,Punjab,2006,Rabi,69.1,30.9,33.4,23.9
+Bhakkar,Punjab,2007,Kharif,69.1,30.9,35.5,28.9
+Bhakkar,Punjab,2007,Rabi,69.1,30.9,29.4,25.1
+Bhakkar,Punjab,2008,Kharif,69.1,30.9,26.9,33.4
+Bhakkar,Punjab,2008,Rabi,69.1,30.9,27.3,27.5
+Bhakkar,Punjab,2009,Kharif,69.1,30.9,29.9,28.2
+Bhakkar,Punjab,2009,Rabi,69.1,30.9,36.3,28.1
+Bhakkar,Punjab,2010,Kharif,69.1,30.9,30.2,29.8
+Bhakkar,Punjab,2010,Rabi,69.1,30.9,26.0,26.6
+Bhakkar,Punjab,2011,Kharif,69.1,30.9,35.4,28.3
+Bhakkar,Punjab,2011,Rabi,69.1,30.9,23.6,27.7
+Bhakkar,Punjab,2012,Kharif,69.1,30.9,33.2,23.1
+Bhakkar,Punjab,2012,Rabi,69.1,30.9,30.5,32.7
+Bhakkar,Punjab,2013,Kharif,69.1,30.9,26.8,30.8
+Bhakkar,Punjab,2013,Rabi,69.1,30.9,24.6,29.3
+Bhakkar,Punjab,2014,Kharif,69.1,30.9,32.3,29.8
+Bhakkar,Punjab,2014,Rabi,69.1,30.9,35.5,28.4
+Bhakkar,Punjab,2015,Kharif,69.1,30.9,31.8,24.5
+Bhakkar,Punjab,2015,Rabi,69.1,30.9,26.3,30.1
+Bhakkar,Punjab,2016,Kharif,69.1,30.9,34.9,29.1
+Bhakkar,Punjab,2016,Rabi,69.1,30.9,34.5,25.3
+Bhakkar,Punjab,2017,Kharif,69.1,30.9,43.5,25.6
+Bhakkar,Punjab,2017,Rabi,69.1,30.9,27.0,27.8
+Bhakkar,Punjab,2018,Kharif,69.1,30.9,30.8,22.6
+Bhakkar,Punjab,2018,Rabi,69.1,30.9,32.5,27.1
+Bhakkar,Punjab,2019,Kharif,69.1,30.9,30.0,24.5
+Bhakkar,Punjab,2019,Rabi,69.1,30.9,36.6,29.3
+Bhakkar,Punjab,2020,Kharif,69.1,30.9,32.1,28.5
+Bhakkar,Punjab,2020,Rabi,69.1,30.9,30.7,26.3
+Bhakkar,Punjab,2021,Kharif,69.1,30.9,30.7,26.3
+Bhakkar,Punjab,2021,Rabi,69.1,30.9,28.3,29.3
+Bhakkar,Punjab,2022,Kharif,69.1,30.9,46.3,27.0
+Bhakkar,Punjab,2022,Rabi,69.1,30.9,22.0,24.9
+Bhakkar,Punjab,2023,Kharif,69.1,30.9,33.3,25.3
+Bhakkar,Punjab,2023,Rabi,69.1,30.9,33.4,32.9
+Layyah,Punjab,2000,Kharif,63.5,36.5,39.1,27.8
+Layyah,Punjab,2000,Rabi,63.5,36.5,40.1,21.5
+Layyah,Punjab,2001,Kharif,63.5,36.5,24.6,25.3
+Layyah,Punjab,2001,Rabi,63.5,36.5,39.9,23.7
+Layyah,Punjab,2002,Kharif,63.5,36.5,36.5,25.2
+Layyah,Punjab,2002,Rabi,63.5,36.5,28.2,28.0
+Layyah,Punjab,2003,Kharif,63.5,36.5,42.1,25.0
+Layyah,Punjab,2003,Rabi,63.5,36.5,43.9,22.3
+Layyah,Punjab,2004,Kharif,63.5,36.5,42.5,28.1
+Layyah,Punjab,2004,Rabi,63.5,36.5,45.4,23.3
+Layyah,Punjab,2005,Kharif,63.5,36.5,34.3,25.5
+Layyah,Punjab,2005,Rabi,63.5,36.5,40.8,28.0
+Layyah,Punjab,2006,Kharif,63.5,36.5,39.3,24.1
+Layyah,Punjab,2006,Rabi,63.5,36.5,34.6,21.3
+Layyah,Punjab,2007,Kharif,63.5,36.5,36.9,28.4
+Layyah,Punjab,2007,Rabi,63.5,36.5,28.4,27.5
+Layyah,Punjab,2008,Kharif,63.5,36.5,42.1,28.7
+Layyah,Punjab,2008,Rabi,63.5,36.5,35.4,20.9
+Layyah,Punjab,2009,Kharif,63.5,36.5,36.5,23.0
+Layyah,Punjab,2009,Rabi,63.5,36.5,36.2,29.4
+Layyah,Punjab,2010,Kharif,63.5,36.5,38.7,23.8
+Layyah,Punjab,2010,Rabi,63.5,36.5,39.2,25.2
+Layyah,Punjab,2011,Kharif,63.5,36.5,35.5,26.3
+Layyah,Punjab,2011,Rabi,63.5,36.5,39.3,23.8
+Layyah,Punjab,2012,Kharif,63.5,36.5,38.5,21.8
+Layyah,Punjab,2012,Rabi,63.5,36.5,29.4,29.2
+Layyah,Punjab,2013,Kharif,63.5,36.5,33.6,23.5
+Layyah,Punjab,2013,Rabi,63.5,36.5,31.2,29.6
+Layyah,Punjab,2014,Kharif,63.5,36.5,42.0,23.1
+Layyah,Punjab,2014,Rabi,63.5,36.5,29.6,28.9
+Layyah,Punjab,2015,Kharif,63.5,36.5,36.9,24.1
+Layyah,Punjab,2015,Rabi,63.5,36.5,32.4,21.9
+Layyah,Punjab,2016,Kharif,63.5,36.5,39.4,25.6
+Layyah,Punjab,2016,Rabi,63.5,36.5,27.4,22.2
+Layyah,Punjab,2017,Kharif,63.5,36.5,34.5,22.1
+Layyah,Punjab,2017,Rabi,63.5,36.5,36.2,19.6
+Layyah,Punjab,2018,Kharif,63.5,36.5,31.6,26.9
+Layyah,Punjab,2018,Rabi,63.5,36.5,37.4,23.2
+Layyah,Punjab,2019,Kharif,63.5,36.5,34.7,24.4
+Layyah,Punjab,2019,Rabi,63.5,36.5,36.6,26.3
+Layyah,Punjab,2020,Kharif,63.5,36.5,39.4,24.4
+Layyah,Punjab,2020,Rabi,63.5,36.5,42.4,29.6
+Layyah,Punjab,2021,Kharif,63.5,36.5,38.9,22.3
+Layyah,Punjab,2021,Rabi,63.5,36.5,26.7,24.6
+Layyah,Punjab,2022,Kharif,63.5,36.5,41.1,27.5
+Layyah,Punjab,2022,Rabi,63.5,36.5,34.6,25.9
+Layyah,Punjab,2023,Kharif,63.5,36.5,46.7,20.7
+Layyah,Punjab,2023,Rabi,63.5,36.5,40.8,28.4
+Mianwali,Punjab,2000,Kharif,56.4,43.6,42.7,21.8
+Mianwali,Punjab,2000,Rabi,56.4,43.6,41.1,25.0
+Mianwali,Punjab,2001,Kharif,56.4,43.6,43.1,26.6
+Mianwali,Punjab,2001,Rabi,56.4,43.6,46.9,24.3
+Mianwali,Punjab,2002,Kharif,56.4,43.6,31.4,25.3
+Mianwali,Punjab,2002,Rabi,56.4,43.6,43.2,21.0
+Mianwali,Punjab,2003,Kharif,56.4,43.6,45.9,26.5
+Mianwali,Punjab,2003,Rabi,56.4,43.6,35.5,24.2
+Mianwali,Punjab,2004,Kharif,56.4,43.6,32.6,21.6
+Mianwali,Punjab,2004,Rabi,56.4,43.6,40.8,22.4
+Mianwali,Punjab,2005,Kharif,56.4,43.6,52.7,24.9
+Mianwali,Punjab,2005,Rabi,56.4,43.6,42.9,22.2
+Mianwali,Punjab,2006,Kharif,56.4,43.6,38.5,23.2
+Mianwali,Punjab,2006,Rabi,56.4,43.6,44.7,18.8
+Mianwali,Punjab,2007,Kharif,56.4,43.6,40.8,25.3
+Mianwali,Punjab,2007,Rabi,56.4,43.6,43.0,20.9
+Mianwali,Punjab,2008,Kharif,56.4,43.6,48.1,25.1
+Mianwali,Punjab,2008,Rabi,56.4,43.6,43.1,20.1
+Mianwali,Punjab,2009,Kharif,56.4,43.6,42.4,25.7
+Mianwali,Punjab,2009,Rabi,56.4,43.6,41.1,17.5
+Mianwali,Punjab,2010,Kharif,56.4,43.6,40.9,24.0
+Mianwali,Punjab,2010,Rabi,56.4,43.6,46.2,20.1
+Mianwali,Punjab,2011,Kharif,56.4,43.6,45.3,20.3
+Mianwali,Punjab,2011,Rabi,56.4,43.6,51.6,22.7
+Mianwali,Punjab,2012,Kharif,56.4,43.6,46.1,25.3
+Mianwali,Punjab,2012,Rabi,56.4,43.6,41.0,26.1
+Mianwali,Punjab,2013,Kharif,56.4,43.6,37.5,17.4
+Mianwali,Punjab,2013,Rabi,56.4,43.6,41.8,29.9
+Mianwali,Punjab,2014,Kharif,56.4,43.6,37.2,22.2
+Mianwali,Punjab,2014,Rabi,56.4,43.6,43.2,26.5
+Mianwali,Punjab,2015,Kharif,56.4,43.6,35.9,23.4
+Mianwali,Punjab,2015,Rabi,56.4,43.6,42.5,23.9
+Mianwali,Punjab,2016,Kharif,56.4,43.6,46.1,17.6
+Mianwali,Punjab,2016,Rabi,56.4,43.6,46.1,17.6
+Mianwali,Punjab,2017,Kharif,56.4,43.6,42.7,21.8
+Mianwali,Punjab,2017,Rabi,56.4,43.6,39.7,20.3
+Mianwali,Punjab,2018,Kharif,56.4,43.6,45.6,20.0
+Mianwali,Punjab,2018,Rabi,56.4,43.6,43.8,25.3
+Mianwali,Punjab,2019,Kharif,56.4,43.6,46.4,26.8
+Mianwali,Punjab,2019,Rabi,56.4,43.6,49.3,17.5
+Mianwali,Punjab,2020,Kharif,56.4,43.6,35.2,16.3
+Mianwali,Punjab,2020,Rabi,56.4,43.6,42.0,26.1
+Mianwali,Punjab,2021,Kharif,56.4,43.6,45.6,17.7
+Mianwali,Punjab,2021,Rabi,56.4,43.6,37.8,19.8
+Mianwali,Punjab,2022,Kharif,56.4,43.6,37.3,20.3
+Mianwali,Punjab,2022,Rabi,56.4,43.6,38.3,23.1
+Mianwali,Punjab,2023,Kharif,56.4,43.6,50.4,19.5
+Mianwali,Punjab,2023,Rabi,56.4,43.6,48.5,21.6
+Bahawalpur,Punjab,2000,Kharif,45.2,54.8,67.4,18.2
+Bahawalpur,Punjab,2000,Rabi,45.2,54.8,53.5,16.4
+Bahawalpur,Punjab,2001,Kharif,45.2,54.8,55.4,18.5
+Bahawalpur,Punjab,2001,Rabi,45.2,54.8,59.2,17.4
+Bahawalpur,Punjab,2002,Kharif,45.2,54.8,62.0,17.0
+Bahawalpur,Punjab,2002,Rabi,45.2,54.8,54.5,17.4
+Bahawalpur,Punjab,2003,Kharif,45.2,54.8,52.1,11.2
+Bahawalpur,Punjab,2003,Rabi,45.2,54.8,57.9,23.0
+Bahawalpur,Punjab,2004,Kharif,45.2,54.8,53.7,17.3
+Bahawalpur,Punjab,2004,Rabi,45.2,54.8,50.7,18.5
+Bahawalpur,Punjab,2005,Kharif,45.2,54.8,52.8,18.2
+Bahawalpur,Punjab,2005,Rabi,45.2,54.8,56.2,18.8
+Bahawalpur,Punjab,2006,Kharif,45.2,54.8,53.8,20.6
+Bahawalpur,Punjab,2006,Rabi,45.2,54.8,51.0,15.3
+Bahawalpur,Punjab,2007,Kharif,45.2,54.8,54.4,20.5
+Bahawalpur,Punjab,2007,Rabi,45.2,54.8,47.2,20.6
+Bahawalpur,Punjab,2008,Kharif,45.2,54.8,44.4,20.2
+Bahawalpur,Punjab,2008,Rabi,45.2,54.8,53.1,16.9
+Bahawalpur,Punjab,2009,Kharif,45.2,54.8,58.7,16.7
+Bahawalpur,Punjab,2009,Rabi,45.2,54.8,49.2,19.5
+Bahawalpur,Punjab,2010,Kharif,45.2,54.8,51.6,16.0
+Bahawalpur,Punjab,2010,Rabi,45.2,54.8,48.5,20.2
+Bahawalpur,Punjab,2011,Kharif,45.2,54.8,53.9,16.3
+Bahawalpur,Punjab,2011,Rabi,45.2,54.8,53.8,17.3
+Bahawalpur,Punjab,2012,Kharif,45.2,54.8,56.4,21.1
+Bahawalpur,Punjab,2012,Rabi,45.2,54.8,53.8,16.4
+Bahawalpur,Punjab,2013,Kharif,45.2,54.8,52.4,20.3
+Bahawalpur,Punjab,2013,Rabi,45.2,54.8,59.6,20.1
+Bahawalpur,Punjab,2014,Kharif,45.2,54.8,61.2,15.9
+Bahawalpur,Punjab,2014,Rabi,45.2,54.8,48.1,12.9
+Bahawalpur,Punjab,2015,Kharif,45.2,54.8,52.0,17.1
+Bahawalpur,Punjab,2015,Rabi,45.2,54.8,53.9,14.1
+Bahawalpur,Punjab,2016,Kharif,45.2,54.8,52.8,20.7
+Bahawalpur,Punjab,2016,Rabi,45.2,54.8,61.2,14.0
+Bahawalpur,Punjab,2017,Kharif,45.2,54.8,58.2,15.9
+Bahawalpur,Punjab,2017,Rabi,45.2,54.8,49.1,17.0
+Bahawalpur,Punjab,2018,Kharif,45.2,54.8,57.4,11.0
+Bahawalpur,Punjab,2018,Rabi,45.2,54.8,61.3,19.8
+Bahawalpur,Punjab,2019,Kharif,45.2,54.8,58.7,15.7
+Bahawalpur,Punjab,2019,Rabi,45.2,54.8,56.6,20.2
+Bahawalpur,Punjab,2020,Kharif,45.2,54.8,52.0,20.7
+Bahawalpur,Punjab,2020,Rabi,45.2,54.8,55.7,19.9
+Bahawalpur,Punjab,2021,Kharif,45.2,54.8,49.6,18.0
+Bahawalpur,Punjab,2021,Rabi,45.2,54.8,53.0,20.8
+Bahawalpur,Punjab,2022,Kharif,45.2,54.8,46.2,14.6
+Bahawalpur,Punjab,2022,Rabi,45.2,54.8,58.2,22.8
+Bahawalpur,Punjab,2023,Kharif,45.2,54.8,53.8,20.9
+Bahawalpur,Punjab,2023,Rabi,45.2,54.8,55.2,18.7
+Bahawalnagar,Punjab,2000,Kharif,48.5,51.5,44.4,24.2
+Bahawalnagar,Punjab,2000,Rabi,48.5,51.5,46.6,17.0
+Bahawalnagar,Punjab,2001,Kharif,48.5,51.5,57.6,20.3
+Bahawalnagar,Punjab,2001,Rabi,48.5,51.5,52.0,18.7
+Bahawalnagar,Punjab,2002,Kharif,48.5,51.5,50.1,15.5
+Bahawalnagar,Punjab,2002,Rabi,48.5,51.5,42.8,20.5
+Bahawalnagar,Punjab,2003,Kharif,48.5,51.5,52.3,15.2
+Bahawalnagar,Punjab,2003,Rabi,48.5,51.5,53.5,19.6
+Bahawalnagar,Punjab,2004,Kharif,48.5,51.5,50.1,20.1
+Bahawalnagar,Punjab,2004,Rabi,48.5,51.5,49.2,19.4
+Bahawalnagar,Punjab,2005,Kharif,48.5,51.5,55.3,21.4
+Bahawalnagar,Punjab,2005,Rabi,48.5,51.5,55.1,25.4
+Bahawalnagar,Punjab,2006,Kharif,48.5,51.5,52.0,18.0
+Bahawalnagar,Punjab,2006,Rabi,48.5,51.5,44.6,16.8
+Bahawalnagar,Punjab,2007,Kharif,48.5,51.5,37.5,19.2
+Bahawalnagar,Punjab,2007,Rabi,48.5,51.5,49.6,15.3
+Bahawalnagar,Punjab,2008,Kharif,48.5,51.5,57.5,18.6
+Bahawalnagar,Punjab,2008,Rabi,48.5,51.5,46.1,19.0
+Bahawalnagar,Punjab,2009,Kharif,48.5,51.5,51.5,14.1
+Bahawalnagar,Punjab,2009,Rabi,48.5,51.5,47.4,22.3
+Bahawalnagar,Punjab,2010,Kharif,48.5,51.5,42.5,17.5
+Bahawalnagar,Punjab,2010,Rabi,48.5,51.5,49.1,23.2
+Bahawalnagar,Punjab,2011,Kharif,48.5,51.5,56.0,19.3
+Bahawalnagar,Punjab,2011,Rabi,48.5,51.5,46.6,17.5
+Bahawalnagar,Punjab,2012,Kharif,48.5,51.5,50.6,22.0
+Bahawalnagar,Punjab,2012,Rabi,48.5,51.5,60.2,17.6
+Bahawalnagar,Punjab,2013,Kharif,48.5,51.5,55.8,17.0
+Bahawalnagar,Punjab,2013,Rabi,48.5,51.5,50.5,19.7
+Bahawalnagar,Punjab,2014,Kharif,48.5,51.5,51.7,18.1
+Bahawalnagar,Punjab,2014,Rabi,48.5,51.5,50.1,25.4
+Bahawalnagar,Punjab,2015,Kharif,48.5,51.5,56.1,17.9
+Bahawalnagar,Punjab,2015,Rabi,48.5,51.5,44.8,23.6
+Bahawalnagar,Punjab,2016,Kharif,48.5,51.5,53.7,16.5
+Bahawalnagar,Punjab,2016,Rabi,48.5,51.5,54.1,19.4
+Bahawalnagar,Punjab,2017,Kharif,48.5,51.5,48.8,18.3
+Bahawalnagar,Punjab,2017,Rabi,48.5,51.5,42.7,23.6
+Bahawalnagar,Punjab,2018,Kharif,48.5,51.5,49.8,20.3
+Bahawalnagar,Punjab,2018,Rabi,48.5,51.5,45.9,20.3
+Bahawalnagar,Punjab,2019,Kharif,48.5,51.5,52.9,21.0
+Bahawalnagar,Punjab,2019,Rabi,48.5,51.5,57.1,20.1
+Bahawalnagar,Punjab,2020,Kharif,48.5,51.5,56.4,19.0
+Bahawalnagar,Punjab,2020,Rabi,48.5,51.5,52.5,18.7
+Bahawalnagar,Punjab,2021,Kharif,48.5,51.5,49.8,22.1
+Bahawalnagar,Punjab,2021,Rabi,48.5,51.5,51.4,21.1
+Bahawalnagar,Punjab,2022,Kharif,48.5,51.5,49.6,17.7
+Bahawalnagar,Punjab,2022,Rabi,48.5,51.5,52.8,21.0
+Bahawalnagar,Punjab,2023,Kharif,48.5,51.5,52.1,18.1
+Bahawalnagar,Punjab,2023,Rabi,48.5,51.5,53.3,17.0
+Rahim Yar Khan,Punjab,2000,Kharif,40.3,59.7,56.9,16.3
+Rahim Yar Khan,Punjab,2000,Rabi,40.3,59.7,62.0,18.3
+Rahim Yar Khan,Punjab,2001,Kharif,40.3,59.7,63.1,21.0
+Rahim Yar Khan,Punjab,2001,Rabi,40.3,59.7,68.0,15.6
+Rahim Yar Khan,Punjab,2002,Kharif,40.3,59.7,64.2,16.5
+Rahim Yar Khan,Punjab,2002,Rabi,40.3,59.7,65.6,17.8
+Rahim Yar Khan,Punjab,2003,Kharif,40.3,59.7,67.4,16.5
+Rahim Yar Khan,Punjab,2003,Rabi,40.3,59.7,66.4,9.9
+Rahim Yar Khan,Punjab,2004,Kharif,40.3,59.7,60.6,16.5
+Rahim Yar Khan,Punjab,2004,Rabi,40.3,59.7,57.5,13.0
+Rahim Yar Khan,Punjab,2005,Kharif,40.3,59.7,57.7,13.6
+Rahim Yar Khan,Punjab,2005,Rabi,40.3,59.7,58.2,18.7
+Rahim Yar Khan,Punjab,2006,Kharif,40.3,59.7,55.2,18.6
+Rahim Yar Khan,Punjab,2006,Rabi,40.3,59.7,55.5,15.9
+Rahim Yar Khan,Punjab,2007,Kharif,40.3,59.7,58.4,18.4
+Rahim Yar Khan,Punjab,2007,Rabi,40.3,59.7,63.6,15.3
+Rahim Yar Khan,Punjab,2008,Kharif,40.3,59.7,68.0,14.2
+Rahim Yar Khan,Punjab,2008,Rabi,40.3,59.7,68.4,16.7
+Rahim Yar Khan,Punjab,2009,Kharif,40.3,59.7,58.4,14.7
+Rahim Yar Khan,Punjab,2009,Rabi,40.3,59.7,56.5,11.5
+Rahim Yar Khan,Punjab,2010,Kharif,40.3,59.7,56.7,20.4
+Rahim Yar Khan,Punjab,2010,Rabi,40.3,59.7,58.3,15.2
+Rahim Yar Khan,Punjab,2011,Kharif,40.3,59.7,57.6,23.1
+Rahim Yar Khan,Punjab,2011,Rabi,40.3,59.7,58.1,20.0
+Rahim Yar Khan,Punjab,2012,Kharif,40.3,59.7,59.7,17.3
+Rahim Yar Khan,Punjab,2012,Rabi,40.3,59.7,57.7,16.1
+Rahim Yar Khan,Punjab,2013,Kharif,40.3,59.7,50.9,16.7
+Rahim Yar Khan,Punjab,2013,Rabi,40.3,59.7,62.7,13.1
+Rahim Yar Khan,Punjab,2014,Kharif,40.3,59.7,56.6,13.5
+Rahim Yar Khan,Punjab,2014,Rabi,40.3,59.7,68.1,17.6
+Rahim Yar Khan,Punjab,2015,Kharif,40.3,59.7,60.2,12.1
+Rahim Yar Khan,Punjab,2015,Rabi,40.3,59.7,67.0,20.6
+Rahim Yar Khan,Punjab,2016,Kharif,40.3,59.7,69.8,16.5
+Rahim Yar Khan,Punjab,2016,Rabi,40.3,59.7,59.3,16.6
+Rahim Yar Khan,Punjab,2017,Kharif,40.3,59.7,56.2,17.1
+Rahim Yar Khan,Punjab,2017,Rabi,40.3,59.7,55.3,15.5
+Rahim Yar Khan,Punjab,2018,Kharif,40.3,59.7,60.2,19.5
+Rahim Yar Khan,Punjab,2018,Rabi,40.3,59.7,55.4,11.5
+Rahim Yar Khan,Punjab,2019,Kharif,40.3,59.7,52.1,12.0
+Rahim Yar Khan,Punjab,2019,Rabi,40.3,59.7,65.1,16.0
+Rahim Yar Khan,Punjab,2020,Kharif,40.3,59.7,63.9,17.0
+Rahim Yar Khan,Punjab,2020,Rabi,40.3,59.7,72.7,16.5
+Rahim Yar Khan,Punjab,2021,Kharif,40.3,59.7,64.4,15.9
+Rahim Yar Khan,Punjab,2021,Rabi,40.3,59.7,60.5,16.2
+Rahim Yar Khan,Punjab,2022,Kharif,40.3,59.7,51.0,19.0
+Rahim Yar Khan,Punjab,2022,Rabi,40.3,59.7,57.7,19.2
+Rahim Yar Khan,Punjab,2023,Kharif,40.3,59.7,51.4,16.4
+Rahim Yar Khan,Punjab,2023,Rabi,40.3,59.7,64.4,16.0
+Faisalabad,Punjab,2000,Kharif,3.5,96.5,95.0,0.0
+Faisalabad,Punjab,2000,Rabi,3.5,96.5,94.6,4.9
+Faisalabad,Punjab,2001,Kharif,3.5,96.5,95.5,4.5
+Faisalabad,Punjab,2001,Rabi,3.5,96.5,91.9,0.4
+Faisalabad,Punjab,2002,Kharif,3.5,96.5,87.2,0.0
+Faisalabad,Punjab,2002,Rabi,3.5,96.5,98.3,0.0
+Faisalabad,Punjab,2003,Kharif,3.5,96.5,95.7,5.0
+Faisalabad,Punjab,2003,Rabi,3.5,96.5,100.0,5.2
+Faisalabad,Punjab,2004,Kharif,3.5,96.5,93.8,0.7
+Faisalabad,Punjab,2004,Rabi,3.5,96.5,81.2,5.9
+Faisalabad,Punjab,2005,Kharif,3.5,96.5,96.5,2.4
+Faisalabad,Punjab,2005,Rabi,3.5,96.5,96.3,5.6
+Faisalabad,Punjab,2006,Kharif,3.5,96.5,100.0,2.1
+Faisalabad,Punjab,2006,Rabi,3.5,96.5,92.0,0.5
+Faisalabad,Punjab,2007,Kharif,3.5,96.5,94.2,1.6
+Faisalabad,Punjab,2007,Rabi,3.5,96.5,100.0,0.0
+Faisalabad,Punjab,2008,Kharif,3.5,96.5,87.6,4.5
+Faisalabad,Punjab,2008,Rabi,3.5,96.5,100.0,0.0
+Faisalabad,Punjab,2009,Kharif,3.5,96.5,98.5,6.3
+Faisalabad,Punjab,2009,Rabi,3.5,96.5,98.3,1.1
+Faisalabad,Punjab,2010,Kharif,3.5,96.5,100.0,1.1
+Faisalabad,Punjab,2010,Rabi,3.5,96.5,98.2,1.1
+Faisalabad,Punjab,2011,Kharif,3.5,96.5,100.0,0.0
+Faisalabad,Punjab,2011,Rabi,3.5,96.5,98.9,0.0
+Faisalabad,Punjab,2012,Kharif,3.5,96.5,99.2,0.0
+Faisalabad,Punjab,2012,Rabi,3.5,96.5,84.1,2.2
+Faisalabad,Punjab,2013,Kharif,3.5,96.5,91.7,0.7
+Faisalabad,Punjab,2013,Rabi,3.5,96.5,90.3,0.0
+Faisalabad,Punjab,2014,Kharif,3.5,96.5,100.0,0.0
+Faisalabad,Punjab,2014,Rabi,3.5,96.5,97.5,0.0
+Faisalabad,Punjab,2015,Kharif,3.5,96.5,92.1,0.2
+Faisalabad,Punjab,2015,Rabi,3.5,96.5,85.8,0.0
+Faisalabad,Punjab,2016,Kharif,3.5,96.5,94.7,0.0
+Faisalabad,Punjab,2016,Rabi,3.5,96.5,95.8,0.0
+Faisalabad,Punjab,2017,Kharif,3.5,96.5,88.2,3.2
+Faisalabad,Punjab,2017,Rabi,3.5,96.5,96.5,0.0
+Faisalabad,Punjab,2018,Kharif,3.5,96.5,87.4,2.3
+Faisalabad,Punjab,2018,Rabi,3.5,96.5,96.0,0.0
+Faisalabad,Punjab,2019,Kharif,3.5,96.5,92.6,1.7
+Faisalabad,Punjab,2019,Rabi,3.5,96.5,95.9,3.4
+Faisalabad,Punjab,2020,Kharif,3.5,96.5,100.0,3.7
+Faisalabad,Punjab,2020,Rabi,3.5,96.5,95.5,0.9
+Faisalabad,Punjab,2021,Kharif,3.5,96.5,95.8,0.0
+Faisalabad,Punjab,2021,Rabi,3.5,96.5,94.1,0.7
+Faisalabad,Punjab,2022,Kharif,3.5,96.5,92.3,6.2
+Faisalabad,Punjab,2022,Rabi,3.5,96.5,98.5,0.9
+Faisalabad,Punjab,2023,Kharif,3.5,96.5,100.0,5.4
+Faisalabad,Punjab,2023,Rabi,3.5,96.5,98.9,4.0
+Sargodha,Punjab,2000,Kharif,8.7,91.3,93.2,7.6
+Sargodha,Punjab,2000,Rabi,8.7,91.3,87.3,1.9
+Sargodha,Punjab,2001,Kharif,8.7,91.3,92.8,5.4
+Sargodha,Punjab,2001,Rabi,8.7,91.3,91.8,3.2
+Sargodha,Punjab,2002,Kharif,8.7,91.3,83.6,2.0
+Sargodha,Punjab,2002,Rabi,8.7,91.3,95.8,1.1
+Sargodha,Punjab,2003,Kharif,8.7,91.3,87.4,2.4
+Sargodha,Punjab,2003,Rabi,8.7,91.3,85.1,3.0
+Sargodha,Punjab,2004,Kharif,8.7,91.3,89.6,3.1
+Sargodha,Punjab,2004,Rabi,8.7,91.3,91.7,3.3
+Sargodha,Punjab,2005,Kharif,8.7,91.3,86.8,3.6
+Sargodha,Punjab,2005,Rabi,8.7,91.3,86.9,2.5
+Sargodha,Punjab,2006,Kharif,8.7,91.3,89.8,7.1
+Sargodha,Punjab,2006,Rabi,8.7,91.3,87.1,1.8
+Sargodha,Punjab,2007,Kharif,8.7,91.3,90.5,3.2
+Sargodha,Punjab,2007,Rabi,8.7,91.3,84.9,1.8
+Sargodha,Punjab,2008,Kharif,8.7,91.3,88.9,1.3
+Sargodha,Punjab,2008,Rabi,8.7,91.3,90.5,2.4
+Sargodha,Punjab,2009,Kharif,8.7,91.3,84.6,0.5
+Sargodha,Punjab,2009,Rabi,8.7,91.3,92.1,2.9
+Sargodha,Punjab,2010,Kharif,8.7,91.3,92.3,5.0
+Sargodha,Punjab,2010,Rabi,8.7,91.3,96.2,0.9
+Sargodha,Punjab,2011,Kharif,8.7,91.3,90.6,10.1
+Sargodha,Punjab,2011,Rabi,8.7,91.3,95.3,1.1
+Sargodha,Punjab,2012,Kharif,8.7,91.3,88.8,3.0
+Sargodha,Punjab,2012,Rabi,8.7,91.3,87.2,0.0
+Sargodha,Punjab,2013,Kharif,8.7,91.3,91.2,1.4
+Sargodha,Punjab,2013,Rabi,8.7,91.3,91.7,3.6
+Sargodha,Punjab,2014,Kharif,8.7,91.3,100.0,4.4
+Sargodha,Punjab,2014,Rabi,8.7,91.3,82.5,5.1
+Sargodha,Punjab,2015,Kharif,8.7,91.3,97.6,6.8
+Sargodha,Punjab,2015,Rabi,8.7,91.3,76.8,1.9
+Sargodha,Punjab,2016,Kharif,8.7,91.3,88.5,1.3
+Sargodha,Punjab,2016,Rabi,8.7,91.3,100.0,3.0
+Sargodha,Punjab,2017,Kharif,8.7,91.3,96.9,2.4
+Sargodha,Punjab,2017,Rabi,8.7,91.3,95.7,10.2
+Sargodha,Punjab,2018,Kharif,8.7,91.3,90.4,5.3
+Sargodha,Punjab,2018,Rabi,8.7,91.3,88.1,5.6
+Sargodha,Punjab,2019,Kharif,8.7,91.3,93.2,6.7
+Sargodha,Punjab,2019,Rabi,8.7,91.3,95.8,2.5
+Sargodha,Punjab,2020,Kharif,8.7,91.3,99.2,3.1
+Sargodha,Punjab,2020,Rabi,8.7,91.3,93.5,3.1
+Sargodha,Punjab,2021,Kharif,8.7,91.3,85.9,1.8
+Sargodha,Punjab,2021,Rabi,8.7,91.3,100.0,3.2
+Sargodha,Punjab,2022,Kharif,8.7,91.3,90.7,6.4
+Sargodha,Punjab,2022,Rabi,8.7,91.3,93.6,5.2
+Sargodha,Punjab,2023,Kharif,8.7,91.3,94.1,10.3
+Sargodha,Punjab,2023,Rabi,8.7,91.3,91.8,5.3
+Multan,Punjab,2000,Kharif,14.6,85.4,84.4,3.2
+Multan,Punjab,2000,Rabi,14.6,85.4,76.9,4.2
+Multan,Punjab,2001,Kharif,14.6,85.4,91.3,6.0
+Multan,Punjab,2001,Rabi,14.6,85.4,82.4,2.1
+Multan,Punjab,2002,Kharif,14.6,85.4,77.7,9.6
+Multan,Punjab,2002,Rabi,14.6,85.4,87.9,7.3
+Multan,Punjab,2003,Kharif,14.6,85.4,89.1,6.8
+Multan,Punjab,2003,Rabi,14.6,85.4,81.8,0.7
+Multan,Punjab,2004,Kharif,14.6,85.4,84.1,9.3
+Multan,Punjab,2004,Rabi,14.6,85.4,81.2,5.4
+Multan,Punjab,2005,Kharif,14.6,85.4,90.4,3.6
+Multan,Punjab,2005,Rabi,14.6,85.4,85.8,9.0
+Multan,Punjab,2006,Kharif,14.6,85.4,88.3,9.0
+Multan,Punjab,2006,Rabi,14.6,85.4,85.9,3.3
+Multan,Punjab,2007,Kharif,14.6,85.4,87.2,12.8
+Multan,Punjab,2007,Rabi,14.6,85.4,90.6,4.5
+Multan,Punjab,2008,Kharif,14.6,85.4,83.1,8.4
+Multan,Punjab,2008,Rabi,14.6,85.4,89.2,10.8
+Multan,Punjab,2009,Kharif,14.6,85.4,81.5,2.8
+Multan,Punjab,2009,Rabi,14.6,85.4,84.5,7.4
+Multan,Punjab,2010,Kharif,14.6,85.4,84.2,4.6
+Multan,Punjab,2010,Rabi,14.6,85.4,90.1,5.8
+Multan,Punjab,2011,Kharif,14.6,85.4,88.8,8.2
+Multan,Punjab,2011,Rabi,14.6,85.4,80.4,3.6
+Multan,Punjab,2012,Kharif,14.6,85.4,93.0,6.1
+Multan,Punjab,2012,Rabi,14.6,85.4,90.4,4.2
+Multan,Punjab,2013,Kharif,14.6,85.4,81.6,6.2
+Multan,Punjab,2013,Rabi,14.6,85.4,86.0,6.3
+Multan,Punjab,2014,Kharif,14.6,85.4,80.8,2.0
+Multan,Punjab,2014,Rabi,14.6,85.4,86.1,8.0
+Multan,Punjab,2015,Kharif,14.6,85.4,88.6,8.3
+Multan,Punjab,2015,Rabi,14.6,85.4,87.4,6.2
+Multan,Punjab,2016,Kharif,14.6,85.4,89.0,8.1
+Multan,Punjab,2016,Rabi,14.6,85.4,88.0,6.0
+Multan,Punjab,2017,Kharif,14.6,85.4,88.5,8.4
+Multan,Punjab,2017,Rabi,14.6,85.4,82.6,1.6
+Multan,Punjab,2018,Kharif,14.6,85.4,88.1,0.6
+Multan,Punjab,2018,Rabi,14.6,85.4,91.8,6.7
+Multan,Punjab,2019,Kharif,14.6,85.4,88.4,2.1
+Multan,Punjab,2019,Rabi,14.6,85.4,82.8,4.0
+Multan,Punjab,2020,Kharif,14.6,85.4,87.1,7.4
+Multan,Punjab,2020,Rabi,14.6,85.4,86.2,2.7
+Multan,Punjab,2021,Kharif,14.6,85.4,80.3,2.0
+Multan,Punjab,2021,Rabi,14.6,85.4,84.0,8.0
+Multan,Punjab,2022,Kharif,14.6,85.4,84.8,11.7
+Multan,Punjab,2022,Rabi,14.6,85.4,86.1,9.2
+Multan,Punjab,2023,Kharif,14.6,85.4,84.5,9.2
+Multan,Punjab,2023,Rabi,14.6,85.4,87.1,4.3
+Khanewal,Punjab,2000,Kharif,6.2,93.8,100.0,1.9
+Khanewal,Punjab,2000,Rabi,6.2,93.8,100.0,1.1
+Khanewal,Punjab,2001,Kharif,6.2,93.8,95.9,7.5
+Khanewal,Punjab,2001,Rabi,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2002,Kharif,6.2,93.8,99.4,5.3
+Khanewal,Punjab,2002,Rabi,6.2,93.8,84.8,6.7
+Khanewal,Punjab,2003,Kharif,6.2,93.8,95.5,10.1
+Khanewal,Punjab,2003,Rabi,6.2,93.8,93.4,2.3
+Khanewal,Punjab,2004,Kharif,6.2,93.8,94.1,0.0
+Khanewal,Punjab,2004,Rabi,6.2,93.8,93.0,2.8
+Khanewal,Punjab,2005,Kharif,6.2,93.8,95.6,0.0
+Khanewal,Punjab,2005,Rabi,6.2,93.8,83.4,1.8
+Khanewal,Punjab,2006,Kharif,6.2,93.8,93.2,3.1
+Khanewal,Punjab,2006,Rabi,6.2,93.8,91.0,2.3
+Khanewal,Punjab,2007,Kharif,6.2,93.8,96.6,2.7
+Khanewal,Punjab,2007,Rabi,6.2,93.8,96.1,1.5
+Khanewal,Punjab,2008,Kharif,6.2,93.8,87.5,3.5
+Khanewal,Punjab,2008,Rabi,6.2,93.8,86.1,0.0
+Khanewal,Punjab,2009,Kharif,6.2,93.8,91.4,2.9
+Khanewal,Punjab,2009,Rabi,6.2,93.8,93.5,0.0
+Khanewal,Punjab,2010,Kharif,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2010,Rabi,6.2,93.8,92.3,5.2
+Khanewal,Punjab,2011,Kharif,6.2,93.8,94.6,1.9
+Khanewal,Punjab,2011,Rabi,6.2,93.8,98.8,2.4
+Khanewal,Punjab,2012,Kharif,6.2,93.8,88.1,8.4
+Khanewal,Punjab,2012,Rabi,6.2,93.8,94.0,0.0
+Khanewal,Punjab,2013,Kharif,6.2,93.8,100.0,0.1
+Khanewal,Punjab,2013,Rabi,6.2,93.8,90.8,0.0
+Khanewal,Punjab,2014,Kharif,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2014,Rabi,6.2,93.8,96.8,7.8
+Khanewal,Punjab,2015,Kharif,6.2,93.8,94.5,0.9
+Khanewal,Punjab,2015,Rabi,6.2,93.8,93.7,4.2
+Khanewal,Punjab,2016,Kharif,6.2,93.8,88.8,3.5
+Khanewal,Punjab,2016,Rabi,6.2,93.8,89.9,2.3
+Khanewal,Punjab,2017,Kharif,6.2,93.8,91.3,4.7
+Khanewal,Punjab,2017,Rabi,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2018,Kharif,6.2,93.8,93.6,4.9
+Khanewal,Punjab,2018,Rabi,6.2,93.8,91.4,2.8
+Khanewal,Punjab,2019,Kharif,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2019,Rabi,6.2,93.8,95.6,5.8
+Khanewal,Punjab,2020,Kharif,6.2,93.8,95.3,2.7
+Khanewal,Punjab,2020,Rabi,6.2,93.8,99.1,3.1
+Khanewal,Punjab,2021,Kharif,6.2,93.8,97.1,7.7
+Khanewal,Punjab,2021,Rabi,6.2,93.8,90.2,0.5
+Khanewal,Punjab,2022,Kharif,6.2,93.8,80.0,0.5
+Khanewal,Punjab,2022,Rabi,6.2,93.8,100.0,0.0
+Khanewal,Punjab,2023,Kharif,6.2,93.8,95.0,0.5
+Khanewal,Punjab,2023,Rabi,6.2,93.8,92.8,4.3
+Vehari,Punjab,2000,Kharif,5.0,95.0,90.4,2.8
+Vehari,Punjab,2000,Rabi,5.0,95.0,93.6,9.4
+Vehari,Punjab,2001,Kharif,5.0,95.0,96.1,4.5
+Vehari,Punjab,2001,Rabi,5.0,95.0,96.1,3.0
+Vehari,Punjab,2002,Kharif,5.0,95.0,97.5,0.0
+Vehari,Punjab,2002,Rabi,5.0,95.0,90.7,3.5
+Vehari,Punjab,2003,Kharif,5.0,95.0,96.5,3.0
+Vehari,Punjab,2003,Rabi,5.0,95.0,100.0,0.3
+Vehari,Punjab,2004,Kharif,5.0,95.0,88.9,0.0
+Vehari,Punjab,2004,Rabi,5.0,95.0,100.0,1.7
+Vehari,Punjab,2005,Kharif,5.0,95.0,99.6,0.0
+Vehari,Punjab,2005,Rabi,5.0,95.0,99.4,1.2
+Vehari,Punjab,2006,Kharif,5.0,95.0,92.4,0.0
+Vehari,Punjab,2006,Rabi,5.0,95.0,97.7,0.0
+Vehari,Punjab,2007,Kharif,5.0,95.0,93.5,3.7
+Vehari,Punjab,2007,Rabi,5.0,95.0,94.0,1.7
+Vehari,Punjab,2008,Kharif,5.0,95.0,95.2,3.1
+Vehari,Punjab,2008,Rabi,5.0,95.0,99.7,7.0
+Vehari,Punjab,2009,Kharif,5.0,95.0,94.5,2.3
+Vehari,Punjab,2009,Rabi,5.0,95.0,89.1,8.5
+Vehari,Punjab,2010,Kharif,5.0,95.0,85.7,4.0
+Vehari,Punjab,2010,Rabi,5.0,95.0,99.8,0.0
+Vehari,Punjab,2011,Kharif,5.0,95.0,90.2,4.8
+Vehari,Punjab,2011,Rabi,5.0,95.0,84.1,5.3
+Vehari,Punjab,2012,Kharif,5.0,95.0,100.0,1.9
+Vehari,Punjab,2012,Rabi,5.0,95.0,90.1,0.0
+Vehari,Punjab,2013,Kharif,5.0,95.0,91.1,0.0
+Vehari,Punjab,2013,Rabi,5.0,95.0,95.2,0.0
+Vehari,Punjab,2014,Kharif,5.0,95.0,99.0,1.8
+Vehari,Punjab,2014,Rabi,5.0,95.0,93.9,6.1
+Vehari,Punjab,2015,Kharif,5.0,95.0,88.5,4.5
+Vehari,Punjab,2015,Rabi,5.0,95.0,98.3,1.7
+Vehari,Punjab,2016,Kharif,5.0,95.0,93.2,2.7
+Vehari,Punjab,2016,Rabi,5.0,95.0,96.1,0.9
+Vehari,Punjab,2017,Kharif,5.0,95.0,95.0,2.6
+Vehari,Punjab,2017,Rabi,5.0,95.0,93.9,2.6
+Vehari,Punjab,2018,Kharif,5.0,95.0,98.1,0.4
+Vehari,Punjab,2018,Rabi,5.0,95.0,97.8,2.0
+Vehari,Punjab,2019,Kharif,5.0,95.0,100.0,4.3
+Vehari,Punjab,2019,Rabi,5.0,95.0,91.9,1.5
+Vehari,Punjab,2020,Kharif,5.0,95.0,100.0,7.8
+Vehari,Punjab,2020,Rabi,5.0,95.0,93.4,5.4
+Vehari,Punjab,2021,Kharif,5.0,95.0,80.9,0.0
+Vehari,Punjab,2021,Rabi,5.0,95.0,96.2,7.5
+Vehari,Punjab,2022,Kharif,5.0,95.0,92.9,1.3
+Vehari,Punjab,2022,Rabi,5.0,95.0,92.1,3.2
+Vehari,Punjab,2023,Kharif,5.0,95.0,97.6,0.0
+Vehari,Punjab,2023,Rabi,5.0,95.0,90.8,5.7
+Sahiwal,Punjab,2000,Kharif,6.9,93.1,96.6,2.2
+Sahiwal,Punjab,2000,Rabi,6.9,93.1,86.6,1.0
+Sahiwal,Punjab,2001,Kharif,6.9,93.1,90.1,0.0
+Sahiwal,Punjab,2001,Rabi,6.9,93.1,95.1,0.7
+Sahiwal,Punjab,2002,Kharif,6.9,93.1,86.7,0.0
+Sahiwal,Punjab,2002,Rabi,6.9,93.1,94.3,5.7
+Sahiwal,Punjab,2003,Kharif,6.9,93.1,80.4,0.8
+Sahiwal,Punjab,2003,Rabi,6.9,93.1,99.9,4.2
+Sahiwal,Punjab,2004,Kharif,6.9,93.1,88.3,7.0
+Sahiwal,Punjab,2004,Rabi,6.9,93.1,98.2,4.2
+Sahiwal,Punjab,2005,Kharif,6.9,93.1,99.3,2.6
+Sahiwal,Punjab,2005,Rabi,6.9,93.1,100.0,3.7
+Sahiwal,Punjab,2006,Kharif,6.9,93.1,97.6,5.1
+Sahiwal,Punjab,2006,Rabi,6.9,93.1,100.0,0.9
+Sahiwal,Punjab,2007,Kharif,6.9,93.1,87.6,0.0
+Sahiwal,Punjab,2007,Rabi,6.9,93.1,94.2,0.7
+Sahiwal,Punjab,2008,Kharif,6.9,93.1,92.9,8.6
+Sahiwal,Punjab,2008,Rabi,6.9,93.1,90.6,2.4
+Sahiwal,Punjab,2009,Kharif,6.9,93.1,86.4,3.2
+Sahiwal,Punjab,2009,Rabi,6.9,93.1,88.6,2.9
+Sahiwal,Punjab,2010,Kharif,6.9,93.1,90.8,0.0
+Sahiwal,Punjab,2010,Rabi,6.9,93.1,80.9,5.9
+Sahiwal,Punjab,2011,Kharif,6.9,93.1,97.0,5.7
+Sahiwal,Punjab,2011,Rabi,6.9,93.1,94.7,1.1
+Sahiwal,Punjab,2012,Kharif,6.9,93.1,96.7,0.2
+Sahiwal,Punjab,2012,Rabi,6.9,93.1,91.8,0.8
+Sahiwal,Punjab,2013,Kharif,6.9,93.1,89.6,0.4
+Sahiwal,Punjab,2013,Rabi,6.9,93.1,91.3,4.7
+Sahiwal,Punjab,2014,Kharif,6.9,93.1,94.5,2.3
+Sahiwal,Punjab,2014,Rabi,6.9,93.1,92.5,0.0
+Sahiwal,Punjab,2015,Kharif,6.9,93.1,100.0,5.8
+Sahiwal,Punjab,2015,Rabi,6.9,93.1,94.9,0.0
+Sahiwal,Punjab,2016,Kharif,6.9,93.1,86.7,5.7
+Sahiwal,Punjab,2016,Rabi,6.9,93.1,100.0,0.0
+Sahiwal,Punjab,2017,Kharif,6.9,93.1,100.0,7.4
+Sahiwal,Punjab,2017,Rabi,6.9,93.1,100.0,0.6
+Sahiwal,Punjab,2018,Kharif,6.9,93.1,85.9,0.0
+Sahiwal,Punjab,2018,Rabi,6.9,93.1,96.2,0.0
+Sahiwal,Punjab,2019,Kharif,6.9,93.1,90.5,4.0
+Sahiwal,Punjab,2019,Rabi,6.9,93.1,98.3,1.7
+Sahiwal,Punjab,2020,Kharif,6.9,93.1,94.9,2.9
+Sahiwal,Punjab,2020,Rabi,6.9,93.1,91.8,3.3
+Sahiwal,Punjab,2021,Kharif,6.9,93.1,93.6,7.4
+Sahiwal,Punjab,2021,Rabi,6.9,93.1,96.9,8.1
+Sahiwal,Punjab,2022,Kharif,6.9,93.1,97.4,4.8
+Sahiwal,Punjab,2022,Rabi,6.9,93.1,95.8,0.0
+Sahiwal,Punjab,2023,Kharif,6.9,93.1,94.9,0.0
+Sahiwal,Punjab,2023,Rabi,6.9,93.1,92.4,3.6
+Okara,Punjab,2000,Kharif,14.7,85.3,89.0,5.1
+Okara,Punjab,2000,Rabi,14.7,85.3,75.0,7.3
+Okara,Punjab,2001,Kharif,14.7,85.3,92.1,8.0
+Okara,Punjab,2001,Rabi,14.7,85.3,75.6,4.4
+Okara,Punjab,2002,Kharif,14.7,85.3,93.6,5.8
+Okara,Punjab,2002,Rabi,14.7,85.3,83.0,7.7
+Okara,Punjab,2003,Kharif,14.7,85.3,83.1,11.9
+Okara,Punjab,2003,Rabi,14.7,85.3,84.1,9.2
+Okara,Punjab,2004,Kharif,14.7,85.3,85.9,9.6
+Okara,Punjab,2004,Rabi,14.7,85.3,74.4,5.3
+Okara,Punjab,2005,Kharif,14.7,85.3,76.7,5.1
+Okara,Punjab,2005,Rabi,14.7,85.3,88.7,1.6
+Okara,Punjab,2006,Kharif,14.7,85.3,79.8,1.6
+Okara,Punjab,2006,Rabi,14.7,85.3,89.9,5.5
+Okara,Punjab,2007,Kharif,14.7,85.3,87.4,9.9
+Okara,Punjab,2007,Rabi,14.7,85.3,91.1,8.5
+Okara,Punjab,2008,Kharif,14.7,85.3,85.7,2.1
+Okara,Punjab,2008,Rabi,14.7,85.3,94.1,4.5
+Okara,Punjab,2009,Kharif,14.7,85.3,82.1,7.3
+Okara,Punjab,2009,Rabi,14.7,85.3,83.6,6.0
+Okara,Punjab,2010,Kharif,14.7,85.3,85.8,4.7
+Okara,Punjab,2010,Rabi,14.7,85.3,85.4,6.6
+Okara,Punjab,2011,Kharif,14.7,85.3,76.7,4.0
+Okara,Punjab,2011,Rabi,14.7,85.3,85.8,6.9
+Okara,Punjab,2012,Kharif,14.7,85.3,89.9,3.8
+Okara,Punjab,2012,Rabi,14.7,85.3,79.6,5.6
+Okara,Punjab,2013,Kharif,14.7,85.3,86.4,2.0
+Okara,Punjab,2013,Rabi,14.7,85.3,83.2,3.3
+Okara,Punjab,2014,Kharif,14.7,85.3,82.9,6.7
+Okara,Punjab,2014,Rabi,14.7,85.3,94.2,2.5
+Okara,Punjab,2015,Kharif,14.7,85.3,89.4,7.7
+Okara,Punjab,2015,Rabi,14.7,85.3,85.7,6.1
+Okara,Punjab,2016,Kharif,14.7,85.3,86.9,5.4
+Okara,Punjab,2016,Rabi,14.7,85.3,75.0,4.8
+Okara,Punjab,2017,Kharif,14.7,85.3,85.6,6.5
+Okara,Punjab,2017,Rabi,14.7,85.3,92.6,1.7
+Okara,Punjab,2018,Kharif,14.7,85.3,96.6,5.8
+Okara,Punjab,2018,Rabi,14.7,85.3,83.8,3.7
+Okara,Punjab,2019,Kharif,14.7,85.3,84.9,9.0
+Okara,Punjab,2019,Rabi,14.7,85.3,82.3,5.7
+Okara,Punjab,2020,Kharif,14.7,85.3,82.1,0.8
+Okara,Punjab,2020,Rabi,14.7,85.3,82.5,4.0
+Okara,Punjab,2021,Kharif,14.7,85.3,87.5,9.4
+Okara,Punjab,2021,Rabi,14.7,85.3,89.2,2.9
+Okara,Punjab,2022,Kharif,14.7,85.3,77.0,8.1
+Okara,Punjab,2022,Rabi,14.7,85.3,85.5,7.8
+Okara,Punjab,2023,Kharif,14.7,85.3,89.2,6.1
+Okara,Punjab,2023,Rabi,14.7,85.3,84.6,7.4
+Gujranwala,Punjab,2000,Kharif,15.0,85.0,88.2,8.6
+Gujranwala,Punjab,2000,Rabi,15.0,85.0,80.3,6.5
+Gujranwala,Punjab,2001,Kharif,15.0,85.0,79.9,3.8
+Gujranwala,Punjab,2001,Rabi,15.0,85.0,82.7,7.3
+Gujranwala,Punjab,2002,Kharif,15.0,85.0,84.2,2.8
+Gujranwala,Punjab,2002,Rabi,15.0,85.0,84.8,5.4
+Gujranwala,Punjab,2003,Kharif,15.0,85.0,91.8,6.7
+Gujranwala,Punjab,2003,Rabi,15.0,85.0,78.2,6.0
+Gujranwala,Punjab,2004,Kharif,15.0,85.0,91.0,9.2
+Gujranwala,Punjab,2004,Rabi,15.0,85.0,93.3,5.5
+Gujranwala,Punjab,2005,Kharif,15.0,85.0,78.4,7.0
+Gujranwala,Punjab,2005,Rabi,15.0,85.0,72.4,4.6
+Gujranwala,Punjab,2006,Kharif,15.0,85.0,85.3,10.5
+Gujranwala,Punjab,2006,Rabi,15.0,85.0,88.3,2.7
+Gujranwala,Punjab,2007,Kharif,15.0,85.0,73.1,4.8
+Gujranwala,Punjab,2007,Rabi,15.0,85.0,86.1,1.8
+Gujranwala,Punjab,2008,Kharif,15.0,85.0,87.1,6.7
+Gujranwala,Punjab,2008,Rabi,15.0,85.0,92.3,1.4
+Gujranwala,Punjab,2009,Kharif,15.0,85.0,82.0,7.1
+Gujranwala,Punjab,2009,Rabi,15.0,85.0,81.7,4.2
+Gujranwala,Punjab,2010,Kharif,15.0,85.0,89.0,3.3
+Gujranwala,Punjab,2010,Rabi,15.0,85.0,92.4,5.5
+Gujranwala,Punjab,2011,Kharif,15.0,85.0,83.6,1.1
+Gujranwala,Punjab,2011,Rabi,15.0,85.0,79.8,4.3
+Gujranwala,Punjab,2012,Kharif,15.0,85.0,90.5,5.5
+Gujranwala,Punjab,2012,Rabi,15.0,85.0,84.0,6.9
+Gujranwala,Punjab,2013,Kharif,15.0,85.0,91.3,8.7
+Gujranwala,Punjab,2013,Rabi,15.0,85.0,93.2,10.8
+Gujranwala,Punjab,2014,Kharif,15.0,85.0,89.4,7.9
+Gujranwala,Punjab,2014,Rabi,15.0,85.0,87.1,2.6
+Gujranwala,Punjab,2015,Kharif,15.0,85.0,81.7,4.6
+Gujranwala,Punjab,2015,Rabi,15.0,85.0,89.2,4.5
+Gujranwala,Punjab,2016,Kharif,15.0,85.0,85.9,10.8
+Gujranwala,Punjab,2016,Rabi,15.0,85.0,82.9,5.0
+Gujranwala,Punjab,2017,Kharif,15.0,85.0,79.6,11.0
+Gujranwala,Punjab,2017,Rabi,15.0,85.0,91.6,7.9
+Gujranwala,Punjab,2018,Kharif,15.0,85.0,92.9,6.9
+Gujranwala,Punjab,2018,Rabi,15.0,85.0,84.9,14.6
+Gujranwala,Punjab,2019,Kharif,15.0,85.0,87.5,5.0
+Gujranwala,Punjab,2019,Rabi,15.0,85.0,76.3,7.9
+Gujranwala,Punjab,2020,Kharif,15.0,85.0,87.3,3.2
+Gujranwala,Punjab,2020,Rabi,15.0,85.0,90.5,4.9
+Gujranwala,Punjab,2021,Kharif,15.0,85.0,75.5,9.0
+Gujranwala,Punjab,2021,Rabi,15.0,85.0,84.2,9.3
+Gujranwala,Punjab,2022,Kharif,15.0,85.0,83.4,7.6
+Gujranwala,Punjab,2022,Rabi,15.0,85.0,95.6,4.6
+Gujranwala,Punjab,2023,Kharif,15.0,85.0,84.0,2.0
+Gujranwala,Punjab,2023,Rabi,15.0,85.0,92.3,2.2
+Sialkot,Punjab,2000,Kharif,12.5,87.5,84.7,10.2
+Sialkot,Punjab,2000,Rabi,12.5,87.5,86.8,1.3
+Sialkot,Punjab,2001,Kharif,12.5,87.5,78.2,4.3
+Sialkot,Punjab,2001,Rabi,12.5,87.5,82.1,4.4
+Sialkot,Punjab,2002,Kharif,12.5,87.5,81.8,10.0
+Sialkot,Punjab,2002,Rabi,12.5,87.5,89.0,4.6
+Sialkot,Punjab,2003,Kharif,12.5,87.5,92.1,8.9
+Sialkot,Punjab,2003,Rabi,12.5,87.5,88.1,7.3
+Sialkot,Punjab,2004,Kharif,12.5,87.5,84.6,1.1
+Sialkot,Punjab,2004,Rabi,12.5,87.5,95.9,5.3
+Sialkot,Punjab,2005,Kharif,12.5,87.5,94.3,3.5
+Sialkot,Punjab,2005,Rabi,12.5,87.5,92.3,3.0
+Sialkot,Punjab,2006,Kharif,12.5,87.5,82.7,0.0
+Sialkot,Punjab,2006,Rabi,12.5,87.5,84.1,8.3
+Sialkot,Punjab,2007,Kharif,12.5,87.5,86.8,4.6
+Sialkot,Punjab,2007,Rabi,12.5,87.5,87.0,7.5
+Sialkot,Punjab,2008,Kharif,12.5,87.5,83.0,0.0
+Sialkot,Punjab,2008,Rabi,12.5,87.5,90.4,5.0
+Sialkot,Punjab,2009,Kharif,12.5,87.5,92.9,8.8
+Sialkot,Punjab,2009,Rabi,12.5,87.5,80.8,7.4
+Sialkot,Punjab,2010,Kharif,12.5,87.5,94.9,2.2
+Sialkot,Punjab,2010,Rabi,12.5,87.5,87.6,10.8
+Sialkot,Punjab,2011,Kharif,12.5,87.5,81.9,1.5
+Sialkot,Punjab,2011,Rabi,12.5,87.5,85.4,8.7
+Sialkot,Punjab,2012,Kharif,12.5,87.5,77.7,5.5
+Sialkot,Punjab,2012,Rabi,12.5,87.5,77.0,6.6
+Sialkot,Punjab,2013,Kharif,12.5,87.5,88.3,5.6
+Sialkot,Punjab,2013,Rabi,12.5,87.5,90.1,0.4
+Sialkot,Punjab,2014,Kharif,12.5,87.5,100.0,0.0
+Sialkot,Punjab,2014,Rabi,12.5,87.5,89.5,4.5
+Sialkot,Punjab,2015,Kharif,12.5,87.5,82.1,2.2
+Sialkot,Punjab,2015,Rabi,12.5,87.5,85.7,6.9
+Sialkot,Punjab,2016,Kharif,12.5,87.5,85.0,6.0
+Sialkot,Punjab,2016,Rabi,12.5,87.5,87.3,7.4
+Sialkot,Punjab,2017,Kharif,12.5,87.5,89.5,8.8
+Sialkot,Punjab,2017,Rabi,12.5,87.5,88.1,6.4
+Sialkot,Punjab,2018,Kharif,12.5,87.5,92.6,6.1
+Sialkot,Punjab,2018,Rabi,12.5,87.5,90.8,7.0
+Sialkot,Punjab,2019,Kharif,12.5,87.5,91.6,7.8
+Sialkot,Punjab,2019,Rabi,12.5,87.5,84.2,0.7
+Sialkot,Punjab,2020,Kharif,12.5,87.5,87.5,7.7
+Sialkot,Punjab,2020,Rabi,12.5,87.5,88.6,8.0
+Sialkot,Punjab,2021,Kharif,12.5,87.5,79.4,6.6
+Sialkot,Punjab,2021,Rabi,12.5,87.5,79.9,1.4
+Sialkot,Punjab,2022,Kharif,12.5,87.5,93.3,6.5
+Sialkot,Punjab,2022,Rabi,12.5,87.5,93.5,7.3
+Sialkot,Punjab,2023,Kharif,12.5,87.5,83.4,5.7
+Sialkot,Punjab,2023,Rabi,12.5,87.5,91.0,6.0
+Sheikhupura,Punjab,2000,Kharif,5.1,94.9,86.1,0.0
+Sheikhupura,Punjab,2000,Rabi,5.1,94.9,96.4,1.2
+Sheikhupura,Punjab,2001,Kharif,5.1,94.9,96.5,0.6
+Sheikhupura,Punjab,2001,Rabi,5.1,94.9,98.0,0.8
+Sheikhupura,Punjab,2002,Kharif,5.1,94.9,93.6,3.6
+Sheikhupura,Punjab,2002,Rabi,5.1,94.9,100.0,8.1
+Sheikhupura,Punjab,2003,Kharif,5.1,94.9,95.8,3.0
+Sheikhupura,Punjab,2003,Rabi,5.1,94.9,100.0,3.8
+Sheikhupura,Punjab,2004,Kharif,5.1,94.9,96.2,0.0
+Sheikhupura,Punjab,2004,Rabi,5.1,94.9,93.2,0.0
+Sheikhupura,Punjab,2005,Kharif,5.1,94.9,92.4,4.8
+Sheikhupura,Punjab,2005,Rabi,5.1,94.9,88.2,3.1
+Sheikhupura,Punjab,2006,Kharif,5.1,94.9,100.0,4.1
+Sheikhupura,Punjab,2006,Rabi,5.1,94.9,88.7,2.3
+Sheikhupura,Punjab,2007,Kharif,5.1,94.9,97.6,5.6
+Sheikhupura,Punjab,2007,Rabi,5.1,94.9,90.3,4.5
+Sheikhupura,Punjab,2008,Kharif,5.1,94.9,95.4,1.2
+Sheikhupura,Punjab,2008,Rabi,5.1,94.9,89.1,0.4
+Sheikhupura,Punjab,2009,Kharif,5.1,94.9,100.0,4.3
+Sheikhupura,Punjab,2009,Rabi,5.1,94.9,96.6,5.7
+Sheikhupura,Punjab,2010,Kharif,5.1,94.9,97.4,1.6
+Sheikhupura,Punjab,2010,Rabi,5.1,94.9,88.6,1.6
+Sheikhupura,Punjab,2011,Kharif,5.1,94.9,87.2,0.0
+Sheikhupura,Punjab,2011,Rabi,5.1,94.9,100.0,7.6
+Sheikhupura,Punjab,2012,Kharif,5.1,94.9,92.9,2.8
+Sheikhupura,Punjab,2012,Rabi,5.1,94.9,95.2,2.0
+Sheikhupura,Punjab,2013,Kharif,5.1,94.9,97.0,5.7
+Sheikhupura,Punjab,2013,Rabi,5.1,94.9,85.9,2.0
+Sheikhupura,Punjab,2014,Kharif,5.1,94.9,97.5,0.0
+Sheikhupura,Punjab,2014,Rabi,5.1,94.9,98.4,2.5
+Sheikhupura,Punjab,2015,Kharif,5.1,94.9,92.3,10.7
+Sheikhupura,Punjab,2015,Rabi,5.1,94.9,87.9,1.0
+Sheikhupura,Punjab,2016,Kharif,5.1,94.9,92.3,1.8
+Sheikhupura,Punjab,2016,Rabi,5.1,94.9,80.7,3.8
+Sheikhupura,Punjab,2017,Kharif,5.1,94.9,91.2,0.2
+Sheikhupura,Punjab,2017,Rabi,5.1,94.9,97.0,0.0
+Sheikhupura,Punjab,2018,Kharif,5.1,94.9,97.6,5.1
+Sheikhupura,Punjab,2018,Rabi,5.1,94.9,97.1,2.6
+Sheikhupura,Punjab,2019,Kharif,5.1,94.9,89.7,2.3
+Sheikhupura,Punjab,2019,Rabi,5.1,94.9,94.4,3.9
+Sheikhupura,Punjab,2020,Kharif,5.1,94.9,97.4,0.0
+Sheikhupura,Punjab,2020,Rabi,5.1,94.9,99.7,3.7
+Sheikhupura,Punjab,2021,Kharif,5.1,94.9,88.5,0.0
+Sheikhupura,Punjab,2021,Rabi,5.1,94.9,97.8,5.3
+Sheikhupura,Punjab,2022,Kharif,5.1,94.9,96.1,5.8
+Sheikhupura,Punjab,2022,Rabi,5.1,94.9,94.0,1.7
+Sheikhupura,Punjab,2023,Kharif,5.1,94.9,94.6,4.0
+Sheikhupura,Punjab,2023,Rabi,5.1,94.9,96.5,2.7
+Kasur,Punjab,2000,Kharif,9.1,90.9,83.5,5.0
+Kasur,Punjab,2000,Rabi,9.1,90.9,93.4,3.8
+Kasur,Punjab,2001,Kharif,9.1,90.9,96.6,5.1
+Kasur,Punjab,2001,Rabi,9.1,90.9,92.4,6.3
+Kasur,Punjab,2002,Kharif,9.1,90.9,95.2,4.2
+Kasur,Punjab,2002,Rabi,9.1,90.9,93.5,2.1
+Kasur,Punjab,2003,Kharif,9.1,90.9,88.2,2.0
+Kasur,Punjab,2003,Rabi,9.1,90.9,91.6,4.2
+Kasur,Punjab,2004,Kharif,9.1,90.9,90.6,0.0
+Kasur,Punjab,2004,Rabi,9.1,90.9,98.1,1.7
+Kasur,Punjab,2005,Kharif,9.1,90.9,90.2,0.0
+Kasur,Punjab,2005,Rabi,9.1,90.9,100.0,3.1
+Kasur,Punjab,2006,Kharif,9.1,90.9,93.5,0.0
+Kasur,Punjab,2006,Rabi,9.1,90.9,86.2,4.1
+Kasur,Punjab,2007,Kharif,9.1,90.9,95.1,8.3
+Kasur,Punjab,2007,Rabi,9.1,90.9,87.5,5.1
+Kasur,Punjab,2008,Kharif,9.1,90.9,94.7,1.4
+Kasur,Punjab,2008,Rabi,9.1,90.9,86.1,0.0
+Kasur,Punjab,2009,Kharif,9.1,90.9,83.6,0.0
+Kasur,Punjab,2009,Rabi,9.1,90.9,94.3,3.4
+Kasur,Punjab,2010,Kharif,9.1,90.9,89.2,0.0
+Kasur,Punjab,2010,Rabi,9.1,90.9,97.6,7.0
+Kasur,Punjab,2011,Kharif,9.1,90.9,82.4,2.7
+Kasur,Punjab,2011,Rabi,9.1,90.9,96.4,4.1
+Kasur,Punjab,2012,Kharif,9.1,90.9,86.7,0.2
+Kasur,Punjab,2012,Rabi,9.1,90.9,89.6,3.6
+Kasur,Punjab,2013,Kharif,9.1,90.9,96.4,5.8
+Kasur,Punjab,2013,Rabi,9.1,90.9,88.2,0.0
+Kasur,Punjab,2014,Kharif,9.1,90.9,86.9,3.8
+Kasur,Punjab,2014,Rabi,9.1,90.9,77.6,6.5
+Kasur,Punjab,2015,Kharif,9.1,90.9,84.3,5.7
+Kasur,Punjab,2015,Rabi,9.1,90.9,89.3,1.8
+Kasur,Punjab,2016,Kharif,9.1,90.9,88.2,1.8
+Kasur,Punjab,2016,Rabi,9.1,90.9,86.0,0.0
+Kasur,Punjab,2017,Kharif,9.1,90.9,88.6,4.2
+Kasur,Punjab,2017,Rabi,9.1,90.9,91.7,3.0
+Kasur,Punjab,2018,Kharif,9.1,90.9,100.0,3.5
+Kasur,Punjab,2018,Rabi,9.1,90.9,98.1,4.1
+Kasur,Punjab,2019,Kharif,9.1,90.9,88.2,4.8
+Kasur,Punjab,2019,Rabi,9.1,90.9,91.3,3.8
+Kasur,Punjab,2020,Kharif,9.1,90.9,84.4,5.1
+Kasur,Punjab,2020,Rabi,9.1,90.9,85.8,1.6
+Kasur,Punjab,2021,Kharif,9.1,90.9,97.8,0.1
+Kasur,Punjab,2021,Rabi,9.1,90.9,83.5,0.0
+Kasur,Punjab,2022,Kharif,9.1,90.9,88.1,6.6
+Kasur,Punjab,2022,Rabi,9.1,90.9,85.3,9.6
+Kasur,Punjab,2023,Kharif,9.1,90.9,94.6,3.7
+Kasur,Punjab,2023,Rabi,9.1,90.9,89.9,3.7
+Jhang,Punjab,2000,Kharif,4.6,95.4,92.3,7.2
+Jhang,Punjab,2000,Rabi,4.6,95.4,100.0,5.6
+Jhang,Punjab,2001,Kharif,4.6,95.4,96.2,1.3
+Jhang,Punjab,2001,Rabi,4.6,95.4,100.0,0.0
+Jhang,Punjab,2002,Kharif,4.6,95.4,100.0,8.5
+Jhang,Punjab,2002,Rabi,4.6,95.4,100.0,0.0
+Jhang,Punjab,2003,Kharif,4.6,95.4,98.0,5.4
+Jhang,Punjab,2003,Rabi,4.6,95.4,96.4,4.3
+Jhang,Punjab,2004,Kharif,4.6,95.4,90.7,2.2
+Jhang,Punjab,2004,Rabi,4.6,95.4,98.6,0.0
+Jhang,Punjab,2005,Kharif,4.6,95.4,99.6,6.8
+Jhang,Punjab,2005,Rabi,4.6,95.4,90.0,6.8
+Jhang,Punjab,2006,Kharif,4.6,95.4,97.0,4.7
+Jhang,Punjab,2006,Rabi,4.6,95.4,97.7,1.4
+Jhang,Punjab,2007,Kharif,4.6,95.4,91.3,3.9
+Jhang,Punjab,2007,Rabi,4.6,95.4,89.7,4.2
+Jhang,Punjab,2008,Kharif,4.6,95.4,97.0,6.0
+Jhang,Punjab,2008,Rabi,4.6,95.4,89.9,0.6
+Jhang,Punjab,2009,Kharif,4.6,95.4,100.0,1.4
+Jhang,Punjab,2009,Rabi,4.6,95.4,100.0,1.5
+Jhang,Punjab,2010,Kharif,4.6,95.4,93.7,0.0
+Jhang,Punjab,2010,Rabi,4.6,95.4,90.0,0.0
+Jhang,Punjab,2011,Kharif,4.6,95.4,95.3,0.4
+Jhang,Punjab,2011,Rabi,4.6,95.4,98.1,0.0
+Jhang,Punjab,2012,Kharif,4.6,95.4,100.0,3.5
+Jhang,Punjab,2012,Rabi,4.6,95.4,95.6,1.1
+Jhang,Punjab,2013,Kharif,4.6,95.4,91.7,9.3
+Jhang,Punjab,2013,Rabi,4.6,95.4,95.6,2.6
+Jhang,Punjab,2014,Kharif,4.6,95.4,100.0,3.3
+Jhang,Punjab,2014,Rabi,4.6,95.4,97.3,0.2
+Jhang,Punjab,2015,Kharif,4.6,95.4,100.0,0.0
+Jhang,Punjab,2015,Rabi,4.6,95.4,99.1,3.3
+Jhang,Punjab,2016,Kharif,4.6,95.4,97.8,2.4
+Jhang,Punjab,2016,Rabi,4.6,95.4,96.1,0.0
+Jhang,Punjab,2017,Kharif,4.6,95.4,92.1,4.1
+Jhang,Punjab,2017,Rabi,4.6,95.4,95.5,2.1
+Jhang,Punjab,2018,Kharif,4.6,95.4,94.7,4.4
+Jhang,Punjab,2018,Rabi,4.6,95.4,93.5,0.0
+Jhang,Punjab,2019,Kharif,4.6,95.4,95.8,0.0
+Jhang,Punjab,2019,Rabi,4.6,95.4,94.7,0.0
+Jhang,Punjab,2020,Kharif,4.6,95.4,98.0,4.9
+Jhang,Punjab,2020,Rabi,4.6,95.4,95.1,0.6
+Jhang,Punjab,2021,Kharif,4.6,95.4,99.2,0.0
+Jhang,Punjab,2021,Rabi,4.6,95.4,99.7,1.5
+Jhang,Punjab,2022,Kharif,4.6,95.4,88.9,1.1
+Jhang,Punjab,2022,Rabi,4.6,95.4,94.5,5.1
+Jhang,Punjab,2023,Kharif,4.6,95.4,100.0,0.0
+Jhang,Punjab,2023,Rabi,4.6,95.4,94.8,3.5
+Toba Tek Singh,Punjab,2000,Kharif,13.2,86.8,90.9,4.6
+Toba Tek Singh,Punjab,2000,Rabi,13.2,86.8,77.5,4.8
+Toba Tek Singh,Punjab,2001,Kharif,13.2,86.8,93.3,2.2
+Toba Tek Singh,Punjab,2001,Rabi,13.2,86.8,81.6,8.7
+Toba Tek Singh,Punjab,2002,Kharif,13.2,86.8,79.0,7.1
+Toba Tek Singh,Punjab,2002,Rabi,13.2,86.8,100.0,9.8
+Toba Tek Singh,Punjab,2003,Kharif,13.2,86.8,88.8,7.0
+Toba Tek Singh,Punjab,2003,Rabi,13.2,86.8,89.9,1.2
+Toba Tek Singh,Punjab,2004,Kharif,13.2,86.8,82.8,4.1
+Toba Tek Singh,Punjab,2004,Rabi,13.2,86.8,88.4,0.0
+Toba Tek Singh,Punjab,2005,Kharif,13.2,86.8,81.6,8.8
+Toba Tek Singh,Punjab,2005,Rabi,13.2,86.8,83.8,7.0
+Toba Tek Singh,Punjab,2006,Kharif,13.2,86.8,81.9,5.4
+Toba Tek Singh,Punjab,2006,Rabi,13.2,86.8,92.4,2.8
+Toba Tek Singh,Punjab,2007,Kharif,13.2,86.8,91.5,10.8
+Toba Tek Singh,Punjab,2007,Rabi,13.2,86.8,94.6,2.8
+Toba Tek Singh,Punjab,2008,Kharif,13.2,86.8,82.1,1.4
+Toba Tek Singh,Punjab,2008,Rabi,13.2,86.8,86.4,5.4
+Toba Tek Singh,Punjab,2009,Kharif,13.2,86.8,86.9,9.8
+Toba Tek Singh,Punjab,2009,Rabi,13.2,86.8,76.7,2.2
+Toba Tek Singh,Punjab,2010,Kharif,13.2,86.8,88.8,5.1
+Toba Tek Singh,Punjab,2010,Rabi,13.2,86.8,79.1,2.0
+Toba Tek Singh,Punjab,2011,Kharif,13.2,86.8,85.5,9.1
+Toba Tek Singh,Punjab,2011,Rabi,13.2,86.8,91.8,6.9
+Toba Tek Singh,Punjab,2012,Kharif,13.2,86.8,95.7,7.3
+Toba Tek Singh,Punjab,2012,Rabi,13.2,86.8,93.1,8.7
+Toba Tek Singh,Punjab,2013,Kharif,13.2,86.8,78.8,4.8
+Toba Tek Singh,Punjab,2013,Rabi,13.2,86.8,89.8,11.7
+Toba Tek Singh,Punjab,2014,Kharif,13.2,86.8,83.6,3.9
+Toba Tek Singh,Punjab,2014,Rabi,13.2,86.8,83.2,6.6
+Toba Tek Singh,Punjab,2015,Kharif,13.2,86.8,85.2,6.5
+Toba Tek Singh,Punjab,2015,Rabi,13.2,86.8,89.7,5.7
+Toba Tek Singh,Punjab,2016,Kharif,13.2,86.8,84.7,4.0
+Toba Tek Singh,Punjab,2016,Rabi,13.2,86.8,85.6,4.3
+Toba Tek Singh,Punjab,2017,Kharif,13.2,86.8,92.8,9.9
+Toba Tek Singh,Punjab,2017,Rabi,13.2,86.8,94.0,4.5
+Toba Tek Singh,Punjab,2018,Kharif,13.2,86.8,88.4,2.5
+Toba Tek Singh,Punjab,2018,Rabi,13.2,86.8,80.6,7.0
+Toba Tek Singh,Punjab,2019,Kharif,13.2,86.8,86.6,7.7
+Toba Tek Singh,Punjab,2019,Rabi,13.2,86.8,78.7,2.2
+Toba Tek Singh,Punjab,2020,Kharif,13.2,86.8,83.3,7.4
+Toba Tek Singh,Punjab,2020,Rabi,13.2,86.8,96.4,0.0
+Toba Tek Singh,Punjab,2021,Kharif,13.2,86.8,86.1,6.2
+Toba Tek Singh,Punjab,2021,Rabi,13.2,86.8,89.0,6.8
+Toba Tek Singh,Punjab,2022,Kharif,13.2,86.8,88.4,11.2
+Toba Tek Singh,Punjab,2022,Rabi,13.2,86.8,91.5,6.8
+Toba Tek Singh,Punjab,2023,Kharif,13.2,86.8,89.1,3.1
+Toba Tek Singh,Punjab,2023,Rabi,13.2,86.8,80.8,6.6
+Dera Ghazi Khan,Punjab,2000,Kharif,51.9,48.1,51.2,23.5
+Dera Ghazi Khan,Punjab,2000,Rabi,51.9,48.1,55.9,19.6
+Dera Ghazi Khan,Punjab,2001,Kharif,51.9,48.1,43.1,17.3
+Dera Ghazi Khan,Punjab,2001,Rabi,51.9,48.1,55.9,22.2
+Dera Ghazi Khan,Punjab,2002,Kharif,51.9,48.1,46.0,24.4
+Dera Ghazi Khan,Punjab,2002,Rabi,51.9,48.1,53.5,15.6
+Dera Ghazi Khan,Punjab,2003,Kharif,51.9,48.1,55.3,20.3
+Dera Ghazi Khan,Punjab,2003,Rabi,51.9,48.1,44.7,21.4
+Dera Ghazi Khan,Punjab,2004,Kharif,51.9,48.1,48.0,20.5
+Dera Ghazi Khan,Punjab,2004,Rabi,51.9,48.1,47.8,22.2
+Dera Ghazi Khan,Punjab,2005,Kharif,51.9,48.1,47.7,21.3
+Dera Ghazi Khan,Punjab,2005,Rabi,51.9,48.1,51.1,18.2
+Dera Ghazi Khan,Punjab,2006,Kharif,51.9,48.1,49.4,20.7
+Dera Ghazi Khan,Punjab,2006,Rabi,51.9,48.1,39.4,21.7
+Dera Ghazi Khan,Punjab,2007,Kharif,51.9,48.1,47.5,19.4
+Dera Ghazi Khan,Punjab,2007,Rabi,51.9,48.1,44.6,22.8
+Dera Ghazi Khan,Punjab,2008,Kharif,51.9,48.1,42.4,21.5
+Dera Ghazi Khan,Punjab,2008,Rabi,51.9,48.1,54.5,22.9
+Dera Ghazi Khan,Punjab,2009,Kharif,51.9,48.1,49.7,20.3
+Dera Ghazi Khan,Punjab,2009,Rabi,51.9,48.1,56.3,18.8
+Dera Ghazi Khan,Punjab,2010,Kharif,51.9,48.1,44.7,19.8
+Dera Ghazi Khan,Punjab,2010,Rabi,51.9,48.1,43.0,20.0
+Dera Ghazi Khan,Punjab,2011,Kharif,51.9,48.1,53.2,21.0
+Dera Ghazi Khan,Punjab,2011,Rabi,51.9,48.1,53.1,23.0
+Dera Ghazi Khan,Punjab,2012,Kharif,51.9,48.1,49.6,21.4
+Dera Ghazi Khan,Punjab,2012,Rabi,51.9,48.1,40.3,16.6
+Dera Ghazi Khan,Punjab,2013,Kharif,51.9,48.1,51.0,20.7
+Dera Ghazi Khan,Punjab,2013,Rabi,51.9,48.1,44.4,17.2
+Dera Ghazi Khan,Punjab,2014,Kharif,51.9,48.1,40.9,27.6
+Dera Ghazi Khan,Punjab,2014,Rabi,51.9,48.1,40.0,24.0
+Dera Ghazi Khan,Punjab,2015,Kharif,51.9,48.1,44.6,16.7
+Dera Ghazi Khan,Punjab,2015,Rabi,51.9,48.1,45.6,24.8
+Dera Ghazi Khan,Punjab,2016,Kharif,51.9,48.1,47.7,26.6
+Dera Ghazi Khan,Punjab,2016,Rabi,51.9,48.1,50.5,16.8
+Dera Ghazi Khan,Punjab,2017,Kharif,51.9,48.1,60.2,18.3
+Dera Ghazi Khan,Punjab,2017,Rabi,51.9,48.1,39.1,26.2
+Dera Ghazi Khan,Punjab,2018,Kharif,51.9,48.1,58.9,22.3
+Dera Ghazi Khan,Punjab,2018,Rabi,51.9,48.1,54.8,23.0
+Dera Ghazi Khan,Punjab,2019,Kharif,51.9,48.1,53.5,23.8
+Dera Ghazi Khan,Punjab,2019,Rabi,51.9,48.1,43.1,22.2
+Dera Ghazi Khan,Punjab,2020,Kharif,51.9,48.1,48.3,20.4
+Dera Ghazi Khan,Punjab,2020,Rabi,51.9,48.1,47.7,22.4
+Dera Ghazi Khan,Punjab,2021,Kharif,51.9,48.1,41.2,24.0
+Dera Ghazi Khan,Punjab,2021,Rabi,51.9,48.1,44.6,20.9
+Dera Ghazi Khan,Punjab,2022,Kharif,51.9,48.1,59.7,21.5
+Dera Ghazi Khan,Punjab,2022,Rabi,51.9,48.1,48.2,18.3
+Dera Ghazi Khan,Punjab,2023,Kharif,51.9,48.1,55.2,24.2
+Dera Ghazi Khan,Punjab,2023,Rabi,51.9,48.1,44.0,23.6
+Rajanpur,Punjab,2000,Kharif,45.1,54.9,55.8,17.9
+Rajanpur,Punjab,2000,Rabi,45.1,54.9,51.8,15.1
+Rajanpur,Punjab,2001,Kharif,45.1,54.9,50.1,17.5
+Rajanpur,Punjab,2001,Rabi,45.1,54.9,58.3,18.8
+Rajanpur,Punjab,2002,Kharif,45.1,54.9,62.4,14.7
+Rajanpur,Punjab,2002,Rabi,45.1,54.9,48.9,19.5
+Rajanpur,Punjab,2003,Kharif,45.1,54.9,42.5,11.5
+Rajanpur,Punjab,2003,Rabi,45.1,54.9,51.0,20.1
+Rajanpur,Punjab,2004,Kharif,45.1,54.9,55.1,19.3
+Rajanpur,Punjab,2004,Rabi,45.1,54.9,53.0,22.2
+Rajanpur,Punjab,2005,Kharif,45.1,54.9,52.5,18.2
+Rajanpur,Punjab,2005,Rabi,45.1,54.9,63.6,22.7
+Rajanpur,Punjab,2006,Kharif,45.1,54.9,56.4,17.9
+Rajanpur,Punjab,2006,Rabi,45.1,54.9,43.3,15.8
+Rajanpur,Punjab,2007,Kharif,45.1,54.9,48.4,10.9
+Rajanpur,Punjab,2007,Rabi,45.1,54.9,49.4,26.1
+Rajanpur,Punjab,2008,Kharif,45.1,54.9,63.2,12.6
+Rajanpur,Punjab,2008,Rabi,45.1,54.9,50.5,18.8
+Rajanpur,Punjab,2009,Kharif,45.1,54.9,50.4,17.6
+Rajanpur,Punjab,2009,Rabi,45.1,54.9,56.8,19.4
+Rajanpur,Punjab,2010,Kharif,45.1,54.9,58.6,14.1
+Rajanpur,Punjab,2010,Rabi,45.1,54.9,61.3,16.0
+Rajanpur,Punjab,2011,Kharif,45.1,54.9,50.4,19.4
+Rajanpur,Punjab,2011,Rabi,45.1,54.9,46.8,12.4
+Rajanpur,Punjab,2012,Kharif,45.1,54.9,56.8,18.1
+Rajanpur,Punjab,2012,Rabi,45.1,54.9,47.1,18.1
+Rajanpur,Punjab,2013,Kharif,45.1,54.9,53.0,22.8
+Rajanpur,Punjab,2013,Rabi,45.1,54.9,54.5,18.8
+Rajanpur,Punjab,2014,Kharif,45.1,54.9,58.3,17.9
+Rajanpur,Punjab,2014,Rabi,45.1,54.9,51.9,20.8
+Rajanpur,Punjab,2015,Kharif,45.1,54.9,62.3,17.0
+Rajanpur,Punjab,2015,Rabi,45.1,54.9,56.2,11.1
+Rajanpur,Punjab,2016,Kharif,45.1,54.9,54.9,13.9
+Rajanpur,Punjab,2016,Rabi,45.1,54.9,51.4,23.9
+Rajanpur,Punjab,2017,Kharif,45.1,54.9,49.8,19.8
+Rajanpur,Punjab,2017,Rabi,45.1,54.9,51.0,17.9
+Rajanpur,Punjab,2018,Kharif,45.1,54.9,57.7,15.9
+Rajanpur,Punjab,2018,Rabi,45.1,54.9,61.1,16.4
+Rajanpur,Punjab,2019,Kharif,45.1,54.9,51.2,14.9
+Rajanpur,Punjab,2019,Rabi,45.1,54.9,55.3,14.3
+Rajanpur,Punjab,2020,Kharif,45.1,54.9,56.5,15.5
+Rajanpur,Punjab,2020,Rabi,45.1,54.9,53.0,18.7
+Rajanpur,Punjab,2021,Kharif,45.1,54.9,48.2,19.8
+Rajanpur,Punjab,2021,Rabi,45.1,54.9,51.0,17.9
+Rajanpur,Punjab,2022,Kharif,45.1,54.9,55.9,15.0
+Rajanpur,Punjab,2022,Rabi,45.1,54.9,55.2,19.0
+Rajanpur,Punjab,2023,Kharif,45.1,54.9,53.6,18.2
+Rajanpur,Punjab,2023,Rabi,45.1,54.9,61.6,22.5
+Muzaffargarh,Punjab,2000,Kharif,13.2,86.8,78.4,2.7
+Muzaffargarh,Punjab,2000,Rabi,13.2,86.8,86.1,4.5
+Muzaffargarh,Punjab,2001,Kharif,13.2,86.8,85.6,5.8
+Muzaffargarh,Punjab,2001,Rabi,13.2,86.8,82.9,4.7
+Muzaffargarh,Punjab,2002,Kharif,13.2,86.8,78.0,8.6
+Muzaffargarh,Punjab,2002,Rabi,13.2,86.8,81.4,5.6
+Muzaffargarh,Punjab,2003,Kharif,13.2,86.8,97.7,6.1
+Muzaffargarh,Punjab,2003,Rabi,13.2,86.8,83.1,4.3
+Muzaffargarh,Punjab,2004,Kharif,13.2,86.8,84.1,0.0
+Muzaffargarh,Punjab,2004,Rabi,13.2,86.8,82.7,7.8
+Muzaffargarh,Punjab,2005,Kharif,13.2,86.8,75.1,6.6
+Muzaffargarh,Punjab,2005,Rabi,13.2,86.8,85.9,8.9
+Muzaffargarh,Punjab,2006,Kharif,13.2,86.8,91.5,10.3
+Muzaffargarh,Punjab,2006,Rabi,13.2,86.8,79.9,11.1
+Muzaffargarh,Punjab,2007,Kharif,13.2,86.8,90.0,4.9
+Muzaffargarh,Punjab,2007,Rabi,13.2,86.8,90.0,6.6
+Muzaffargarh,Punjab,2008,Kharif,13.2,86.8,91.8,0.0
+Muzaffargarh,Punjab,2008,Rabi,13.2,86.8,94.4,6.8
+Muzaffargarh,Punjab,2009,Kharif,13.2,86.8,85.5,4.1
+Muzaffargarh,Punjab,2009,Rabi,13.2,86.8,85.9,6.4
+Muzaffargarh,Punjab,2010,Kharif,13.2,86.8,89.3,8.3
+Muzaffargarh,Punjab,2010,Rabi,13.2,86.8,82.3,5.3
+Muzaffargarh,Punjab,2011,Kharif,13.2,86.8,89.5,9.2
+Muzaffargarh,Punjab,2011,Rabi,13.2,86.8,85.7,3.5
+Muzaffargarh,Punjab,2012,Kharif,13.2,86.8,82.2,3.5
+Muzaffargarh,Punjab,2012,Rabi,13.2,86.8,87.5,3.5
+Muzaffargarh,Punjab,2013,Kharif,13.2,86.8,87.9,3.8
+Muzaffargarh,Punjab,2013,Rabi,13.2,86.8,86.7,3.5
+Muzaffargarh,Punjab,2014,Kharif,13.2,86.8,91.0,9.9
+Muzaffargarh,Punjab,2014,Rabi,13.2,86.8,87.0,4.3
+Muzaffargarh,Punjab,2015,Kharif,13.2,86.8,82.8,5.3
+Muzaffargarh,Punjab,2015,Rabi,13.2,86.8,88.9,2.6
+Muzaffargarh,Punjab,2016,Kharif,13.2,86.8,77.9,7.5
+Muzaffargarh,Punjab,2016,Rabi,13.2,86.8,94.9,5.3
+Muzaffargarh,Punjab,2017,Kharif,13.2,86.8,84.8,8.8
+Muzaffargarh,Punjab,2017,Rabi,13.2,86.8,91.2,5.3
+Muzaffargarh,Punjab,2018,Kharif,13.2,86.8,80.2,3.3
+Muzaffargarh,Punjab,2018,Rabi,13.2,86.8,91.7,3.6
+Muzaffargarh,Punjab,2019,Kharif,13.2,86.8,87.8,0.2
+Muzaffargarh,Punjab,2019,Rabi,13.2,86.8,85.0,0.8
+Muzaffargarh,Punjab,2020,Kharif,13.2,86.8,88.5,5.5
+Muzaffargarh,Punjab,2020,Rabi,13.2,86.8,93.3,0.6
+Muzaffargarh,Punjab,2021,Kharif,13.2,86.8,83.5,8.6
+Muzaffargarh,Punjab,2021,Rabi,13.2,86.8,87.5,3.1
+Muzaffargarh,Punjab,2022,Kharif,13.2,86.8,88.3,7.1
+Muzaffargarh,Punjab,2022,Rabi,13.2,86.8,96.2,2.3
+Muzaffargarh,Punjab,2023,Kharif,13.2,86.8,87.3,9.7
+Muzaffargarh,Punjab,2023,Rabi,13.2,86.8,87.8,5.0
+Khushab,Punjab,2000,Kharif,68.4,31.6,31.8,24.4
+Khushab,Punjab,2000,Rabi,68.4,31.6,31.9,24.6
+Khushab,Punjab,2001,Kharif,68.4,31.6,28.8,24.0
+Khushab,Punjab,2001,Rabi,68.4,31.6,31.8,28.6
+Khushab,Punjab,2002,Kharif,68.4,31.6,37.7,24.6
+Khushab,Punjab,2002,Rabi,68.4,31.6,35.9,22.5
+Khushab,Punjab,2003,Kharif,68.4,31.6,29.8,27.4
+Khushab,Punjab,2003,Rabi,68.4,31.6,33.8,27.9
+Khushab,Punjab,2004,Kharif,68.4,31.6,22.5,28.2
+Khushab,Punjab,2004,Rabi,68.4,31.6,28.4,28.2
+Khushab,Punjab,2005,Kharif,68.4,31.6,27.2,29.3
+Khushab,Punjab,2005,Rabi,68.4,31.6,32.0,27.4
+Khushab,Punjab,2006,Kharif,68.4,31.6,21.0,28.6
+Khushab,Punjab,2006,Rabi,68.4,31.6,39.1,36.7
+Khushab,Punjab,2007,Kharif,68.4,31.6,28.0,28.8
+Khushab,Punjab,2007,Rabi,68.4,31.6,37.1,29.9
+Khushab,Punjab,2008,Kharif,68.4,31.6,33.1,30.1
+Khushab,Punjab,2008,Rabi,68.4,31.6,30.9,28.2
+Khushab,Punjab,2009,Kharif,68.4,31.6,29.9,25.7
+Khushab,Punjab,2009,Rabi,68.4,31.6,23.4,30.3
+Khushab,Punjab,2010,Kharif,68.4,31.6,28.4,26.6
+Khushab,Punjab,2010,Rabi,68.4,31.6,34.5,31.8
+Khushab,Punjab,2011,Kharif,68.4,31.6,34.7,23.8
+Khushab,Punjab,2011,Rabi,68.4,31.6,22.6,22.9
+Khushab,Punjab,2012,Kharif,68.4,31.6,25.7,25.8
+Khushab,Punjab,2012,Rabi,68.4,31.6,28.3,27.1
+Khushab,Punjab,2013,Kharif,68.4,31.6,29.0,26.5
+Khushab,Punjab,2013,Rabi,68.4,31.6,25.9,28.3
+Khushab,Punjab,2014,Kharif,68.4,31.6,31.6,32.9
+Khushab,Punjab,2014,Rabi,68.4,31.6,30.5,25.9
+Khushab,Punjab,2015,Kharif,68.4,31.6,37.8,25.5
+Khushab,Punjab,2015,Rabi,68.4,31.6,40.0,21.8
+Khushab,Punjab,2016,Kharif,68.4,31.6,21.7,28.1
+Khushab,Punjab,2016,Rabi,68.4,31.6,35.0,26.7
+Khushab,Punjab,2017,Kharif,68.4,31.6,35.5,27.9
+Khushab,Punjab,2017,Rabi,68.4,31.6,36.6,29.3
+Khushab,Punjab,2018,Kharif,68.4,31.6,35.4,27.6
+Khushab,Punjab,2018,Rabi,68.4,31.6,34.4,27.4
+Khushab,Punjab,2019,Kharif,68.4,31.6,30.6,31.2
+Khushab,Punjab,2019,Rabi,68.4,31.6,37.0,29.2
+Khushab,Punjab,2020,Kharif,68.4,31.6,35.6,34.8
+Khushab,Punjab,2020,Rabi,68.4,31.6,29.5,26.8
+Khushab,Punjab,2021,Kharif,68.4,31.6,37.8,28.4
+Khushab,Punjab,2021,Rabi,68.4,31.6,29.6,27.8
+Khushab,Punjab,2022,Kharif,68.4,31.6,33.6,22.8
+Khushab,Punjab,2022,Rabi,68.4,31.6,34.1,27.8
+Khushab,Punjab,2023,Kharif,68.4,31.6,32.4,26.9
+Khushab,Punjab,2023,Rabi,68.4,31.6,38.6,31.6
+Hafizabad,Punjab,2000,Kharif,7.7,92.3,84.2,3.1
+Hafizabad,Punjab,2000,Rabi,7.7,92.3,84.3,0.0
+Hafizabad,Punjab,2001,Kharif,7.7,92.3,84.7,3.9
+Hafizabad,Punjab,2001,Rabi,7.7,92.3,85.3,6.1
+Hafizabad,Punjab,2002,Kharif,7.7,92.3,87.7,2.9
+Hafizabad,Punjab,2002,Rabi,7.7,92.3,95.4,0.1
+Hafizabad,Punjab,2003,Kharif,7.7,92.3,96.3,3.3
+Hafizabad,Punjab,2003,Rabi,7.7,92.3,91.5,0.0
+Hafizabad,Punjab,2004,Kharif,7.7,92.3,88.5,1.2
+Hafizabad,Punjab,2004,Rabi,7.7,92.3,93.7,2.0
+Hafizabad,Punjab,2005,Kharif,7.7,92.3,90.8,5.3
+Hafizabad,Punjab,2005,Rabi,7.7,92.3,84.7,4.1
+Hafizabad,Punjab,2006,Kharif,7.7,92.3,88.6,0.0
+Hafizabad,Punjab,2006,Rabi,7.7,92.3,84.1,7.5
+Hafizabad,Punjab,2007,Kharif,7.7,92.3,94.2,4.7
+Hafizabad,Punjab,2007,Rabi,7.7,92.3,91.6,3.8
+Hafizabad,Punjab,2008,Kharif,7.7,92.3,100.0,4.0
+Hafizabad,Punjab,2008,Rabi,7.7,92.3,87.1,1.7
+Hafizabad,Punjab,2009,Kharif,7.7,92.3,96.3,2.4
+Hafizabad,Punjab,2009,Rabi,7.7,92.3,92.3,0.0
+Hafizabad,Punjab,2010,Kharif,7.7,92.3,95.3,2.6
+Hafizabad,Punjab,2010,Rabi,7.7,92.3,83.9,4.6
+Hafizabad,Punjab,2011,Kharif,7.7,92.3,94.2,1.4
+Hafizabad,Punjab,2011,Rabi,7.7,92.3,94.1,4.8
+Hafizabad,Punjab,2012,Kharif,7.7,92.3,95.7,4.6
+Hafizabad,Punjab,2012,Rabi,7.7,92.3,91.8,5.3
+Hafizabad,Punjab,2013,Kharif,7.7,92.3,91.1,5.3
+Hafizabad,Punjab,2013,Rabi,7.7,92.3,93.9,0.0
+Hafizabad,Punjab,2014,Kharif,7.7,92.3,90.5,4.1
+Hafizabad,Punjab,2014,Rabi,7.7,92.3,86.1,5.7
+Hafizabad,Punjab,2015,Kharif,7.7,92.3,94.9,2.8
+Hafizabad,Punjab,2015,Rabi,7.7,92.3,92.8,6.3
+Hafizabad,Punjab,2016,Kharif,7.7,92.3,99.9,0.0
+Hafizabad,Punjab,2016,Rabi,7.7,92.3,94.2,4.4
+Hafizabad,Punjab,2017,Kharif,7.7,92.3,89.5,0.4
+Hafizabad,Punjab,2017,Rabi,7.7,92.3,87.5,5.0
+Hafizabad,Punjab,2018,Kharif,7.7,92.3,99.6,6.8
+Hafizabad,Punjab,2018,Rabi,7.7,92.3,97.1,2.4
+Hafizabad,Punjab,2019,Kharif,7.7,92.3,85.2,10.0
+Hafizabad,Punjab,2019,Rabi,7.7,92.3,91.0,4.9
+Hafizabad,Punjab,2020,Kharif,7.7,92.3,89.4,6.7
+Hafizabad,Punjab,2020,Rabi,7.7,92.3,92.4,1.9
+Hafizabad,Punjab,2021,Kharif,7.7,92.3,96.5,2.7
+Hafizabad,Punjab,2021,Rabi,7.7,92.3,96.9,3.6
+Hafizabad,Punjab,2022,Kharif,7.7,92.3,92.3,5.0
+Hafizabad,Punjab,2022,Rabi,7.7,92.3,93.2,0.0
+Hafizabad,Punjab,2023,Kharif,7.7,92.3,87.7,1.0
+Hafizabad,Punjab,2023,Rabi,7.7,92.3,87.9,9.4
+Mandi Bahauddin,Punjab,2000,Kharif,14.8,85.2,88.8,4.6
+Mandi Bahauddin,Punjab,2000,Rabi,14.8,85.2,75.4,5.4
+Mandi Bahauddin,Punjab,2001,Kharif,14.8,85.2,78.4,12.3
+Mandi Bahauddin,Punjab,2001,Rabi,14.8,85.2,88.3,9.0
+Mandi Bahauddin,Punjab,2002,Kharif,14.8,85.2,79.0,8.4
+Mandi Bahauddin,Punjab,2002,Rabi,14.8,85.2,89.1,0.0
+Mandi Bahauddin,Punjab,2003,Kharif,14.8,85.2,90.4,10.0
+Mandi Bahauddin,Punjab,2003,Rabi,14.8,85.2,83.1,5.4
+Mandi Bahauddin,Punjab,2004,Kharif,14.8,85.2,81.9,6.0
+Mandi Bahauddin,Punjab,2004,Rabi,14.8,85.2,78.8,4.0
+Mandi Bahauddin,Punjab,2005,Kharif,14.8,85.2,81.3,14.3
+Mandi Bahauddin,Punjab,2005,Rabi,14.8,85.2,75.3,8.1
+Mandi Bahauddin,Punjab,2006,Kharif,14.8,85.2,80.2,8.4
+Mandi Bahauddin,Punjab,2006,Rabi,14.8,85.2,79.2,15.3
+Mandi Bahauddin,Punjab,2007,Kharif,14.8,85.2,89.0,10.0
+Mandi Bahauddin,Punjab,2007,Rabi,14.8,85.2,93.5,8.6
+Mandi Bahauddin,Punjab,2008,Kharif,14.8,85.2,87.7,3.8
+Mandi Bahauddin,Punjab,2008,Rabi,14.8,85.2,81.9,11.4
+Mandi Bahauddin,Punjab,2009,Kharif,14.8,85.2,83.0,11.2
+Mandi Bahauddin,Punjab,2009,Rabi,14.8,85.2,85.9,2.9
+Mandi Bahauddin,Punjab,2010,Kharif,14.8,85.2,93.4,4.1
+Mandi Bahauddin,Punjab,2010,Rabi,14.8,85.2,79.4,4.1
+Mandi Bahauddin,Punjab,2011,Kharif,14.8,85.2,86.5,5.4
+Mandi Bahauddin,Punjab,2011,Rabi,14.8,85.2,88.7,7.0
+Mandi Bahauddin,Punjab,2012,Kharif,14.8,85.2,84.0,0.0
+Mandi Bahauddin,Punjab,2012,Rabi,14.8,85.2,95.2,1.7
+Mandi Bahauddin,Punjab,2013,Kharif,14.8,85.2,83.4,4.1
+Mandi Bahauddin,Punjab,2013,Rabi,14.8,85.2,81.0,5.7
+Mandi Bahauddin,Punjab,2014,Kharif,14.8,85.2,84.9,4.6
+Mandi Bahauddin,Punjab,2014,Rabi,14.8,85.2,89.9,6.4
+Mandi Bahauddin,Punjab,2015,Kharif,14.8,85.2,78.7,0.5
+Mandi Bahauddin,Punjab,2015,Rabi,14.8,85.2,83.3,9.9
+Mandi Bahauddin,Punjab,2016,Kharif,14.8,85.2,85.3,5.2
+Mandi Bahauddin,Punjab,2016,Rabi,14.8,85.2,85.9,9.6
+Mandi Bahauddin,Punjab,2017,Kharif,14.8,85.2,97.2,8.3
+Mandi Bahauddin,Punjab,2017,Rabi,14.8,85.2,92.9,4.2
+Mandi Bahauddin,Punjab,2018,Kharif,14.8,85.2,83.2,2.4
+Mandi Bahauddin,Punjab,2018,Rabi,14.8,85.2,90.2,9.4
+Mandi Bahauddin,Punjab,2019,Kharif,14.8,85.2,86.6,5.0
+Mandi Bahauddin,Punjab,2019,Rabi,14.8,85.2,87.0,3.1
+Mandi Bahauddin,Punjab,2020,Kharif,14.8,85.2,91.1,13.8
+Mandi Bahauddin,Punjab,2020,Rabi,14.8,85.2,79.1,3.1
+Mandi Bahauddin,Punjab,2021,Kharif,14.8,85.2,87.1,4.8
+Mandi Bahauddin,Punjab,2021,Rabi,14.8,85.2,98.3,6.5
+Mandi Bahauddin,Punjab,2022,Kharif,14.8,85.2,89.2,4.6
+Mandi Bahauddin,Punjab,2022,Rabi,14.8,85.2,85.1,7.2
+Mandi Bahauddin,Punjab,2023,Kharif,14.8,85.2,84.1,9.0
+Mandi Bahauddin,Punjab,2023,Rabi,14.8,85.2,81.1,6.8
+Narowal,Punjab,2000,Kharif,8.0,92.0,82.4,2.1
+Narowal,Punjab,2000,Rabi,8.0,92.0,94.7,0.9
+Narowal,Punjab,2001,Kharif,8.0,92.0,84.6,0.0
+Narowal,Punjab,2001,Rabi,8.0,92.0,89.2,4.6
+Narowal,Punjab,2002,Kharif,8.0,92.0,90.9,0.6
+Narowal,Punjab,2002,Rabi,8.0,92.0,90.6,0.0
+Narowal,Punjab,2003,Kharif,8.0,92.0,93.0,9.5
+Narowal,Punjab,2003,Rabi,8.0,92.0,90.3,6.0
+Narowal,Punjab,2004,Kharif,8.0,92.0,98.7,5.4
+Narowal,Punjab,2004,Rabi,8.0,92.0,83.9,0.0
+Narowal,Punjab,2005,Kharif,8.0,92.0,91.7,0.2
+Narowal,Punjab,2005,Rabi,8.0,92.0,90.2,6.4
+Narowal,Punjab,2006,Kharif,8.0,92.0,89.8,8.3
+Narowal,Punjab,2006,Rabi,8.0,92.0,87.9,4.3
+Narowal,Punjab,2007,Kharif,8.0,92.0,92.3,0.0
+Narowal,Punjab,2007,Rabi,8.0,92.0,98.4,0.0
+Narowal,Punjab,2008,Kharif,8.0,92.0,99.3,9.7
+Narowal,Punjab,2008,Rabi,8.0,92.0,88.3,0.2
+Narowal,Punjab,2009,Kharif,8.0,92.0,93.7,9.1
+Narowal,Punjab,2009,Rabi,8.0,92.0,86.2,7.7
+Narowal,Punjab,2010,Kharif,8.0,92.0,84.8,1.8
+Narowal,Punjab,2010,Rabi,8.0,92.0,87.8,6.3
+Narowal,Punjab,2011,Kharif,8.0,92.0,94.0,5.1
+Narowal,Punjab,2011,Rabi,8.0,92.0,86.4,1.0
+Narowal,Punjab,2012,Kharif,8.0,92.0,87.7,5.4
+Narowal,Punjab,2012,Rabi,8.0,92.0,91.5,3.9
+Narowal,Punjab,2013,Kharif,8.0,92.0,100.0,0.5
+Narowal,Punjab,2013,Rabi,8.0,92.0,93.1,4.5
+Narowal,Punjab,2014,Kharif,8.0,92.0,90.0,0.4
+Narowal,Punjab,2014,Rabi,8.0,92.0,91.5,3.5
+Narowal,Punjab,2015,Kharif,8.0,92.0,86.8,7.4
+Narowal,Punjab,2015,Rabi,8.0,92.0,86.2,1.6
+Narowal,Punjab,2016,Kharif,8.0,92.0,85.5,4.0
+Narowal,Punjab,2016,Rabi,8.0,92.0,93.8,1.4
+Narowal,Punjab,2017,Kharif,8.0,92.0,91.1,3.0
+Narowal,Punjab,2017,Rabi,8.0,92.0,94.4,4.1
+Narowal,Punjab,2018,Kharif,8.0,92.0,92.7,2.3
+Narowal,Punjab,2018,Rabi,8.0,92.0,94.7,3.4
+Narowal,Punjab,2019,Kharif,8.0,92.0,95.0,6.1
+Narowal,Punjab,2019,Rabi,8.0,92.0,88.4,4.5
+Narowal,Punjab,2020,Kharif,8.0,92.0,93.4,1.8
+Narowal,Punjab,2020,Rabi,8.0,92.0,94.4,6.3
+Narowal,Punjab,2021,Kharif,8.0,92.0,93.1,0.8
+Narowal,Punjab,2021,Rabi,8.0,92.0,94.9,4.6
+Narowal,Punjab,2022,Kharif,8.0,92.0,93.7,6.0
+Narowal,Punjab,2022,Rabi,8.0,92.0,94.9,4.0
+Narowal,Punjab,2023,Kharif,8.0,92.0,90.2,0.0
+Narowal,Punjab,2023,Rabi,8.0,92.0,88.3,0.0
+Tharparkar,Sindh,2000,Kharif,59.2,40.8,44.9,24.9
+Tharparkar,Sindh,2000,Rabi,59.2,40.8,37.2,21.4
+Tharparkar,Sindh,2001,Kharif,59.2,40.8,30.8,23.8
+Tharparkar,Sindh,2001,Rabi,59.2,40.8,40.5,24.7
+Tharparkar,Sindh,2002,Kharif,59.2,40.8,47.4,22.9
+Tharparkar,Sindh,2002,Rabi,59.2,40.8,43.4,22.8
+Tharparkar,Sindh,2003,Kharif,59.2,40.8,35.2,21.9
+Tharparkar,Sindh,2003,Rabi,59.2,40.8,44.9,29.1
+Tharparkar,Sindh,2004,Kharif,59.2,40.8,39.7,22.8
+Tharparkar,Sindh,2004,Rabi,59.2,40.8,48.8,26.4
+Tharparkar,Sindh,2005,Kharif,59.2,40.8,44.9,25.7
+Tharparkar,Sindh,2005,Rabi,59.2,40.8,34.3,25.1
+Tharparkar,Sindh,2006,Kharif,59.2,40.8,48.0,22.7
+Tharparkar,Sindh,2006,Rabi,59.2,40.8,38.5,25.9
+Tharparkar,Sindh,2007,Kharif,59.2,40.8,38.8,21.1
+Tharparkar,Sindh,2007,Rabi,59.2,40.8,37.5,26.7
+Tharparkar,Sindh,2008,Kharif,59.2,40.8,37.7,24.8
+Tharparkar,Sindh,2008,Rabi,59.2,40.8,44.4,24.6
+Tharparkar,Sindh,2009,Kharif,59.2,40.8,37.5,21.8
+Tharparkar,Sindh,2009,Rabi,59.2,40.8,38.0,20.5
+Tharparkar,Sindh,2010,Kharif,59.2,40.8,47.2,24.6
+Tharparkar,Sindh,2010,Rabi,59.2,40.8,39.7,24.5
+Tharparkar,Sindh,2011,Kharif,59.2,40.8,37.6,29.5
+Tharparkar,Sindh,2011,Rabi,59.2,40.8,36.0,25.1
+Tharparkar,Sindh,2012,Kharif,59.2,40.8,51.2,24.2
+Tharparkar,Sindh,2012,Rabi,59.2,40.8,44.2,26.4
+Tharparkar,Sindh,2013,Kharif,59.2,40.8,40.6,21.4
+Tharparkar,Sindh,2013,Rabi,59.2,40.8,44.6,22.3
+Tharparkar,Sindh,2014,Kharif,59.2,40.8,40.2,23.3
+Tharparkar,Sindh,2014,Rabi,59.2,40.8,32.0,24.0
+Tharparkar,Sindh,2015,Kharif,59.2,40.8,45.6,23.4
+Tharparkar,Sindh,2015,Rabi,59.2,40.8,42.9,21.0
+Tharparkar,Sindh,2016,Kharif,59.2,40.8,31.1,23.7
+Tharparkar,Sindh,2016,Rabi,59.2,40.8,31.2,25.8
+Tharparkar,Sindh,2017,Kharif,59.2,40.8,45.5,23.4
+Tharparkar,Sindh,2017,Rabi,59.2,40.8,40.7,26.5
+Tharparkar,Sindh,2018,Kharif,59.2,40.8,38.5,24.5
+Tharparkar,Sindh,2018,Rabi,59.2,40.8,40.2,27.9
+Tharparkar,Sindh,2019,Kharif,59.2,40.8,30.0,22.6
+Tharparkar,Sindh,2019,Rabi,59.2,40.8,48.5,26.4
+Tharparkar,Sindh,2020,Kharif,59.2,40.8,39.9,27.4
+Tharparkar,Sindh,2020,Rabi,59.2,40.8,42.6,23.8
+Tharparkar,Sindh,2021,Kharif,59.2,40.8,42.3,21.0
+Tharparkar,Sindh,2021,Rabi,59.2,40.8,33.2,27.4
+Tharparkar,Sindh,2022,Kharif,59.2,40.8,49.0,23.8
+Tharparkar,Sindh,2022,Rabi,59.2,40.8,37.8,22.3
+Tharparkar,Sindh,2023,Kharif,59.2,40.8,46.1,25.5
+Tharparkar,Sindh,2023,Rabi,59.2,40.8,37.4,16.6
+Umerkot,Sindh,2000,Kharif,53.8,46.2,42.2,22.4
+Umerkot,Sindh,2000,Rabi,53.8,46.2,50.7,19.4
+Umerkot,Sindh,2001,Kharif,53.8,46.2,52.3,21.9
+Umerkot,Sindh,2001,Rabi,53.8,46.2,49.9,22.4
+Umerkot,Sindh,2002,Kharif,53.8,46.2,49.4,27.3
+Umerkot,Sindh,2002,Rabi,53.8,46.2,40.4,20.2
+Umerkot,Sindh,2003,Kharif,53.8,46.2,42.2,19.7
+Umerkot,Sindh,2003,Rabi,53.8,46.2,49.3,20.8
+Umerkot,Sindh,2004,Kharif,53.8,46.2,48.3,26.0
+Umerkot,Sindh,2004,Rabi,53.8,46.2,45.9,18.7
+Umerkot,Sindh,2005,Kharif,53.8,46.2,51.5,23.6
+Umerkot,Sindh,2005,Rabi,53.8,46.2,47.6,17.6
+Umerkot,Sindh,2006,Kharif,53.8,46.2,33.8,19.6
+Umerkot,Sindh,2006,Rabi,53.8,46.2,42.8,28.5
+Umerkot,Sindh,2007,Kharif,53.8,46.2,53.7,19.2
+Umerkot,Sindh,2007,Rabi,53.8,46.2,54.1,20.0
+Umerkot,Sindh,2008,Kharif,53.8,46.2,50.5,21.0
+Umerkot,Sindh,2008,Rabi,53.8,46.2,44.9,24.7
+Umerkot,Sindh,2009,Kharif,53.8,46.2,52.4,25.5
+Umerkot,Sindh,2009,Rabi,53.8,46.2,46.5,18.4
+Umerkot,Sindh,2010,Kharif,53.8,46.2,50.5,16.9
+Umerkot,Sindh,2010,Rabi,53.8,46.2,35.2,19.3
+Umerkot,Sindh,2011,Kharif,53.8,46.2,53.7,23.8
+Umerkot,Sindh,2011,Rabi,53.8,46.2,46.1,24.5
+Umerkot,Sindh,2012,Kharif,53.8,46.2,47.7,20.1
+Umerkot,Sindh,2012,Rabi,53.8,46.2,44.8,21.0
+Umerkot,Sindh,2013,Kharif,53.8,46.2,47.9,20.3
+Umerkot,Sindh,2013,Rabi,53.8,46.2,36.2,23.6
+Umerkot,Sindh,2014,Kharif,53.8,46.2,51.5,21.8
+Umerkot,Sindh,2014,Rabi,53.8,46.2,52.8,25.1
+Umerkot,Sindh,2015,Kharif,53.8,46.2,38.8,25.8
+Umerkot,Sindh,2015,Rabi,53.8,46.2,42.3,20.1
+Umerkot,Sindh,2016,Kharif,53.8,46.2,46.9,18.4
+Umerkot,Sindh,2016,Rabi,53.8,46.2,43.0,17.0
+Umerkot,Sindh,2017,Kharif,53.8,46.2,44.5,23.5
+Umerkot,Sindh,2017,Rabi,53.8,46.2,46.9,19.2
+Umerkot,Sindh,2018,Kharif,53.8,46.2,37.1,24.6
+Umerkot,Sindh,2018,Rabi,53.8,46.2,43.5,20.1
+Umerkot,Sindh,2019,Kharif,53.8,46.2,56.2,26.6
+Umerkot,Sindh,2019,Rabi,53.8,46.2,46.7,20.8
+Umerkot,Sindh,2020,Kharif,53.8,46.2,52.5,14.4
+Umerkot,Sindh,2020,Rabi,53.8,46.2,46.1,21.3
+Umerkot,Sindh,2021,Kharif,53.8,46.2,46.1,20.3
+Umerkot,Sindh,2021,Rabi,53.8,46.2,34.4,20.8
+Umerkot,Sindh,2022,Kharif,53.8,46.2,48.3,23.1
+Umerkot,Sindh,2022,Rabi,53.8,46.2,45.3,21.7
+Umerkot,Sindh,2023,Kharif,53.8,46.2,41.4,23.7
+Umerkot,Sindh,2023,Rabi,53.8,46.2,43.1,23.2
+Mirpur Khas,Sindh,2000,Kharif,11.4,88.6,92.5,8.8
+Mirpur Khas,Sindh,2000,Rabi,11.4,88.6,83.8,7.3
+Mirpur Khas,Sindh,2001,Kharif,11.4,88.6,92.2,5.5
+Mirpur Khas,Sindh,2001,Rabi,11.4,88.6,82.4,12.6
+Mirpur Khas,Sindh,2002,Kharif,11.4,88.6,82.0,8.0
+Mirpur Khas,Sindh,2002,Rabi,11.4,88.6,88.1,1.0
+Mirpur Khas,Sindh,2003,Kharif,11.4,88.6,97.1,5.6
+Mirpur Khas,Sindh,2003,Rabi,11.4,88.6,91.4,3.9
+Mirpur Khas,Sindh,2004,Kharif,11.4,88.6,79.9,5.7
+Mirpur Khas,Sindh,2004,Rabi,11.4,88.6,87.2,8.9
+Mirpur Khas,Sindh,2005,Kharif,11.4,88.6,94.8,6.1
+Mirpur Khas,Sindh,2005,Rabi,11.4,88.6,92.5,6.1
+Mirpur Khas,Sindh,2006,Kharif,11.4,88.6,87.4,9.4
+Mirpur Khas,Sindh,2006,Rabi,11.4,88.6,90.6,6.6
+Mirpur Khas,Sindh,2007,Kharif,11.4,88.6,85.4,5.4
+Mirpur Khas,Sindh,2007,Rabi,11.4,88.6,88.4,1.2
+Mirpur Khas,Sindh,2008,Kharif,11.4,88.6,72.3,4.6
+Mirpur Khas,Sindh,2008,Rabi,11.4,88.6,85.2,2.5
+Mirpur Khas,Sindh,2009,Kharif,11.4,88.6,85.3,8.1
+Mirpur Khas,Sindh,2009,Rabi,11.4,88.6,87.2,9.3
+Mirpur Khas,Sindh,2010,Kharif,11.4,88.6,90.7,9.6
+Mirpur Khas,Sindh,2010,Rabi,11.4,88.6,80.1,8.9
+Mirpur Khas,Sindh,2011,Kharif,11.4,88.6,91.1,3.1
+Mirpur Khas,Sindh,2011,Rabi,11.4,88.6,85.2,7.2
+Mirpur Khas,Sindh,2012,Kharif,11.4,88.6,82.1,0.0
+Mirpur Khas,Sindh,2012,Rabi,11.4,88.6,86.5,3.5
+Mirpur Khas,Sindh,2013,Kharif,11.4,88.6,84.0,10.5
+Mirpur Khas,Sindh,2013,Rabi,11.4,88.6,98.8,1.3
+Mirpur Khas,Sindh,2014,Kharif,11.4,88.6,91.0,5.3
+Mirpur Khas,Sindh,2014,Rabi,11.4,88.6,97.9,8.9
+Mirpur Khas,Sindh,2015,Kharif,11.4,88.6,94.3,0.4
+Mirpur Khas,Sindh,2015,Rabi,11.4,88.6,90.0,7.1
+Mirpur Khas,Sindh,2016,Kharif,11.4,88.6,85.2,8.1
+Mirpur Khas,Sindh,2016,Rabi,11.4,88.6,92.8,7.1
+Mirpur Khas,Sindh,2017,Kharif,11.4,88.6,85.5,8.2
+Mirpur Khas,Sindh,2017,Rabi,11.4,88.6,84.7,3.1
+Mirpur Khas,Sindh,2018,Kharif,11.4,88.6,89.8,1.8
+Mirpur Khas,Sindh,2018,Rabi,11.4,88.6,90.4,8.6
+Mirpur Khas,Sindh,2019,Kharif,11.4,88.6,83.3,5.1
+Mirpur Khas,Sindh,2019,Rabi,11.4,88.6,85.3,9.5
+Mirpur Khas,Sindh,2020,Kharif,11.4,88.6,94.1,0.0
+Mirpur Khas,Sindh,2020,Rabi,11.4,88.6,87.5,7.1
+Mirpur Khas,Sindh,2021,Kharif,11.4,88.6,92.1,7.4
+Mirpur Khas,Sindh,2021,Rabi,11.4,88.6,97.9,1.2
+Mirpur Khas,Sindh,2022,Kharif,11.4,88.6,97.9,1.7
+Mirpur Khas,Sindh,2022,Rabi,11.4,88.6,91.6,3.5
+Mirpur Khas,Sindh,2023,Kharif,11.4,88.6,85.1,5.1
+Mirpur Khas,Sindh,2023,Rabi,11.4,88.6,85.8,2.3
+Sanghar,Sindh,2000,Kharif,5.3,94.7,100.0,0.0
+Sanghar,Sindh,2000,Rabi,5.3,94.7,93.5,0.2
+Sanghar,Sindh,2001,Kharif,5.3,94.7,100.0,0.0
+Sanghar,Sindh,2001,Rabi,5.3,94.7,100.0,1.1
+Sanghar,Sindh,2002,Kharif,5.3,94.7,100.0,0.0
+Sanghar,Sindh,2002,Rabi,5.3,94.7,97.8,4.0
+Sanghar,Sindh,2003,Kharif,5.3,94.7,100.0,0.9
+Sanghar,Sindh,2003,Rabi,5.3,94.7,93.4,2.3
+Sanghar,Sindh,2004,Kharif,5.3,94.7,87.4,1.8
+Sanghar,Sindh,2004,Rabi,5.3,94.7,98.7,1.2
+Sanghar,Sindh,2005,Kharif,5.3,94.7,99.3,0.0
+Sanghar,Sindh,2005,Rabi,5.3,94.7,94.3,1.4
+Sanghar,Sindh,2006,Kharif,5.3,94.7,88.6,7.9
+Sanghar,Sindh,2006,Rabi,5.3,94.7,91.6,0.0
+Sanghar,Sindh,2007,Kharif,5.3,94.7,87.0,2.9
+Sanghar,Sindh,2007,Rabi,5.3,94.7,93.1,0.0
+Sanghar,Sindh,2008,Kharif,5.3,94.7,99.3,0.0
+Sanghar,Sindh,2008,Rabi,5.3,94.7,99.4,4.0
+Sanghar,Sindh,2009,Kharif,5.3,94.7,98.5,0.0
+Sanghar,Sindh,2009,Rabi,5.3,94.7,97.8,0.6
+Sanghar,Sindh,2010,Kharif,5.3,94.7,93.0,3.8
+Sanghar,Sindh,2010,Rabi,5.3,94.7,92.2,4.4
+Sanghar,Sindh,2011,Kharif,5.3,94.7,88.7,2.5
+Sanghar,Sindh,2011,Rabi,5.3,94.7,87.8,0.0
+Sanghar,Sindh,2012,Kharif,5.3,94.7,96.2,3.7
+Sanghar,Sindh,2012,Rabi,5.3,94.7,100.0,0.0
+Sanghar,Sindh,2013,Kharif,5.3,94.7,94.6,0.6
+Sanghar,Sindh,2013,Rabi,5.3,94.7,97.9,9.0
+Sanghar,Sindh,2014,Kharif,5.3,94.7,98.7,0.3
+Sanghar,Sindh,2014,Rabi,5.3,94.7,91.4,0.2
+Sanghar,Sindh,2015,Kharif,5.3,94.7,93.6,2.7
+Sanghar,Sindh,2015,Rabi,5.3,94.7,95.1,4.7
+Sanghar,Sindh,2016,Kharif,5.3,94.7,86.4,5.2
+Sanghar,Sindh,2016,Rabi,5.3,94.7,90.9,2.2
+Sanghar,Sindh,2017,Kharif,5.3,94.7,94.0,0.0
+Sanghar,Sindh,2017,Rabi,5.3,94.7,89.7,0.8
+Sanghar,Sindh,2018,Kharif,5.3,94.7,84.4,7.9
+Sanghar,Sindh,2018,Rabi,5.3,94.7,100.0,6.1
+Sanghar,Sindh,2019,Kharif,5.3,94.7,90.2,1.5
+Sanghar,Sindh,2019,Rabi,5.3,94.7,100.0,4.9
+Sanghar,Sindh,2020,Kharif,5.3,94.7,88.1,2.7
+Sanghar,Sindh,2020,Rabi,5.3,94.7,89.8,2.8
+Sanghar,Sindh,2021,Kharif,5.3,94.7,100.0,1.2
+Sanghar,Sindh,2021,Rabi,5.3,94.7,100.0,1.2
+Sanghar,Sindh,2022,Kharif,5.3,94.7,92.1,0.7
+Sanghar,Sindh,2022,Rabi,5.3,94.7,100.0,0.0
+Sanghar,Sindh,2023,Kharif,5.3,94.7,88.3,0.0
+Sanghar,Sindh,2023,Rabi,5.3,94.7,96.5,0.0
+Sukkur,Sindh,2000,Kharif,6.9,93.1,88.4,0.0
+Sukkur,Sindh,2000,Rabi,6.9,93.1,82.4,2.0
+Sukkur,Sindh,2001,Kharif,6.9,93.1,88.4,2.3
+Sukkur,Sindh,2001,Rabi,6.9,93.1,92.2,3.5
+Sukkur,Sindh,2002,Kharif,6.9,93.1,89.3,4.0
+Sukkur,Sindh,2002,Rabi,6.9,93.1,100.0,0.0
+Sukkur,Sindh,2003,Kharif,6.9,93.1,89.5,0.0
+Sukkur,Sindh,2003,Rabi,6.9,93.1,93.3,3.6
+Sukkur,Sindh,2004,Kharif,6.9,93.1,81.3,1.4
+Sukkur,Sindh,2004,Rabi,6.9,93.1,100.0,1.0
+Sukkur,Sindh,2005,Kharif,6.9,93.1,99.4,1.7
+Sukkur,Sindh,2005,Rabi,6.9,93.1,95.2,1.4
+Sukkur,Sindh,2006,Kharif,6.9,93.1,98.4,5.0
+Sukkur,Sindh,2006,Rabi,6.9,93.1,85.0,1.0
+Sukkur,Sindh,2007,Kharif,6.9,93.1,82.1,6.6
+Sukkur,Sindh,2007,Rabi,6.9,93.1,93.4,0.2
+Sukkur,Sindh,2008,Kharif,6.9,93.1,90.3,5.1
+Sukkur,Sindh,2008,Rabi,6.9,93.1,97.9,8.6
+Sukkur,Sindh,2009,Kharif,6.9,93.1,92.0,4.1
+Sukkur,Sindh,2009,Rabi,6.9,93.1,85.9,0.0
+Sukkur,Sindh,2010,Kharif,6.9,93.1,93.5,0.0
+Sukkur,Sindh,2010,Rabi,6.9,93.1,90.6,5.7
+Sukkur,Sindh,2011,Kharif,6.9,93.1,92.9,0.0
+Sukkur,Sindh,2011,Rabi,6.9,93.1,100.0,3.5
+Sukkur,Sindh,2012,Kharif,6.9,93.1,98.4,1.0
+Sukkur,Sindh,2012,Rabi,6.9,93.1,87.3,0.0
+Sukkur,Sindh,2013,Kharif,6.9,93.1,84.0,3.7
+Sukkur,Sindh,2013,Rabi,6.9,93.1,100.0,3.7
+Sukkur,Sindh,2014,Kharif,6.9,93.1,85.5,1.5
+Sukkur,Sindh,2014,Rabi,6.9,93.1,97.4,4.9
+Sukkur,Sindh,2015,Kharif,6.9,93.1,91.3,3.2
+Sukkur,Sindh,2015,Rabi,6.9,93.1,86.2,4.2
+Sukkur,Sindh,2016,Kharif,6.9,93.1,86.8,0.0
+Sukkur,Sindh,2016,Rabi,6.9,93.1,91.0,2.5
+Sukkur,Sindh,2017,Kharif,6.9,93.1,100.0,5.7
+Sukkur,Sindh,2017,Rabi,6.9,93.1,94.9,0.0
+Sukkur,Sindh,2018,Kharif,6.9,93.1,95.5,0.6
+Sukkur,Sindh,2018,Rabi,6.9,93.1,100.0,1.4
+Sukkur,Sindh,2019,Kharif,6.9,93.1,100.0,0.4
+Sukkur,Sindh,2019,Rabi,6.9,93.1,90.2,0.1
+Sukkur,Sindh,2020,Kharif,6.9,93.1,87.5,7.0
+Sukkur,Sindh,2020,Rabi,6.9,93.1,86.0,3.9
+Sukkur,Sindh,2021,Kharif,6.9,93.1,84.5,1.4
+Sukkur,Sindh,2021,Rabi,6.9,93.1,91.9,0.0
+Sukkur,Sindh,2022,Kharif,6.9,93.1,83.8,2.3
+Sukkur,Sindh,2022,Rabi,6.9,93.1,95.3,7.5
+Sukkur,Sindh,2023,Kharif,6.9,93.1,90.3,0.0
+Sukkur,Sindh,2023,Rabi,6.9,93.1,95.6,1.9
+Khairpur,Sindh,2000,Kharif,14.2,85.8,86.8,0.8
+Khairpur,Sindh,2000,Rabi,14.2,85.8,80.3,5.2
+Khairpur,Sindh,2001,Kharif,14.2,85.8,86.9,7.1
+Khairpur,Sindh,2001,Rabi,14.2,85.8,83.6,0.3
+Khairpur,Sindh,2002,Kharif,14.2,85.8,89.2,1.3
+Khairpur,Sindh,2002,Rabi,14.2,85.8,85.4,7.5
+Khairpur,Sindh,2003,Kharif,14.2,85.8,83.8,7.0
+Khairpur,Sindh,2003,Rabi,14.2,85.8,95.6,7.9
+Khairpur,Sindh,2004,Kharif,14.2,85.8,86.3,3.6
+Khairpur,Sindh,2004,Rabi,14.2,85.8,78.3,6.3
+Khairpur,Sindh,2005,Kharif,14.2,85.8,83.9,3.5
+Khairpur,Sindh,2005,Rabi,14.2,85.8,75.5,10.5
+Khairpur,Sindh,2006,Kharif,14.2,85.8,84.4,3.2
+Khairpur,Sindh,2006,Rabi,14.2,85.8,93.7,2.2
+Khairpur,Sindh,2007,Kharif,14.2,85.8,72.6,6.6
+Khairpur,Sindh,2007,Rabi,14.2,85.8,84.9,6.0
+Khairpur,Sindh,2008,Kharif,14.2,85.8,85.1,12.6
+Khairpur,Sindh,2008,Rabi,14.2,85.8,80.8,0.7
+Khairpur,Sindh,2009,Kharif,14.2,85.8,91.1,5.8
+Khairpur,Sindh,2009,Rabi,14.2,85.8,84.7,3.1
+Khairpur,Sindh,2010,Kharif,14.2,85.8,83.2,10.3
+Khairpur,Sindh,2010,Rabi,14.2,85.8,80.9,5.9
+Khairpur,Sindh,2011,Kharif,14.2,85.8,82.3,2.8
+Khairpur,Sindh,2011,Rabi,14.2,85.8,75.4,0.7
+Khairpur,Sindh,2012,Kharif,14.2,85.8,80.7,7.3
+Khairpur,Sindh,2012,Rabi,14.2,85.8,86.6,5.8
+Khairpur,Sindh,2013,Kharif,14.2,85.8,91.0,5.4
+Khairpur,Sindh,2013,Rabi,14.2,85.8,90.2,3.0
+Khairpur,Sindh,2014,Kharif,14.2,85.8,78.3,6.3
+Khairpur,Sindh,2014,Rabi,14.2,85.8,84.8,5.6
+Khairpur,Sindh,2015,Kharif,14.2,85.8,98.7,6.8
+Khairpur,Sindh,2015,Rabi,14.2,85.8,88.8,0.0
+Khairpur,Sindh,2016,Kharif,14.2,85.8,91.3,3.3
+Khairpur,Sindh,2016,Rabi,14.2,85.8,79.2,0.0
+Khairpur,Sindh,2017,Kharif,14.2,85.8,82.3,5.8
+Khairpur,Sindh,2017,Rabi,14.2,85.8,90.5,3.2
+Khairpur,Sindh,2018,Kharif,14.2,85.8,84.9,9.4
+Khairpur,Sindh,2018,Rabi,14.2,85.8,87.8,5.0
+Khairpur,Sindh,2019,Kharif,14.2,85.8,89.1,3.1
+Khairpur,Sindh,2019,Rabi,14.2,85.8,81.8,2.5
+Khairpur,Sindh,2020,Kharif,14.2,85.8,89.4,4.3
+Khairpur,Sindh,2020,Rabi,14.2,85.8,85.8,6.1
+Khairpur,Sindh,2021,Kharif,14.2,85.8,88.2,7.1
+Khairpur,Sindh,2021,Rabi,14.2,85.8,89.0,7.2
+Khairpur,Sindh,2022,Kharif,14.2,85.8,86.2,1.3
+Khairpur,Sindh,2022,Rabi,14.2,85.8,86.6,7.5
+Khairpur,Sindh,2023,Kharif,14.2,85.8,88.8,0.0
+Khairpur,Sindh,2023,Rabi,14.2,85.8,81.9,2.6
+Larkana,Sindh,2000,Kharif,7.0,93.0,93.0,7.5
+Larkana,Sindh,2000,Rabi,7.0,93.0,97.7,2.8
+Larkana,Sindh,2001,Kharif,7.0,93.0,84.5,4.3
+Larkana,Sindh,2001,Rabi,7.0,93.0,98.9,8.2
+Larkana,Sindh,2002,Kharif,7.0,93.0,94.6,6.8
+Larkana,Sindh,2002,Rabi,7.0,93.0,93.7,4.2
+Larkana,Sindh,2003,Kharif,7.0,93.0,97.3,5.6
+Larkana,Sindh,2003,Rabi,7.0,93.0,88.1,2.6
+Larkana,Sindh,2004,Kharif,7.0,93.0,100.0,6.6
+Larkana,Sindh,2004,Rabi,7.0,93.0,87.6,0.0
+Larkana,Sindh,2005,Kharif,7.0,93.0,97.2,5.8
+Larkana,Sindh,2005,Rabi,7.0,93.0,92.5,0.0
+Larkana,Sindh,2006,Kharif,7.0,93.0,94.2,3.2
+Larkana,Sindh,2006,Rabi,7.0,93.0,94.6,3.4
+Larkana,Sindh,2007,Kharif,7.0,93.0,91.0,5.7
+Larkana,Sindh,2007,Rabi,7.0,93.0,91.0,1.1
+Larkana,Sindh,2008,Kharif,7.0,93.0,88.7,0.5
+Larkana,Sindh,2008,Rabi,7.0,93.0,89.3,4.9
+Larkana,Sindh,2009,Kharif,7.0,93.0,98.5,0.3
+Larkana,Sindh,2009,Rabi,7.0,93.0,88.8,5.7
+Larkana,Sindh,2010,Kharif,7.0,93.0,95.8,2.5
+Larkana,Sindh,2010,Rabi,7.0,93.0,89.7,2.9
+Larkana,Sindh,2011,Kharif,7.0,93.0,95.1,3.0
+Larkana,Sindh,2011,Rabi,7.0,93.0,96.3,0.0
+Larkana,Sindh,2012,Kharif,7.0,93.0,97.0,1.6
+Larkana,Sindh,2012,Rabi,7.0,93.0,91.5,4.8
+Larkana,Sindh,2013,Kharif,7.0,93.0,95.1,0.0
+Larkana,Sindh,2013,Rabi,7.0,93.0,88.9,6.9
+Larkana,Sindh,2014,Kharif,7.0,93.0,87.0,0.8
+Larkana,Sindh,2014,Rabi,7.0,93.0,98.8,1.0
+Larkana,Sindh,2015,Kharif,7.0,93.0,98.8,0.8
+Larkana,Sindh,2015,Rabi,7.0,93.0,85.5,6.2
+Larkana,Sindh,2016,Kharif,7.0,93.0,95.4,0.0
+Larkana,Sindh,2016,Rabi,7.0,93.0,88.2,2.7
+Larkana,Sindh,2017,Kharif,7.0,93.0,86.2,1.0
+Larkana,Sindh,2017,Rabi,7.0,93.0,83.3,4.3
+Larkana,Sindh,2018,Kharif,7.0,93.0,89.5,0.0
+Larkana,Sindh,2018,Rabi,7.0,93.0,91.4,0.0
+Larkana,Sindh,2019,Kharif,7.0,93.0,90.0,3.9
+Larkana,Sindh,2019,Rabi,7.0,93.0,93.2,3.5
+Larkana,Sindh,2020,Kharif,7.0,93.0,100.0,1.0
+Larkana,Sindh,2020,Rabi,7.0,93.0,90.4,0.8
+Larkana,Sindh,2021,Kharif,7.0,93.0,96.0,5.8
+Larkana,Sindh,2021,Rabi,7.0,93.0,86.4,3.1
+Larkana,Sindh,2022,Kharif,7.0,93.0,93.2,0.0
+Larkana,Sindh,2022,Rabi,7.0,93.0,97.8,2.0
+Larkana,Sindh,2023,Kharif,7.0,93.0,100.0,2.9
+Larkana,Sindh,2023,Rabi,7.0,93.0,94.2,4.1
+Badin,Sindh,2000,Kharif,45.7,54.3,65.9,18.0
+Badin,Sindh,2000,Rabi,45.7,54.3,50.1,15.7
+Badin,Sindh,2001,Kharif,45.7,54.3,49.5,15.2
+Badin,Sindh,2001,Rabi,45.7,54.3,57.7,18.7
+Badin,Sindh,2002,Kharif,45.7,54.3,58.6,18.2
+Badin,Sindh,2002,Rabi,45.7,54.3,55.1,18.4
+Badin,Sindh,2003,Kharif,45.7,54.3,54.9,18.8
+Badin,Sindh,2003,Rabi,45.7,54.3,51.2,20.7
+Badin,Sindh,2004,Kharif,45.7,54.3,66.9,15.3
+Badin,Sindh,2004,Rabi,45.7,54.3,57.1,20.5
+Badin,Sindh,2005,Kharif,45.7,54.3,51.9,17.4
+Badin,Sindh,2005,Rabi,45.7,54.3,55.6,21.1
+Badin,Sindh,2006,Kharif,45.7,54.3,50.0,18.6
+Badin,Sindh,2006,Rabi,45.7,54.3,54.1,17.0
+Badin,Sindh,2007,Kharif,45.7,54.3,59.7,22.2
+Badin,Sindh,2007,Rabi,45.7,54.3,52.9,19.2
+Badin,Sindh,2008,Kharif,45.7,54.3,49.0,20.8
+Badin,Sindh,2008,Rabi,45.7,54.3,51.0,15.4
+Badin,Sindh,2009,Kharif,45.7,54.3,57.6,16.1
+Badin,Sindh,2009,Rabi,45.7,54.3,56.5,21.6
+Badin,Sindh,2010,Kharif,45.7,54.3,55.2,18.3
+Badin,Sindh,2010,Rabi,45.7,54.3,49.6,17.7
+Badin,Sindh,2011,Kharif,45.7,54.3,68.6,22.8
+Badin,Sindh,2011,Rabi,45.7,54.3,49.9,18.6
+Badin,Sindh,2012,Kharif,45.7,54.3,55.5,15.6
+Badin,Sindh,2012,Rabi,45.7,54.3,59.1,15.4
+Badin,Sindh,2013,Kharif,45.7,54.3,49.9,21.7
+Badin,Sindh,2013,Rabi,45.7,54.3,60.6,12.5
+Badin,Sindh,2014,Kharif,45.7,54.3,57.2,16.8
+Badin,Sindh,2014,Rabi,45.7,54.3,61.6,16.1
+Badin,Sindh,2015,Kharif,45.7,54.3,56.5,15.1
+Badin,Sindh,2015,Rabi,45.7,54.3,66.1,19.1
+Badin,Sindh,2016,Kharif,45.7,54.3,56.4,18.7
+Badin,Sindh,2016,Rabi,45.7,54.3,48.4,19.9
+Badin,Sindh,2017,Kharif,45.7,54.3,51.0,18.3
+Badin,Sindh,2017,Rabi,45.7,54.3,56.9,22.4
+Badin,Sindh,2018,Kharif,45.7,54.3,50.0,16.0
+Badin,Sindh,2018,Rabi,45.7,54.3,48.8,18.8
+Badin,Sindh,2019,Kharif,45.7,54.3,51.0,17.2
+Badin,Sindh,2019,Rabi,45.7,54.3,51.7,16.6
+Badin,Sindh,2020,Kharif,45.7,54.3,48.2,18.2
+Badin,Sindh,2020,Rabi,45.7,54.3,55.4,20.0
+Badin,Sindh,2021,Kharif,45.7,54.3,56.6,20.8
+Badin,Sindh,2021,Rabi,45.7,54.3,47.1,19.6
+Badin,Sindh,2022,Kharif,45.7,54.3,54.5,18.8
+Badin,Sindh,2022,Rabi,45.7,54.3,57.1,20.5
+Badin,Sindh,2023,Kharif,45.7,54.3,53.3,18.0
+Badin,Sindh,2023,Rabi,45.7,54.3,60.0,19.4
+Thatta,Sindh,2000,Kharif,53.8,46.2,49.6,22.0
+Thatta,Sindh,2000,Rabi,53.8,46.2,45.1,20.7
+Thatta,Sindh,2001,Kharif,53.8,46.2,41.6,24.9
+Thatta,Sindh,2001,Rabi,53.8,46.2,37.2,21.3
+Thatta,Sindh,2002,Kharif,53.8,46.2,38.4,22.2
+Thatta,Sindh,2002,Rabi,53.8,46.2,41.8,27.5
+Thatta,Sindh,2003,Kharif,53.8,46.2,52.3,20.3
+Thatta,Sindh,2003,Rabi,53.8,46.2,46.2,24.0
+Thatta,Sindh,2004,Kharif,53.8,46.2,56.6,24.2
+Thatta,Sindh,2004,Rabi,53.8,46.2,53.7,24.7
+Thatta,Sindh,2005,Kharif,53.8,46.2,45.3,16.4
+Thatta,Sindh,2005,Rabi,53.8,46.2,40.1,25.8
+Thatta,Sindh,2006,Kharif,53.8,46.2,48.5,20.0
+Thatta,Sindh,2006,Rabi,53.8,46.2,45.0,21.7
+Thatta,Sindh,2007,Kharif,53.8,46.2,41.1,21.3
+Thatta,Sindh,2007,Rabi,53.8,46.2,44.9,28.3
+Thatta,Sindh,2008,Kharif,53.8,46.2,49.4,23.8
+Thatta,Sindh,2008,Rabi,53.8,46.2,52.8,23.2
+Thatta,Sindh,2009,Kharif,53.8,46.2,40.7,21.4
+Thatta,Sindh,2009,Rabi,53.8,46.2,50.2,20.4
+Thatta,Sindh,2010,Kharif,53.8,46.2,45.4,23.2
+Thatta,Sindh,2010,Rabi,53.8,46.2,46.0,21.2
+Thatta,Sindh,2011,Kharif,53.8,46.2,41.3,25.1
+Thatta,Sindh,2011,Rabi,53.8,46.2,41.4,18.6
+Thatta,Sindh,2012,Kharif,53.8,46.2,55.1,23.3
+Thatta,Sindh,2012,Rabi,53.8,46.2,51.2,19.2
+Thatta,Sindh,2013,Kharif,53.8,46.2,34.4,17.6
+Thatta,Sindh,2013,Rabi,53.8,46.2,37.7,18.2
+Thatta,Sindh,2014,Kharif,53.8,46.2,43.2,20.4
+Thatta,Sindh,2014,Rabi,53.8,46.2,48.2,14.5
+Thatta,Sindh,2015,Kharif,53.8,46.2,41.9,25.3
+Thatta,Sindh,2015,Rabi,53.8,46.2,53.6,14.2
+Thatta,Sindh,2016,Kharif,53.8,46.2,45.2,16.7
+Thatta,Sindh,2016,Rabi,53.8,46.2,43.7,23.0
+Thatta,Sindh,2017,Kharif,53.8,46.2,50.3,21.3
+Thatta,Sindh,2017,Rabi,53.8,46.2,52.8,22.6
+Thatta,Sindh,2018,Kharif,53.8,46.2,35.8,23.8
+Thatta,Sindh,2018,Rabi,53.8,46.2,40.3,18.7
+Thatta,Sindh,2019,Kharif,53.8,46.2,45.8,28.9
+Thatta,Sindh,2019,Rabi,53.8,46.2,44.3,23.7
+Thatta,Sindh,2020,Kharif,53.8,46.2,48.3,20.5
+Thatta,Sindh,2020,Rabi,53.8,46.2,49.4,21.2
+Thatta,Sindh,2021,Kharif,53.8,46.2,48.0,23.1
+Thatta,Sindh,2021,Rabi,53.8,46.2,45.2,22.6
+Thatta,Sindh,2022,Kharif,53.8,46.2,37.6,15.5
+Thatta,Sindh,2022,Rabi,53.8,46.2,50.9,22.1
+Thatta,Sindh,2023,Kharif,53.8,46.2,49.3,24.5
+Thatta,Sindh,2023,Rabi,53.8,46.2,48.5,23.5
+Nawabshah (Shaheed Benazirabad),Sindh,2000,Kharif,8.1,91.9,92.1,3.8
+Nawabshah (Shaheed Benazirabad),Sindh,2000,Rabi,8.1,91.9,96.2,2.8
+Nawabshah (Shaheed Benazirabad),Sindh,2001,Kharif,8.1,91.9,94.0,3.8
+Nawabshah (Shaheed Benazirabad),Sindh,2001,Rabi,8.1,91.9,90.3,0.0
+Nawabshah (Shaheed Benazirabad),Sindh,2002,Kharif,8.1,91.9,90.2,8.0
+Nawabshah (Shaheed Benazirabad),Sindh,2002,Rabi,8.1,91.9,93.7,3.2
+Nawabshah (Shaheed Benazirabad),Sindh,2003,Kharif,8.1,91.9,88.9,5.0
+Nawabshah (Shaheed Benazirabad),Sindh,2003,Rabi,8.1,91.9,90.6,2.6
+Nawabshah (Shaheed Benazirabad),Sindh,2004,Kharif,8.1,91.9,89.7,4.6
+Nawabshah (Shaheed Benazirabad),Sindh,2004,Rabi,8.1,91.9,89.2,0.1
+Nawabshah (Shaheed Benazirabad),Sindh,2005,Kharif,8.1,91.9,85.5,6.4
+Nawabshah (Shaheed Benazirabad),Sindh,2005,Rabi,8.1,91.9,94.7,4.9
+Nawabshah (Shaheed Benazirabad),Sindh,2006,Kharif,8.1,91.9,91.2,1.1
+Nawabshah (Shaheed Benazirabad),Sindh,2006,Rabi,8.1,91.9,91.7,2.9
+Nawabshah (Shaheed Benazirabad),Sindh,2007,Kharif,8.1,91.9,84.2,4.0
+Nawabshah (Shaheed Benazirabad),Sindh,2007,Rabi,8.1,91.9,89.2,1.2
+Nawabshah (Shaheed Benazirabad),Sindh,2008,Kharif,8.1,91.9,93.3,8.1
+Nawabshah (Shaheed Benazirabad),Sindh,2008,Rabi,8.1,91.9,86.8,7.7
+Nawabshah (Shaheed Benazirabad),Sindh,2009,Kharif,8.1,91.9,92.3,1.9
+Nawabshah (Shaheed Benazirabad),Sindh,2009,Rabi,8.1,91.9,92.3,2.8
+Nawabshah (Shaheed Benazirabad),Sindh,2010,Kharif,8.1,91.9,84.3,1.5
+Nawabshah (Shaheed Benazirabad),Sindh,2010,Rabi,8.1,91.9,88.5,1.9
+Nawabshah (Shaheed Benazirabad),Sindh,2011,Kharif,8.1,91.9,98.5,4.3
+Nawabshah (Shaheed Benazirabad),Sindh,2011,Rabi,8.1,91.9,100.0,4.0
+Nawabshah (Shaheed Benazirabad),Sindh,2012,Kharif,8.1,91.9,89.0,4.1
+Nawabshah (Shaheed Benazirabad),Sindh,2012,Rabi,8.1,91.9,86.0,5.6
+Nawabshah (Shaheed Benazirabad),Sindh,2013,Kharif,8.1,91.9,97.6,0.5
+Nawabshah (Shaheed Benazirabad),Sindh,2013,Rabi,8.1,91.9,88.8,2.1
+Nawabshah (Shaheed Benazirabad),Sindh,2014,Kharif,8.1,91.9,100.0,6.5
+Nawabshah (Shaheed Benazirabad),Sindh,2014,Rabi,8.1,91.9,94.5,12.0
+Nawabshah (Shaheed Benazirabad),Sindh,2015,Kharif,8.1,91.9,88.6,6.6
+Nawabshah (Shaheed Benazirabad),Sindh,2015,Rabi,8.1,91.9,90.9,7.1
+Nawabshah (Shaheed Benazirabad),Sindh,2016,Kharif,8.1,91.9,84.9,3.6
+Nawabshah (Shaheed Benazirabad),Sindh,2016,Rabi,8.1,91.9,94.4,7.5
+Nawabshah (Shaheed Benazirabad),Sindh,2017,Kharif,8.1,91.9,88.3,9.5
+Nawabshah (Shaheed Benazirabad),Sindh,2017,Rabi,8.1,91.9,92.4,4.4
+Nawabshah (Shaheed Benazirabad),Sindh,2018,Kharif,8.1,91.9,89.4,6.9
+Nawabshah (Shaheed Benazirabad),Sindh,2018,Rabi,8.1,91.9,92.6,2.5
+Nawabshah (Shaheed Benazirabad),Sindh,2019,Kharif,8.1,91.9,99.3,3.4
+Nawabshah (Shaheed Benazirabad),Sindh,2019,Rabi,8.1,91.9,94.0,8.9
+Nawabshah (Shaheed Benazirabad),Sindh,2020,Kharif,8.1,91.9,82.7,9.0
+Nawabshah (Shaheed Benazirabad),Sindh,2020,Rabi,8.1,91.9,92.6,3.7
+Nawabshah (Shaheed Benazirabad),Sindh,2021,Kharif,8.1,91.9,96.9,1.3
+Nawabshah (Shaheed Benazirabad),Sindh,2021,Rabi,8.1,91.9,94.5,4.4
+Nawabshah (Shaheed Benazirabad),Sindh,2022,Kharif,8.1,91.9,100.0,6.7
+Nawabshah (Shaheed Benazirabad),Sindh,2022,Rabi,8.1,91.9,95.4,2.3
+Nawabshah (Shaheed Benazirabad),Sindh,2023,Kharif,8.1,91.9,99.3,2.7
+Nawabshah (Shaheed Benazirabad),Sindh,2023,Rabi,8.1,91.9,87.8,0.0
+Dera Ismail Khan,KPK,2000,Kharif,40.6,59.4,61.5,15.4
+Dera Ismail Khan,KPK,2000,Rabi,40.6,59.4,69.5,13.0
+Dera Ismail Khan,KPK,2001,Kharif,40.6,59.4,61.9,18.0
+Dera Ismail Khan,KPK,2001,Rabi,40.6,59.4,68.9,14.3
+Dera Ismail Khan,KPK,2002,Kharif,40.6,59.4,56.4,21.5
+Dera Ismail Khan,KPK,2002,Rabi,40.6,59.4,64.0,14.7
+Dera Ismail Khan,KPK,2003,Kharif,40.6,59.4,59.5,16.0
+Dera Ismail Khan,KPK,2003,Rabi,40.6,59.4,59.4,20.2
+Dera Ismail Khan,KPK,2004,Kharif,40.6,59.4,59.0,17.2
+Dera Ismail Khan,KPK,2004,Rabi,40.6,59.4,56.3,17.8
+Dera Ismail Khan,KPK,2005,Kharif,40.6,59.4,63.2,12.9
+Dera Ismail Khan,KPK,2005,Rabi,40.6,59.4,64.3,18.4
+Dera Ismail Khan,KPK,2006,Kharif,40.6,59.4,61.9,17.5
+Dera Ismail Khan,KPK,2006,Rabi,40.6,59.4,58.8,19.9
+Dera Ismail Khan,KPK,2007,Kharif,40.6,59.4,54.9,14.2
+Dera Ismail Khan,KPK,2007,Rabi,40.6,59.4,56.5,17.1
+Dera Ismail Khan,KPK,2008,Kharif,40.6,59.4,58.7,15.5
+Dera Ismail Khan,KPK,2008,Rabi,40.6,59.4,59.6,17.3
+Dera Ismail Khan,KPK,2009,Kharif,40.6,59.4,67.7,21.0
+Dera Ismail Khan,KPK,2009,Rabi,40.6,59.4,56.3,18.6
+Dera Ismail Khan,KPK,2010,Kharif,40.6,59.4,55.0,19.3
+Dera Ismail Khan,KPK,2010,Rabi,40.6,59.4,58.3,15.1
+Dera Ismail Khan,KPK,2011,Kharif,40.6,59.4,67.6,14.1
+Dera Ismail Khan,KPK,2011,Rabi,40.6,59.4,58.1,16.2
+Dera Ismail Khan,KPK,2012,Kharif,40.6,59.4,61.8,17.6
+Dera Ismail Khan,KPK,2012,Rabi,40.6,59.4,59.8,16.7
+Dera Ismail Khan,KPK,2013,Kharif,40.6,59.4,63.7,15.4
+Dera Ismail Khan,KPK,2013,Rabi,40.6,59.4,58.2,19.2
+Dera Ismail Khan,KPK,2014,Kharif,40.6,59.4,62.7,18.5
+Dera Ismail Khan,KPK,2014,Rabi,40.6,59.4,52.9,19.3
+Dera Ismail Khan,KPK,2015,Kharif,40.6,59.4,55.6,16.8
+Dera Ismail Khan,KPK,2015,Rabi,40.6,59.4,61.9,18.5
+Dera Ismail Khan,KPK,2016,Kharif,40.6,59.4,62.8,18.5
+Dera Ismail Khan,KPK,2016,Rabi,40.6,59.4,57.1,13.1
+Dera Ismail Khan,KPK,2017,Kharif,40.6,59.4,52.0,14.0
+Dera Ismail Khan,KPK,2017,Rabi,40.6,59.4,53.5,13.7
+Dera Ismail Khan,KPK,2018,Kharif,40.6,59.4,56.1,12.2
+Dera Ismail Khan,KPK,2018,Rabi,40.6,59.4,50.4,16.8
+Dera Ismail Khan,KPK,2019,Kharif,40.6,59.4,65.8,15.0
+Dera Ismail Khan,KPK,2019,Rabi,40.6,59.4,63.5,13.9
+Dera Ismail Khan,KPK,2020,Kharif,40.6,59.4,63.6,17.3
+Dera Ismail Khan,KPK,2020,Rabi,40.6,59.4,59.9,12.7
+Dera Ismail Khan,KPK,2021,Kharif,40.6,59.4,61.0,19.1
+Dera Ismail Khan,KPK,2021,Rabi,40.6,59.4,55.5,13.1
+Dera Ismail Khan,KPK,2022,Kharif,40.6,59.4,57.5,18.5
+Dera Ismail Khan,KPK,2022,Rabi,40.6,59.4,52.4,19.8
+Dera Ismail Khan,KPK,2023,Kharif,40.6,59.4,58.8,18.3
+Dera Ismail Khan,KPK,2023,Rabi,40.6,59.4,56.1,16.9
+Bannu,KPK,2000,Kharif,57.7,42.3,50.7,24.2
+Bannu,KPK,2000,Rabi,57.7,42.3,43.9,20.3
+Bannu,KPK,2001,Kharif,57.7,42.3,43.9,22.0
+Bannu,KPK,2001,Rabi,57.7,42.3,40.9,19.3
+Bannu,KPK,2002,Kharif,57.7,42.3,35.4,27.9
+Bannu,KPK,2002,Rabi,57.7,42.3,35.6,20.2
+Bannu,KPK,2003,Kharif,57.7,42.3,38.2,24.1
+Bannu,KPK,2003,Rabi,57.7,42.3,48.2,21.7
+Bannu,KPK,2004,Kharif,57.7,42.3,42.9,30.6
+Bannu,KPK,2004,Rabi,57.7,42.3,43.1,26.5
+Bannu,KPK,2005,Kharif,57.7,42.3,45.3,25.2
+Bannu,KPK,2005,Rabi,57.7,42.3,42.6,22.0
+Bannu,KPK,2006,Kharif,57.7,42.3,39.7,19.2
+Bannu,KPK,2006,Rabi,57.7,42.3,42.7,23.0
+Bannu,KPK,2007,Kharif,57.7,42.3,42.4,18.5
+Bannu,KPK,2007,Rabi,57.7,42.3,40.2,26.8
+Bannu,KPK,2008,Kharif,57.7,42.3,38.3,21.8
+Bannu,KPK,2008,Rabi,57.7,42.3,38.1,18.5
+Bannu,KPK,2009,Kharif,57.7,42.3,39.1,23.8
+Bannu,KPK,2009,Rabi,57.7,42.3,48.4,16.9
+Bannu,KPK,2010,Kharif,57.7,42.3,43.0,24.6
+Bannu,KPK,2010,Rabi,57.7,42.3,43.0,27.7
+Bannu,KPK,2011,Kharif,57.7,42.3,50.9,23.0
+Bannu,KPK,2011,Rabi,57.7,42.3,44.0,20.0
+Bannu,KPK,2012,Kharif,57.7,42.3,43.1,24.6
+Bannu,KPK,2012,Rabi,57.7,42.3,37.3,22.7
+Bannu,KPK,2013,Kharif,57.7,42.3,45.4,28.2
+Bannu,KPK,2013,Rabi,57.7,42.3,53.1,25.6
+Bannu,KPK,2014,Kharif,57.7,42.3,48.5,24.4
+Bannu,KPK,2014,Rabi,57.7,42.3,37.6,24.4
+Bannu,KPK,2015,Kharif,57.7,42.3,44.8,22.9
+Bannu,KPK,2015,Rabi,57.7,42.3,40.1,21.9
+Bannu,KPK,2016,Kharif,57.7,42.3,45.9,23.6
+Bannu,KPK,2016,Rabi,57.7,42.3,50.0,18.9
+Bannu,KPK,2017,Kharif,57.7,42.3,49.2,23.3
+Bannu,KPK,2017,Rabi,57.7,42.3,42.3,24.5
+Bannu,KPK,2018,Kharif,57.7,42.3,45.5,22.9
+Bannu,KPK,2018,Rabi,57.7,42.3,41.0,23.9
+Bannu,KPK,2019,Kharif,57.7,42.3,37.7,29.9
+Bannu,KPK,2019,Rabi,57.7,42.3,35.1,24.5
+Bannu,KPK,2020,Kharif,57.7,42.3,42.6,25.7
+Bannu,KPK,2020,Rabi,57.7,42.3,48.1,24.6
+Bannu,KPK,2021,Kharif,57.7,42.3,42.4,23.1
+Bannu,KPK,2021,Rabi,57.7,42.3,37.7,26.5
+Bannu,KPK,2022,Kharif,57.7,42.3,28.9,21.6
+Bannu,KPK,2022,Rabi,57.7,42.3,36.2,24.9
+Bannu,KPK,2023,Kharif,57.7,42.3,37.0,22.3
+Bannu,KPK,2023,Rabi,57.7,42.3,49.6,22.8
+Kohat,KPK,2000,Kharif,46.0,54.0,53.6,18.8
+Kohat,KPK,2000,Rabi,46.0,54.0,52.7,22.2
+Kohat,KPK,2001,Kharif,46.0,54.0,52.2,19.6
+Kohat,KPK,2001,Rabi,46.0,54.0,40.5,17.2
+Kohat,KPK,2002,Kharif,46.0,54.0,59.4,16.7
+Kohat,KPK,2002,Rabi,46.0,54.0,53.5,18.6
+Kohat,KPK,2003,Kharif,46.0,54.0,58.6,9.0
+Kohat,KPK,2003,Rabi,46.0,54.0,47.5,15.0
+Kohat,KPK,2004,Kharif,46.0,54.0,58.5,23.6
+Kohat,KPK,2004,Rabi,46.0,54.0,54.2,17.3
+Kohat,KPK,2005,Kharif,46.0,54.0,49.5,17.3
+Kohat,KPK,2005,Rabi,46.0,54.0,46.9,19.4
+Kohat,KPK,2006,Kharif,46.0,54.0,64.1,13.9
+Kohat,KPK,2006,Rabi,46.0,54.0,51.8,15.0
+Kohat,KPK,2007,Kharif,46.0,54.0,50.8,16.3
+Kohat,KPK,2007,Rabi,46.0,54.0,54.5,17.8
+Kohat,KPK,2008,Kharif,46.0,54.0,49.0,19.3
+Kohat,KPK,2008,Rabi,46.0,54.0,57.9,16.8
+Kohat,KPK,2009,Kharif,46.0,54.0,59.0,18.0
+Kohat,KPK,2009,Rabi,46.0,54.0,56.8,16.2
+Kohat,KPK,2010,Kharif,46.0,54.0,49.2,21.0
+Kohat,KPK,2010,Rabi,46.0,54.0,49.2,17.4
+Kohat,KPK,2011,Kharif,46.0,54.0,50.2,17.0
+Kohat,KPK,2011,Rabi,46.0,54.0,52.7,21.9
+Kohat,KPK,2012,Kharif,46.0,54.0,47.3,19.2
+Kohat,KPK,2012,Rabi,46.0,54.0,60.4,20.4
+Kohat,KPK,2013,Kharif,46.0,54.0,48.5,19.7
+Kohat,KPK,2013,Rabi,46.0,54.0,61.3,16.4
+Kohat,KPK,2014,Kharif,46.0,54.0,48.4,18.7
+Kohat,KPK,2014,Rabi,46.0,54.0,54.4,16.1
+Kohat,KPK,2015,Kharif,46.0,54.0,53.1,18.3
+Kohat,KPK,2015,Rabi,46.0,54.0,60.7,23.3
+Kohat,KPK,2016,Kharif,46.0,54.0,56.4,13.2
+Kohat,KPK,2016,Rabi,46.0,54.0,52.9,21.0
+Kohat,KPK,2017,Kharif,46.0,54.0,55.7,17.6
+Kohat,KPK,2017,Rabi,46.0,54.0,56.5,15.8
+Kohat,KPK,2018,Kharif,46.0,54.0,61.3,23.0
+Kohat,KPK,2018,Rabi,46.0,54.0,48.7,18.4
+Kohat,KPK,2019,Kharif,46.0,54.0,54.3,18.2
+Kohat,KPK,2019,Rabi,46.0,54.0,53.0,19.6
+Kohat,KPK,2020,Kharif,46.0,54.0,51.1,16.6
+Kohat,KPK,2020,Rabi,46.0,54.0,57.5,14.0
+Kohat,KPK,2021,Kharif,46.0,54.0,56.3,14.2
+Kohat,KPK,2021,Rabi,46.0,54.0,61.0,20.2
+Kohat,KPK,2022,Kharif,46.0,54.0,56.0,20.1
+Kohat,KPK,2022,Rabi,46.0,54.0,57.1,16.9
+Kohat,KPK,2023,Kharif,46.0,54.0,50.3,17.8
+Kohat,KPK,2023,Rabi,46.0,54.0,49.1,19.4
+Peshawar,KPK,2000,Kharif,5.4,94.6,87.2,2.7
+Peshawar,KPK,2000,Rabi,5.4,94.6,88.0,1.5
+Peshawar,KPK,2001,Kharif,5.4,94.6,87.3,5.1
+Peshawar,KPK,2001,Rabi,5.4,94.6,90.5,0.0
+Peshawar,KPK,2002,Kharif,5.4,94.6,89.3,0.0
+Peshawar,KPK,2002,Rabi,5.4,94.6,95.1,2.3
+Peshawar,KPK,2003,Kharif,5.4,94.6,92.5,0.0
+Peshawar,KPK,2003,Rabi,5.4,94.6,84.8,1.9
+Peshawar,KPK,2004,Kharif,5.4,94.6,95.7,0.0
+Peshawar,KPK,2004,Rabi,5.4,94.6,90.9,0.3
+Peshawar,KPK,2005,Kharif,5.4,94.6,98.8,0.0
+Peshawar,KPK,2005,Rabi,5.4,94.6,95.6,1.9
+Peshawar,KPK,2006,Kharif,5.4,94.6,92.9,3.0
+Peshawar,KPK,2006,Rabi,5.4,94.6,92.5,2.2
+Peshawar,KPK,2007,Kharif,5.4,94.6,98.4,3.9
+Peshawar,KPK,2007,Rabi,5.4,94.6,100.0,3.4
+Peshawar,KPK,2008,Kharif,5.4,94.6,93.0,2.7
+Peshawar,KPK,2008,Rabi,5.4,94.6,92.1,0.0
+Peshawar,KPK,2009,Kharif,5.4,94.6,94.0,0.0
+Peshawar,KPK,2009,Rabi,5.4,94.6,99.2,0.0
+Peshawar,KPK,2010,Kharif,5.4,94.6,98.0,4.3
+Peshawar,KPK,2010,Rabi,5.4,94.6,100.0,1.4
+Peshawar,KPK,2011,Kharif,5.4,94.6,100.0,0.0
+Peshawar,KPK,2011,Rabi,5.4,94.6,91.3,0.0
+Peshawar,KPK,2012,Kharif,5.4,94.6,92.1,0.0
+Peshawar,KPK,2012,Rabi,5.4,94.6,100.0,2.1
+Peshawar,KPK,2013,Kharif,5.4,94.6,99.1,2.7
+Peshawar,KPK,2013,Rabi,5.4,94.6,93.6,5.2
+Peshawar,KPK,2014,Kharif,5.4,94.6,90.0,6.6
+Peshawar,KPK,2014,Rabi,5.4,94.6,88.2,7.2
+Peshawar,KPK,2015,Kharif,5.4,94.6,95.6,0.7
+Peshawar,KPK,2015,Rabi,5.4,94.6,93.7,0.0
+Peshawar,KPK,2016,Kharif,5.4,94.6,100.0,4.1
+Peshawar,KPK,2016,Rabi,5.4,94.6,97.0,4.0
+Peshawar,KPK,2017,Kharif,5.4,94.6,91.1,7.8
+Peshawar,KPK,2017,Rabi,5.4,94.6,92.3,0.8
+Peshawar,KPK,2018,Kharif,5.4,94.6,99.7,0.0
+Peshawar,KPK,2018,Rabi,5.4,94.6,100.0,4.5
+Peshawar,KPK,2019,Kharif,5.4,94.6,88.9,0.2
+Peshawar,KPK,2019,Rabi,5.4,94.6,88.3,0.0
+Peshawar,KPK,2020,Kharif,5.4,94.6,100.0,4.1
+Peshawar,KPK,2020,Rabi,5.4,94.6,92.5,6.3
+Peshawar,KPK,2021,Kharif,5.4,94.6,97.1,2.3
+Peshawar,KPK,2021,Rabi,5.4,94.6,89.6,2.7
+Peshawar,KPK,2022,Kharif,5.4,94.6,86.1,3.1
+Peshawar,KPK,2022,Rabi,5.4,94.6,90.8,3.9
+Peshawar,KPK,2023,Kharif,5.4,94.6,96.9,6.3
+Peshawar,KPK,2023,Rabi,5.4,94.6,94.9,0.0
+Mardan,KPK,2000,Kharif,10.6,89.4,86.7,4.0
+Mardan,KPK,2000,Rabi,10.6,89.4,84.3,2.3
+Mardan,KPK,2001,Kharif,10.6,89.4,85.3,1.3
+Mardan,KPK,2001,Rabi,10.6,89.4,95.8,7.7
+Mardan,KPK,2002,Kharif,10.6,89.4,90.5,6.0
+Mardan,KPK,2002,Rabi,10.6,89.4,86.0,5.2
+Mardan,KPK,2003,Kharif,10.6,89.4,89.9,1.4
+Mardan,KPK,2003,Rabi,10.6,89.4,88.0,1.4
+Mardan,KPK,2004,Kharif,10.6,89.4,85.5,1.8
+Mardan,KPK,2004,Rabi,10.6,89.4,87.3,0.0
+Mardan,KPK,2005,Kharif,10.6,89.4,86.3,6.0
+Mardan,KPK,2005,Rabi,10.6,89.4,94.2,0.0
+Mardan,KPK,2006,Kharif,10.6,89.4,91.4,5.0
+Mardan,KPK,2006,Rabi,10.6,89.4,84.9,0.0
+Mardan,KPK,2007,Kharif,10.6,89.4,87.7,3.2
+Mardan,KPK,2007,Rabi,10.6,89.4,84.6,6.0
+Mardan,KPK,2008,Kharif,10.6,89.4,87.0,0.0
+Mardan,KPK,2008,Rabi,10.6,89.4,86.9,2.4
+Mardan,KPK,2009,Kharif,10.6,89.4,89.5,4.7
+Mardan,KPK,2009,Rabi,10.6,89.4,92.4,4.3
+Mardan,KPK,2010,Kharif,10.6,89.4,94.6,1.9
+Mardan,KPK,2010,Rabi,10.6,89.4,89.9,4.7
+Mardan,KPK,2011,Kharif,10.6,89.4,89.0,0.0
+Mardan,KPK,2011,Rabi,10.6,89.4,95.5,3.6
+Mardan,KPK,2012,Kharif,10.6,89.4,89.9,6.2
+Mardan,KPK,2012,Rabi,10.6,89.4,86.8,7.9
+Mardan,KPK,2013,Kharif,10.6,89.4,90.0,6.1
+Mardan,KPK,2013,Rabi,10.6,89.4,92.0,4.7
+Mardan,KPK,2014,Kharif,10.6,89.4,91.1,12.1
+Mardan,KPK,2014,Rabi,10.6,89.4,89.1,3.9
+Mardan,KPK,2015,Kharif,10.6,89.4,93.1,3.8
+Mardan,KPK,2015,Rabi,10.6,89.4,95.4,7.7
+Mardan,KPK,2016,Kharif,10.6,89.4,87.9,2.9
+Mardan,KPK,2016,Rabi,10.6,89.4,89.9,11.1
+Mardan,KPK,2017,Kharif,10.6,89.4,98.9,5.8
+Mardan,KPK,2017,Rabi,10.6,89.4,90.7,3.5
+Mardan,KPK,2018,Kharif,10.6,89.4,85.0,5.3
+Mardan,KPK,2018,Rabi,10.6,89.4,89.5,4.1
+Mardan,KPK,2019,Kharif,10.6,89.4,84.2,5.7
+Mardan,KPK,2019,Rabi,10.6,89.4,85.6,5.9
+Mardan,KPK,2020,Kharif,10.6,89.4,91.1,4.0
+Mardan,KPK,2020,Rabi,10.6,89.4,84.9,4.5
+Mardan,KPK,2021,Kharif,10.6,89.4,94.9,3.0
+Mardan,KPK,2021,Rabi,10.6,89.4,88.4,0.0
+Mardan,KPK,2022,Kharif,10.6,89.4,89.0,8.1
+Mardan,KPK,2022,Rabi,10.6,89.4,71.8,9.0
+Mardan,KPK,2023,Kharif,10.6,89.4,87.5,1.4
+Mardan,KPK,2023,Rabi,10.6,89.4,90.9,3.0
+Swabi,KPK,2000,Kharif,6.0,94.0,92.5,0.0
+Swabi,KPK,2000,Rabi,6.0,94.0,97.2,3.2
+Swabi,KPK,2001,Kharif,6.0,94.0,96.2,5.2
+Swabi,KPK,2001,Rabi,6.0,94.0,97.6,3.3
+Swabi,KPK,2002,Kharif,6.0,94.0,88.5,3.9
+Swabi,KPK,2002,Rabi,6.0,94.0,90.8,0.0
+Swabi,KPK,2003,Kharif,6.0,94.0,85.2,1.0
+Swabi,KPK,2003,Rabi,6.0,94.0,91.1,1.7
+Swabi,KPK,2004,Kharif,6.0,94.0,78.8,0.0
+Swabi,KPK,2004,Rabi,6.0,94.0,93.7,0.4
+Swabi,KPK,2005,Kharif,6.0,94.0,91.9,2.2
+Swabi,KPK,2005,Rabi,6.0,94.0,94.0,0.2
+Swabi,KPK,2006,Kharif,6.0,94.0,91.7,2.3
+Swabi,KPK,2006,Rabi,6.0,94.0,90.7,1.9
+Swabi,KPK,2007,Kharif,6.0,94.0,91.3,6.8
+Swabi,KPK,2007,Rabi,6.0,94.0,95.0,2.7
+Swabi,KPK,2008,Kharif,6.0,94.0,86.2,1.2
+Swabi,KPK,2008,Rabi,6.0,94.0,84.5,0.4
+Swabi,KPK,2009,Kharif,6.0,94.0,100.0,3.5
+Swabi,KPK,2009,Rabi,6.0,94.0,95.8,0.0
+Swabi,KPK,2010,Kharif,6.0,94.0,87.8,5.3
+Swabi,KPK,2010,Rabi,6.0,94.0,94.3,0.7
+Swabi,KPK,2011,Kharif,6.0,94.0,91.2,0.2
+Swabi,KPK,2011,Rabi,6.0,94.0,100.0,0.0
+Swabi,KPK,2012,Kharif,6.0,94.0,100.0,2.8
+Swabi,KPK,2012,Rabi,6.0,94.0,95.4,0.5
+Swabi,KPK,2013,Kharif,6.0,94.0,98.4,4.5
+Swabi,KPK,2013,Rabi,6.0,94.0,95.1,2.3
+Swabi,KPK,2014,Kharif,6.0,94.0,91.1,0.0
+Swabi,KPK,2014,Rabi,6.0,94.0,87.2,4.2
+Swabi,KPK,2015,Kharif,6.0,94.0,97.1,1.6
+Swabi,KPK,2015,Rabi,6.0,94.0,99.2,0.0
+Swabi,KPK,2016,Kharif,6.0,94.0,89.3,2.5
+Swabi,KPK,2016,Rabi,6.0,94.0,90.0,1.8
+Swabi,KPK,2017,Kharif,6.0,94.0,93.6,2.7
+Swabi,KPK,2017,Rabi,6.0,94.0,94.5,0.2
+Swabi,KPK,2018,Kharif,6.0,94.0,90.9,8.6
+Swabi,KPK,2018,Rabi,6.0,94.0,91.6,8.8
+Swabi,KPK,2019,Kharif,6.0,94.0,93.5,4.0
+Swabi,KPK,2019,Rabi,6.0,94.0,95.9,0.7
+Swabi,KPK,2020,Kharif,6.0,94.0,95.6,3.3
+Swabi,KPK,2020,Rabi,6.0,94.0,94.7,1.7
+Swabi,KPK,2021,Kharif,6.0,94.0,86.4,0.0
+Swabi,KPK,2021,Rabi,6.0,94.0,84.4,5.4
+Swabi,KPK,2022,Kharif,6.0,94.0,94.2,3.9
+Swabi,KPK,2022,Rabi,6.0,94.0,94.4,3.4
+Swabi,KPK,2023,Kharif,6.0,94.0,92.7,3.1
+Swabi,KPK,2023,Rabi,6.0,94.0,87.5,3.6
+Kharan,Balochistan,2000,Kharif,71.8,28.2,31.0,24.6
+Kharan,Balochistan,2000,Rabi,71.8,28.2,30.3,33.7
+Kharan,Balochistan,2001,Kharif,71.8,28.2,27.3,32.8
+Kharan,Balochistan,2001,Rabi,71.8,28.2,26.6,27.0
+Kharan,Balochistan,2002,Kharif,71.8,28.2,40.5,26.6
+Kharan,Balochistan,2002,Rabi,71.8,28.2,26.3,27.9
+Kharan,Balochistan,2003,Kharif,71.8,28.2,24.6,30.4
+Kharan,Balochistan,2003,Rabi,71.8,28.2,29.3,24.8
+Kharan,Balochistan,2004,Kharif,71.8,28.2,22.5,32.1
+Kharan,Balochistan,2004,Rabi,71.8,28.2,33.6,31.3
+Kharan,Balochistan,2005,Kharif,71.8,28.2,31.0,26.4
+Kharan,Balochistan,2005,Rabi,71.8,28.2,30.8,28.4
+Kharan,Balochistan,2006,Kharif,71.8,28.2,29.9,26.4
+Kharan,Balochistan,2006,Rabi,71.8,28.2,33.1,31.9
+Kharan,Balochistan,2007,Kharif,71.8,28.2,28.3,32.7
+Kharan,Balochistan,2007,Rabi,71.8,28.2,29.3,28.5
+Kharan,Balochistan,2008,Kharif,71.8,28.2,32.6,28.9
+Kharan,Balochistan,2008,Rabi,71.8,28.2,37.0,23.8
+Kharan,Balochistan,2009,Kharif,71.8,28.2,20.9,31.7
+Kharan,Balochistan,2009,Rabi,71.8,28.2,29.4,29.4
+Kharan,Balochistan,2010,Kharif,71.8,28.2,26.3,30.2
+Kharan,Balochistan,2010,Rabi,71.8,28.2,29.4,30.2
+Kharan,Balochistan,2011,Kharif,71.8,28.2,30.8,27.8
+Kharan,Balochistan,2011,Rabi,71.8,28.2,30.4,32.7
+Kharan,Balochistan,2012,Kharif,71.8,28.2,38.6,26.4
+Kharan,Balochistan,2012,Rabi,71.8,28.2,32.2,31.4
+Kharan,Balochistan,2013,Kharif,71.8,28.2,31.3,34.5
+Kharan,Balochistan,2013,Rabi,71.8,28.2,29.6,29.4
+Kharan,Balochistan,2014,Kharif,71.8,28.2,32.3,26.1
+Kharan,Balochistan,2014,Rabi,71.8,28.2,33.4,25.6
+Kharan,Balochistan,2015,Kharif,71.8,28.2,20.5,29.4
+Kharan,Balochistan,2015,Rabi,71.8,28.2,27.7,25.7
+Kharan,Balochistan,2016,Kharif,71.8,28.2,16.7,29.6
+Kharan,Balochistan,2016,Rabi,71.8,28.2,24.5,38.0
+Kharan,Balochistan,2017,Kharif,71.8,28.2,27.3,27.5
+Kharan,Balochistan,2017,Rabi,71.8,28.2,23.3,28.3
+Kharan,Balochistan,2018,Kharif,71.8,28.2,30.4,25.6
+Kharan,Balochistan,2018,Rabi,71.8,28.2,31.5,30.1
+Kharan,Balochistan,2019,Kharif,71.8,28.2,28.5,23.6
+Kharan,Balochistan,2019,Rabi,71.8,28.2,31.8,30.6
+Kharan,Balochistan,2020,Kharif,71.8,28.2,25.8,28.7
+Kharan,Balochistan,2020,Rabi,71.8,28.2,31.8,28.9
+Kharan,Balochistan,2021,Kharif,71.8,28.2,27.1,34.1
+Kharan,Balochistan,2021,Rabi,71.8,28.2,29.1,31.1
+Kharan,Balochistan,2022,Kharif,71.8,28.2,13.2,28.1
+Kharan,Balochistan,2022,Rabi,71.8,28.2,29.0,28.4
+Kharan,Balochistan,2023,Kharif,71.8,28.2,24.5,30.3
+Kharan,Balochistan,2023,Rabi,71.8,28.2,27.7,30.4
+Chagai,Balochistan,2000,Kharif,74.0,26.0,25.6,29.3
+Chagai,Balochistan,2000,Rabi,74.0,26.0,26.4,33.4
+Chagai,Balochistan,2001,Kharif,74.0,26.0,26.2,28.5
+Chagai,Balochistan,2001,Rabi,74.0,26.0,22.7,30.1
+Chagai,Balochistan,2002,Kharif,74.0,26.0,24.9,35.8
+Chagai,Balochistan,2002,Rabi,74.0,26.0,16.7,27.4
+Chagai,Balochistan,2003,Kharif,74.0,26.0,31.0,26.4
+Chagai,Balochistan,2003,Rabi,74.0,26.0,16.0,31.2
+Chagai,Balochistan,2004,Kharif,74.0,26.0,25.0,28.5
+Chagai,Balochistan,2004,Rabi,74.0,26.0,21.4,30.0
+Chagai,Balochistan,2005,Kharif,74.0,26.0,29.0,33.6
+Chagai,Balochistan,2005,Rabi,74.0,26.0,30.7,28.9
+Chagai,Balochistan,2006,Kharif,74.0,26.0,31.8,32.7
+Chagai,Balochistan,2006,Rabi,74.0,26.0,31.3,29.8
+Chagai,Balochistan,2007,Kharif,74.0,26.0,27.0,28.0
+Chagai,Balochistan,2007,Rabi,74.0,26.0,35.4,29.9
+Chagai,Balochistan,2008,Kharif,74.0,26.0,20.6,31.9
+Chagai,Balochistan,2008,Rabi,74.0,26.0,28.2,28.1
+Chagai,Balochistan,2009,Kharif,74.0,26.0,22.9,29.0
+Chagai,Balochistan,2009,Rabi,74.0,26.0,22.6,24.0
+Chagai,Balochistan,2010,Kharif,74.0,26.0,23.7,27.0
+Chagai,Balochistan,2010,Rabi,74.0,26.0,30.5,32.6
+Chagai,Balochistan,2011,Kharif,74.0,26.0,22.0,32.0
+Chagai,Balochistan,2011,Rabi,74.0,26.0,21.3,29.2
+Chagai,Balochistan,2012,Kharif,74.0,26.0,21.8,30.7
+Chagai,Balochistan,2012,Rabi,74.0,26.0,29.5,25.1
+Chagai,Balochistan,2013,Kharif,74.0,26.0,23.3,30.4
+Chagai,Balochistan,2013,Rabi,74.0,26.0,23.9,32.7
+Chagai,Balochistan,2014,Kharif,74.0,26.0,18.3,29.2
+Chagai,Balochistan,2014,Rabi,74.0,26.0,28.5,26.9
+Chagai,Balochistan,2015,Kharif,74.0,26.0,25.4,29.3
+Chagai,Balochistan,2015,Rabi,74.0,26.0,21.3,29.9
+Chagai,Balochistan,2016,Kharif,74.0,26.0,21.3,27.3
+Chagai,Balochistan,2016,Rabi,74.0,26.0,12.7,31.5
+Chagai,Balochistan,2017,Kharif,74.0,26.0,24.2,24.6
+Chagai,Balochistan,2017,Rabi,74.0,26.0,19.8,27.4
+Chagai,Balochistan,2018,Kharif,74.0,26.0,29.2,29.8
+Chagai,Balochistan,2018,Rabi,74.0,26.0,28.6,24.8
+Chagai,Balochistan,2019,Kharif,74.0,26.0,22.5,31.8
+Chagai,Balochistan,2019,Rabi,74.0,26.0,15.9,28.4
+Chagai,Balochistan,2020,Kharif,74.0,26.0,24.6,27.8
+Chagai,Balochistan,2020,Rabi,74.0,26.0,22.0,27.3
+Chagai,Balochistan,2021,Kharif,74.0,26.0,22.2,26.0
+Chagai,Balochistan,2021,Rabi,74.0,26.0,28.4,27.0
+Chagai,Balochistan,2022,Kharif,74.0,26.0,24.9,34.2
+Chagai,Balochistan,2022,Rabi,74.0,26.0,36.1,39.7
+Chagai,Balochistan,2023,Kharif,74.0,26.0,24.0,30.5
+Chagai,Balochistan,2023,Rabi,74.0,26.0,28.1,28.4
+Loralai,Balochistan,2000,Kharif,71.2,28.8,35.3,25.0
+Loralai,Balochistan,2000,Rabi,71.2,28.8,35.9,28.7
+Loralai,Balochistan,2001,Kharif,71.2,28.8,23.0,31.4
+Loralai,Balochistan,2001,Rabi,71.2,28.8,28.2,26.7
+Loralai,Balochistan,2002,Kharif,71.2,28.8,31.2,31.4
+Loralai,Balochistan,2002,Rabi,71.2,28.8,28.7,29.6
+Loralai,Balochistan,2003,Kharif,71.2,28.8,32.2,29.7
+Loralai,Balochistan,2003,Rabi,71.2,28.8,32.8,27.9
+Loralai,Balochistan,2004,Kharif,71.2,28.8,33.4,27.4
+Loralai,Balochistan,2004,Rabi,71.2,28.8,38.1,26.0
+Loralai,Balochistan,2005,Kharif,71.2,28.8,34.0,29.4
+Loralai,Balochistan,2005,Rabi,71.2,28.8,30.1,29.5
+Loralai,Balochistan,2006,Kharif,71.2,28.8,39.7,25.3
+Loralai,Balochistan,2006,Rabi,71.2,28.8,28.6,29.8
+Loralai,Balochistan,2007,Kharif,71.2,28.8,25.6,29.6
+Loralai,Balochistan,2007,Rabi,71.2,28.8,32.8,29.9
+Loralai,Balochistan,2008,Kharif,71.2,28.8,31.7,25.8
+Loralai,Balochistan,2008,Rabi,71.2,28.8,26.2,28.5
+Loralai,Balochistan,2009,Kharif,71.2,28.8,26.7,31.2
+Loralai,Balochistan,2009,Rabi,71.2,28.8,31.0,32.2
+Loralai,Balochistan,2010,Kharif,71.2,28.8,29.4,30.2
+Loralai,Balochistan,2010,Rabi,71.2,28.8,30.8,28.7
+Loralai,Balochistan,2011,Kharif,71.2,28.8,30.2,25.6
+Loralai,Balochistan,2011,Rabi,71.2,28.8,22.8,30.4
+Loralai,Balochistan,2012,Kharif,71.2,28.8,34.5,25.8
+Loralai,Balochistan,2012,Rabi,71.2,28.8,23.9,27.8
+Loralai,Balochistan,2013,Kharif,71.2,28.8,25.2,31.2
+Loralai,Balochistan,2013,Rabi,71.2,28.8,30.0,28.6
+Loralai,Balochistan,2014,Kharif,71.2,28.8,29.0,29.2
+Loralai,Balochistan,2014,Rabi,71.2,28.8,26.3,28.4
+Loralai,Balochistan,2015,Kharif,71.2,28.8,33.4,23.4
+Loralai,Balochistan,2015,Rabi,71.2,28.8,23.7,28.1
+Loralai,Balochistan,2016,Kharif,71.2,28.8,25.9,34.1
+Loralai,Balochistan,2016,Rabi,71.2,28.8,38.0,26.5
+Loralai,Balochistan,2017,Kharif,71.2,28.8,29.6,26.2
+Loralai,Balochistan,2017,Rabi,71.2,28.8,29.7,29.0
+Loralai,Balochistan,2018,Kharif,71.2,28.8,37.4,31.4
+Loralai,Balochistan,2018,Rabi,71.2,28.8,32.7,28.0
+Loralai,Balochistan,2019,Kharif,71.2,28.8,30.8,29.1
+Loralai,Balochistan,2019,Rabi,71.2,28.8,36.3,27.0
+Loralai,Balochistan,2020,Kharif,71.2,28.8,28.0,30.5
+Loralai,Balochistan,2020,Rabi,71.2,28.8,32.3,28.1
+Loralai,Balochistan,2021,Kharif,71.2,28.8,21.6,28.6
+Loralai,Balochistan,2021,Rabi,71.2,28.8,40.2,21.1
+Loralai,Balochistan,2022,Kharif,71.2,28.8,34.6,33.2
+Loralai,Balochistan,2022,Rabi,71.2,28.8,34.4,31.0
+Loralai,Balochistan,2023,Kharif,71.2,28.8,37.7,29.5
+Loralai,Balochistan,2023,Rabi,71.2,28.8,27.8,30.8
+Khuzdar,Balochistan,2000,Kharif,58.1,41.9,44.6,31.5
+Khuzdar,Balochistan,2000,Rabi,58.1,41.9,39.4,22.3
+Khuzdar,Balochistan,2001,Kharif,58.1,41.9,38.1,21.7
+Khuzdar,Balochistan,2001,Rabi,58.1,41.9,37.2,30.1
+Khuzdar,Balochistan,2002,Kharif,58.1,41.9,40.9,23.1
+Khuzdar,Balochistan,2002,Rabi,58.1,41.9,38.1,21.6
+Khuzdar,Balochistan,2003,Kharif,58.1,41.9,46.5,18.8
+Khuzdar,Balochistan,2003,Rabi,58.1,41.9,40.3,22.9
+Khuzdar,Balochistan,2004,Kharif,58.1,41.9,52.6,21.5
+Khuzdar,Balochistan,2004,Rabi,58.1,41.9,46.9,21.4
+Khuzdar,Balochistan,2005,Kharif,58.1,41.9,42.0,22.2
+Khuzdar,Balochistan,2005,Rabi,58.1,41.9,42.6,20.9
+Khuzdar,Balochistan,2006,Kharif,58.1,41.9,42.7,21.1
+Khuzdar,Balochistan,2006,Rabi,58.1,41.9,51.3,20.1
+Khuzdar,Balochistan,2007,Kharif,58.1,41.9,38.5,27.6
+Khuzdar,Balochistan,2007,Rabi,58.1,41.9,37.9,20.3
+Khuzdar,Balochistan,2008,Kharif,58.1,41.9,39.1,24.4
+Khuzdar,Balochistan,2008,Rabi,58.1,41.9,40.9,24.0
+Khuzdar,Balochistan,2009,Kharif,58.1,41.9,40.8,20.5
+Khuzdar,Balochistan,2009,Rabi,58.1,41.9,35.1,23.8
+Khuzdar,Balochistan,2010,Kharif,58.1,41.9,46.4,19.3
+Khuzdar,Balochistan,2010,Rabi,58.1,41.9,42.1,24.0
+Khuzdar,Balochistan,2011,Kharif,58.1,41.9,47.5,20.6
+Khuzdar,Balochistan,2011,Rabi,58.1,41.9,46.0,24.2
+Khuzdar,Balochistan,2012,Kharif,58.1,41.9,32.2,23.5
+Khuzdar,Balochistan,2012,Rabi,58.1,41.9,46.7,22.7
+Khuzdar,Balochistan,2013,Kharif,58.1,41.9,48.3,23.6
+Khuzdar,Balochistan,2013,Rabi,58.1,41.9,44.7,28.7
+Khuzdar,Balochistan,2014,Kharif,58.1,41.9,43.2,25.2
+Khuzdar,Balochistan,2014,Rabi,58.1,41.9,46.0,23.4
+Khuzdar,Balochistan,2015,Kharif,58.1,41.9,41.6,24.4
+Khuzdar,Balochistan,2015,Rabi,58.1,41.9,40.3,24.0
+Khuzdar,Balochistan,2016,Kharif,58.1,41.9,44.9,21.3
+Khuzdar,Balochistan,2016,Rabi,58.1,41.9,43.4,27.2
+Khuzdar,Balochistan,2017,Kharif,58.1,41.9,45.2,23.4
+Khuzdar,Balochistan,2017,Rabi,58.1,41.9,45.1,23.3
+Khuzdar,Balochistan,2018,Kharif,58.1,41.9,48.8,26.5
+Khuzdar,Balochistan,2018,Rabi,58.1,41.9,44.6,21.2
+Khuzdar,Balochistan,2019,Kharif,58.1,41.9,44.0,22.2
+Khuzdar,Balochistan,2019,Rabi,58.1,41.9,42.1,25.4
+Khuzdar,Balochistan,2020,Kharif,58.1,41.9,48.9,20.4
+Khuzdar,Balochistan,2020,Rabi,58.1,41.9,45.8,14.6
+Khuzdar,Balochistan,2021,Kharif,58.1,41.9,47.8,19.4
+Khuzdar,Balochistan,2021,Rabi,58.1,41.9,40.2,21.9
+Khuzdar,Balochistan,2022,Kharif,58.1,41.9,49.4,28.8
+Khuzdar,Balochistan,2022,Rabi,58.1,41.9,43.1,27.5
+Khuzdar,Balochistan,2023,Kharif,58.1,41.9,36.1,16.7
+Khuzdar,Balochistan,2023,Rabi,58.1,41.9,46.8,22.6
+Turbat (Kech),Balochistan,2000,Kharif,71.4,28.6,17.6,26.2
+Turbat (Kech),Balochistan,2000,Rabi,71.4,28.6,28.6,25.8
+Turbat (Kech),Balochistan,2001,Kharif,71.4,28.6,33.7,34.0
+Turbat (Kech),Balochistan,2001,Rabi,71.4,28.6,25.2,28.5
+Turbat (Kech),Balochistan,2002,Kharif,71.4,28.6,31.3,30.1
+Turbat (Kech),Balochistan,2002,Rabi,71.4,28.6,28.7,27.3
+Turbat (Kech),Balochistan,2003,Kharif,71.4,28.6,24.2,36.4
+Turbat (Kech),Balochistan,2003,Rabi,71.4,28.6,33.1,32.4
+Turbat (Kech),Balochistan,2004,Kharif,71.4,28.6,26.3,27.3
+Turbat (Kech),Balochistan,2004,Rabi,71.4,28.6,23.9,31.2
+Turbat (Kech),Balochistan,2005,Kharif,71.4,28.6,23.3,28.5
+Turbat (Kech),Balochistan,2005,Rabi,71.4,28.6,27.8,27.6
+Turbat (Kech),Balochistan,2006,Kharif,71.4,28.6,25.3,24.3
+Turbat (Kech),Balochistan,2006,Rabi,71.4,28.6,17.1,29.7
+Turbat (Kech),Balochistan,2007,Kharif,71.4,28.6,25.3,27.5
+Turbat (Kech),Balochistan,2007,Rabi,71.4,28.6,32.8,35.8
+Turbat (Kech),Balochistan,2008,Kharif,71.4,28.6,24.9,28.7
+Turbat (Kech),Balochistan,2008,Rabi,71.4,28.6,27.2,30.1
+Turbat (Kech),Balochistan,2009,Kharif,71.4,28.6,28.8,25.9
+Turbat (Kech),Balochistan,2009,Rabi,71.4,28.6,33.4,28.1
+Turbat (Kech),Balochistan,2010,Kharif,71.4,28.6,36.4,28.2
+Turbat (Kech),Balochistan,2010,Rabi,71.4,28.6,33.6,28.9
+Turbat (Kech),Balochistan,2011,Kharif,71.4,28.6,30.2,27.8
+Turbat (Kech),Balochistan,2011,Rabi,71.4,28.6,26.1,27.3
+Turbat (Kech),Balochistan,2012,Kharif,71.4,28.6,33.9,25.2
+Turbat (Kech),Balochistan,2012,Rabi,71.4,28.6,37.5,21.9
+Turbat (Kech),Balochistan,2013,Kharif,71.4,28.6,30.9,29.2
+Turbat (Kech),Balochistan,2013,Rabi,71.4,28.6,21.1,23.8
+Turbat (Kech),Balochistan,2014,Kharif,71.4,28.6,39.6,26.7
+Turbat (Kech),Balochistan,2014,Rabi,71.4,28.6,30.3,31.1
+Turbat (Kech),Balochistan,2015,Kharif,71.4,28.6,23.1,27.9
+Turbat (Kech),Balochistan,2015,Rabi,71.4,28.6,23.3,28.9
+Turbat (Kech),Balochistan,2016,Kharif,71.4,28.6,30.3,28.8
+Turbat (Kech),Balochistan,2016,Rabi,71.4,28.6,22.1,23.6
+Turbat (Kech),Balochistan,2017,Kharif,71.4,28.6,30.1,26.8
+Turbat (Kech),Balochistan,2017,Rabi,71.4,28.6,28.0,33.4
+Turbat (Kech),Balochistan,2018,Kharif,71.4,28.6,37.9,32.8
+Turbat (Kech),Balochistan,2018,Rabi,71.4,28.6,26.3,30.6
+Turbat (Kech),Balochistan,2019,Kharif,71.4,28.6,25.2,29.1
+Turbat (Kech),Balochistan,2019,Rabi,71.4,28.6,19.6,28.0
+Turbat (Kech),Balochistan,2020,Kharif,71.4,28.6,25.8,24.6
+Turbat (Kech),Balochistan,2020,Rabi,71.4,28.6,27.5,23.9
+Turbat (Kech),Balochistan,2021,Kharif,71.4,28.6,33.3,32.7
+Turbat (Kech),Balochistan,2021,Rabi,71.4,28.6,39.9,33.0
+Turbat (Kech),Balochistan,2022,Kharif,71.4,28.6,29.8,25.4
+Turbat (Kech),Balochistan,2022,Rabi,71.4,28.6,29.3,30.1
+Turbat (Kech),Balochistan,2023,Kharif,71.4,28.6,30.1,30.3
+Turbat (Kech),Balochistan,2023,Rabi,71.4,28.6,26.0,26.5
