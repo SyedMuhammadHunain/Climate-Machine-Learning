@@ -32,16 +32,16 @@
 **Description:** Run `uv sync` to update the local virtual environment with FastAPI and related dependencies specified in `afzal`'s `pyproject.toml`. Run `scripts/verify_backend.py` to ensure backend endpoints and model inference work.
 
 **Acceptance criteria:**
-- [ ] Dependencies updated via `uv sync`.
-- [ ] `scripts/verify_backend.py` executes without errors:
+- [x] Dependencies updated via `uv sync`.
+- [x] `scripts/verify_backend.py` executes without errors:
   - GET `/health` returns 200 OK and `model_loaded: true`.
   - GET `/api/v1/metadata` returns 3 provinces and 13 crops.
   - POST `/api/v1/predict` returns valid predictions.
   - POST `/api/v1/recommend` returns ranked low-water crops.
-- [ ] Notebook integrity verified.
+- [x] Notebook integrity verified.
 
 **Verification:**
-- [ ] `.venv/bin/python scripts/verify_backend.py` outputs all PASSED assertions.
+- [x] `.venv/bin/python scripts/verify_backend.py` outputs all PASSED assertions. (Passed: All 9 backend verification tests passed 100%).
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -52,7 +52,7 @@
 ---
 
 ## Checkpoint: All Tests Green
-- [ ] All backend endpoints verified and model inference fully functional.
+- [x] All backend endpoints verified and model inference fully functional.
 
 ---
 
