@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Infinite Field — Crop Yield Prediction & Drought Advisory</title>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
 
@@ -588,7 +591,16 @@
         </div>
 
         <!-- Results Container (Hidden on initial load until prediction runs) -->
-        <div id="results-container" style="display: none; margin-top: 16px;">
+        <div id="results-container" style="display: none; margin-top: 24px;">
+
+            <!-- Real-Time Inference Status & Verification Badge Row -->
+            <div class="inference-status-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--colorNeutral200);">
+                <div class="status-pill" id="inference-status-pill" style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--colorNeutral800); background-color: #f7f8fa; border: 1px solid var(--colorNeutral200); padding: 4px 12px; border-radius: 14px;">
+                    <span class="status-dot" id="status-dot" style="width: 7px; height: 7px; border-radius: 50%; background-color: #10b981;"></span>
+                    <span id="status-badge-text">Inference completed • Updated just now</span>
+                </div>
+                <span id="inference-timestamp" style="font-size: 12px; color: var(--colorNeutral600);"></span>
+            </div>
 
             <!-- Single Crop Projection Section (Visible in Single Crop Mode) -->
             <div class="team-section" id="single-crop-section" style="display: none;">
@@ -867,6 +879,14 @@
             const resultsContainer = document.getElementById("results-container");
             if (resultsContainer) resultsContainer.style.display = "block";
 
+            const statusDot = document.getElementById("status-dot");
+            const badgeText = document.getElementById("status-badge-text");
+            const timeText = document.getElementById("inference-timestamp");
+            const now = new Date().toLocaleTimeString();
+            if (statusDot) statusDot.style.backgroundColor = "#10b981";
+            if (badgeText) badgeText.textContent = "Live ML Model Pipeline (FastAPI / Scikit-Learn)";
+            if (timeText) timeText.textContent = `Updated at ${now}`;
+
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");
             const warningsSection = document.getElementById("team-section-2");
@@ -930,6 +950,14 @@
         window.renderFallbackSimulation = function(payload, isAllCrops) {
             const resultsContainer = document.getElementById("results-container");
             if (resultsContainer) resultsContainer.style.display = "block";
+
+            const statusDot = document.getElementById("status-dot");
+            const badgeText = document.getElementById("status-badge-text");
+            const timeText = document.getElementById("inference-timestamp");
+            const now = new Date().toLocaleTimeString();
+            if (statusDot) statusDot.style.backgroundColor = "#f59e0b";
+            if (badgeText) badgeText.textContent = "Agronomic Simulation Engine (Regional Fallback)";
+            if (timeText) timeText.textContent = `Calculated at ${now}`;
 
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");

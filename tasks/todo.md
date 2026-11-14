@@ -26,13 +26,13 @@
 **Description:** Add an Ashby-style indicator pill above the results list displaying `• Updated at [HH:MM:SS] • [Engine Source]`. Add `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">` to prevent browser cache from holding stale versions.
 
 **Acceptance criteria:**
-- [ ] Status badge appears above recommendations showing exact execution timestamp.
-- [ ] Badge clearly distinguishes `Live ML Model (FastAPI)` from `Agronomic Simulation Engine`.
-- [ ] Cache-control meta headers present in `<head>`.
+- [x] Status badge appears above recommendations showing exact execution timestamp.
+- [x] Badge clearly distinguishes `Live ML Model (FastAPI)` from `Agronomic Simulation Engine`.
+- [x] Cache-control meta headers present in `<head>`.
 
 **Verification:**
-- [ ] Submitting form updates badge with new timestamp.
-- [ ] Cache headers present in HTTP/HTML inspect.
+- [x] Submitting form updates badge with new timestamp.
+- [x] Cache headers present in HTTP/HTML inspect.
 
 **Dependencies:** Task 1
 **Files likely touched:**
