@@ -46,11 +46,11 @@
 **Description:** Start the FastAPI application on `http://127.0.0.1:8000` using `.venv/bin/python -m uvicorn app.main:app --port 8000`. Test end-to-end inference from the frontend form to verify live model predictions work alongside the fallback.
 
 **Acceptance criteria:**
-- [ ] Backend responds with 200 OK on `/docs` and `/api/v1/recommend`.
-- [ ] Form submission successfully queries live API and renders ML pipeline outputs.
+- [x] Backend responds with 200 OK on `/docs` and `/api/v1/recommend`.
+- [x] Form submission successfully queries live API and renders ML pipeline outputs.
 
 **Verification:**
-- [ ] Automated CDP test verifies live API submission and badge text `Live ML Model (FastAPI)`.
+- [x] Automated CDP test verifies live API submission and badge text `Live ML Model (FastAPI)`.
 
 **Dependencies:** Task 1, Task 2
 **Files likely touched:**
@@ -60,5 +60,5 @@
 ---
 
 ## Checkpoint: Phase 3 Verification
-- [ ] Button click provides unmistakable visual feedback (spinner -> auto-scroll -> results).
-- [ ] Works both with live FastAPI server running and offline fallback.
+- [x] Button click provides unmistakable visual feedback (spinner -> auto-scroll -> results).
+- [x] Works both with live FastAPI server running and offline fallback.

@@ -460,15 +460,19 @@
                     <div class="input-wrapper">
                         <select id="field-crop" class="select-input">
                             <option value="ALL" selected>All Crops (Ranked Recommendation)</option>
-                            <option value="Bajra">Bajra (Pearl Millet)</option>
-                            <option value="Jowar">Jowar (Sorghum)</option>
-                            <option value="Gram">Gram (Chickpea)</option>
-                            <option value="Barley">Barley</option>
-                            <option value="Wheat">Wheat</option>
-                            <option value="Maize">Maize</option>
-                            <option value="Cotton">Cotton</option>
-                            <option value="Rice">Rice</option>
-                            <option value="Sugarcane">Sugarcane</option>
+                            <option value="wheat">Wheat</option>
+                            <option value="onion">Onion (Low Water)</option>
+                            <option value="pomegranate">Pomegranate (Low Water)</option>
+                            <option value="dates">Dates (Low Water)</option>
+                            <option value="grapes">Grapes (Low Water)</option>
+                            <option value="potato">Potato</option>
+                            <option value="tomato">Tomato</option>
+                            <option value="mango">Mango</option>
+                            <option value="apple">Apple</option>
+                            <option value="cotton">Cotton (High Water)</option>
+                            <option value="rice">Rice (High Water)</option>
+                            <option value="sugarcane">Sugarcane (High Water)</option>
+                            <option value="banana">Banana (High Water)</option>
                         </select>
                         <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
                             <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -804,7 +808,7 @@
                     scenario_name: `Agroclimatic Simulation (${province})`
                 } : {
                     province: province,
-                    crop: crop,
+                    crop: crop.toLowerCase(),
                     area: area,
                     precipitation_sum: precip,
                     temperature_2m_mean: temp,
@@ -931,13 +935,14 @@
                 resilientSection.style.display = "none";
                 warningsSection.style.display = "none";
 
-                boardHeading.textContent = `Crop Yield Forecast: ${data.crop}`;
+                const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
+                boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
                 const yieldKg = Math.round(data.predicted_yield_kg_ha).toLocaleString();
                 const totalMetricTons = Math.round((data.predicted_yield_kg_ha * (data.features_used?.Area || 50)) / 1000).toLocaleString();
 
                 document.getElementById("single-crop-items").innerHTML = `
                     <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">${data.crop} (${data.province})</a>
+                        <a href="javascript:void(0)" class="job-title">${cropDisplay} (${data.province})</a>
                         <div class="job-metadata">Predicted Yield: ${yieldKg} kg/ha • Water Category: ${data.water_category} • Drought Resilient: ${data.is_drought_resilient ? 'YES' : 'NO'}</div>
                         <div class="job-metadata" style="margin-top: 4px; color: var(--colorNeutral800);">Total Expected Production: ${totalMetricTons} metric tons across ${data.features_used?.Area || 50} hectares</div>
                     </div>
@@ -1015,30 +1020,30 @@
                 resilientSection.style.display = "none";
                 warningsSection.style.display = "none";
 
-                const crop = payload.crop;
-                boardHeading.textContent = `Crop Yield Forecast: ${crop}`;
+                const crop = payload.crop || "wheat";
+                const cropDisplay = crop.charAt(0).toUpperCase() + crop.slice(1);
+                boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
 
-                const isResilient = ["Bajra", "Jowar", "Gram", "Barley"].includes(crop);
-                let estYield = 1200;
-                if (crop === "Bajra") estYield = Math.round(1750 + precip * 6);
-                else if (crop === "Jowar") estYield = Math.round(1350 + precip * 5);
-                else if (crop === "Gram") estYield = Math.round(890 + precip * 4);
-                else if (crop === "Wheat") estYield = Math.round(2300 + precip * 12);
-                else if (crop === "Sugarcane") estYield = Math.round(4100 + precip * 15);
-                else if (crop === "Rice") estYield = Math.round(1050 + precip * 8);
-                else estYield = Math.round(1400 + precip * 6);
+                const isResilient = ["onion", "pomegranate", "grapes", "wheat", "dates"].includes(crop.toLowerCase());
+                let estYield = 90;
+                if (crop.toLowerCase() === "onion") estYield = Math.round(95 + precip * 0.5);
+                else if (crop.toLowerCase() === "wheat") estYield = Math.round(88 + precip * 0.4);
+                else if (crop.toLowerCase() === "sugarcane") estYield = Math.round(500 + precip * 2);
+                else if (crop.toLowerCase() === "rice") estYield = Math.round(130 + precip * 0.8);
+                else if (crop.toLowerCase() === "cotton") estYield = Math.round(130 + precip * 0.8);
+                else estYield = Math.round(110 + precip * 0.6);
 
                 const totalMetricTons = Math.round((estYield * area) / 1000).toLocaleString();
 
                 document.getElementById("single-crop-items").innerHTML = `
                     <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">${crop} (${province})</a>
-                        <div class="job-metadata">Predicted Yield: ${estYield.toLocaleString()} kg/ha • Water Category: ${isResilient ? 'Low' : 'High'} • Drought Resilient: ${isResilient ? 'YES' : 'NO'}</div>
+                        <a href="javascript:void(0)" class="job-title">${cropDisplay} (${province})</a>
+                        <div class="job-metadata">Predicted Yield: ${estYield.toLocaleString()} kg/ha • Water Category: ${isResilient ? 'Low-Water Resilient' : 'High-Water Intensive'} • Drought Resilient: ${isResilient ? 'YES' : 'NO'}</div>
                         <div class="job-metadata" style="margin-top: 4px; color: var(--colorNeutral800);">Total Expected Production: ${totalMetricTons} metric tons across ${area} hectares</div>
                     </div>
                 `;
 
-                advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${crop} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
+                advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${cropDisplay} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
             }
         };
     </script>
