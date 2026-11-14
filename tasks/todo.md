@@ -136,4 +136,4 @@
 
 ## Checkpoint: Complete Deliverable
 - [x] Notebook runs cleanly end-to-end via `nbconvert`.
-- [ ] Git commit and push to branch `Hunain`.
+- [x] Git commit and push to branch `Hunain`.
