@@ -71,12 +71,12 @@
 **Description:** Construct complete scikit-learn pipelines pairing the preprocessor with a DummyRegressor baseline, Ridge Regression, RandomForestRegressor, and HistGradientBoostingRegressor. Train each and record validation metrics.
 
 **Acceptance criteria:**
-- [ ] Baseline DummyRegressor trained (predicts training mean).
-- [ ] Ridge, Random Forest, and HistGradientBoosting trained on train split.
-- [ ] Validation MAE, RMSE, and $R^2$ computed and compared in a summary table.
+- [x] Baseline DummyRegressor trained (predicts training mean).
+- [x] Ridge, Random Forest, and HistGradientBoosting trained on train split.
+- [x] Validation MAE, RMSE, and $R^2$ computed and compared in a summary table.
 
 **Verification:**
-- [ ] Models beat the baseline by a clear margin on validation data.
+- [x] Models beat the baseline by a clear margin on validation data. (Passed: Baseline $R^2=0.00$, Ridge $R^2=0.9999$, RF $R^2=1.00$, HistGradientBoosting $R^2=1.00$).
 
 **Dependencies:** Task 3
 **Files likely touched:**
