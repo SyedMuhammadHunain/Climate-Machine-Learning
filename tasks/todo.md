@@ -6,13 +6,13 @@
 **Description:** Switch to `main`, merge branch `Hunain`, and then merge branch `origin/afzal`. Ensure all commits from both contributors are preserved without any conflict markers.
 
 **Acceptance criteria:**
-- [ ] Working directory is clean on branch `main`.
-- [ ] `Hunain` merged cleanly into `main` (brings ML pipeline, real dataset, and notebook).
-- [ ] `origin/afzal` merged cleanly into `main` (brings FastAPI backend and test suite).
-- [ ] `git status` confirms zero merge conflicts and clean working tree.
+- [x] Working directory is clean on branch `main`.
+- [x] `Hunain` merged cleanly into `main` (brings ML pipeline, real dataset, and notebook).
+- [x] `origin/afzal` merged cleanly into `main` (brings FastAPI backend and test suite).
+- [x] `git status` confirms zero merge conflicts and clean working tree.
 
 **Verification:**
-- [ ] Run `git log --oneline -5` on `main`; confirm commits from both Hunain and Afzal are present.
+- [x] Run `git log --oneline -5` on `main`; confirm commits from both Hunain and Afzal are present. (Passed: Merge commit f1db23c cleanly combines both histories).
 
 **Dependencies:** None
 **Files likely touched:**
@@ -22,7 +22,7 @@
 ---
 
 ## Checkpoint: Clean Merge
-- [ ] Both branches merged into `main` with 0 conflicts.
+- [x] Both branches merged into `main` with 0 conflicts.
 
 ---
 
