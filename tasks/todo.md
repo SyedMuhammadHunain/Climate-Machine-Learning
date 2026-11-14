@@ -52,13 +52,13 @@
 **Description:** Implement temporal dataset split by year to avoid temporal leakage. Create a scikit-learn `ColumnTransformer` with `SimpleImputer`, `StandardScaler`, and `OneHotEncoder` fitted strictly on the training partition.
 
 **Acceptance criteria:**
-- [ ] Train set: `Crop_Year <= 2016` (70.8%, 7,854 rows).
-- [ ] Val set: `2017 <= Crop_Year <= 2019` (12.5%, 1,386 rows).
-- [ ] Test set: `Crop_Year >= 2020` (16.7%, 1,848 rows).
-- [ ] ColumnTransformer handles numeric features, categorical features, and prevents leakage.
+- [x] Train set: `Crop_Year <= 2016` (70.8%, 7,854 rows).
+- [x] Val set: `2017 <= Crop_Year <= 2019` (12.5%, 1,386 rows).
+- [x] Test set: `Crop_Year >= 2020` (16.7%, 1,848 rows).
+- [x] ColumnTransformer handles numeric features, categorical features, and prevents leakage.
 
 **Verification:**
-- [ ] Assert split row counts and verify that preprocessor transforms train/val/test without error.
+- [x] Assert split row counts and verify that preprocessor transforms train/val/test without error. (Passed: 117 encoded features generated without leakage).
 
 **Dependencies:** Task 1, Task 2
 **Files likely touched:**
