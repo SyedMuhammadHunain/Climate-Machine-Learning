@@ -116,14 +116,14 @@
 **Description:** Export final tuned pipeline to `models/crop_yield_pipeline.joblib`. Create a high-level Python function `recommend_low_water_crops(...)` that simulates farmer drought inputs, evaluates candidate low-water crops, and returns a sorted recommendation table with a comparison bar chart.
 
 **Acceptance criteria:**
-- [ ] `models/` directory created and `joblib.dump()` writes pipeline.
-- [ ] Pipeline reloaded with `joblib.load()` and output verified.
-- [ ] `recommend_low_water_crops(...)` accepts farmer scenario parameters and returns ranked crops (Bajra, Sorghum, Chickpea, Canola, Barley).
-- [ ] Example drought scenario demonstrated with visualization.
+- [x] `models/` directory created and `joblib.dump()` writes pipeline.
+- [x] Pipeline reloaded with `joblib.load()` and output verified.
+- [x] `recommend_low_water_crops(...)` accepts farmer scenario parameters and returns ranked crops (Bajra, Sorghum, Chickpea, Canola, Barley).
+- [x] Example drought scenario demonstrated with visualization.
 
 **Verification:**
-- [ ] File exists at `models/crop_yield_pipeline.joblib`.
-- [ ] Recommendation function successfully runs on sample input and prints ranked table.
+- [x] File exists at `models/crop_yield_pipeline.joblib`. (Passed: 95 KB serialized pipeline verified).
+- [x] Recommendation function successfully runs on sample input and prints ranked table. (Passed: Kharif & Rabi scenarios ranked and plotted).
 
 **Dependencies:** Task 5
 **Files likely touched:**
@@ -134,5 +134,5 @@
 ---
 
 ## Checkpoint: Complete Deliverable
-- [ ] Complete notebook runs sequentially without errors.
-- [ ] Final model exported for teammate's downstream script/app conversion.
+- [x] Complete notebook runs sequentially without errors.
+- [x] Final model exported for teammate's downstream script/app conversion.
