@@ -1,46 +1,48 @@
-# Implementation Plan: ML Input Form for Climate-Resilient Crop Selection
+# Implementation Plan: Interactive Submit Feedback & Result State Management
 
 ## Overview
-Transform `frontend/climate-resilient-frontend/predict.html` into a dedicated Machine Learning Input Form and Advisory Interface matching the Ashby aesthetic (`jobs.ashbyhq.com/infinitefield/`). The form will expose all essential agricultural and climate features required by the FastAPI/Scikit-Learn backend (`SinglePredictionRequest` and `DroughtScenarioRequest`), organized into primary core fields and a collapsible advanced meteorological section, with one-click presets and live prediction output.
+Address the issue where clicking "Run Crop Yield Prediction" provides no perceptible visual feedback to the user ("nothing happens"). This occurs because static results were pre-rendered on page load, the offline fallback resolved instantaneously without scrolling or transition, and no visual timestamp/status badge indicated execution. This phase adds clean initial state hiding, smooth auto-scroll to results, a noticeable 350ms perceptible loading transition, an Ashby-style execution timestamp badge, and live FastAPI server integration.
 
 ## Architecture Decisions
-- **Ashby Visual Identity:** Maintain exact `720px` width container, inline vector `Infinite Field®` wordmark, Whitney SSm typography, `#FF7344` brand accents, and subtle `#d7dae0` bordered inputs.
-- **Hierarchical Form Structure:**
-  - **Core Grid (Always Visible):** Province, Crop / Recommendation Mode, Cultivated Area (ha), Seasonal Precipitation (mm), and Mean Temperature (°C).
-  - **Advanced Section (Collapsible Accordion):** Max Temperature (°C), Min Temperature (°C), FAO Evapotranspiration (mm/day), Solar Shortwave Radiation (MJ/m²), Precipitation Hours, and Climate Dryness Index.
-- **One-Click Agroclimatic Presets:** Buttons for "Severe Drought", "Moderate Drought", "Baseline Normal", and "Extreme Heatwave" that auto-populate realistic Pakistan meteorological benchmarks.
-- **Backend Connector & Resilient Offline Fallback:** Dispatches asynchronous `fetch()` to `http://localhost:8000/api/v1/predict` or `/api/v1/recommend`. If the backend service is offline, seamlessly computes locally using pre-calculated agronomic weights so the interface always responds.
+- **Empty Initial State**: Hide the results container on initial page load (or display a subtle empty placeholder), ensuring that clicking "Run Crop Yield Prediction" causes an unmistakable visual transition when results appear.
+- **Perceptible Transition Window**: Guarantee a minimum 350ms execution window before hiding the spinner so users visibly see the pipeline processing, avoiding 0ms invisible blinks when network calls failover immediately.
+- **Smooth Viewport Auto-Scroll**: Upon successful inference or fallback calculation, trigger `resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' })` so user focus immediately tracks to the newly calculated metrics.
+- **Execution Badge & Source Indicator**: Display an Ashby-style pill badge above results displaying the timestamp and data source (`Live ML Model (Port 8000)` vs `Agronomic Simulation Mode`).
+- **Live Backend Runner**: Provide verified startup for the FastAPI service (`uvicorn app.main:app --port 8000`) so the frontend can query the real Scikit-Learn pipeline directly.
 
 ---
 
 ## Task List
 
-### Phase 1: Form Structure & Input Fields
-- [ ] **Task 1: Build Core Input Grid and Preset Scenario Selector**
-  - Implement 2-column Ashby-styled form fields for Province, Crop, Area, Seasonal Rainfall, and Mean Temperature with preset buttons.
-- [ ] **Task 2: Build Collapsible Advanced Meteorological Parameters Section**
-  - Implement collapsible accordion containing Max/Min Temp, Evapotranspiration, Solar Radiation, Precipitation Hours, and Climate Index with agronomic defaults.
+### Phase 3: Submit Responsiveness, Visual State Transitions & Live Backend
 
-### Checkpoint: Form Layout & Accessibility
-- [ ] All 10 input controls rendered cleanly within 720px container.
-- [ ] Responsive on mobile and desktop viewports.
-- [ ] Preset buttons correctly update all form fields.
+- [ ] **Task 1: Refactor Results Container to Initial Empty State with Smooth Auto-Scroll**
+  - Hide `#results-container` on initial load; reveal it dynamically upon form submission.
+  - Add smooth auto-scrolling to `#results-container` when prediction calculation completes.
+  - Implement a minimum 350ms perceptible loading window to avoid instant 0ms blinks.
 
-### Phase 2: Action Button & Inference Integration
-- [ ] **Task 3: Implement Submit Action, Client Validation, and Backend API Dispatch**
-  - Add Ashby-styled "Run Crop Yield Prediction" button. Wire client-side input validation (`max_temp >= min_temp`, valid ranges). Send `POST` requests to `/api/v1/predict` or `/api/v1/recommend`.
-- [ ] **Task 4: Build Dynamic Categorized Results View**
-  - Render model yield predictions, water footprint classifications, and drought risk warnings in Ashby listing format with fallback simulation.
+- [ ] **Task 2: Add Real-Time Inference Badge and Cache-Busting Headers**
+  - Add an Ashby-style status badge showing inference timestamp and execution source (Live Model vs Local Agronomic Engine).
+  - Add cache-busting meta headers to prevent browsers from caching stale JavaScript files.
+  - Sync updates between `predict.html` and `careers.html`.
 
-### Checkpoint: Inference & Verification
-- [ ] Single crop prediction renders expected harvest yield and water category.
-- [ ] Multi-crop recommendation ranks drought-resilient crops and flags high-risk water-intensive crops.
-- [ ] Zero unhandled JavaScript errors in browser console.
+- [ ] **Task 3: Launch & Connect Live FastAPI Backend Service**
+  - Launch FastAPI application (`app.main:app`) on port 8000 using project Python environment.
+  - Verify live API communication between frontend and backend via CDP automated test.
+
+---
+
+## Checkpoint: Phase 3 Verification
+- [ ] Initial page load shows form cleanly without pre-baked results cluttering the page.
+- [ ] Clicking "Run Crop Yield Prediction" displays loading spinner for at least 350ms, reveals results container, and auto-scrolls down smoothly.
+- [ ] Status badge explicitly confirms timestamp and engine source.
+- [ ] Automated headless Chrome DevTools test verifies DOM mutation, visibility, and click reaction.
 
 ---
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Backend API offline during frontend review | Medium | Include comprehensive offline fallback simulation using Pakistani agricultural benchmarks. |
-| Incompatible Min/Max temperatures | Low | Client-side validation prevents submission when `max_temp < min_temp` with clear inline feedback. |
+| User browser disk-caching old HTML/JS | High | Add HTML `Cache-Control` meta tags and verify via headless Chrome with cache disabled. |
+| Fast failover feels like an unresponsive button | High | Introduce 350ms artificial transition delay so users register the action. |
+| Backend port 8000 conflict | Medium | Check port availability before launching uvicorn daemon. |

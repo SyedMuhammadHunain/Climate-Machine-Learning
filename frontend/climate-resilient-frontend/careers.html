@@ -587,8 +587,8 @@
             </div>
         </div>
 
-        <!-- Results Container -->
-        <div id="results-container">
+        <!-- Results Container (Hidden on initial load until prediction runs) -->
+        <div id="results-container" style="display: none; margin-top: 16px;">
 
             <!-- Single Crop Projection Section (Visible in Single Crop Mode) -->
             <div class="team-section" id="single-crop-section" style="display: none;">
@@ -602,14 +602,7 @@
             <div class="team-section" id="team-section-1">
                 <h2 class="team-title" id="team-title-1">Drought-Resilient Recommendations</h2>
                 <div id="team-items-1">
-                    <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">Bajra (Pearl Millet)</a>
-                        <div class="job-metadata">Drought Resilient • 1,845 kg/ha • Low Water Demand • Punjab</div>
-                    </div>
-                    <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">Jowar (Sorghum)</a>
-                        <div class="job-metadata">Drought Resilient • 1,411 kg/ha • Low Water Demand • Punjab</div>
-                    </div>
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -617,20 +610,13 @@
             <div class="team-section" id="team-section-2">
                 <h2 class="team-title" id="team-title-2">Water-Intensive Warnings</h2>
                 <div id="team-items-2">
-                    <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">Sugarcane</a>
-                        <div class="job-metadata">Critical Risk • 4,120 kg/ha • High Water Deficit Vulnerability</div>
-                    </div>
-                    <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">Rice</a>
-                        <div class="job-metadata">Severe Risk • 1,101 kg/ha • Canal Failure Vulnerable</div>
-                    </div>
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
             <!-- Agronomic Advisory Narrative -->
             <div class="advisory-summary" id="advisory-summary">
-                <strong>Agronomic Advisory:</strong> Under severe drought stress in Punjab, prioritize low-water coarse grains (Bajra & Jowar). Avoid irrigating high-water crops like Sugarcane and Rice without guaranteed canal water supply.
+                <!-- Populated dynamically -->
             </div>
 
         </div>
@@ -738,6 +724,10 @@
             applyPreset('severe');
             document.getElementById("field-province").value = "Punjab";
             document.getElementById("field-crop").value = "ALL";
+            const results = document.getElementById("results-container");
+            if (results) results.style.display = "none";
+            const heading = document.querySelector(".board-heading");
+            if (heading) heading.textContent = "Crop Yield Prediction & Drought Advisory";
         }
 
         async function submitPredictionForm() {
@@ -778,6 +768,7 @@
                 }
             }
 
+            const startTime = performance.now();
             const loadingEl = document.getElementById("loading-indicator");
             const submitBtn = document.getElementById("btn-submit-prediction");
             loadingEl.style.display = "inline-flex";
@@ -817,6 +808,9 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3500);
 
+                let resultData = null;
+                let isLiveApi = false;
+
                 try {
                     const response = await fetch(endpoint, {
                         method: "POST",
@@ -827,10 +821,8 @@
                     clearTimeout(timeoutId);
 
                     if (response.ok) {
-                        const data = await response.json();
-                        if (window.renderModelResults) {
-                            window.renderModelResults(data, isAllCrops);
-                        }
+                        resultData = await response.json();
+                        isLiveApi = true;
                     } else {
                         const err = await response.json();
                         showValidationError(err.detail || "API rejected input parameters.");
@@ -838,10 +830,29 @@
                 } catch (networkErr) {
                     clearTimeout(timeoutId);
                     console.warn("Backend API request failed or timed out. Running local agronomic fallback simulation.", networkErr);
-                    // If backend server is not active during local demo, trigger fallback simulation
+                }
+
+                // Minimum 350ms loading duration for tactile feedback
+                const elapsed = performance.now() - startTime;
+                if (elapsed < 350) {
+                    await new Promise(r => setTimeout(r, 350 - elapsed));
+                }
+
+                if (resultData && isLiveApi) {
+                    if (window.renderModelResults) {
+                        window.renderModelResults(resultData, isAllCrops);
+                    }
+                } else if (!document.getElementById("validation-alert").offsetParent) {
+                    // Fallback simulation when live API not reached and no validation error
                     if (window.renderFallbackSimulation) {
                         window.renderFallbackSimulation(payload, isAllCrops);
                     }
+                }
+
+                // Smooth scroll to results
+                const resultsContainer = document.getElementById("results-container");
+                if (resultsContainer && resultsContainer.style.display !== "none") {
+                    resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
                 }
             } catch (unexpectedErr) {
                 console.error("Unexpected error in prediction pipeline:", unexpectedErr);
@@ -853,6 +864,8 @@
         }
 
         window.renderModelResults = function(data, isAllCrops) {
+            const resultsContainer = document.getElementById("results-container");
+            if (resultsContainer) resultsContainer.style.display = "block";
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");
             const warningsSection = document.getElementById("team-section-2");
@@ -914,6 +927,9 @@
         };
 
         window.renderFallbackSimulation = function(payload, isAllCrops) {
+            const resultsContainer = document.getElementById("results-container");
+            if (resultsContainer) resultsContainer.style.display = "block";
+
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");
             const warningsSection = document.getElementById("team-section-2");
