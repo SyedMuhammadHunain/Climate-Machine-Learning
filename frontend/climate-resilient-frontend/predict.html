@@ -207,6 +207,58 @@
             height: 12px;
         }
 
+        /* Advanced Accordion Toggle */
+        .advanced-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+            padding: 0;
+            outline: none;
+            transition: color 0.15s ease;
+        }
+
+        .advanced-toggle-btn:hover {
+            color: var(--colorPrimary600);
+        }
+
+        .advanced-chevron {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .advanced-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .advanced-panel {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background-color: #fafbfc;
+            border: 1px solid var(--colorNeutral200);
+            border-radius: 8px;
+        }
+
+        .advanced-panel.open {
+            display: grid;
+        }
+
+        @media (max-width: 600px) {
+            .advanced-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Category Titles and Results */
         .team-title {
             font-size: 18px;
@@ -344,6 +396,67 @@
                 </div>
 
             </div>
+
+            <!-- Advanced Collapsible Toggle Button -->
+            <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" onclick="toggleAdvancedPanel()">
+                <span>Advanced Meteorological Parameters (6 features)</span>
+                <svg class="advanced-chevron" id="advanced-chevron" viewBox="0 0 12 12" fill="none">
+                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <!-- Collapsible Panel with 6 Secondary Features -->
+            <div class="advanced-panel" id="advanced-panel">
+
+                <!-- 1. Maximum Temperature -->
+                <div class="input-group">
+                    <label class="input-label" for="field-temp-max">Maximum Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-temp-max" class="text-input" min="-5.0" max="60.0" step="0.5" value="39.5" placeholder="e.g. 39.5">
+                    </div>
+                </div>
+
+                <!-- 2. Minimum Temperature -->
+                <div class="input-group">
+                    <label class="input-label" for="field-temp-min">Minimum Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-temp-min" class="text-input" min="-10.0" max="45.0" step="0.5" value="26.0" placeholder="e.g. 26.0">
+                    </div>
+                </div>
+
+                <!-- 3. FAO Reference Evapotranspiration -->
+                <div class="input-group">
+                    <label class="input-label" for="field-et0">FAO Evapotranspiration (mm/day)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-et0" class="text-input" min="0.5" max="20.0" step="0.1" value="7.8" placeholder="e.g. 7.8">
+                    </div>
+                </div>
+
+                <!-- 4. Solar Radiation -->
+                <div class="input-group">
+                    <label class="input-label" for="field-radiation">Solar Radiation (MJ/m²)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-radiation" class="text-input" min="5.0" max="40.0" step="0.5" value="25.5" placeholder="e.g. 25.5">
+                    </div>
+                </div>
+
+                <!-- 5. Precipitation Hours -->
+                <div class="input-group">
+                    <label class="input-label" for="field-precip-hours">Precipitation Hours (hours)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-precip-hours" class="text-input" min="0.0" max="500.0" step="0.5" value="1.0" placeholder="e.g. 1.0">
+                    </div>
+                </div>
+
+                <!-- 6. Climate Dryness Index -->
+                <div class="input-group">
+                    <label class="input-label" for="field-climate-index">Climate Dryness Index (0.0 - 1.0)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-climate-index" class="text-input" min="0.0" max="1.0" step="0.01" value="0.92" placeholder="e.g. 0.92">
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <!-- Section 1 Preview: Engineering / Drought-Resilient Crops -->
@@ -383,11 +496,58 @@
 
     <script>
         const PRESET_CONFIGS = {
-            severe: { precip: 3.5, temp: 34.0, area: 50.0 },
-            moderate: { precip: 15.0, temp: 31.5, area: 50.0 },
-            baseline: { precip: 45.0, temp: 27.5, area: 50.0 },
-            heatwave: { precip: 1.0, temp: 42.0, area: 50.0 }
+            severe: {
+                precip: 3.5,
+                temp: 34.0,
+                area: 50.0,
+                temp_max: 39.5,
+                temp_min: 26.0,
+                et0: 7.8,
+                radiation: 25.5,
+                precip_hours: 1.0,
+                climate_index: 0.92
+            },
+            moderate: {
+                precip: 15.0,
+                temp: 31.5,
+                area: 50.0,
+                temp_max: 36.0,
+                temp_min: 23.5,
+                et0: 6.2,
+                radiation: 22.0,
+                precip_hours: 5.0,
+                climate_index: 0.75
+            },
+            baseline: {
+                precip: 45.0,
+                temp: 27.5,
+                area: 50.0,
+                temp_max: 32.0,
+                temp_min: 20.0,
+                et0: 4.8,
+                radiation: 18.5,
+                precip_hours: 18.0,
+                climate_index: 0.45
+            },
+            heatwave: {
+                precip: 1.0,
+                temp: 42.0,
+                area: 50.0,
+                temp_max: 46.5,
+                temp_min: 31.0,
+                et0: 9.5,
+                radiation: 28.0,
+                precip_hours: 0.5,
+                climate_index: 0.98
+            }
         };
+
+        function toggleAdvancedPanel() {
+            const panel = document.getElementById("advanced-panel");
+            const chevron = document.getElementById("advanced-chevron");
+            const isOpen = panel.classList.toggle("open");
+            chevron.classList.toggle("open", isOpen);
+        }
 
         function applyPreset(key) {
             const config = PRESET_CONFIGS[key];
@@ -397,8 +557,20 @@
             document.getElementById("field-temperature").value = config.temp;
             document.getElementById("field-area").value = config.area;
 
+            // Update advanced fields if present
+            if (document.getElementById("field-temp-max")) {
+                document.getElementById("field-temp-max").value = config.temp_max;
+                document.getElementById("field-temp-min").value = config.temp_min;
+                document.getElementById("field-et0").value = config.et0;
+                document.getElementById("field-radiation").value = config.radiation;
+                document.getElementById("field-precip-hours").value = config.precip_hours;
+                document.getElementById("field-climate-index").value = config.climate_index;
+            }
+
             document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
-            event.target.classList.add("active");
+            if (event && event.target) {
+                event.target.classList.add("active");
+            }
         }
     </script>
 </body>

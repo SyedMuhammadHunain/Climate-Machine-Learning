@@ -25,13 +25,13 @@
 **Description:** Add an expandable/collapsible "Advanced Meteorological Parameters" section below the core grid in `frontend/climate-resilient-frontend/predict.html`. This accordion will contain the secondary features used by the ML pipeline: Maximum Temperature (`temperature_2m_max`), Minimum Temperature (`temperature_2m_min`), FAO Evapotranspiration (`fao_evapotranspiration`), Solar Radiation (`shortwave_radiation`), Precipitation Hours (`precipitation_hours`), and Climate Index (`climate_index`).
 
 **Acceptance criteria:**
-- [ ] Accordion toggles open and closed with subtle chevron indicator without page reloads.
-- [ ] Contains 6 advanced meteorological inputs pre-populated with Pakistan regional averages.
-- [ ] Styled cleanly within the Ashby design system.
+- [x] Accordion toggles open and closed with subtle chevron indicator without page reloads.
+- [x] Contains 6 advanced meteorological inputs pre-populated with Pakistan regional averages.
+- [x] Styled cleanly within the Ashby design system.
 
 **Verification:**
-- [ ] Accordion toggle works on click.
-- [ ] Input values read correctly into JavaScript form payload.
+- [x] Accordion toggle works on click.
+- [x] Input values read correctly into JavaScript form payload.
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -41,9 +41,9 @@
 ---
 
 ## Checkpoint: Form Layout & Accessibility
-- [ ] Core and advanced inputs render within 720px container.
-- [ ] Responsive on both mobile and desktop viewports.
-- [ ] Presets populate both core and advanced fields properly.
+- [x] Core and advanced inputs render within 720px container.
+- [x] Responsive on both mobile and desktop viewports.
+- [x] Presets populate both core and advanced fields properly.
 
 ---
 
