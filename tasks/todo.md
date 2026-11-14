@@ -53,14 +53,14 @@
 **Description:** Split data temporally by `Year` to prevent temporal leakage. Drop `Production` to avoid mathematical target leakage ($\text{Yield} = \text{Production} / \text{Area}$). Build a scikit-learn `ColumnTransformer` with `StandardScaler` for continuous climate features and `OneHotEncoder` for `Crop` and `Province`.
 
 **Acceptance criteria:**
-- [ ] Train set: `Year <= 2016` (72.7%, 7,488 rows).
-- [ ] Validation set: `2017 <= Year <= 2019` (13.6%, 1,404 rows).
-- [ ] Test set: `Year >= 2020` (13.6%, 1,404 rows).
-- [ ] `Production` column excluded from feature matrix $X$.
-- [ ] Preprocessor pipeline fits strictly on training split.
+- [x] Train set: `Year <= 2016` (72.7%, 7,488 rows).
+- [x] Validation set: `2017 <= Year <= 2019` (13.6%, 1,404 rows).
+- [x] Test set: `Year >= 2020` (13.6%, 1,404 rows).
+- [x] `Production` column excluded from feature matrix $X$.
+- [x] Preprocessor pipeline fits strictly on training split.
 
 **Verification:**
-- [ ] Assert split row counts and verify transformed feature dimensions on train, val, and test partitions.
+- [x] Assert split row counts and verify transformed feature dimensions on train, val, and test partitions. (Passed: 7,488 / 1,404 / 1,404 split, 32 transformed features, zero leakage).
 
 **Dependencies:** Task 2
 **Files likely touched:**
