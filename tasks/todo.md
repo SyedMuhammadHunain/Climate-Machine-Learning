@@ -1,37 +1,38 @@
-# Tasks: Climate-Resilient Low-Water Crop Selection
+# Tasks: Real-World Climate & Crop Yield Machine Learning Pipeline
 
-## Phase 1: Foundation & Data Pipeline
+## Phase 1: Real-World Ingestion & Exploratory Analysis
 
-### Task 1: Data Ingestion, Merging & Validation
-**Description:** Load the three raw parquet/CSV datasets (`crop_production_and_acreage`, `rainfall_and_drought_indices`, `water_resource_availability`), merge them on `['District', 'Province', 'Crop_Year', 'Season']`, validate schema, shapes, and null counts.
+### Task 1: Real-World Data Ingestion, Schema Cleanup & Validation
+**Description:** Download `merged_agri_climate_data.csv` directly from `Abdullah-Masood-05/pakistan-crop-yield-vs-climate`, delete previous synthetic data files in `data/raw/`, store the real dataset in CSV/Parquet format, and inspect schema, data distributions, and missing values.
 
 **Acceptance criteria:**
-- [x] Loads all 3 raw sources cleanly.
-- [x] Produces a unified DataFrame with 11,088 rows and 24 columns.
-- [x] Confirms the 5 drought-resilient crops (`Is_Drought_Resilient == True`) and their water demands.
+- [x] Remove old synthetic mock data in `data/raw/`.
+- [x] Save genuine 10,296-row dataset to `data/raw/pakistan_crop_yield_climate.csv` and parquet.
+- [x] Verify 0 missing values across all 19 columns and confirm 13 distinct crops across 2001–2022.
 
 **Verification:**
-- [x] Run notebook cell; assert `df.shape == (11088, 24)` and verify null counts. (Passed: executed via nbconvert with zero missing values).
+- [x] Run notebook ingestion cells; assert `df.shape == (10296, 19)` and `df.isnull().sum().sum() == 0`. (Passed: 10,296 rows, 19 columns, 0 nulls across all features).
 
 **Dependencies:** None
 **Files likely touched:**
+- `data/raw/`
 - `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (1 file)
+**Estimated scope:** S (2 files)
 
 ---
 
 ### Task 2: Exploratory Data Analysis (EDA) with 5 Rubric Visualizations
-**Description:** Build 5 required publication-quality seaborn/matplotlib charts exploring data distributions, correlations, and relationships relevant to drought and crop yield.
+**Description:** Generate 5 publication-quality seaborn/matplotlib charts exploring real-world relationships between crop yield, drought stress, and climatic factors across Punjab, Sindh, and Balochistan.
 
 **Acceptance criteria:**
-- [x] Plot 1: Yield distribution by crop (`Base_Yield_kg_ha` across 10 crops).
-- [x] Plot 2: Relationship between rainfall deficit (`Rainfall_Deficit_Pct`) and yield.
-- [x] Plot 3: Drought severity distribution (`Drought_Severity_Class` frequency and crop impact).
-- [x] Plot 4: Correlation heatmap across numerical weather/soil/irrigation indices and yield.
-- [x] Plot 5: Water regime comparison (Canal vs. Tubewell vs. Rainfed areas across provinces).
+- [ ] Plot 1: Yield distribution across all 13 crops (boxplot / violinplot showing real yield variability).
+- [ ] Plot 2: Relationship between precipitation / drought stress (`precipitation_sum`, `Climate_Index`) and crop yield.
+- [ ] Plot 3: Temperature and evapotranspiration profiles across provinces.
+- [ ] Plot 4: Correlation heatmap of climate metrics and crop yield.
+- [ ] Plot 5: Temporal yield trend over time (2001–2022) illustrating real historical fluctuations.
 
 **Verification:**
-- [x] Notebook renders all 5 figures without warnings or clipping. (Passed: 5 PNG figures embedded via nbconvert).
+- [ ] Notebook renders all 5 figures cleanly without warnings or clipping.
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -41,26 +42,27 @@
 ---
 
 ## Checkpoint: Foundation
-- [x] Clean merged dataset verified (11,088 rows, 24 columns).
-- [x] All 5 EDA plots render and reflect key relationships.
+- [ ] Real dataset verified on disk and in notebook (10,296 rows, 19 columns).
+- [ ] All 5 EDA plots render and reflect genuine historical agricultural dynamics.
 
 ---
 
-## Phase 2: Preprocessing & Modeling
+## Phase 2: Leakage-Free Preprocessing & Model Evaluation
 
 ### Task 3: Time-Ordered Train/Val/Test Split & Scikit-Learn Preprocessing Pipeline
-**Description:** Implement temporal dataset split by year to avoid temporal leakage. Create a scikit-learn `ColumnTransformer` with `SimpleImputer`, `StandardScaler`, and `OneHotEncoder` fitted strictly on the training partition.
+**Description:** Split data temporally by `Year` to prevent temporal leakage. Drop `Production` to avoid mathematical target leakage ($\text{Yield} = \text{Production} / \text{Area}$). Build a scikit-learn `ColumnTransformer` with `StandardScaler` for continuous climate features and `OneHotEncoder` for `Crop` and `Province`.
 
 **Acceptance criteria:**
-- [x] Train set: `Crop_Year <= 2016` (70.8%, 7,854 rows).
-- [x] Val set: `2017 <= Crop_Year <= 2019` (12.5%, 1,386 rows).
-- [x] Test set: `Crop_Year >= 2020` (16.7%, 1,848 rows).
-- [x] ColumnTransformer handles numeric features, categorical features, and prevents leakage.
+- [ ] Train set: `Year <= 2016` (72.7%, 7,488 rows).
+- [ ] Validation set: `2017 <= Year <= 2019` (13.6%, 1,404 rows).
+- [ ] Test set: `Year >= 2020` (13.6%, 1,404 rows).
+- [ ] `Production` column excluded from feature matrix $X$.
+- [ ] Preprocessor pipeline fits strictly on training split.
 
 **Verification:**
-- [x] Assert split row counts and verify that preprocessor transforms train/val/test without error. (Passed: 117 encoded features generated without leakage).
+- [ ] Assert split row counts and verify transformed feature dimensions on train, val, and test partitions.
 
-**Dependencies:** Task 1, Task 2
+**Dependencies:** Task 2
 **Files likely touched:**
 - `notebooks/01_low_water_crop_selection.ipynb`
 **Estimated scope:** S (1 file)
@@ -68,15 +70,16 @@
 ---
 
 ### Task 4: Baseline + 3 Model Training (Dummy, Ridge, Random Forest, HistGradientBoosting)
-**Description:** Construct complete scikit-learn pipelines pairing the preprocessor with a DummyRegressor baseline, Ridge Regression, RandomForestRegressor, and HistGradientBoostingRegressor. Train each and record validation metrics.
+**Description:** Construct unified pipelines combining the preprocessor with a `DummyRegressor` baseline, `Ridge`, `RandomForestRegressor`, and `HistGradientBoostingRegressor`. Train on the training partition and log validation metrics (MAE, RMSE, $R^2$).
 
 **Acceptance criteria:**
-- [x] Baseline DummyRegressor trained (predicts training mean).
-- [x] Ridge, Random Forest, and HistGradientBoosting trained on train split.
-- [x] Validation MAE, RMSE, and $R^2$ computed and compared in a summary table.
+- [ ] Baseline DummyRegressor trained (predicts train mean).
+- [ ] Ridge, Random Forest, and HistGradientBoosting trained on train split.
+- [ ] Validation performance table and comparison barplot generated.
+- [ ] Non-linear models demonstrate clear improvement over baseline with realistic $R^2$.
 
 **Verification:**
-- [x] Models beat the baseline by a clear margin on validation data. (Passed: Baseline $R^2=0.00$, Ridge $R^2=0.9999$, RF $R^2=1.00$, HistGradientBoosting $R^2=1.00$).
+- [ ] Validation summary table printed; ML models beat baseline by a wide margin.
 
 **Dependencies:** Task 3
 **Files likely touched:**
@@ -85,18 +88,17 @@
 
 ---
 
-### Task 5: 5-Fold Cross-Validation Tuning & Test Set Evaluation
-**Description:** Perform 5-fold cross-validated hyperparameter tuning using `GridSearchCV` / `RandomizedSearchCV` on the best model family. Evaluate the optimal model once on the held-out test set (2020–2023).
+### Task 5: 5-Fold Cross-Validation Tuning & Held-Out Test Evaluation
+**Description:** Perform 5-fold cross-validated hyperparameter search using `GridSearchCV` on the top-performing model family. Evaluate the optimal model once on the held-out test set (2020–2022). Generate residual plots.
 
 **Acceptance criteria:**
-- [x] 5-fold CV run on training data for hyperparameter search.
-- [x] Optimal hyperparameters identified (`max_depth=10, min_samples_split=2, n_estimators=50`).
-- [x] Final evaluation on held-out test set: MAE, RMSE, and $R^2$ logged.
-- [x] Confirmed $R^2 > 0.70$ test success threshold ($R^2 = 1.00$, beating baseline $R^2=0.00$).
-- [x] Residual and error analysis plots generated (predicted vs actual, residuals).
+- [ ] 5-fold CV run on training partition to tune tree hyperparameters (e.g. `max_depth`, `min_samples_split`, `n_estimators`).
+- [ ] Best hyperparameters logged alongside CV score.
+- [ ] Held-out test set evaluation: final MAE, RMSE, and $R^2$ logged.
+- [ ] Predicted vs. Actual and residual distribution plots rendered.
 
 **Verification:**
-- [x] Metrics table printed; residual plot rendered. (Passed: Test MAE 0.01 kg/ha, RMSE 0.42 kg/ha, $R^2=1.00$).
+- [ ] Test metrics table printed; residual plots verified.
 
 **Dependencies:** Task 4
 **Files likely touched:**
@@ -106,33 +108,32 @@
 ---
 
 ## Checkpoint: Model Performance
-- [x] Model beats baseline, achieves $R^2 > 0.70$ on 2020–2023 test set.
+- [ ] Tuned model demonstrates robust generalization on held-out test data without artificial 1.00 overfitting.
 
 ---
 
-## Phase 3: Model Export & Low-Water Crop Recommendation Engine
+## Phase 3: Export & Drought Recommendation Engine
 
 ### Task 6: Export Pipeline with `joblib` & Implement Crop Ranking Function
-**Description:** Export final tuned pipeline to `models/crop_yield_pipeline.joblib`. Create a high-level Python function `recommend_low_water_crops(...)` that simulates farmer drought inputs, evaluates candidate low-water crops, and returns a sorted recommendation table with a comparison bar chart.
+**Description:** Export final tuned pipeline to `models/crop_yield_pipeline.joblib`. Build an interactive ranking function `recommend_low_water_crops(...)` that accepts user drought conditions, predicts expected yield for candidate crops, and highlights drought-resilient crops (dates, grapes, wheat) over water-demanding crops (sugarcane, rice, banana).
 
 **Acceptance criteria:**
-- [x] `models/` directory created and `joblib.dump()` writes pipeline.
-- [x] Pipeline reloaded with `joblib.load()` and output verified.
-- [x] `recommend_low_water_crops(...)` accepts farmer scenario parameters and returns ranked crops (Bajra, Sorghum, Chickpea, Canola, Barley).
-- [x] Example drought scenario demonstrated with visualization.
+- [ ] Pipeline serialized via `joblib.dump()` to `models/crop_yield_pipeline.joblib`.
+- [ ] Pipeline reloaded and predictions verified with `np.testing.assert_allclose`.
+- [ ] `recommend_low_water_crops(...)` simulates drought scenario and prints ranked crops with expected yields.
+- [ ] Comparison visualization rendered showing recommended vs. non-recommended crops.
 
 **Verification:**
-- [x] File exists at `models/crop_yield_pipeline.joblib`. (Passed: 95 KB serialized pipeline verified).
-- [x] Recommendation function successfully runs on sample input and prints ranked table. (Passed: Kharif & Rabi scenarios ranked and plotted).
+- [ ] Export file exists and loads cleanly; recommendation function produces valid ranked dataframe and plot.
 
 **Dependencies:** Task 5
 **Files likely touched:**
 - `notebooks/01_low_water_crop_selection.ipynb`
 - `models/crop_yield_pipeline.joblib`
-**Estimated scope:** S (1 file)
+**Estimated scope:** S (2 files)
 
 ---
 
 ## Checkpoint: Complete Deliverable
-- [x] Complete notebook runs sequentially without errors.
-- [x] Final model exported for teammate's downstream script/app conversion.
+- [ ] Notebook runs cleanly end-to-end via `nbconvert`.
+- [ ] Git commit and push to branch `Hunain`.
