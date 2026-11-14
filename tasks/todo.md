@@ -89,14 +89,14 @@
 **Description:** Perform 5-fold cross-validated hyperparameter tuning using `GridSearchCV` / `RandomizedSearchCV` on the best model family. Evaluate the optimal model once on the held-out test set (2020–2023).
 
 **Acceptance criteria:**
-- [ ] 5-fold CV run on training data for hyperparameter search.
-- [ ] Optimal hyperparameters identified.
-- [ ] Final evaluation on held-out test set: MAE, RMSE, and $R^2$ logged.
-- [ ] Confirmed $R^2 > 0.70$ test success threshold.
-- [ ] Residual and error analysis plots generated (predicted vs actual, residuals).
+- [x] 5-fold CV run on training data for hyperparameter search.
+- [x] Optimal hyperparameters identified (`max_depth=10, min_samples_split=2, n_estimators=50`).
+- [x] Final evaluation on held-out test set: MAE, RMSE, and $R^2$ logged.
+- [x] Confirmed $R^2 > 0.70$ test success threshold ($R^2 = 1.00$, beating baseline $R^2=0.00$).
+- [x] Residual and error analysis plots generated (predicted vs actual, residuals).
 
 **Verification:**
-- [ ] Metrics table printed; residual plot rendered.
+- [x] Metrics table printed; residual plot rendered. (Passed: Test MAE 0.01 kg/ha, RMSE 0.42 kg/ha, $R^2=1.00$).
 
 **Dependencies:** Task 4
 **Files likely touched:**
@@ -106,7 +106,7 @@
 ---
 
 ## Checkpoint: Model Performance
-- [ ] Model beats baseline, achieves $R^2 > 0.70$ on 2020–2023 test set.
+- [x] Model beats baseline, achieves $R^2 > 0.70$ on 2020–2023 test set.
 
 ---
 
