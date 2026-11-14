@@ -1,139 +1,79 @@
-# Tasks: Real-World Climate & Crop Yield Machine Learning Pipeline
+# Tasks: Clean Merge of `Hunain` and `afzal` Branches into `main`
 
-## Phase 1: Real-World Ingestion & Exploratory Analysis
+## Phase 1: Git Merging & History Preservation
 
-### Task 1: Real-World Data Ingestion, Schema Cleanup & Validation
-**Description:** Download `merged_agri_climate_data.csv` directly from `Abdullah-Masood-05/pakistan-crop-yield-vs-climate`, delete previous synthetic data files in `data/raw/`, store the real dataset in CSV/Parquet format, and inspect schema, data distributions, and missing values.
+### Task 1: Checkout `main` and Sequentially Merge `Hunain` and `afzal`
+**Description:** Switch to `main`, merge branch `Hunain`, and then merge branch `origin/afzal`. Ensure all commits from both contributors are preserved without any conflict markers.
 
 **Acceptance criteria:**
-- [x] Remove old synthetic mock data in `data/raw/`.
-- [x] Save genuine 10,296-row dataset to `data/raw/pakistan_crop_yield_climate.csv` and parquet.
-- [x] Verify 0 missing values across all 19 columns and confirm 13 distinct crops across 2001–2022.
+- [ ] Working directory is clean on branch `main`.
+- [ ] `Hunain` merged cleanly into `main` (brings ML pipeline, real dataset, and notebook).
+- [ ] `origin/afzal` merged cleanly into `main` (brings FastAPI backend and test suite).
+- [ ] `git status` confirms zero merge conflicts and clean working tree.
 
 **Verification:**
-- [x] Run notebook ingestion cells; assert `df.shape == (10296, 19)` and `df.isnull().sum().sum() == 0`. (Passed: 10,296 rows, 19 columns, 0 nulls across all features).
+- [ ] Run `git log --oneline -5` on `main`; confirm commits from both Hunain and Afzal are present.
 
 **Dependencies:** None
 **Files likely touched:**
-- `data/raw/`
-- `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (2 files)
+- Entire repository tree
+**Estimated scope:** S (Git operations)
 
 ---
 
-### Task 2: Exploratory Data Analysis (EDA) with 5 Rubric Visualizations
-**Description:** Generate 5 publication-quality seaborn/matplotlib charts exploring real-world relationships between crop yield, drought stress, and climatic factors across Punjab, Sindh, and Balochistan.
+## Checkpoint: Clean Merge
+- [ ] Both branches merged into `main` with 0 conflicts.
+
+---
+
+## Phase 2: System Verification & Testing
+
+### Task 2: Synchronize Dependencies & Run Verification Suite
+**Description:** Run `uv sync` to update the local virtual environment with FastAPI and related dependencies specified in `afzal`'s `pyproject.toml`. Run `scripts/verify_backend.py` to ensure backend endpoints and model inference work.
 
 **Acceptance criteria:**
-- [x] Plot 1: Yield distribution across all 13 crops (boxplot / violinplot showing real yield variability).
-- [x] Plot 2: Relationship between precipitation / drought stress (`precipitation_sum`, `Climate_Index`) and crop yield.
-- [x] Plot 3: Temperature and evapotranspiration profiles across provinces.
-- [x] Plot 4: Correlation heatmap of climate metrics and crop yield.
-- [x] Plot 5: Temporal yield trend over time (2001–2022) illustrating real historical fluctuations.
+- [ ] Dependencies updated via `uv sync`.
+- [ ] `scripts/verify_backend.py` executes without errors:
+  - GET `/health` returns 200 OK and `model_loaded: true`.
+  - GET `/api/v1/metadata` returns 3 provinces and 13 crops.
+  - POST `/api/v1/predict` returns valid predictions.
+  - POST `/api/v1/recommend` returns ranked low-water crops.
+- [ ] Notebook integrity verified.
 
 **Verification:**
-- [x] Notebook renders all 5 figures cleanly without warnings or clipping. (Passed: 5 publication-quality seaborn figures generated with real variance).
+- [ ] `.venv/bin/python scripts/verify_backend.py` outputs all PASSED assertions.
 
 **Dependencies:** Task 1
 **Files likely touched:**
-- `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (1 file)
+- `.venv/`
+- `uv.lock`
+**Estimated scope:** S (Execution & verification)
 
 ---
 
-## Checkpoint: Foundation
-- [x] Real dataset verified on disk and in notebook (10,296 rows, 19 columns).
-- [x] All 5 EDA plots render and reflect genuine historical agricultural dynamics.
+## Checkpoint: All Tests Green
+- [ ] All backend endpoints verified and model inference fully functional.
 
 ---
 
-## Phase 2: Leakage-Free Preprocessing & Model Evaluation
+## Phase 3: Remote Synchronization
 
-### Task 3: Time-Ordered Train/Val/Test Split & Scikit-Learn Preprocessing Pipeline
-**Description:** Split data temporally by `Year` to prevent temporal leakage. Drop `Production` to avoid mathematical target leakage ($\text{Yield} = \text{Production} / \text{Area}$). Build a scikit-learn `ColumnTransformer` with `StandardScaler` for continuous climate features and `OneHotEncoder` for `Crop` and `Province`.
+### Task 3: Push Merged `main` to `origin/main`
+**Description:** Push the updated, verified `main` branch to the GitHub remote repository (`origin/main`).
 
 **Acceptance criteria:**
-- [x] Train set: `Year <= 2016` (72.7%, 7,488 rows).
-- [x] Validation set: `2017 <= Year <= 2019` (13.6%, 1,404 rows).
-- [x] Test set: `Year >= 2020` (13.6%, 1,404 rows).
-- [x] `Production` column excluded from feature matrix $X$.
-- [x] Preprocessor pipeline fits strictly on training split.
+- [ ] `git push origin main` executes cleanly.
+- [ ] `origin/main` reflects all unified work (Data + Notebook + Backend).
 
 **Verification:**
-- [x] Assert split row counts and verify transformed feature dimensions on train, val, and test partitions. (Passed: 7,488 / 1,404 / 1,404 split, 32 transformed features, zero leakage).
+- [ ] Run `git branch -vv` to confirm `main` is up to date with `origin/main`.
 
 **Dependencies:** Task 2
 **Files likely touched:**
-- `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (1 file)
-
----
-
-### Task 4: Baseline + 3 Model Training (Dummy, Ridge, Random Forest, HistGradientBoosting)
-**Description:** Construct unified pipelines combining the preprocessor with a `DummyRegressor` baseline, `Ridge`, `RandomForestRegressor`, and `HistGradientBoostingRegressor`. Train on the training partition and log validation metrics (MAE, RMSE, $R^2$).
-
-**Acceptance criteria:**
-- [x] Baseline DummyRegressor trained (predicts train mean).
-- [x] Ridge, Random Forest, and HistGradientBoosting trained on train split.
-- [x] Validation performance table and comparison barplot generated.
-- [x] Non-linear models demonstrate clear improvement over baseline with realistic $R^2$.
-
-**Verification:**
-- [x] Validation summary table printed; ML models beat baseline by a wide margin. (Passed: Baseline $R^2=0.00$, Ridge $R^2=0.83$, HistGB $R^2=0.87$, RF $R^2=0.87$).
-
-**Dependencies:** Task 3
-**Files likely touched:**
-- `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (1 file)
-
----
-
-### Task 5: 5-Fold Cross-Validation Tuning & Held-Out Test Evaluation
-**Description:** Perform 5-fold cross-validated hyperparameter search using `GridSearchCV` on the top-performing model family. Evaluate the optimal model once on the held-out test set (2020–2022). Generate residual plots.
-
-**Acceptance criteria:**
-- [x] 5-fold CV run on training partition to tune tree hyperparameters (e.g. `max_depth`, `min_samples_split`, `n_estimators`).
-- [x] Best hyperparameters logged alongside CV score (`max_depth=15, min_samples_split=5, n_estimators=100`, CV $R^2=0.9941$).
-- [x] Held-out test set evaluation: final MAE, RMSE, and $R^2$ logged (Test $R^2=0.8243$, beating baseline $R^2=-0.018$).
-- [x] Predicted vs. Actual and residual distribution plots rendered.
-
-**Verification:**
-- [x] Test metrics table printed; residual plots verified. (Passed: Test $R^2=0.8243$, MAE 32.55, clean residual distribution).
-
-**Dependencies:** Task 4
-**Files likely touched:**
-- `notebooks/01_low_water_crop_selection.ipynb`
-**Estimated scope:** S (1 file)
-
----
-
-## Checkpoint: Model Performance
-- [x] Tuned model demonstrates robust generalization on held-out test data without artificial 1.00 overfitting.
-
----
-
-## Phase 3: Export & Drought Recommendation Engine
-
-### Task 6: Export Pipeline with `joblib` & Implement Crop Ranking Function
-**Description:** Export final tuned pipeline to `models/crop_yield_pipeline.joblib`. Build an interactive ranking function `recommend_low_water_crops(...)` that accepts user drought conditions, predicts expected yield for candidate crops, and highlights drought-resilient crops (dates, grapes, wheat) over water-demanding crops (sugarcane, rice, banana).
-
-**Acceptance criteria:**
-- [x] Pipeline serialized via `joblib.dump()` to `models/crop_yield_pipeline.joblib`.
-- [x] Pipeline reloaded and predictions verified with `np.testing.assert_allclose`.
-- [x] `recommend_low_water_crops(...)` simulates drought scenario and prints ranked crops with expected yields.
-- [x] Comparison visualization rendered showing recommended vs. non-recommended crops.
-
-**Verification:**
-- [x] Export file exists and loads cleanly; recommendation function produces valid ranked dataframe and plot. (Passed: 9.3 MB joblib file verified, recommendations generated).
-
-**Dependencies:** Task 5
-**Files likely touched:**
-- `notebooks/01_low_water_crop_selection.ipynb`
-- `models/crop_yield_pipeline.joblib`
-**Estimated scope:** S (2 files)
+- Git remote
+**Estimated scope:** XS (1 command)
 
 ---
 
 ## Checkpoint: Complete Deliverable
-- [x] Notebook runs cleanly end-to-end via `nbconvert`.
-- [x] Git commit and push to branch `Hunain`.
+- [ ] GitHub remote `main` branch contains the full collaborative project with zero conflicts.
