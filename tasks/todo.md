@@ -25,14 +25,14 @@
 **Description:** Generate 5 publication-quality seaborn/matplotlib charts exploring real-world relationships between crop yield, drought stress, and climatic factors across Punjab, Sindh, and Balochistan.
 
 **Acceptance criteria:**
-- [ ] Plot 1: Yield distribution across all 13 crops (boxplot / violinplot showing real yield variability).
-- [ ] Plot 2: Relationship between precipitation / drought stress (`precipitation_sum`, `Climate_Index`) and crop yield.
-- [ ] Plot 3: Temperature and evapotranspiration profiles across provinces.
-- [ ] Plot 4: Correlation heatmap of climate metrics and crop yield.
-- [ ] Plot 5: Temporal yield trend over time (2001–2022) illustrating real historical fluctuations.
+- [x] Plot 1: Yield distribution across all 13 crops (boxplot / violinplot showing real yield variability).
+- [x] Plot 2: Relationship between precipitation / drought stress (`precipitation_sum`, `Climate_Index`) and crop yield.
+- [x] Plot 3: Temperature and evapotranspiration profiles across provinces.
+- [x] Plot 4: Correlation heatmap of climate metrics and crop yield.
+- [x] Plot 5: Temporal yield trend over time (2001–2022) illustrating real historical fluctuations.
 
 **Verification:**
-- [ ] Notebook renders all 5 figures cleanly without warnings or clipping.
+- [x] Notebook renders all 5 figures cleanly without warnings or clipping. (Passed: 5 publication-quality seaborn figures generated with real variance).
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -42,8 +42,8 @@
 ---
 
 ## Checkpoint: Foundation
-- [ ] Real dataset verified on disk and in notebook (10,296 rows, 19 columns).
-- [ ] All 5 EDA plots render and reflect genuine historical agricultural dynamics.
+- [x] Real dataset verified on disk and in notebook (10,296 rows, 19 columns).
+- [x] All 5 EDA plots render and reflect genuine historical agricultural dynamics.
 
 ---
 
