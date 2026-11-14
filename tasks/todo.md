@@ -53,13 +53,13 @@
 **Description:** Add a primary Ashby-styled action button ("Run Crop Yield Prediction"). Implement client-side physical validation (ensuring $T_{max} \ge T_{min}$, positive area, and rainfall within 0–600mm). Send asynchronous request to FastAPI endpoints (`POST /api/v1/recommend` or `POST /api/v1/predict`) based on whether "All Crops" or a specific crop is selected.
 
 **Acceptance criteria:**
-- [ ] Action button styled with Ashby button tokens (rounded, `#232323` background with hover effect).
-- [ ] Temperature validation prevents submission if $T_{max} < T_{min}$.
-- [ ] Asynchronous fetch handles API response and displays loading spinner while waiting.
+- [x] Action button styled with Ashby button tokens (rounded, `#232323` background with hover effect).
+- [x] Temperature validation prevents submission if $T_{max} < T_{min}$.
+- [x] Asynchronous fetch handles API response and displays loading spinner while waiting.
 
 **Verification:**
-- [ ] Form submission dispatches valid JSON matching `SinglePredictionRequest` or `DroughtScenarioRequest`.
-- [ ] Invalid temperature trigger displays clean inline warning.
+- [x] Form submission dispatches valid JSON matching `SinglePredictionRequest` or `DroughtScenarioRequest`.
+- [x] Invalid temperature trigger displays clean inline warning.
 
 **Dependencies:** Task 1, Task 2
 **Files likely touched:**

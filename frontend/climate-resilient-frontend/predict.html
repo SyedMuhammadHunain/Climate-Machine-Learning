@@ -207,6 +207,91 @@
             height: 12px;
         }
 
+        /* Submit Action Row */
+        .form-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            margin-bottom: 24px;
+        }
+
+        .btn-submit {
+            height: 42px;
+            padding: 0 28px;
+            background-color: var(--colorPrimary900);
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--colorPrimary600);
+            box-shadow: 0 4px 12px rgba(255, 115, 68, 0.25);
+        }
+
+        .btn-reset {
+            height: 42px;
+            padding: 0 20px;
+            background: transparent;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-reset:hover {
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral400);
+        }
+
+        .validation-alert {
+            display: none;
+            padding: 10px 16px;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #b91c1c;
+            margin-bottom: 16px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--colorNeutral600);
+            margin-top: 12px;
+        }
+
+        .loading-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--colorNeutral300);
+            border-top-color: var(--colorPrimary600);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Advanced Accordion Toggle */
         .advanced-toggle-btn {
             background: none;
@@ -457,6 +542,32 @@
                 </div>
 
             </div>
+
+            <!-- Validation Alert Box -->
+            <div id="validation-alert" class="validation-alert">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span id="validation-msg">Validation error message</span>
+            </div>
+
+            <!-- Primary Action Buttons Row -->
+            <div class="form-actions-row">
+                <button type="button" class="btn-submit" id="btn-submit-prediction" onclick="submitPredictionForm()">
+                    <span>Run Crop Yield Prediction</span>
+                </button>
+                <button type="button" class="btn-reset" onclick="resetFormToDefaults()">
+                    Reset
+                </button>
+            </div>
+
+            <!-- Loading Spinner State -->
+            <div id="loading-indicator" class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <span>Executing machine learning pipeline inference...</span>
+            </div>
         </div>
 
         <!-- Section 1 Preview: Engineering / Drought-Resilient Crops -->
@@ -570,6 +681,124 @@
             document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
             if (event && event.target) {
                 event.target.classList.add("active");
+            }
+        }
+
+        function showValidationError(message) {
+            const alertBox = document.getElementById("validation-alert");
+            const msgEl = document.getElementById("validation-msg");
+            msgEl.textContent = message;
+            alertBox.style.display = "flex";
+        }
+
+        function clearValidationError() {
+            const alertBox = document.getElementById("validation-alert");
+            alertBox.style.display = "none";
+        }
+
+        function resetFormToDefaults() {
+            clearValidationError();
+            applyPreset('severe');
+            document.getElementById("field-province").value = "Punjab";
+            document.getElementById("field-crop").value = "ALL";
+        }
+
+        async function submitPredictionForm() {
+            clearValidationError();
+
+            const province = document.getElementById("field-province").value;
+            const crop = document.getElementById("field-crop").value;
+            const area = parseFloat(document.getElementById("field-area").value);
+            const precip = parseFloat(document.getElementById("field-precipitation").value);
+            const temp = parseFloat(document.getElementById("field-temperature").value);
+            const temp_max = parseFloat(document.getElementById("field-temp-max").value);
+            const temp_min = parseFloat(document.getElementById("field-temp-min").value);
+            const et0 = parseFloat(document.getElementById("field-et0").value);
+            const radiation = parseFloat(document.getElementById("field-radiation").value);
+            const precip_hours = parseFloat(document.getElementById("field-precip-hours").value);
+            const climate_index = parseFloat(document.getElementById("field-climate-index").value);
+
+            // Client-side Physical Agronomic Validation
+            if (isNaN(area) || area < 0.1 || area > 20000.0) {
+                showValidationError("Cultivated area must be between 0.1 and 20,000 hectares.");
+                return;
+            }
+
+            if (isNaN(precip) || precip < 0.0 || precip > 600.0) {
+                showValidationError("Seasonal precipitation must be between 0 and 600 mm.");
+                return;
+            }
+
+            if (isNaN(temp) || temp < -5.0 || temp > 55.0) {
+                showValidationError("Mean temperature must be between -5.0°C and 55.0°C.");
+                return;
+            }
+
+            if (!isNaN(temp_max) && !isNaN(temp_min)) {
+                if (temp_max < temp_min) {
+                    showValidationError(`Maximum temperature (${temp_max}°C) cannot be lower than minimum temperature (${temp_min}°C).`);
+                    return;
+                }
+            }
+
+            const loadingEl = document.getElementById("loading-indicator");
+            const submitBtn = document.getElementById("btn-submit-prediction");
+            loadingEl.style.display = "inline-flex";
+            submitBtn.disabled = true;
+
+            const isAllCrops = crop === "ALL";
+            const endpoint = isAllCrops ? `${API_BASE}/api/v1/recommend` : `${API_BASE}/api/v1/predict`;
+
+            const payload = isAllCrops ? {
+                province: province,
+                area: area,
+                precipitation_sum: precip,
+                temperature_2m_mean: temp,
+                temperature_2m_max: temp_max,
+                temperature_2m_min: temp_min,
+                fao_evapotranspiration: et0,
+                shortwave_radiation: radiation,
+                precipitation_hours: precip_hours,
+                climate_index: climate_index,
+                scenario_name: `Agroclimatic Simulation (${province})`
+            } : {
+                province: province,
+                crop: crop,
+                area: area,
+                precipitation_sum: precip,
+                temperature_2m_mean: temp,
+                temperature_2m_max: temp_max,
+                temperature_2m_min: temp_min,
+                fao_evapotranspiration: et0,
+                shortwave_radiation: radiation,
+                precipitation_hours: precip_hours,
+                climate_index: climate_index
+            };
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (window.renderModelResults) {
+                        window.renderModelResults(data, isAllCrops);
+                    }
+                } else {
+                    const err = await response.json();
+                    showValidationError(err.detail || "API rejected input parameters.");
+                }
+            } catch (networkErr) {
+                // If backend server is not active during local demo, trigger fallback simulation
+                if (window.renderFallbackSimulation) {
+                    window.renderFallbackSimulation(payload, isAllCrops);
+                }
+            } finally {
+                loadingEl.style.display = "none";
+                submitBtn.disabled = false;
             }
         }
     </script>
