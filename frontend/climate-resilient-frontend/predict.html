@@ -641,6 +641,8 @@
     </div>
 
     <script>
+        const API_BASE = window.API_BASE || "http://127.0.0.1:8000";
+
         const PRESET_CONFIGS = {
             severe: {
                 precip: 3.5,
@@ -781,56 +783,69 @@
             loadingEl.style.display = "inline-flex";
             submitBtn.disabled = true;
 
-            const isAllCrops = crop === "ALL";
-            const endpoint = isAllCrops ? `${API_BASE}/api/v1/recommend` : `${API_BASE}/api/v1/predict`;
-
-            const payload = isAllCrops ? {
-                province: province,
-                area: area,
-                precipitation_sum: precip,
-                temperature_2m_mean: temp,
-                temperature_2m_max: temp_max,
-                temperature_2m_min: temp_min,
-                fao_evapotranspiration: et0,
-                shortwave_radiation: radiation,
-                precipitation_hours: precip_hours,
-                climate_index: climate_index,
-                scenario_name: `Agroclimatic Simulation (${province})`
-            } : {
-                province: province,
-                crop: crop,
-                area: area,
-                precipitation_sum: precip,
-                temperature_2m_mean: temp,
-                temperature_2m_max: temp_max,
-                temperature_2m_min: temp_min,
-                fao_evapotranspiration: et0,
-                shortwave_radiation: radiation,
-                precipitation_hours: precip_hours,
-                climate_index: climate_index
-            };
-
             try {
-                const response = await fetch(endpoint, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
+                const isAllCrops = crop === "ALL";
+                const endpoint = isAllCrops ? `${API_BASE}/api/v1/recommend` : `${API_BASE}/api/v1/predict`;
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (window.renderModelResults) {
-                        window.renderModelResults(data, isAllCrops);
+                const payload = isAllCrops ? {
+                    province: province,
+                    area: area,
+                    precipitation_sum: precip,
+                    temperature_2m_mean: temp,
+                    temperature_2m_max: temp_max,
+                    temperature_2m_min: temp_min,
+                    fao_evapotranspiration: et0,
+                    shortwave_radiation: radiation,
+                    precipitation_hours: precip_hours,
+                    climate_index: climate_index,
+                    scenario_name: `Agroclimatic Simulation (${province})`
+                } : {
+                    province: province,
+                    crop: crop,
+                    area: area,
+                    precipitation_sum: precip,
+                    temperature_2m_mean: temp,
+                    temperature_2m_max: temp_max,
+                    temperature_2m_min: temp_min,
+                    fao_evapotranspiration: et0,
+                    shortwave_radiation: radiation,
+                    precipitation_hours: precip_hours,
+                    climate_index: climate_index
+                };
+
+                // Abort request after 3.5s if backend is unreachable or hanging
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+                try {
+                    const response = await fetch(endpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (window.renderModelResults) {
+                            window.renderModelResults(data, isAllCrops);
+                        }
+                    } else {
+                        const err = await response.json();
+                        showValidationError(err.detail || "API rejected input parameters.");
                     }
-                } else {
-                    const err = await response.json();
-                    showValidationError(err.detail || "API rejected input parameters.");
+                } catch (networkErr) {
+                    clearTimeout(timeoutId);
+                    console.warn("Backend API request failed or timed out. Running local agronomic fallback simulation.", networkErr);
+                    // If backend server is not active during local demo, trigger fallback simulation
+                    if (window.renderFallbackSimulation) {
+                        window.renderFallbackSimulation(payload, isAllCrops);
+                    }
                 }
-            } catch (networkErr) {
-                // If backend server is not active during local demo, trigger fallback simulation
-                if (window.renderFallbackSimulation) {
-                    window.renderFallbackSimulation(payload, isAllCrops);
-                }
+            } catch (unexpectedErr) {
+                console.error("Unexpected error in prediction pipeline:", unexpectedErr);
+                showValidationError("An unexpected error occurred while executing inference.");
             } finally {
                 loadingEl.style.display = "none";
                 submitBtn.disabled = false;
