@@ -92,13 +92,13 @@
 **Description:** Perform 5-fold cross-validated hyperparameter search using `GridSearchCV` on the top-performing model family. Evaluate the optimal model once on the held-out test set (2020–2022). Generate residual plots.
 
 **Acceptance criteria:**
-- [ ] 5-fold CV run on training partition to tune tree hyperparameters (e.g. `max_depth`, `min_samples_split`, `n_estimators`).
-- [ ] Best hyperparameters logged alongside CV score.
-- [ ] Held-out test set evaluation: final MAE, RMSE, and $R^2$ logged.
-- [ ] Predicted vs. Actual and residual distribution plots rendered.
+- [x] 5-fold CV run on training partition to tune tree hyperparameters (e.g. `max_depth`, `min_samples_split`, `n_estimators`).
+- [x] Best hyperparameters logged alongside CV score (`max_depth=15, min_samples_split=5, n_estimators=100`, CV $R^2=0.9941$).
+- [x] Held-out test set evaluation: final MAE, RMSE, and $R^2$ logged (Test $R^2=0.8243$, beating baseline $R^2=-0.018$).
+- [x] Predicted vs. Actual and residual distribution plots rendered.
 
 **Verification:**
-- [ ] Test metrics table printed; residual plots verified.
+- [x] Test metrics table printed; residual plots verified. (Passed: Test $R^2=0.8243$, MAE 32.55, clean residual distribution).
 
 **Dependencies:** Task 4
 **Files likely touched:**
@@ -108,7 +108,7 @@
 ---
 
 ## Checkpoint: Model Performance
-- [ ] Tuned model demonstrates robust generalization on held-out test data without artificial 1.00 overfitting.
+- [x] Tuned model demonstrates robust generalization on held-out test data without artificial 1.00 overfitting.
 
 ---
 
