@@ -118,13 +118,13 @@
 **Description:** Export final tuned pipeline to `models/crop_yield_pipeline.joblib`. Build an interactive ranking function `recommend_low_water_crops(...)` that accepts user drought conditions, predicts expected yield for candidate crops, and highlights drought-resilient crops (dates, grapes, wheat) over water-demanding crops (sugarcane, rice, banana).
 
 **Acceptance criteria:**
-- [ ] Pipeline serialized via `joblib.dump()` to `models/crop_yield_pipeline.joblib`.
-- [ ] Pipeline reloaded and predictions verified with `np.testing.assert_allclose`.
-- [ ] `recommend_low_water_crops(...)` simulates drought scenario and prints ranked crops with expected yields.
-- [ ] Comparison visualization rendered showing recommended vs. non-recommended crops.
+- [x] Pipeline serialized via `joblib.dump()` to `models/crop_yield_pipeline.joblib`.
+- [x] Pipeline reloaded and predictions verified with `np.testing.assert_allclose`.
+- [x] `recommend_low_water_crops(...)` simulates drought scenario and prints ranked crops with expected yields.
+- [x] Comparison visualization rendered showing recommended vs. non-recommended crops.
 
 **Verification:**
-- [ ] Export file exists and loads cleanly; recommendation function produces valid ranked dataframe and plot.
+- [x] Export file exists and loads cleanly; recommendation function produces valid ranked dataframe and plot. (Passed: 9.3 MB joblib file verified, recommendations generated).
 
 **Dependencies:** Task 5
 **Files likely touched:**
@@ -135,5 +135,5 @@
 ---
 
 ## Checkpoint: Complete Deliverable
-- [ ] Notebook runs cleanly end-to-end via `nbconvert`.
+- [x] Notebook runs cleanly end-to-end via `nbconvert`.
 - [ ] Git commit and push to branch `Hunain`.
