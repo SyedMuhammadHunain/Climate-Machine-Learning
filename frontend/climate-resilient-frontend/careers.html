@@ -383,6 +383,23 @@
             border-top: 1px solid var(--colorNeutral200);
             margin-top: 64px;
         }
+
+        /* Advisory Summary Card */
+        .advisory-summary {
+            background-color: #f7f8fa;
+            border: 1px solid var(--colorNeutral200);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--colorNeutral800);
+            line-height: 1.5;
+            margin-top: 36px;
+        }
+
+        .advisory-summary strong {
+            color: var(--colorPrimary900);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -570,34 +587,52 @@
             </div>
         </div>
 
-        <!-- Section 1 Preview: Engineering / Drought-Resilient Crops -->
-        <div class="team-section" id="team-section-1">
-            <h2 class="team-title" id="team-title-1">Drought-Resilient Recommendations</h2>
-            <div id="team-items-1">
-                <div class="job-post-item">
-                    <a href="javascript:void(0)" class="job-title">Bajra (Pearl Millet)</a>
-                    <div class="job-metadata">Drought Resilient • 1,845 kg/ha • Low Water Demand • Punjab</div>
-                </div>
-                <div class="job-post-item">
-                    <a href="javascript:void(0)" class="job-title">Jowar (Sorghum)</a>
-                    <div class="job-metadata">Drought Resilient • 1,411 kg/ha • Low Water Demand • Punjab</div>
-                </div>
-            </div>
-        </div>
+        <!-- Results Container -->
+        <div id="results-container">
 
-        <!-- Section 2 Preview: Trading / Water-Intensive Crops -->
-        <div class="team-section" id="team-section-2">
-            <h2 class="team-title" id="team-title-2">Water-Intensive Warnings</h2>
-            <div id="team-items-2">
-                <div class="job-post-item">
-                    <a href="javascript:void(0)" class="job-title">Sugarcane</a>
-                    <div class="job-metadata">Critical Risk • 4,120 kg/ha • High Water Deficit Vulnerability</div>
-                </div>
-                <div class="job-post-item">
-                    <a href="javascript:void(0)" class="job-title">Rice</a>
-                    <div class="job-metadata">Severe Risk • 1,101 kg/ha • Canal Failure Vulnerable</div>
+            <!-- Single Crop Projection Section (Visible in Single Crop Mode) -->
+            <div class="team-section" id="single-crop-section" style="display: none;">
+                <h2 class="team-title" id="single-crop-title">Yield Forecast</h2>
+                <div id="single-crop-items">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
+
+            <!-- Multi-Crop Category 1: Drought-Resilient Recommendations -->
+            <div class="team-section" id="team-section-1">
+                <h2 class="team-title" id="team-title-1">Drought-Resilient Recommendations</h2>
+                <div id="team-items-1">
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">Bajra (Pearl Millet)</a>
+                        <div class="job-metadata">Drought Resilient • 1,845 kg/ha • Low Water Demand • Punjab</div>
+                    </div>
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">Jowar (Sorghum)</a>
+                        <div class="job-metadata">Drought Resilient • 1,411 kg/ha • Low Water Demand • Punjab</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Crop Category 2: Water-Intensive Warnings -->
+            <div class="team-section" id="team-section-2">
+                <h2 class="team-title" id="team-title-2">Water-Intensive Warnings</h2>
+                <div id="team-items-2">
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">Sugarcane</a>
+                        <div class="job-metadata">Critical Risk • 4,120 kg/ha • High Water Deficit Vulnerability</div>
+                    </div>
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">Rice</a>
+                        <div class="job-metadata">Severe Risk • 1,101 kg/ha • Canal Failure Vulnerable</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agronomic Advisory Narrative -->
+            <div class="advisory-summary" id="advisory-summary">
+                <strong>Agronomic Advisory:</strong> Under severe drought stress in Punjab, prioritize low-water coarse grains (Bajra & Jowar). Avoid irrigating high-water crops like Sugarcane and Rice without guaranteed canal water supply.
+            </div>
+
         </div>
 
         <!-- Faint bottom divider matching Ashby -->
@@ -801,6 +836,151 @@
                 submitBtn.disabled = false;
             }
         }
+
+        window.renderModelResults = function(data, isAllCrops) {
+            const singleSection = document.getElementById("single-crop-section");
+            const resilientSection = document.getElementById("team-section-1");
+            const warningsSection = document.getElementById("team-section-2");
+            const advisorySummary = document.getElementById("advisory-summary");
+            const boardHeading = document.querySelector(".board-heading");
+
+            if (isAllCrops) {
+                singleSection.style.display = "none";
+                resilientSection.style.display = "block";
+                warningsSection.style.display = "block";
+
+                const count = (data.ranked_drought_resilient || []).length + (data.water_intensive_warnings || []).length;
+                boardHeading.textContent = `Drought-Resilient Crop Advisory (${count})`;
+
+                let resHtml = "";
+                (data.ranked_drought_resilient || []).forEach(item => {
+                    const yieldKg = Math.round(item.predicted_yield_kg_ha).toLocaleString();
+                    resHtml += `
+                        <div class="job-post-item" onclick="alert('${item.crop}: Predicted Yield ${yieldKg} kg/ha. Water category: ${item.water_category}. ${item.risk_assessment}')">
+                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
+                            <div class="job-metadata">Rank #${item.rank} • Predicted Yield: ${yieldKg} kg/ha • Water Category: ${item.water_category} • ${item.risk_assessment}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("team-items-1").innerHTML = resHtml;
+
+                let warnHtml = "";
+                (data.water_intensive_warnings || []).forEach(item => {
+                    const yieldKg = Math.round(item.predicted_yield_kg_ha).toLocaleString();
+                    warnHtml += `
+                        <div class="job-post-item" onclick="alert('${item.crop}: Critical Water Deficit! ${item.warning}')">
+                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
+                            <div class="job-metadata">High Water Demand • Predicted Yield: ${yieldKg} kg/ha • ${item.warning}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("team-items-2").innerHTML = warnHtml;
+
+                advisorySummary.innerHTML = `<strong>Agronomic Advisory (${data.scenario_name || data.province}):</strong> ${data.recommendation_summary}`;
+            } else {
+                singleSection.style.display = "block";
+                resilientSection.style.display = "none";
+                warningsSection.style.display = "none";
+
+                boardHeading.textContent = `Crop Yield Forecast: ${data.crop}`;
+                const yieldKg = Math.round(data.predicted_yield_kg_ha).toLocaleString();
+                const totalMetricTons = Math.round((data.predicted_yield_kg_ha * (data.features_used?.Area || 50)) / 1000).toLocaleString();
+
+                document.getElementById("single-crop-items").innerHTML = `
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">${data.crop} (${data.province})</a>
+                        <div class="job-metadata">Predicted Yield: ${yieldKg} kg/ha • Water Category: ${data.water_category} • Drought Resilient: ${data.is_drought_resilient ? 'YES' : 'NO'}</div>
+                        <div class="job-metadata" style="margin-top: 4px; color: var(--colorNeutral800);">Total Expected Production: ${totalMetricTons} metric tons across ${data.features_used?.Area || 50} hectares</div>
+                    </div>
+                `;
+
+                advisorySummary.innerHTML = `<strong>Prediction Risk Assessment:</strong> ${data.risk_assessment}`;
+            }
+        };
+
+        window.renderFallbackSimulation = function(payload, isAllCrops) {
+            const singleSection = document.getElementById("single-crop-section");
+            const resilientSection = document.getElementById("team-section-1");
+            const warningsSection = document.getElementById("team-section-2");
+            const advisorySummary = document.getElementById("advisory-summary");
+            const boardHeading = document.querySelector(".board-heading");
+
+            const province = payload.province;
+            const precip = payload.precipitation_sum;
+            const temp = payload.temperature_2m_mean;
+            const area = payload.area || 50;
+
+            if (isAllCrops) {
+                singleSection.style.display = "none";
+                resilientSection.style.display = "block";
+                warningsSection.style.display = "block";
+                boardHeading.textContent = `Drought-Resilient Crop Advisory (5)`;
+
+                const resilientCrops = [
+                    { crop: "Bajra (Pearl Millet)", yield: Math.round(1750 + precip * 6 - (temp - 30) * 12), water: "Low", rank: 1, risk: "Minimal Risk under water stress" },
+                    { crop: "Jowar (Sorghum)", yield: Math.round(1350 + precip * 5 - (temp - 30) * 10), water: "Low", rank: 2, risk: "Low Risk — deep root adaptation" },
+                    { crop: "Gram (Chickpea)", yield: Math.round(890 + precip * 4 - (temp - 30) * 8), water: "Low", rank: 3, risk: "Moderate Risk — drought tolerant pulse" }
+                ];
+
+                const warningCrops = [
+                    { crop: "Sugarcane", yield: Math.round(3800 + precip * 15), warning: "Critical Risk: Requires 1,500-2,500mm water; expected 70%+ harvest loss without canal supply." },
+                    { crop: "Rice", yield: Math.round(980 + precip * 8), warning: "Severe Risk: Flooding-dependent paddy unviable under low seasonal rainfall." }
+                ];
+
+                let resHtml = "";
+                resilientCrops.forEach(item => {
+                    resHtml += `
+                        <div class="job-post-item">
+                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
+                            <div class="job-metadata">Rank #${item.rank} • Predicted Yield: ${item.yield.toLocaleString()} kg/ha • Water Category: ${item.water} • ${item.risk}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("team-items-1").innerHTML = resHtml;
+
+                let warnHtml = "";
+                warningCrops.forEach(item => {
+                    warnHtml += `
+                        <div class="job-post-item">
+                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
+                            <div class="job-metadata">High Water Demand • Predicted Yield: ${item.yield.toLocaleString()} kg/ha • ${item.warning}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("team-items-2").innerHTML = warnHtml;
+
+                advisorySummary.innerHTML = `<strong>Agronomic Advisory (${province}):</strong> At ${precip} mm rainfall and ${temp}°C, coarse grains (Bajra & Jowar) show optimal water-use efficiency. Sugarcane and Rice face catastrophic yield reductions.`;
+            } else {
+                singleSection.style.display = "block";
+                resilientSection.style.display = "none";
+                warningsSection.style.display = "none";
+
+                const crop = payload.crop;
+                boardHeading.textContent = `Crop Yield Forecast: ${crop}`;
+
+                const isResilient = ["Bajra", "Jowar", "Gram", "Barley"].includes(crop);
+                let estYield = 1200;
+                if (crop === "Bajra") estYield = Math.round(1750 + precip * 6);
+                else if (crop === "Jowar") estYield = Math.round(1350 + precip * 5);
+                else if (crop === "Gram") estYield = Math.round(890 + precip * 4);
+                else if (crop === "Wheat") estYield = Math.round(2300 + precip * 12);
+                else if (crop === "Sugarcane") estYield = Math.round(4100 + precip * 15);
+                else if (crop === "Rice") estYield = Math.round(1050 + precip * 8);
+                else estYield = Math.round(1400 + precip * 6);
+
+                const totalMetricTons = Math.round((estYield * area) / 1000).toLocaleString();
+
+                document.getElementById("single-crop-items").innerHTML = `
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">${crop} (${province})</a>
+                        <div class="job-metadata">Predicted Yield: ${estYield.toLocaleString()} kg/ha • Water Category: ${isResilient ? 'Low' : 'High'} • Drought Resilient: ${isResilient ? 'YES' : 'NO'}</div>
+                        <div class="job-metadata" style="margin-top: 4px; color: var(--colorNeutral800);">Total Expected Production: ${totalMetricTons} metric tons across ${area} hectares</div>
+                    </div>
+                `;
+
+                advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${crop} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
+            }
+        };
     </script>
 </body>
 </html>

@@ -72,14 +72,14 @@
 **Description:** Render the prediction results below the form in the Ashby job-listing typography (crop name in `#FF7344`, metadata line with `•` separator). For "All Crops", group into "Recommended Drought-Resilient Crops" and "Water-Intensive Warnings". For single crop, display expected harvest yield (kg/ha), water consumption rating, and drought vulnerability assessment. Include offline fallback dataset for reliable demonstration.
 
 **Acceptance criteria:**
-- [ ] Results dynamically populate upon form submission.
-- [ ] Drought-resilient crops ranked with predicted yield and water needs.
-- [ ] Water-intensive crops (Sugarcane, Rice) clearly flagged under drought conditions.
-- [ ] Summary advisory banner displayed with agronomic recommendations.
+- [x] Results dynamically populate upon form submission.
+- [x] Drought-resilient crops ranked with predicted yield and water needs.
+- [x] Water-intensive crops (Sugarcane, Rice) clearly flagged under drought conditions.
+- [x] Summary advisory banner displayed with agronomic recommendations.
 
 **Verification:**
-- [ ] Results section displays cleanly under form.
-- [ ] Offline fallback operates seamlessly if FastAPI backend is not active.
+- [x] Results section displays cleanly under form.
+- [x] Offline fallback operates seamlessly if FastAPI backend is not active.
 
 **Dependencies:** Task 3
 **Files likely touched:**
@@ -90,6 +90,6 @@
 ---
 
 ## Checkpoint: Complete Verification
-- [ ] End-to-end form entry, validation, and prediction flow works.
-- [ ] Design matches Ashby UI style 100%.
-- [ ] Tested locally on `http://localhost:3000/predict.html`.
+- [x] End-to-end form entry, validation, and prediction flow works.
+- [x] Design matches Ashby UI style 100%.
+- [x] Tested locally on `http://localhost:3000/predict.html`.
