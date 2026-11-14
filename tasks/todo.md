@@ -73,13 +73,13 @@
 **Description:** Construct unified pipelines combining the preprocessor with a `DummyRegressor` baseline, `Ridge`, `RandomForestRegressor`, and `HistGradientBoostingRegressor`. Train on the training partition and log validation metrics (MAE, RMSE, $R^2$).
 
 **Acceptance criteria:**
-- [ ] Baseline DummyRegressor trained (predicts train mean).
-- [ ] Ridge, Random Forest, and HistGradientBoosting trained on train split.
-- [ ] Validation performance table and comparison barplot generated.
-- [ ] Non-linear models demonstrate clear improvement over baseline with realistic $R^2$.
+- [x] Baseline DummyRegressor trained (predicts train mean).
+- [x] Ridge, Random Forest, and HistGradientBoosting trained on train split.
+- [x] Validation performance table and comparison barplot generated.
+- [x] Non-linear models demonstrate clear improvement over baseline with realistic $R^2$.
 
 **Verification:**
-- [ ] Validation summary table printed; ML models beat baseline by a wide margin.
+- [x] Validation summary table printed; ML models beat baseline by a wide margin. (Passed: Baseline $R^2=0.00$, Ridge $R^2=0.83$, HistGB $R^2=0.87$, RF $R^2=0.87$).
 
 **Dependencies:** Task 3
 **Files likely touched:**
