@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    
+    <!-- Meta Title -->
+    <title>Infinite Field — There is no limit for those who think infinite</title>
+    
+    <!-- Meta Description -->
+    <meta name="description" content="At Infinite Field, we go beyond the surface, diving deep into data and technology to create precision-driven opportunities. As high-frequency traders, we move fast, think ahead, and innovate boldly to engineer the future of finance.">
+    
+    <!-- Meta Keywords -->
+    <meta name="keywords" content="Infinite Field, high-frequency trading, advanced algorithms, data-driven opportunities, innovation in finance, future of finance, precision trading, technology and finance, algorithmic trading, financial engineering">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Infinite Field — There is no limit for those who think infinite">
+    <meta property="og:description" content="At Infinite Field, we go beyond the surface, diving deep into data and technology to create precision-driven opportunities. As high-frequency traders, we move fast, think ahead, and innovate boldly to engineer the future of finance.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://infinitefield.xyz">
+    <meta property="og:image" content="assets/infinite_field_opengraph.png">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Infinite Field — There is no limit for those who think infinite">
+    <meta name="twitter:description" content="At Infinite Field, we go beyond the surface, diving deep into data and technology to create precision-driven opportunities. As high-frequency traders, we move fast, think ahead, and innovate boldly to engineer the future of finance.">
+    <meta name="twitter:image" content="assets/infinite_field_opengraph.png">
+    
+    <!-- Web Clip (Apple Touch Icon) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/infinite_field_webclip.png">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="author" content="Infinite Field">
+    <meta name="robots" content="index, follow">
+    
+
+
+    <style>
+        :root {
+            --header-pagging: 35px;
+        }
+
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            overscroll-behavior: none;
+        }
+
+        @font-face {
+            font-family: DenimINK-regular;
+            src: url(./assets/DenimINK-Regular.ttf);
+        }
+
+        @font-face {
+            font-family: LD_TechD-Regular;
+            src: url(./assets/LD_TechD-Regular.ttf);
+        }
+
+        * {
+            font-family: DenimINK-regular, sans-serif;
+        }
+
+        #scroll-space {
+            height: 30000px;
+        }
+
+        @media all and (max-width: 800px) {
+            #scroll-space {
+                height: 20000px;
+            }
+        }
+
+        .container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+        .text-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .paragraph-container {
+            width: 90%;
+            max-width: 700px;
+            color: #ffffff;
+            text-align: center;
+            font-size: 24px;
+            line-height: 1.4;
+            opacity: 0;
+        }
+
+        @media (max-width: 700px) {
+            .paragraph-container {
+                max-width: 90%;
+                font-size: 16px;
+            }
+        }
+
+        .paragraph-container .caret {
+            padding: .014em .2em;
+            margin-left: .3em;
+            background-color: #ffffff;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #232323;
+        }
+
+        .header > div {
+            padding: var(--header-pagging);
+        }
+
+        .header .dark-logo,
+        .header .white-logo,
+        .header .white-logo > div {
+            font-size: 28px;
+            font-family: LD_TechD-Regular, sans-serif;
+        }
+
+        .header .dark-logo {
+            position: relative;
+            opacity: 0;
+            color: #232323;
+        }
+
+        .header .white-logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: #ffffff;
+            opacity: 0;
+        }
+
+        .header .scroll-message {
+            padding-right: var(--header-pagging);
+            opacity: 0;
+            color: #ffffff;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer > div {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer > div > div {
+            padding: var(--header-pagging);
+        }
+
+        .footer .white-footer {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .footer .dark-footer {
+            color: #232323;
+            opacity: 0;
+        }
+
+        .footer .white-footer {
+            color: #ffffff;
+            display: none;
+        }
+
+        .footer .horizontal-line {
+            border-top: 2px solid #232323;
+            padding: 0 0 0 100px;
+            margin-right: auto;
+            margin-left: -28px;
+        }
+
+        .footer .white-footer-horizontal-line {
+            border-top-color: #ffffff;
+        }
+
+        .header,
+        .footer {
+            font-size: 18px;
+        }
+
+        @media all and (max-width: 800px) {
+            .header,
+            .footer {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --header-pagging: 22px;
+            }
+
+            .footer > div > div:nth-child(1) {
+                padding-right: .3em;
+            }
+
+            .footer > div > div:nth-child(3) {
+                padding-left: 0;
+            }
+
+            .footer > div {
+                justify-content: center;
+            }
+
+            .footer .horizontal-line {
+                display: none;
+            }
+        }
+
+        * {
+            pointer-events: none;
+        }
+
+        .header .logo {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .careers-button {
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            margin-top: 50px;
+            padding: 7px 20px;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 150px;
+            font-size: 12px;
+            letter-spacing: 7.5px;
+            border: 1px solid white;
+            transition: background 0.3s, border-color 0.3s;
+            pointer-events: auto;
+            text-transform: uppercase;
+            padding-left: 27px;
+        }
+
+
+        .careers-button:hover {
+            background: white;
+            color: #232323;
+        }
+
+        @media (max-width: 700px) {
+            .careers-button {
+                font-size: 10px;
+                letter-spacing: 5px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div id="scroll-space">
+</div>
+<div class="container">
+    <canvas id="mesh-canvas"></canvas>
+    <div class="header">
+        <div class="logo dark-logo">
+            Infinite Field
+        </div>
+        <div class="logo white-logo">
+            Infinite Field
+        </div>
+        <div class="scroll-message">
+            Scroll To Start
+        </div>
+    </div>
+    <div class="footer">
+        <div class="dark-footer">
+            <div>
+                There is no limit
+            </div>
+            <div class="horizontal-line"></div>
+            <div>
+                for those who think infinite
+            </div>
+        </div>
+        <div class="white-footer">
+            <div class="white-footer-typer">
+                There is no limit
+            </div>
+            <div class="horizontal-line white-footer-horizontal-line"></div>
+            <div class="white-footer-typer">
+                for those who think infinite
+            </div>
+        </div>
+    </div>
+    <div class="text-overlay">
+        <div class="paragraph-container">
+            At Infinite Field, we go beyond the surface diving deep into the very fabric of data and technology to create precision-driven opportunities. We're high-frequency traders who move fast, think ahead, and go deep. With advanced algorithms and an unwavering passion for innovation, we unlock infinite possibilities in our field, engineering the future of finance.
+        </div>
+        <a href="predict.html" class="careers-button">Crop Advisory & Predictor</a>
+    </div>
+</div>
+
+
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script src="./vendor/lenis.min.js"></script>
+<script src="./vendor/gsap.min.js"></script>
+<script src="./vendor/ScrollTrigger.min.js"></script>
+<script src='./vendor/TextPlugin.min.js'></script>
+<script src='./vendor/SplitText.min.js'></script>
+
+<script type="module">
+    gsap.registerPlugin(ScrollTrigger, TextPlugin, SplitText);
+
+
+    import * as THREE from 'three';
+    import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+
+
+    const logoEl = Array.from(document.querySelectorAll(".logo"));
+    const scrollMessageEl = document.querySelector(".scroll-message");
+    const headerLogoDark = document.querySelector(".dark-logo");
+    const footerDark = document.querySelector(".dark-footer");
+    const headerLogoWhite = document.querySelector(".white-logo");
+    const footerWhite = document.querySelector(".white-footer");
+    const footerWhiteTypingStrings = Array.from(document.querySelectorAll(".white-footer .white-footer-typer"));
+    const footerHorizontalLine = document.querySelector(".white-footer-horizontal-line");
+    const canvasEl = document.querySelector("#mesh-canvas");
+    const textBlockEl = document.querySelectorAll(".paragraph-container");
+
+
+    logoEl.forEach(l => l.addEventListener("click", () => {
+        window.scrollTo(0, 0);
+        location.reload();
+    }));
+
+
+    const animParams = {
+        viewportOpening: 0,
+        noiseTimeIncr: .7
+    }
+    let firstScrollHappened = false;
+    let previousTime = 0;
+    let renderer, scene, camera, ss;
+    let wavesMesh, wavesMaterial, logoMeshWrapper, logoMesh, wavesMeshClone;
+    let renderTarget, renderTargetScene, renderTargetCamera;
+
+
+    const footerChars = [
+        new SplitText(footerWhiteTypingStrings[0], {type: "chars"}),
+        new SplitText(footerWhiteTypingStrings[1], {type: "chars"}),
+    ]
+    const scrollMessageSplit = new SplitText(scrollMessageEl, {type: "chars"});
+    const getRandomNumberReplacements = () => ["0", "1", "0", "1", "2", "5", "8"].sort(() => Math.random() - .5);
+    const initSymbols = scrollMessageSplit.chars.map(c => c.innerHTML);
+
+    const scrollTipAnimation = gsap.timeline({
+        repeat: -1,
+        repeatDelay: 1,
+        onRepeat: () => {
+            const scrollMessageReplacements = getRandomNumberReplacements();
+            scrollTipAnimation.clear();
+            scrollMessageSplit.chars.forEach((char, idx) => {
+                let timesChanged = 1 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < timesChanged; i++) {
+                    const symbol = scrollMessageReplacements[Math.floor(Math.random() * scrollMessageReplacements.length)];
+                    const time = .3 * Math.random();
+                    scrollTipAnimation.set(char, {
+                        innerHTML: symbol,
+                    }, time)
+                }
+                timesChanged = 1 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < timesChanged; i++) {
+                    const time = .5 + .3 * Math.random();
+                    scrollTipAnimation.set(char, {
+                        innerHTML: initSymbols[idx],
+                    }, time);
+                }
+            });
+        }
+    });
+
+    const scrollMessageReplacements = getRandomNumberReplacements();
+    scrollMessageSplit.chars.forEach(char => {
+        let timesChanged = 1 + Math.floor(Math.random() * 2);
+        for (let i = 0; i < timesChanged; i++) {
+            const symbol = scrollMessageReplacements[Math.floor(Math.random() * scrollMessageReplacements.length)];
+            gsap.set(char, {
+                innerHTML: symbol,
+            })
+        }
+    });
+    scrollTipAnimation.timeScale(0);
+
+
+    const introAnimation = gsap.timeline({})
+        .set(footerWhite, {
+            display: "flex"
+        }, 0)
+        .from(footerChars[0].chars, {
+            duration: .01,
+            stagger: .03,
+            opacity: 0
+        }, 0)
+        .from(footerHorizontalLine, {
+            duration: .5,
+            paddingLeft: 0
+        }, .5)
+        .from(footerChars[1].chars, {
+            duration: .01,
+            stagger: .03,
+            opacity: 0
+        }, .7);
+
+
+    introAnimation.to(headerLogoWhite, {
+        duration: .001,
+        opacity: 1
+    }, 0);
+    const headerLogoWhiteAppearTime = .4;
+    const headerLogoWhiteSplit = new SplitText(headerLogoWhite, {type: "chars"});
+    const headerLogoWhiteInitSymbols = headerLogoWhiteSplit.chars.map(c => c.innerHTML);
+    headerLogoWhiteSplit.chars.forEach((char, charIdx) => {
+        let timesChanged = 6;
+        for (let swapIdx = 0; swapIdx < timesChanged; swapIdx++) {
+            introAnimation.set(char, {
+                display: "none"
+            }, 0)
+            const symbol = ["r", "t", "q", "p", "y", "n", "l"][Math.floor(Math.random() * scrollMessageReplacements.length)];
+            if (swapIdx === 0) {
+                introAnimation.set(char, {
+                    display: "inline"
+                }, headerLogoWhiteAppearTime + .08 * charIdx)
+            }
+            introAnimation.set(char, {
+                innerHTML: (swapIdx < (timesChanged - 1)) ? symbol : headerLogoWhiteInitSymbols[charIdx],
+            }, headerLogoWhiteAppearTime + .08 * charIdx + .05 * swapIdx)
+        }
+    });
+
+
+    introAnimation
+        .to(scrollMessageEl, {
+            duration: .1,
+            opacity: 1
+        }, 2.2)
+        .to(scrollTipAnimation, {
+            duration: .1,
+            timeScale: 1
+        }, 1.3)
+
+
+    initScene();
+
+
+    window.addEventListener("resize", () => {
+        updateSceneSize();
+    });
+
+
+    function initScene() {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            canvas: canvasEl,
+            alpha: true
+        });
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+            minFilter: THREE.LinearFilter,
+            magFilter: THREE.LinearFilter,
+            format: THREE.RGBAFormat,
+            encoding: THREE.sRGBEncoding,
+            alpha: true
+        });
+
+        scene = new THREE.Scene();
+        renderTargetScene = new THREE.Scene();
+
+        scene.background = new THREE.Color(0x232323);
+        renderTargetScene.background = new THREE.Color(0x232323);
+
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .01, 100);
+        camera.position.set(0, 0, 5);
+        renderTargetCamera = camera.clone();
+
+        createWaves();
+
+
+        new GLTFLoader()
+            .load('./assets/logo-3d.glb', (gltf) => {
+                logoMeshWrapper = new THREE.Group();
+                logoMesh = gltf.scene.children[0];
+                updateSceneSize();
+                setupLogoMesh();
+
+                const mainSequence = buildMainSequence();
+                const isTouchscreen = 'ontouchstart' in window;
+
+                let pageScrollLoop;
+                if (isTouchscreen) {
+                    pageScrollLoop = gsap.timeline({
+                        paused: true,
+                        repeat: -1,
+                        onRepeat() {
+                            this._time === this._dur && (this._tTime += this._dur - 0.01);
+                        }
+                    })
+                        .to(mainSequence, {
+                            time: mainSequence.duration(),
+                            duration: 1,
+                            ease: "none"
+                        })
+                }
+
+                const trigger = ScrollTrigger.create({
+                    start: 0,
+                    onUpdate(self) {
+                        if (!firstScrollHappened) {
+                            if (self.progress > .03) {
+                                firstScrollHappened = true;
+                                gsap.to(introAnimation, {
+                                    duration: .1,
+                                    progress: 1,
+                                    onComplete: () => {
+                                        introAnimation.kill();
+                                        gsap.to(scrollMessageEl, {
+                                            duration: .1,
+                                            opacity: 0,
+                                            onComplete: () => {
+                                                scrollTipAnimation.kill();
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        }
+
+                        if (isTouchscreen) {
+                            if (self.progress === 1 && self.direction > 0 && !self.wrapping) {
+                                self.wrapping = true;
+                                self.scroll(self.start + 1);
+                            } else if (self.progress < 1e-5 && self.direction < 0 && !self.wrapping) {
+                                self.wrapping = true;
+                                self.scroll(self.end - 1);
+                            } else {
+                                pageScrollLoop.progress(self.progress);
+                                self.wrapping = false;
+                            }
+                        } else {
+                            mainSequence.progress(self.progress);
+                        }
+                    },
+                });
+
+                window.scrollTo(0, 0);
+
+                let lenis;
+                if (!isTouchscreen) {
+                    lenis = new Lenis({
+                        smooth: true,
+                        infinite: true,
+                        wheelMultiplier: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - 100 * t)
+                    });
+                    lenis.on('scroll', ScrollTrigger.update)
+                }
+
+                gsap.ticker.add((time) => {
+                    if (!isTouchscreen) {
+                        lenis.raf(time * 1000);
+                    }
+
+                    const currentTime = time;
+                    let delta = currentTime - previousTime || 0;
+                    previousTime = currentTime;
+
+                    delta *= (1 - animParams.noiseTimeIncr);
+                    wavesMaterial.uniforms.u_time.value += delta;
+
+                    renderer.setRenderTarget(renderTarget);
+                    renderer.render(renderTargetScene, renderTargetCamera);
+
+                    renderer.setRenderTarget(null);
+                    renderer.render(scene, camera);
+
+                });
+                if (!isTouchscreen) {
+                    gsap.ticker.lagSmoothing(0);
+                }
+            });
+
+    }
+
+    function createWaves() {
+        const w = 70, h = 40, res = 6;
+        const geometry = new THREE.PlaneGeometry(w, h, w * res, h * res);
+
+        wavesMaterial = new THREE.RawShaderMaterial({
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            depthTest: true,
+            side: THREE.DoubleSide,
+            uniforms: {
+                u_time: {value: 0},
+
+                u_wave_colored: {value: 1},
+                u_waves_deform: {value: 1},
+                u_wave_slowed: {value: 1},
+                u_grid_scale: {value: 9},
+                u_wave_to_plane: {value: 0},
+                u_dots_mask_visibility: {value: 0},
+                u_dots_radius_grow: {value: 0},
+                u_checks_normalize_by_noise: {value: 0},
+                u_checks_to_pattern: {value: 0},
+                u_wave_opacity: {value: 1},
+            },
+            vertexShader: `
+                            precision highp float;
+
+                            uniform mat4 modelViewMatrix;
+                            uniform mat4 modelMatrix;
+                            uniform mat4 viewMatrix;
+                            uniform mat4 projectionMatrix;
+
+                            attribute vec3 position;
+                            attribute vec3 normal;
+                            attribute vec2 uv;
+
+                            varying vec2 vUv;
+                            varying float vWaveNoise;
+                            varying vec3 vPos;
+                            varying vec3 vNormal;
+
+                            uniform float u_time;
+                            uniform float u_wave_slowed;
+                            uniform float u_waves_deform;
+                            uniform float u_wave_colored;
+
+                            vec3 mod289(vec3 x) { return x - floor(x * (1. / 289.)) * 289.; }
+                            vec2 mod289(vec2 x) { return x - floor(x * (1. / 289.)) * 289.; }
+                            vec3 permute(vec3 x) { return mod289(((x*34.)+1.)*x); }
+                            float snoise(vec2 v) {
+                                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                                vec2 i = floor(v + dot(v, C.yy));
+                                vec2 x0 = v - i + dot(i, C.xx);
+                                vec2 i1;
+                                i1 = (x0.x > x0.y) ? vec2(1., 0.) : vec2(0., 1.);
+                                vec4 x12 = x0.xyxy + C.xxzz;
+                                x12.xy -= i1;
+                                i = mod289(i);
+                                vec3 p = permute(permute(i.y + vec3(0., i1.y, 1.)) + i.x + vec3(0., i1.x, 1.));
+                                vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.);
+                                m = m*m;
+                                m = m*m;
+                                vec3 x = 2. * fract(p * C.www) - 1.;
+                                vec3 h = abs(x) - 0.5;
+                                vec3 ox = floor(x + 0.5);
+                                vec3 a0 = x - ox;
+                                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                                vec3 g;
+                                g.x = a0.x * x0.x + h.x * x0.y;
+                                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                                return 130. * dot(m, g);
+                            }
+
+                            float displacement(vec3 p) {
+                                float dz = (snoise((.09 - .03 * u_wave_slowed) * p.xy + vec2(-.4, .04) * u_time));
+                                dz += .75 * (snoise(-.03 * p.xy + vec2(.03, -.04) * u_time));
+                                return .5 + .5 * dz;
+                            }
+
+                            vec3 get_displacement_pos(vec3 p, float dz) {
+                                float b_w = (1. - u_wave_colored);
+                                float h = 4. * u_waves_deform * (dz - .5) * (1. + 2. * uv.y * b_w);
+                                h *= pow(uv.y + b_w, 1.);
+                                h *= (.8 - .005 * pow(p.x, 2.) * u_wave_slowed);
+                                return vec3(p.xy, h);
+                            }
+
+                            vec3 get_displacement_normal(vec3 normal, vec3 p, float dz) {
+                                float epsilon = 0.01;
+                                vec3 dpdx = get_displacement_pos(p + vec3(epsilon, 0.0, 0.0), displacement(p + vec3(epsilon, 0.0, 0.0))) - get_displacement_pos(p, dz);
+                                vec3 dpdy = get_displacement_pos(p + vec3(0.0, epsilon, 0.0), displacement(p + vec3(0.0, epsilon, 0.0))) - get_displacement_pos(p, dz);
+                                vec3 displacedNormal = normalize(cross(dpdx, dpdy));
+                                return normalize(displacedNormal);
+                            }
+
+
+                            void main() {
+                                vUv = uv;
+
+                                vPos = position;
+                                float dz = displacement(position);
+                                vec3 displacedPosition = get_displacement_pos(position, dz);
+                                vWaveNoise = dz;
+
+                                vNormal = get_displacement_normal(normal, position, dz);
+
+                                gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+                            }
+                        `,
+            fragmentShader: `
+                        precision highp float;
+
+                        uniform float u_time;
+                        uniform float u_grid_scale;
+                        uniform float u_wave_to_plane;
+                        uniform float u_dots_mask_visibility;
+                        uniform float u_dots_radius_grow;
+                        uniform float u_checks_normalize_by_noise;
+                        uniform float u_waves_deform;
+                        uniform float u_wave_colored;
+                        uniform float u_checks_to_pattern;
+
+                        uniform float u_wave_opacity;
+
+                        varying float vWaveNoise;
+                        varying vec3 vPos;
+                        varying vec2 vUv;
+                        varying vec3 vNormal;
+
+                        vec3 mod289(vec3 x) { return x - floor(x * (1. / 289.)) * 289.; }
+                        vec2 mod289(vec2 x) { return x - floor(x * (1. / 289.)) * 289.; }
+                        vec3 permute(vec3 x) { return mod289(((x*34.)+1.)*x); }
+                        float snoise(vec2 v) {
+                                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                                vec2 i = floor(v + dot(v, C.yy));
+                                vec2 x0 = v - i + dot(i, C.xx);
+                                vec2 i1;
+                                i1 = (x0.x > x0.y) ? vec2(1., 0.) : vec2(0., 1.);
+                                vec4 x12 = x0.xyxy + C.xxzz;
+                                x12.xy -= i1;
+                                i = mod289(i);
+                                vec3 p = permute(permute(i.y + vec3(0., i1.y, 1.)) + i.x + vec3(0., i1.x, 1.));
+                                vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.);
+                                m = m*m;
+                                m = m*m;
+                                vec3 x = 2. * fract(p * C.www) - 1.;
+                                vec3 h = abs(x) - 0.5;
+                                vec3 ox = floor(x + 0.5);
+                                vec3 a0 = x - ox;
+                                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                                vec3 g;
+                                g.x = a0.x * x0.x + h.x * x0.y;
+                                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                                return 130. * dot(m, g);
+                       }
+
+                        float displacement(vec3 p) {
+                            float dz = (snoise(.08 * p.xy + vec2(-.4, .04) * u_time));
+                            dz += .75 * (snoise(-.03 * p.xy + vec2(.03, -.04) * u_time));
+                            return .5 + .5 * dz;
+                        }
+
+                        float random(vec2 _st) {
+                            return fract(sin(dot(_st.xy, vec2(12.9898, 78.233)))*43758.5453123);
+                        }
+
+                        vec3 get_wave_color(vec3 norm) {
+                            vec3 c = .5 + .5 * norm;
+                            c = vec3(c.r, min(.8 * c.r, .3 * c.g), .05);
+                            c = normalize(c);
+                            return c;
+                        }
+
+                        float get_border(vec2 _uv, float thickness) {
+                            return step(thickness, _uv.x) * step(_uv.x, 1. - thickness) * step(thickness, _uv.y) * step(_uv.y, 1.0 - thickness);
+                        }
+
+                        float get_checks(vec2 uv, float scale) {
+                            return mod(floor(uv.x * scale) + floor(uv.y * scale), 2.);
+                        }
+
+                        float get_stripes(float coord, float scale) {
+                            return mod(floor(coord * scale), 2.);
+                        }
+
+                        float circle(vec2 uv, float r) {
+                            vec2 dist = uv - vec2(.5);
+                            return 1. - smoothstep(.9 * r, 1.1 * r, dot(dist, dist) * 4.);
+                        }
+
+
+                        float get_quad_1_tl(vec2 uv, float tile_scale) {
+                            float quad_1_tl = 1.;
+                            quad_1_tl *= (get_stripes(uv.x, tile_scale));
+                            quad_1_tl *= (get_stripes(uv.x, .5 * tile_scale));
+                            quad_1_tl *= (1. - get_stripes(uv.y, tile_scale));
+                            quad_1_tl *= (1. - get_stripes(uv.y, .5 * tile_scale));
+                            return quad_1_tl;
+                        }
+
+                        float get_quad_1_bl(vec2 uv, float tile_scale) {
+                            float quad_1_bl = 1.;
+                            quad_1_bl *= (get_stripes(uv.x, tile_scale));
+                            quad_1_bl *= (get_stripes(uv.x, .5 * tile_scale));
+                            quad_1_bl *= (get_stripes(uv.y, tile_scale));
+                            quad_1_bl *= (get_stripes(uv.y, .5 * tile_scale));
+                            return quad_1_bl;
+                        }
+
+                        float get_quad_1_br(vec2 uv, float tile_scale) {
+                            float quad_1_br = 1.;
+                            quad_1_br *= (1. - get_stripes(uv.x, tile_scale));
+                            quad_1_br *= (1. - get_stripes(uv.x, .5 * tile_scale));
+                            quad_1_br *= (get_stripes(uv.y, tile_scale));
+                            quad_1_br *= (get_stripes(uv.y, .5 * tile_scale));
+                            return quad_1_br;
+                        }
+
+                        float get_quad_1_tr(vec2 uv, float tile_scale) {
+                            float quad_1_tr = 1.;
+                            quad_1_tr *= (1. - get_stripes(uv.x, tile_scale));
+                            quad_1_tr *= (1. - get_stripes(uv.x, .5 * tile_scale));
+                            quad_1_tr *= (1. - get_stripes(uv.y, tile_scale));
+                            quad_1_tr *= (1. - get_stripes(uv.y, .5 * tile_scale));
+                            return quad_1_tr;
+                        }
+
+                        float get_quad_2_tl(vec2 uv, float tile_scale) {
+                            float quad_2_tl = 1.;
+                            quad_2_tl *= (get_stripes(uv.x, tile_scale));
+                            quad_2_tl *= (1. - get_stripes(uv.x, .5 * tile_scale));
+                            quad_2_tl *= (1. - get_stripes(uv.y, tile_scale));
+                            quad_2_tl *= (get_stripes(uv.y, .5 * tile_scale));
+                            return quad_2_tl;
+                        }
+
+                        float get_quad_2_bl(vec2 uv, float tile_scale) {
+                            float quad_2_bl = 1.;
+                            quad_2_bl *= (get_stripes(uv.x, tile_scale));
+                            quad_2_bl *= (1. - get_stripes(uv.x, .5 * tile_scale));
+                            quad_2_bl *= (get_stripes(uv.y, tile_scale));
+                            quad_2_bl *= (1. - get_stripes(uv.y, .5 * tile_scale));
+                            return quad_2_bl;
+                        }
+
+                        float get_quad_2_br(vec2 uv, float tile_scale) {
+                            float quad_2_br = 1.;
+                            quad_2_br *= (1. - get_stripes(uv.x, tile_scale));
+                            quad_2_br *= (get_stripes(uv.x, .5 * tile_scale));
+                            quad_2_br *= (get_stripes(uv.y, tile_scale));
+                            quad_2_br *= (1. - get_stripes(uv.y, .5 * tile_scale));
+                            return quad_2_br;
+                        }
+
+                        float get_quad_2_tr(vec2 uv, float tile_scale) {
+                            float quad_2_tr = 1.;
+                            quad_2_tr *= (1. - get_stripes(uv.x, tile_scale));
+                            quad_2_tr *= (get_stripes(uv.x, .5 * tile_scale));
+                            quad_2_tr *= (1. - get_stripes(uv.y, tile_scale));
+                            quad_2_tr *= (get_stripes(uv.y, .5 * tile_scale));
+                            return quad_2_tr;
+                        }
+
+                        float get_y_down(vec2 uv, float t) {
+                            return (1. - step(t, 1. - uv.y));
+                        }
+                        float get_y_up(vec2 uv, float t) {
+                            return (1. - step(t, uv.y));
+                        }
+                        float get_x_down(vec2 uv, float t) {
+                            return (1. - step(t, 1. - uv.x));
+                        }
+                        float get_x_up(vec2 uv, float t) {
+                            return (1. - step(t, uv.x));
+                        }
+
+                        float get_pattern_mask(vec2 tile_uv, float t, vec2 uv, float base_scale) {
+
+                            float t1 = clamp((t - .0) / .123, 0., 1.);
+                            float t2 = clamp((t - .123) / .123, 0., 1.);
+                            float t3 = clamp((t - .246) / .123, 0., 1.);
+                            float t4 = clamp((t - .369) / .123, 0., 1.);
+                            float t5 = clamp((t - .492) / .123, 0., 1.);
+                            float t6 = clamp((t - .615) / .123, 0., 1.);
+                            float t7 = clamp((t - .738) / .123, 0., 1.);
+                            float t8 = clamp((t - .861) / .123, 0., 1.);
+                            float t9 = clamp((t - .984) / .016, 0., 1.);
+
+                            float m = 0.;
+
+                            m -= get_y_down(tile_uv, t1) * get_quad_1_tl(uv, base_scale);
+                            m -= get_y_up(tile_uv, t1) * get_quad_1_br(uv, base_scale);
+                            m -= get_x_down(tile_uv, t1) * get_quad_2_br(uv, base_scale);
+                            m -= get_x_up(tile_uv, t1) * get_quad_2_tl(uv, base_scale);
+                            m += get_y_down(tile_uv, t1) * get_quad_1_bl(uv, base_scale);
+                            m += get_y_up(tile_uv, t1) * get_quad_1_tr(uv, base_scale);
+                            m += get_x_down(tile_uv, t1) * get_quad_2_bl(uv, base_scale);
+                            m += get_x_up(tile_uv, t1) * get_quad_2_tr(uv, base_scale);
+
+                            m += get_y_down(tile_uv, .5 * t2) * get_quad_1_tl(uv, .5 * base_scale);
+                            m -= get_y_up(tile_uv, .5 * t2) * get_quad_1_bl(uv, .5 * base_scale);
+                            m -= get_y_up(tile_uv, .5 * t2) * get_quad_1_tr(uv, .5 * base_scale);
+                            m += get_y_down(tile_uv, .5 * t2) * get_quad_1_br(uv, .5 * base_scale);
+
+                            m -= get_y_up(tile_uv, t2) * get_stripes(uv.y, .25 * base_scale);
+
+
+                            m += get_y_up(tile_uv, t3) * get_stripes(uv.x, .125 * base_scale);
+
+                            m += get_y_down(tile_uv, t4) * get_stripes(uv.y, .25 * base_scale);
+
+                            m -= get_y_up(tile_uv, t5) * get_stripes(uv.x, .25 * base_scale);
+
+                            m -= get_y_up(tile_uv, t6) * get_stripes(uv.y, base_scale);
+
+                            m += 3. * get_x_down(tile_uv, t7) * get_stripes(uv.y, .0625 * base_scale);
+                            m += 3. * get_y_up(tile_uv, t7) * get_stripes(uv.x + 2., .0625 * base_scale);
+
+                            m += 6. * get_y_down(tile_uv, t8) * (1. - get_stripes(uv.y, .0625 * base_scale));
+                            m += 6. * get_x_up(tile_uv, t8) * get_stripes(uv.y, .0625 * base_scale);
+
+                            m += 6. * get_x_down(tile_uv, t9) * get_stripes(uv.x - 100., .001 * base_scale);
+
+                            return m;
+                        }
+
+
+                        void main() {
+
+                            float tile_scale = u_grid_scale;
+
+                            // ================================================
+
+                            vec2 grid_uv = vPos.xy;
+                            grid_uv *= tile_scale;
+                            vec2 tile_index = floor(grid_uv);
+                            vec2 tile_uv = fract(grid_uv);
+                            grid_uv = tile_index + .5;
+                            grid_uv /= tile_scale;
+
+                            vec2 uv = vPos.xy;
+
+                            // ================================================
+
+                            vec3 wave_color = get_wave_color(vNormal);
+
+                            vec3 orange = vec3(.851, .424, .173);
+                            vec3 black_orange_mix = mix(orange, vec3(0.), vWaveNoise);
+                            vec3 color = mix(wave_color, black_orange_mix, u_wave_to_plane);
+
+                            float cells_mask = circle(tile_uv, .1 + 2. * pow(u_dots_radius_grow, 2. + 2. * vWaveNoise));
+                            float checks = get_checks(uv, tile_scale);
+                            cells_mask *= checks;
+                            cells_mask = mix(1., cells_mask, pow(u_dots_mask_visibility, 3. - 2. * vWaveNoise));
+
+                            float grid_noise = displacement(vec3(grid_uv, 0.));
+                            grid_noise = 1. - smoothstep(0. + .5 * u_checks_normalize_by_noise, 1. - .5 * u_checks_normalize_by_noise, grid_noise);
+                            cells_mask *= mix(cells_mask, grid_noise, u_checks_normalize_by_noise);
+
+                            float pattern_mask = get_pattern_mask(tile_uv, u_checks_to_pattern, uv, tile_scale);
+                            cells_mask += pattern_mask;
+
+                            color = mix(color, vec3(1.), pow(u_checks_normalize_by_noise, 4.));
+                            color = mix(vec3(0.), color, cells_mask);
+
+                            // ================================================
+
+                            float opacity = 1.;
+                            float opacity_stripe = fract(.2 * u_time + .12 * vPos.y - .04 * sin(.8 * vPos.x));
+                            opacity_stripe = smoothstep(0., .5, opacity_stripe) * (1. - smoothstep(.5, 1., opacity_stripe));
+                            opacity_stripe += (1. + vWaveNoise) * (1. - u_wave_colored);
+                            float opacity_stripe_addon = (1. + vWaveNoise) * pow(opacity_stripe, 50.);
+                            opacity_stripe_addon += .3 * opacity_stripe;
+                            opacity = (.1 + u_wave_colored * opacity_stripe_addon);
+                            opacity = 12. * pow(opacity, 2. - 1. + u_wave_colored);
+                            opacity *= smoothstep(.3 + .2 * u_wave_colored, .31 + .2 * u_wave_colored, vUv.y);
+                            opacity += vWaveNoise * min(0., 5. * (1. - u_wave_colored));
+
+                            opacity *= u_wave_opacity;
+
+                            // ================================================
+
+                            gl_FragColor = vec4(color, opacity);
+                        }
+                    `,
+        });
+
+        wavesMesh = new THREE.Mesh(geometry, wavesMaterial);
+
+        wavesMesh.rotation.x = -.5 * Math.PI;
+        scene.add(wavesMesh);
+
+        wavesMeshClone = wavesMesh.clone();
+        renderTargetScene.add(wavesMeshClone);
+    }
+
+    function setupLogoMesh() {
+        logoMesh.material = new THREE.RawShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            uniforms: {
+                u_show_original_scene: {value: 0},
+                u_showing_white: {value: 0},
+                u_solid_color: {value: 0},
+                u_logo_opacity: {value: 0},
+                u_render_target_texture: {value: renderTarget.texture},
+            },
+            vertexShader: `
+                            precision highp float;
+
+                            uniform mat4 modelMatrix;
+                            uniform mat4 viewMatrix;
+                            uniform mat4 projectionMatrix;
+
+                            attribute vec3 position;
+                            varying vec2 vUv;
+
+                            void main() {
+                                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                                vec4 viewPosition = viewMatrix * worldPosition;
+                                vec4 clipPosition = projectionMatrix * viewPosition;
+                                vec2 ndc = clipPosition.xy / clipPosition.w;
+                                vUv = ndc * 0.5 + 0.5;
+                                gl_Position = clipPosition;
+                            }
+                        `,
+            fragmentShader: `
+                        precision highp float;
+
+                        uniform sampler2D u_render_target_texture;
+                        uniform float u_solid_color;
+                        uniform float u_showing_white;
+                        uniform float u_show_original_scene;
+                        uniform float u_logo_opacity;
+                        varying vec2 vUv;
+
+                        void main() {
+                            float original_scene = texture2D(u_render_target_texture, vUv).r;
+                            float color_bw = mix(.137, 1., clamp(u_showing_white - step(.5, original_scene), 0., 1.));
+                            vec3 color = mix(vec3(color_bw), vec3(0.137), u_solid_color);
+                            gl_FragColor = vec4(color, u_logo_opacity);
+                        }
+                    `,
+        });
+        logoMesh.rotation.set(.5 * Math.PI, 0, 0);
+        logoMesh.scale.set(8, 8, 8);
+
+        logoMeshWrapper.add(logoMesh);
+        scene.add(logoMeshWrapper);
+    }
+
+    function updateSceneSize() {
+        camera.aspect = renderTargetCamera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderTargetCamera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderTarget.setSize(2 * window.innerWidth, 2 * window.innerHeight);
+
+        const scale = Math.min(1, .75 * camera.aspect);
+        gsap.set(logoMeshWrapper.scale, {
+            x: scale,
+            y: scale
+        })
+    }
+
+    function buildMainSequence() {
+
+        const openerTl = gsap.timeline({
+            paused: true,
+        })
+            .to([wavesMaterial.uniforms.u_wave_slowed, wavesMeshClone.material.uniforms.u_wave_slowed], {
+                duration: .7,
+                value: 0,
+                ease: "power1.in"
+            }, 0)
+            .to([headerLogoWhite, footerWhite], {
+                duration: .001,
+                opacity: 0
+            }, .6)
+            .to(logoEl, {
+                duration: .001,
+                scale: 0
+            }, .6)
+            .to([wavesMesh.rotation, wavesMeshClone.rotation], {
+                duration: .8,
+                x: 0,
+                ease: "power2.in"
+            }, .0)
+            .to([wavesMesh.position, wavesMeshClone.position], {
+                duration: .5,
+                y: -2,
+                z: -9,
+                ease: "power1.inOut"
+            }, .0)
+            .to([wavesMesh.position, wavesMeshClone.position], {
+                duration: .2,
+                y: 0,
+                ease: "power1.inOut"
+            }, .7)
+
+            .to([wavesMaterial.uniforms.u_wave_colored, wavesMeshClone.material.uniforms.u_wave_colored], {
+                duration: 1,
+                value: 0,
+            }, .4)
+            .to([wavesMaterial.uniforms.u_waves_deform, wavesMeshClone.material.uniforms.u_waves_deform], {
+                duration: .4,
+                value: 0,
+            }, .5)
+            .to(animParams, {
+                duration: .5,
+                noiseTimeIncr: 1,
+            }, 1.2)
+            .to([wavesMaterial.uniforms.u_wave_to_plane, wavesMeshClone.material.uniforms.u_wave_to_plane], {
+                duration: .4,
+                value: 1,
+            }, .3)
+            .to([wavesMaterial.uniforms.u_dots_mask_visibility, wavesMeshClone.material.uniforms.u_dots_mask_visibility], {
+                duration: .4,
+                value: 1,
+            }, .9)
+            .to([wavesMaterial.uniforms.u_dots_radius_grow, wavesMeshClone.material.uniforms.u_dots_radius_grow], {
+                duration: .4,
+                value: 1,
+                ease: "none"
+            }, 1.2)
+            .to([wavesMaterial.uniforms.u_checks_normalize_by_noise, wavesMeshClone.material.uniforms.u_checks_normalize_by_noise], {
+                duration: .7,
+                value: 1,
+                ease: "power1.inOut"
+            }, 1)
+            .to([wavesMaterial.uniforms.u_grid_scale, wavesMeshClone.material.uniforms.u_grid_scale], {
+                duration: 1.2,
+                value: 1,
+                ease: "power2.inOut"
+            }, .7)
+            .to([wavesMaterial.uniforms.u_checks_to_pattern, wavesMeshClone.material.uniforms.u_checks_to_pattern], {
+                duration: 1.5,
+                value: 1,
+                ease: "none"
+            }, 1.65)
+
+
+        const logoAppear = 2.4;
+        const logoScaleStart = logoAppear + .6;
+
+        openerTl
+            .to(logoMesh.material.uniforms.u_show_original_scene, {
+                duration: .1,
+                value: 0
+            }, logoAppear)
+            .to(logoMesh.material.uniforms.u_logo_opacity, {
+                duration: .1,
+                value: 1,
+            }, logoAppear)
+            .to(logoMesh.material.uniforms.u_showing_white, {
+                duration: .1,
+                value: 1
+            }, logoAppear + .3)
+            .to(logoMesh.scale, {
+                duration: 1.7,
+                x: 1700,
+                y: 1700,
+                z: 1700,
+                ease: "power4.in"
+            }, logoScaleStart - .2)
+            .to(logoMesh.position, {
+                duration: 1.7,
+                y: 10,
+                ease: "power3.in"
+            }, logoScaleStart)
+
+            .to(logoMesh.material.uniforms.u_solid_color, {
+                duration: 1,
+                value: 1
+            }, logoScaleStart)
+            .to(logoEl, {
+                duration: .01,
+                scale: 1
+            }, logoAppear - .2)
+            .to([headerLogoDark, footerDark], {
+                duration: .4,
+                opacity: window.innerWidth > 650 ? 1 : 0
+            }, logoAppear)
+            .to([headerLogoDark, footerDark], {
+                duration: .1,
+                opacity: 0
+            }, logoAppear + 1.9)
+            .to([headerLogoWhite, footerWhite], {
+                duration: .1,
+                opacity: 1
+            }, logoAppear + 2.)
+
+            .to(wavesMesh.material.uniforms.u_wave_opacity, {
+                duration: 1,
+                value: 0
+            }, logoAppear + 1.9)
+
+
+        const textTl = gsap.timeline({
+            paused: true
+        })
+            .to(textBlockEl, {
+                duration: .01,
+                opacity: 1
+            }, 0)
+            .to(textBlockEl, {
+                duration: 2,
+                y: -5
+            }, 0)
+            .to('.careers-button', {
+                duration: 1,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            }, 1.5)
+
+        const linesSplit = new SplitText(textBlockEl, {type: "lines"});
+        gsap.set(textBlockEl, {
+            width: "100%",
+            maxWidth: "100%",
+        })
+
+        linesSplit.lines.forEach((l, lIdx) => {
+            textTl
+                .from(l, {
+                    duration: 2. + .2 * lIdx,
+                    opacity: 0,
+                }, .1 * lIdx)
+
+            const caret = document.createElement("span");
+            caret.classList.add("caret");
+            l.appendChild(caret);
+
+            textTl
+                .to(caret, {
+                    duration: .001,
+                    opacity: 0
+                }, 0)
+
+            const charsSplit = new SplitText(l, {type: "chars"});
+            const replacements = ["0", "1", "0", "1", "2", "5", "8"];
+            charsSplit.chars.forEach(char => {
+                const timesChanged = Math.floor(Math.pow(Math.random() * 2, 2));
+                for (let i = 0; i < timesChanged; i++) {
+                    const symbol = replacements[Math.floor(Math.random() * replacements.length)];
+                    const time = 3 * Math.pow(Math.random(), 2);
+                    textTl
+                        .set(char, {
+                            innerHTML: symbol,
+                        }, 3 + time)
+                }
+            })
+
+            const lineStartTime = 4.2 + lIdx / (linesSplit.lines.length - 1) * .8;
+            textTl
+                .to(caret, {
+                    duration: .1,
+                    opacity: 1
+                }, lineStartTime)
+                .to(charsSplit.chars, {
+                    duration: .03,
+                    stagger: .01,
+                    display: "none"
+                }, lineStartTime + 1)
+        })
+        const waveRevertTime = 6;
+
+        textTl
+            .to([wavesMesh.rotation, wavesMeshClone.rotation], {
+                duration: .001,
+                x: -.5 * Math.PI,
+            }, waveRevertTime)
+            .to([wavesMesh.position, wavesMeshClone.position], {
+                duration: .001,
+                y: 0,
+                z: 0,
+            }, waveRevertTime)
+            .to([wavesMaterial.uniforms.u_wave_colored, wavesMeshClone.material.uniforms.u_wave_colored], {
+                duration: .001,
+                value: 1,
+            }, waveRevertTime)
+            .to([
+                wavesMaterial.uniforms.u_wave_to_plane, wavesMeshClone.material.uniforms.u_wave_to_plane,
+                wavesMaterial.uniforms.u_dots_mask_visibility, wavesMeshClone.material.uniforms.u_dots_mask_visibility,
+                wavesMaterial.uniforms.u_dots_radius_grow, wavesMeshClone.material.uniforms.u_dots_radius_grow,
+                wavesMaterial.uniforms.u_checks_normalize_by_noise, wavesMeshClone.material.uniforms.u_checks_normalize_by_noise,
+                wavesMaterial.uniforms.u_grid_scale, wavesMeshClone.material.uniforms.u_grid_scale,
+                wavesMaterial.uniforms.u_checks_to_pattern, wavesMeshClone.material.uniforms.u_checks_to_pattern,
+            ], {
+                duration: .001,
+                value: 0,
+            }, waveRevertTime)
+            .to([
+                wavesMaterial.uniforms.u_grid_scale, wavesMeshClone.material.uniforms.u_grid_scale,
+            ], {
+                duration: .001,
+                value: 9,
+            }, waveRevertTime)
+            .to(animParams, {
+                duration: .001,
+                noiseTimeIncr: .7,
+            }, waveRevertTime)
+            .to([wavesMaterial.uniforms.u_wave_slowed, wavesMeshClone.material.uniforms.u_wave_slowed], {
+                duration: .001,
+                value: 1,
+            }, waveRevertTime)
+
+
+        const textCloseStart = 6.7;
+        textTl
+            .to('.careers-button', {
+                duration: 0.5,
+                opacity: 0,
+                y: 20,
+                ease: "power2.in"
+            }, textCloseStart - 1.2)
+            .to(textBlockEl, {
+                duration: 1,
+                lineHeight: "0px",
+                fontsize: "0px",
+            }, textCloseStart - .2)
+            .to(textBlockEl, {
+                duration: .2,
+                scaleY: 0
+            }, textCloseStart)
+            .to(textBlockEl, {
+                duration: .02,
+                opacity: 0
+            }, textCloseStart + .1)
+
+            .to(logoMesh.material.uniforms.u_logo_opacity, {
+                duration: .1,
+                value: 0,
+            }, textCloseStart - 1)
+            .to(wavesMesh.material.uniforms.u_wave_opacity, {
+                duration: 1,
+                value: 1,
+                ease: "power2.in"
+            }, textCloseStart)
+            .to([
+                wavesMaterial.uniforms.u_waves_deform, wavesMeshClone.material.uniforms.u_waves_deform
+            ], {
+                duration: 1,
+                value: 1,
+            }, textCloseStart)
+
+
+        const mainSequence = gsap.timeline({
+            paused: true
+        });
+
+        mainSequence
+            .to(openerTl, {
+                duration: 0.9,
+                progress: 1,
+                ease: "none"
+            }, 0)
+            .to(textTl, {
+                duration: 0.7 + .02 * linesSplit.lines.length,
+                progress: 1,
+                ease: "none"
+            }, .82);
+
+        return mainSequence;
+
+    }
+
+
+</script>
+
+</body>
+</html>
