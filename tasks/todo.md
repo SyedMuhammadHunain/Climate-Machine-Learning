@@ -24,14 +24,14 @@
 **Description:** Build 5 required publication-quality seaborn/matplotlib charts exploring data distributions, correlations, and relationships relevant to drought and crop yield.
 
 **Acceptance criteria:**
-- [ ] Plot 1: Yield distribution by crop (`Base_Yield_kg_ha` across 10 crops).
-- [ ] Plot 2: Relationship between rainfall deficit (`Rainfall_Deficit_Pct`) and yield.
-- [ ] Plot 3: Drought severity distribution (`Drought_Severity_Class` frequency and crop impact).
-- [ ] Plot 4: Correlation heatmap across numerical weather/soil/irrigation indices and yield.
-- [ ] Plot 5: Water regime comparison (Canal vs. Tubewell vs. Rainfed areas across provinces).
+- [x] Plot 1: Yield distribution by crop (`Base_Yield_kg_ha` across 10 crops).
+- [x] Plot 2: Relationship between rainfall deficit (`Rainfall_Deficit_Pct`) and yield.
+- [x] Plot 3: Drought severity distribution (`Drought_Severity_Class` frequency and crop impact).
+- [x] Plot 4: Correlation heatmap across numerical weather/soil/irrigation indices and yield.
+- [x] Plot 5: Water regime comparison (Canal vs. Tubewell vs. Rainfed areas across provinces).
 
 **Verification:**
-- [ ] Notebook renders all 5 figures without warnings or clipping.
+- [x] Notebook renders all 5 figures without warnings or clipping. (Passed: 5 PNG figures embedded via nbconvert).
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -41,8 +41,8 @@
 ---
 
 ## Checkpoint: Foundation
-- [ ] Clean merged dataset verified.
-- [ ] All 5 EDA plots render and reflect key relationships.
+- [x] Clean merged dataset verified (11,088 rows, 24 columns).
+- [x] All 5 EDA plots render and reflect key relationships.
 
 ---
 
