@@ -29,13 +29,13 @@
 **Description:** Generate a fully pinned `requirements.txt` capturing all runtime and modeling dependencies (FastAPI, uvicorn, scikit-learn, joblib, numpy, pandas, pydantic) from the working `.venv` to satisfy CT-378 ML Lifecycle step 7 and deliverables list. Verify clean dependency resolution.
 
 **Acceptance criteria:**
-- [ ] `requirements.txt` created at repository root with exact pinned versions.
-- [ ] Includes `scikit-learn`, `joblib`, `fastapi`, `uvicorn`, `pydantic`, `pandas`, `numpy`.
-- [ ] No extraneous system build tools or broken platform tags.
+- [x] `requirements.txt` created at repository root with exact pinned versions.
+- [x] Includes `scikit-learn`, `joblib`, `fastapi`, `uvicorn`, `pydantic`, `pandas`, `numpy`.
+- [x] No extraneous system build tools or broken platform tags.
 
 **Verification:**
-- [ ] `grep -E "scikit-learn|joblib|fastapi" requirements.txt` matches pinned versions.
-- [ ] `.venv/bin/python -m pip check` reports no broken dependency trees.
+- [x] `grep -E "scikit-learn|joblib|fastapi" requirements.txt` matches pinned versions.
+- [x] `.venv/bin/python -m pip check` reports no broken dependency trees.
 
 **Dependencies:** None
 **Files likely touched:**
@@ -45,9 +45,9 @@
 ---
 
 ## Checkpoint: Local Serving & Validation
-- [ ] Backend verification test suite passes 10/10 tests.
-- [ ] Local web app launches with a single command and serves all HTML routes and API routes.
-- [ ] Input validation and custom error messages verified end-to-end.
+- [x] Backend verification test suite passes 12/12 tests.
+- [x] Local web app launches with a single command and serves all HTML routes and API routes.
+- [x] Input validation and custom error messages verified end-to-end.
 
 ---
 

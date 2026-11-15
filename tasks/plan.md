@@ -13,12 +13,12 @@ Audit, patch, and package the FastAPI + HTML Local Web App to ensure 100% compli
 
 ### Phase 1: Core App Alignment & Error Handling
 - [x] Task 1: Unify FastAPI static serving and fix frontend error message parsing (`predict.html`, `careers.html`, `app/main.py`)
-- [ ] Task 2: Generate pinned `requirements.txt` and verify clean environment installation
+- [x] Task 2: Generate pinned `requirements.txt` and verify clean environment installation
 
 ### Checkpoint: Local Serving & Validation
-- [ ] All 10 backend automated tests pass.
-- [ ] Single server on `http://127.0.0.1:8000` serves UI and API endpoints without CORS or path errors.
-- [ ] Invalid inputs (e.g. $T_{\text{max}} < T_{\text{min}}$ or negative precipitation) render clear, specific error text in the UI alert banner.
+- [x] All 12 backend automated tests pass.
+- [x] Single server on `http://127.0.0.1:8000` serves UI and API endpoints without CORS or path errors.
+- [x] Invalid inputs (e.g. $T_{\text{max}} < T_{\text{min}}$ or negative precipitation) render clear, specific error text in the UI alert banner.
 
 ### Phase 2: Submission Deliverables & Viva Prep
 - [ ] Task 3: Author comprehensive `README.md` with setup instructions, model metrics, and dataset citations
