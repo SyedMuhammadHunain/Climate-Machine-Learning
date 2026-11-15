@@ -15,6 +15,7 @@ from app.core.exceptions import (
 from app.services.model_service import ModelService
 from app.api.v1.endpoints import router as v1_router
 
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "climate-resilient-frontend"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 
@@ -62,16 +63,11 @@ app.include_router(v1_router, prefix="/api/v1")
 app.include_router(v1_router, prefix="")
 
 
-# Serve static frontend files if directory exists
-if STATIC_DIR.exists():
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Serve static frontend files (prefers frontend/climate-resilient-frontend, falls back to app/static)
+SERVE_DIR = FRONTEND_DIR if FRONTEND_DIR.exists() else (STATIC_DIR if STATIC_DIR.exists() else None)
 
-    @app.get("/", include_in_schema=False)
-    async def serve_index():
-        index_file = STATIC_DIR / "index.html"
-        if index_file.exists():
-            return FileResponse(index_file)
-        return JSONResponse({"message": "Frontend static assets directory exists but index.html not yet built."})
+if SERVE_DIR:
+    app.mount("/", StaticFiles(directory=SERVE_DIR, html=True), name="frontend")
 else:
     @app.get("/", include_in_schema=False)
     async def root():

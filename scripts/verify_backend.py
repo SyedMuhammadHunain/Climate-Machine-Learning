@@ -165,8 +165,34 @@ def run_verification():
         )
         print("  -> PASSED: Ranking dynamically switches between drought (Dates) and normal moisture (Onion).")
 
+        # 11. Static Frontend Integration & Unified Local Serving
+        print("\n[TEST 11] GET Static HTML Routes & Assets (Unified Local Serving)")
+        r_root = client.get("/")
+        assert r_root.status_code == 200, f"Expected 200 on /, got {r_root.status_code}"
+        assert "<!DOCTYPE html>" in r_root.text or "<html" in r_root.text
+
+        r_predict = client.get("/predict.html")
+        assert r_predict.status_code == 200, f"Expected 200 on /predict.html, got {r_predict.status_code}"
+        assert "Crop Yield Prediction & Drought Advisory" in r_predict.text
+
+        r_metrics = client.get("/metrics.html")
+        assert r_metrics.status_code == 200, f"Expected 200 on /metrics.html, got {r_metrics.status_code}"
+        assert "Model Performance & Agroclimatic Benchmarks" in r_metrics.text
+
+        r_asset = client.get("/assets/wordmark.svg")
+        assert r_asset.status_code == 200, f"Expected 200 on /assets/wordmark.svg, got {r_asset.status_code}"
+        print("  -> PASSED: Successfully served root index, predict.html, metrics.html, and static SVG asset.")
+
+        # 12. Error Contract Verification
+        print("\n[TEST 12] Error Detail Contract Verification")
+        res_err = client.post("/api/v1/predict", json=invalid_temp)
+        err_body = res_err.json()
+        assert "message" in err_body
+        assert "details" in err_body or "parameter" in err_body
+        print("  -> PASSED: Error response conforms to frontend error-parser contract.")
+
     print("\n" + "=" * 70)
-    print("ALL 10 BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
+    print("ALL 12 BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)
 
 if __name__ == "__main__":

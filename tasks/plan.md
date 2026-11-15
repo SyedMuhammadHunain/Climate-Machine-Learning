@@ -1,28 +1,40 @@
-# Implementation Plan: Dedicated Model Metrics & Agroclimatic Benchmarks Page (`metrics.html`)
+# Implementation Plan: CT-378 Local Web App Finalization & Submission Readiness
 
 ## Overview
-Create a dedicated "Metrics & Agroclimatic Benchmarks" page (`metrics.html`) linked from the site navigation. This page serves academic evaluators, project reviewers, and agricultural stakeholders by showcasing model performance statistics ($R^2$, RMSE, MAE), historical provincial climate baseline tables (Punjab, Sindh, Balochistan), crop physiological coefficients (vulnerability factor $K_w$, critical heat thresholds $T_{\text{crit}}$), and agroclimatic elasticity equations, keeping `predict.html` clean and focused on prediction.
+Audit, patch, and package the FastAPI + HTML Local Web App to ensure 100% compliance with the CT-378 Machine Learning Semester Project guidelines. This includes unifying localhost frontend-backend serving under FastAPI, fixing error message rendering on client-side and API validation, generating a pinned `requirements.txt`, producing a complete `README.md` with setup steps, and assembling a 10-minute demo and viva preparation guide.
 
 ## Architecture Decisions
-- **Page Design & Aesthetic**: Reuse the clean Ashby-inspired aesthetic of `predict.html` (720px centered container, crisp typography with `DenimINK-Regular` and `LD_TechD-Regular`, monochromatic cards, accessible contrast, responsive layout).
-- **Offline-First & Zero CDNs**: Use 100% local CSS and vanilla JavaScript; no external CDNs or network scripts.
-- **Dynamic Metadata & Fallback**: Integrate live fetch from `/api/v1/metadata` and `/health` with static agronomic fallbacks so the page renders identically whether the backend API is live or offline.
-- **Cross-Page Navigation**: Provide an intuitive header navigation bar (`Overview` $\rightarrow$ `index.html`, `Predictor & Advisory` $\rightarrow$ `predict.html`, `Model & Benchmarks` $\rightarrow$ `metrics.html`) across all frontend pages.
+- **Unified Single-Server Local Deployment**: Mount `frontend/climate-resilient-frontend` as static directory in FastAPI `app/main.py` with fallback route serving `index.html`. This allows examiners to run the complete system with one command (`uvicorn app.main:app`) on `http://127.0.0.1:8000`, while preserving standalone static serving (`python -m http.server 3000`).
+- **Standardized Error Handling Contract**: Align client-side error handling in `predict.html` to parse both structured validation errors (`details` array from Pydantic `RequestValidationError`) and custom domain errors (`message` from `AgronomicValidationError`), displaying readable inline feedback instead of generic fallback text.
+- **Strict Version Pinning**: Pin all exact dependencies in `requirements.txt` from the project's tested `.venv` environment to satisfy the scikit-learn/joblib reproduction requirement.
+- **Academic & Demo Documentation**: Provide a complete `README.md` meeting all deliverable criteria (setup steps, dataset sources, model architecture, evaluation metrics, and API documentation) plus an actionable 10-minute demo and viva guide.
 
 ## Task List
 
-### Phase 1: Benchmarks Page Creation
-- [ ] Task 1: Create `metrics.html` with Model Accuracy, Provincial Climate Baselines, and Crop Physiology Reference Tables
-- [ ] Task 2: Implement Cross-Page Header Navigation in `predict.html`, `careers.html`, `index.html`, and `metrics.html`
+### Phase 1: Core App Alignment & Error Handling
+- [x] Task 1: Unify FastAPI static serving and fix frontend error message parsing (`predict.html`, `careers.html`, `app/main.py`)
+- [ ] Task 2: Generate pinned `requirements.txt` and verify clean environment installation
 
-### Checkpoint: Verification
-- [ ] `metrics.html` renders cleanly with 200 OK locally.
-- [ ] Navigation links between `index.html`, `predict.html`, and `metrics.html` operate seamlessly.
-- [ ] Zero external CDN dependencies in `metrics.html`.
-- [ ] All 10 backend verification tests pass.
+### Checkpoint: Local Serving & Validation
+- [ ] All 10 backend automated tests pass.
+- [ ] Single server on `http://127.0.0.1:8000` serves UI and API endpoints without CORS or path errors.
+- [ ] Invalid inputs (e.g. $T_{\text{max}} < T_{\text{min}}$ or negative precipitation) render clear, specific error text in the UI alert banner.
+
+### Phase 2: Submission Deliverables & Viva Prep
+- [ ] Task 3: Author comprehensive `README.md` with setup instructions, model metrics, and dataset citations
+- [ ] Task 4: Create 10-minute live demonstration script and individual viva preparation guide (`docs/demo_and_viva_guide.md`)
+
+### Checkpoint: Complete
+- [ ] Repository has `data/`, `notebooks/`, `app/`, `models/`, `requirements.txt`, and complete `README.md`.
+- [ ] Demo script cleanly maps to the 3 min problem, 4 min live demo, and 3 min results breakdown.
+- [ ] Ready for final review and Week 15 presentation.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Backend offline prevents metrics display | Medium | Embed hardcoded reference statistics and provincial baseline tables matching `PROVINCE_DEFAULTS` and model artifacts as fallback defaults. |
-| Navigation breaks mobile layout | Low | Use compact flex navigation pills with wrapping and touch-friendly tap targets ($\ge 44\text{px}$). |
+| Static files mount alters relative asset paths in frontend | Medium | Mount at root or `/` using FastAPI `StaticFiles(directory=..., html=True)` while preserving `/api/v1` and `/predict` routes. |
+| Examiner tests unexpected input combinations | High | Ensure both client-side JavaScript guardrails and backend Pydantic/Agronomic exception handlers catch invalid data and return user-friendly error banners. |
+| Dependency conflicts during viva evaluation on clean machine | High | Generate pinned `requirements.txt` directly from working `.venv` with Python 3.13 / compatible wheels. |
+
+## Open Questions
+- None. Group confirmed choice of Local Web App deployment option per course guidelines.

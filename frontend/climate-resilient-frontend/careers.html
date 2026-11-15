@@ -75,27 +75,27 @@
         .site-nav {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 32px;
         }
 
         .nav-pill {
             display: inline-flex;
             align-items: center;
-            padding: 7px 16px;
+            padding: 8px 16px;
             font-size: 13px;
             font-weight: 500;
             color: var(--colorNeutral700);
             text-decoration: none;
-            border-radius: 20px;
+            border-radius: 6px;
             border: 1px solid var(--colorNeutral300);
             background: #ffffff;
-            transition: all 0.15s ease;
+            transition: border-color 0.15s ease, color 0.15s ease;
         }
 
         .nav-pill:hover {
-            color: var(--colorPrimary600);
-            border-color: var(--colorPrimary600);
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral600);
         }
 
         .nav-pill.active {
@@ -683,7 +683,7 @@
     </div>
 
     <script>
-        const API_BASE = window.API_BASE || "http://127.0.0.1:8000";
+        const API_BASE = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
 
         const PRESET_CONFIGS = {
             severe: {
@@ -872,7 +872,22 @@
                         isLiveApi = true;
                     } else {
                         const err = await response.json();
-                        showValidationError(err.detail || "API rejected input parameters.");
+                        let errorMsg = "API rejected input parameters.";
+                        if (err) {
+                            if (err.message && Array.isArray(err.details) && err.details.length > 0) {
+                                const first = err.details[0];
+                                const fieldName = first.field ? first.field.split("->").pop().trim() : "input";
+                                errorMsg = `${err.message} (${fieldName}: ${first.message})`;
+                            } else if (err.message) {
+                                errorMsg = err.message;
+                            } else if (typeof err.detail === "string") {
+                                errorMsg = err.detail;
+                            } else if (Array.isArray(err.detail) && err.detail.length > 0) {
+                                const first = err.detail[0];
+                                errorMsg = first.msg || JSON.stringify(first);
+                            }
+                        }
+                        showValidationError(errorMsg);
                     }
                 } catch (networkErr) {
                     clearTimeout(timeoutId);

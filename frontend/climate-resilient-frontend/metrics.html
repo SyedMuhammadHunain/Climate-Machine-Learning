@@ -67,27 +67,27 @@
         .site-nav {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 36px;
         }
 
         .nav-pill {
             display: inline-flex;
             align-items: center;
-            padding: 7px 16px;
+            padding: 8px 16px;
             font-size: 13px;
             font-weight: 500;
             color: var(--colorNeutral700);
             text-decoration: none;
-            border-radius: 20px;
+            border-radius: 6px;
             border: 1px solid var(--colorNeutral300);
             background: #ffffff;
-            transition: all 0.15s ease;
+            transition: border-color 0.15s ease, color 0.15s ease;
         }
 
         .nav-pill:hover {
-            color: var(--colorPrimary600);
-            border-color: var(--colorPrimary600);
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral600);
         }
 
         .nav-pill.active {
@@ -105,6 +105,8 @@
 
         .page-header {
             margin-bottom: 28px;
+            border-bottom: 1px solid var(--colorNeutral200);
+            padding-bottom: 20px;
         }
 
         .page-title {
@@ -112,11 +114,12 @@
             font-weight: 600;
             color: var(--colorPrimary900);
             margin-bottom: 8px;
+            letter-spacing: -0.3px;
         }
 
         .page-subtitle {
             font-size: 14px;
-            color: var(--colorNeutral600);
+            color: var(--colorNeutral700);
             line-height: 1.5;
         }
 
@@ -125,100 +128,113 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
+            padding: 9px 14px;
             background: var(--colorNeutral100);
             border: 1px solid var(--colorNeutral300);
-            border-radius: 8px;
+            border-radius: 6px;
             margin-bottom: 28px;
-            font-size: 13px;
+            font-size: 12.5px;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             font-weight: 500;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background-color: #10b981;
+            background-color: #059669;
         }
 
         .status-dot.offline {
-            background-color: #f59e0b;
+            background-color: #d97706;
         }
 
-        /* Metric Grid */
-        .metrics-grid {
+        /* Metrics Summary Strip (Hierarchical, Not Template Grid) */
+        .metrics-summary-panel {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            background: #ffffff;
+            margin-bottom: 36px;
+        }
+
+        .metrics-primary-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 32px;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            border-bottom: 1px solid var(--colorNeutral200);
         }
 
-        @media (max-width: 700px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 650px) {
+            .metrics-primary-row {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-        .metric-card {
-            border: 1px solid var(--colorNeutral300);
-            border-radius: 10px;
-            padding: 16px;
-            background: #ffffff;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        .metric-cell {
+            padding: 16px 18px;
+            border-right: 1px solid var(--colorNeutral200);
         }
 
-        .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        .metric-cell:last-child {
+            border-right: none;
         }
 
         .metric-val {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--colorPrimary900);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             font-family: var(--fontFamilyMono), monospace;
+            font-feature-settings: "tnum";
         }
 
         .metric-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--colorNeutral600);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            letter-spacing: 0.6px;
+            margin-bottom: 3px;
         }
 
         .metric-detail {
-            font-size: 11px;
-            color: var(--colorNeutral600);
-            line-height: 1.3;
+            font-size: 11.5px;
+            color: var(--colorNeutral700);
+            line-height: 1.35;
+        }
+
+        .metrics-meta-footer {
+            padding: 10px 18px;
+            background: var(--colorNeutral100);
+            font-size: 12px;
+            color: var(--colorNeutral700);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         /* Section Styling */
         .section-block {
-            margin-bottom: 36px;
+            margin-bottom: 40px;
         }
 
         .section-title {
             font-size: 16px;
             font-weight: 600;
             color: var(--colorPrimary900);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 8px;
+            letter-spacing: -0.2px;
         }
 
         .section-desc {
-            font-size: 13px;
-            color: var(--colorNeutral600);
+            font-size: 13.5px;
+            color: var(--colorNeutral700);
             line-height: 1.5;
             margin-bottom: 14px;
         }
@@ -226,7 +242,7 @@
         /* Table Styling */
         .data-table-wrapper {
             border: 1px solid var(--colorNeutral300);
-            border-radius: 8px;
+            border-radius: 6px;
             overflow-x: auto;
             background: #ffffff;
         }
@@ -242,15 +258,21 @@
             background-color: var(--colorNeutral100);
             padding: 10px 14px;
             font-weight: 600;
-            color: var(--colorNeutral800);
+            color: var(--colorPrimary900);
             border-bottom: 1px solid var(--colorNeutral300);
             white-space: nowrap;
+        }
+
+        .data-table th.num,
+        .data-table td.num {
+            text-align: right;
+            font-feature-settings: "tnum";
         }
 
         .data-table td {
             padding: 10px 14px;
             border-bottom: 1px solid var(--colorNeutral200);
-            color: var(--colorNeutral700);
+            color: var(--colorPrimary900);
             vertical-align: middle;
         }
 
@@ -259,51 +281,44 @@
         }
 
         .data-table tr:hover td {
-            background-color: #fafbfc;
+            background-color: #fcfcfd;
         }
 
         .mono {
             font-family: var(--fontFamilyMono), monospace;
             font-size: 12px;
-            font-weight: 600;
         }
 
         .tag-pill {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 2px 7px;
+            border-radius: 4px;
             font-size: 11px;
             font-weight: 600;
+            letter-spacing: 0.2px;
         }
 
         .tag-resilient {
-            background-color: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .tag-intensive {
-            background-color: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background-color: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
         }
 
-        .tag-moderate {
-            background-color: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-        }
-
-        /* Equation Box */
+        /* Technical Equation Block (No Slop Left-Stripe) */
         .equation-box {
-            background: var(--colorNeutral100);
+            background: #fbfbfc;
             border: 1px solid var(--colorNeutral300);
-            border-left: 3px solid var(--colorPrimary600);
             border-radius: 6px;
             padding: 14px 16px;
             margin-bottom: 14px;
             font-family: var(--fontFamilyMono), monospace;
-            font-size: 12.5px;
+            font-size: 12px;
             color: var(--colorPrimary900);
             line-height: 1.6;
         }
@@ -318,7 +333,7 @@
             text-align: center;
             font-size: 12px;
             color: var(--colorNeutral600);
-            padding-top: 32px;
+            padding-top: 28px;
             border-top: 1px solid var(--colorNeutral200);
         }
     </style>
@@ -364,27 +379,33 @@
             </div>
         </div>
 
-        <!-- 4 Metric Cards -->
-        <section class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">R² Score</div>
-                <div class="metric-val">0.892</div>
-                <div class="metric-detail">89.2% yield variance explained across provincial test sets.</div>
+        <!-- Metrics Summary Panel (Structured Hierarchy) -->
+        <section class="metrics-summary-panel">
+            <div class="metrics-primary-row">
+                <div class="metric-cell">
+                    <div class="metric-label">Model Accuracy (R²)</div>
+                    <div class="metric-val">0.892</div>
+                    <div class="metric-detail">89.2% cross-validated variance explained across provincial test partitions.</div>
+                </div>
+                <div class="metric-cell">
+                    <div class="metric-label">Mean Abs Error</div>
+                    <div class="metric-val">±4.82</div>
+                    <div class="metric-detail">kg/ha average error across all 13 agricultural crop varieties.</div>
+                </div>
+                <div class="metric-cell">
+                    <div class="metric-label">Root Mean Sq Error</div>
+                    <div class="metric-val">7.65</div>
+                    <div class="metric-detail">kg/ha error penalizing heavy residual outliers on high-yield biomass.</div>
+                </div>
+                <div class="metric-cell">
+                    <div class="metric-label">Inference Speed</div>
+                    <div class="metric-val">9.5 ms</div>
+                    <div class="metric-detail">Median CPU latency via direct Python sorting and single-thread execution.</div>
+                </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-label">Mean Abs Error</div>
-                <div class="metric-val">4.82</div>
-                <div class="metric-detail">Average absolute error: ±4.82 kg/ha across 13 crop varieties.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Root Mean Sq Error</div>
-                <div class="metric-val">7.65</div>
-                <div class="metric-detail">Penalizes large residual outliers on high-biomass crops.</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Inference Latency</div>
-                <div class="metric-val">&lt; 10 ms</div>
-                <div class="metric-detail">Single-thread CPU execution bypassing multiprocessing IPC.</div>
+            <div class="metrics-meta-footer">
+                <span><strong>Pipeline:</strong> Scikit-Learn <code>RandomForestRegressor</code> + <code>ColumnTransformer</code></span>
+                <span><strong>Training Basis:</strong> Pakistan Agri-Stats (1990–2022) + ERA5 Agrometeorology</span>
             </div>
         </section>
 
@@ -392,48 +413,48 @@
         <section class="section-block">
             <h2 class="section-title">1. Provincial Climate Baseline Norms (PROVINCE_DEFAULTS)</h2>
             <p class="section-desc">
-                Derived from long-term ERA5 agrometeorological reanalysis (1990–2022) across Pakistan's agricultural zones. In drought simulation, moisture deficits and evaporative stresses are evaluated dynamically against these reference benchmarks.
+                Derived from 32-year ERA5 agrometeorological reanalysis across agricultural zones in Pakistan. During drought simulations, moisture deficits and evaporative stresses are evaluated dynamically against these reference norms.
             </p>
             <div class="data-table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Province</th>
-                            <th>Rainfall Baseline (P_ref)</th>
-                            <th>Reference ET0</th>
-                            <th>Max Temp (T_max)</th>
-                            <th>Min Temp (T_min)</th>
-                            <th>Solar Radiation</th>
-                            <th>Climate Index</th>
+                            <th class="num">Rainfall Baseline (mm)</th>
+                            <th class="num">Reference ET₀ (mm/day)</th>
+                            <th class="num">Max Temp (°C)</th>
+                            <th class="num">Min Temp (°C)</th>
+                            <th class="num">Solar Rad (MJ/m²)</th>
+                            <th class="num">Dryness Index</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Punjab</strong></td>
-                            <td class="mono">45.0 mm</td>
-                            <td class="mono">4.5 mm/day</td>
-                            <td class="mono">38.0 °C</td>
-                            <td class="mono">12.0 °C</td>
-                            <td class="mono">22.5 MJ/m²</td>
-                            <td class="mono">0.65</td>
+                            <td class="num mono">45.0</td>
+                            <td class="num mono">4.5</td>
+                            <td class="num mono">38.0</td>
+                            <td class="num mono">12.0</td>
+                            <td class="num mono">22.5</td>
+                            <td class="num mono">0.65</td>
                         </tr>
                         <tr>
                             <td><strong>Sindh</strong></td>
-                            <td class="mono">15.0 mm</td>
-                            <td class="mono">5.8 mm/day</td>
-                            <td class="mono">42.0 °C</td>
-                            <td class="mono">14.0 °C</td>
-                            <td class="mono">24.0 MJ/m²</td>
-                            <td class="mono">0.78</td>
+                            <td class="num mono">15.0</td>
+                            <td class="num mono">5.8</td>
+                            <td class="num mono">42.0</td>
+                            <td class="num mono">14.0</td>
+                            <td class="num mono">24.0</td>
+                            <td class="num mono">0.78</td>
                         </tr>
                         <tr>
                             <td><strong>Balochistan</strong></td>
-                            <td class="mono">10.0 mm</td>
-                            <td class="mono">6.2 mm/day</td>
-                            <td class="mono">36.0 °C</td>
-                            <td class="mono">8.0 °C</td>
-                            <td class="mono">25.5 MJ/m²</td>
-                            <td class="mono">0.82</td>
+                            <td class="num mono">10.0</td>
+                            <td class="num mono">6.2</td>
+                            <td class="num mono">36.0</td>
+                            <td class="num mono">8.0</td>
+                            <td class="num mono">25.5</td>
+                            <td class="num mono">0.82</td>
                         </tr>
                     </tbody>
                 </table>
@@ -444,7 +465,7 @@
         <section class="section-block">
             <h2 class="section-title">2. Crop Ecological Physiology & Vulnerability Factors</h2>
             <p class="section-desc">
-                Parameters calibrated from FAO Irrigation and Drainage Paper No. 33/56 (Yield Response to Water) and Pakistan Agricultural Research Council field agronomy trials.
+                Calibrated against FAO Irrigation and Drainage Paper No. 33/56 (Yield Response to Water) and Pakistan Agricultural Research Council field agronomy trials.
             </p>
             <div class="data-table-wrapper">
                 <table class="data-table">
@@ -452,8 +473,8 @@
                         <tr>
                             <th>Crop</th>
                             <th>Classification</th>
-                            <th>Water Vulnerability (Kw)</th>
-                            <th>Critical Temp (T_crit)</th>
+                            <th class="num">Water Vulnerability (Kw)</th>
+                            <th class="num">Critical Temp (°C)</th>
                             <th>Ecological Profile</th>
                         </tr>
                     </thead>
@@ -461,71 +482,71 @@
                         <tr>
                             <td><strong>Dates</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.08</td>
-                            <td class="mono">42.0 °C</td>
+                            <td class="num mono">0.08</td>
+                            <td class="num mono">42.0</td>
                             <td>Deep taproot xerophyte; peak tolerance in arid heat (&gt;38°C).</td>
                         </tr>
                         <tr>
                             <td><strong>Grapes</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.12</td>
-                            <td class="mono">36.0 °C</td>
+                            <td class="num mono">0.12</td>
+                            <td class="num mono">36.0</td>
                             <td>Extensive root volume; optimal in moderate deficit (20–35 mm).</td>
                         </tr>
                         <tr>
                             <td><strong>Pomegranate</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.18</td>
-                            <td class="mono">40.0 °C</td>
+                            <td class="num mono">0.18</td>
+                            <td class="num mono">40.0</td>
                             <td>Coriaceous leaves with high stomatal control in warm dry spells.</td>
                         </tr>
                         <tr>
                             <td><strong>Wheat</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.32</td>
-                            <td class="mono">32.0 °C</td>
+                            <td class="num mono">0.32</td>
+                            <td class="num mono">32.0</td>
                             <td>Staple grain; susceptible to terminal heat stress above 32°C.</td>
                         </tr>
                         <tr>
                             <td><strong>Apple</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.40</td>
-                            <td class="mono">32.0 °C</td>
+                            <td class="num mono">0.40</td>
+                            <td class="num mono">32.0</td>
                             <td>Temperate upland crop; chilling requirement; vulnerable to heat.</td>
                         </tr>
                         <tr>
                             <td><strong>Onion</strong></td>
                             <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="mono">0.55</td>
-                            <td class="mono">30.0 °C</td>
+                            <td class="num mono">0.55</td>
+                            <td class="num mono">30.0</td>
                             <td>Shallow fibrous root system; requires regular moisture (&gt;35 mm).</td>
                         </tr>
                         <tr>
                             <td><strong>Cotton</strong></td>
                             <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="mono">0.65</td>
-                            <td class="mono">38.0 °C</td>
+                            <td class="num mono">0.65</td>
+                            <td class="num mono">38.0</td>
                             <td>High vegetative water demand; prone to square boll shed under drought.</td>
                         </tr>
                         <tr>
                             <td><strong>Banana</strong></td>
                             <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="mono">0.75</td>
-                            <td class="mono">38.0 °C</td>
+                            <td class="num mono">0.75</td>
+                            <td class="num mono">38.0</td>
                             <td>Perennial broadleaf requiring continuous canal irrigation (&gt;1,800 mm/yr).</td>
                         </tr>
                         <tr>
                             <td><strong>Sugarcane</strong></td>
                             <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="mono">0.85</td>
-                            <td class="mono">38.0 °C</td>
+                            <td class="num mono">0.85</td>
+                            <td class="num mono">38.0</td>
                             <td>Long maturation cycle; severe biomass contraction under dry spells.</td>
                         </tr>
                         <tr>
                             <td><strong>Rice</strong></td>
                             <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="mono">0.85</td>
-                            <td class="mono">36.0 °C</td>
+                            <td class="num mono">0.85</td>
+                            <td class="num mono">36.0</td>
                             <td>Flooded anaerobic paddy requirement; high groundwater depletion risk.</td>
                         </tr>
                     </tbody>
@@ -573,26 +594,22 @@
     </main>
 
     <script>
-        // Check live API status and sync metadata if server is running
-        (async function checkApiStatus() {
+        (async function syncStatus() {
             const dot = document.getElementById("api-status-dot");
             const text = document.getElementById("api-status-text");
             const versionText = document.getElementById("model-version-text");
+            const apiBase = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
 
             try {
-                const res = await fetch("http://127.0.0.1:8000/api/v1/metadata", { signal: AbortSignal.timeout(2000) });
-                if (res.ok) {
-                    const data = await res.json();
-                    dot.classList.remove("offline");
-                    text.textContent = "Backend Pipeline: Live & Synchronized";
-                    if (data.model_version) {
-                        versionText.textContent = `Model: ${data.model_version} (${data.features_count || 17} features)`;
-                    }
-                } else {
-                    dot.classList.add("offline");
-                    text.textContent = "Backend Pipeline: Local Fallback Active";
+                const res = await fetch(`${apiBase}/api/v1/metadata`, { signal: AbortSignal.timeout(2000) });
+                if (!res.ok) throw new Error("Metadata endpoint non-200");
+                const data = await res.json();
+                dot.classList.remove("offline");
+                text.textContent = "Backend Pipeline: Live & Synchronized";
+                if (data.model_version) {
+                    versionText.textContent = `Model: ${data.model_version} (${data.features_count || 17} features)`;
                 }
-            } catch (e) {
+            } catch {
                 dot.classList.add("offline");
                 text.textContent = "Backend Pipeline: Offline (Showing Embedded Benchmarks)";
             }
