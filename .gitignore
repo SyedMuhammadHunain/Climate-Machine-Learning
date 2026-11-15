@@ -11,3 +11,5 @@ wheels/
 
 .ipynb_checkpoints/
 .~lock.*
+config.bat
+node_modules
