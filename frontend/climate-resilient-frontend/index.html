@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     
     <!-- Meta Title -->
-    <title>Infinite Field — There is no limit for those who think infinite</title>
+    <title>Infinite Field — Guarding harvests against drought with climate intelligence</title>
     
     <!-- Meta Description -->
     <meta name="description" content="At Infinite Field, we use machine learning and climate data to protect agriculture against drought. Our models predict crop yields and recommend low-water, climate-resilient crops to secure sustainable harvests.">
@@ -298,20 +298,20 @@
     <div class="footer">
         <div class="dark-footer">
             <div>
-                There is no limit
+                Guarding harvests against drought
             </div>
             <div class="horizontal-line"></div>
             <div>
-                for those who think infinite
+                with climate intelligence
             </div>
         </div>
         <div class="white-footer">
             <div class="white-footer-typer">
-                There is no limit
+                Guarding harvests against drought
             </div>
             <div class="horizontal-line white-footer-horizontal-line"></div>
             <div class="white-footer-typer">
-                for those who think infinite
+                with climate intelligence
             </div>
         </div>
     </div>
@@ -626,7 +626,7 @@
     }
 
     function createWaves() {
-        const w = 70, h = 40, res = 6;
+        const w = 70, h = 40, res = 5;
         const geometry = new THREE.PlaneGeometry(w, h, w * res, h * res);
 
         wavesMaterial = new THREE.RawShaderMaterial({
@@ -1081,7 +1081,7 @@
         camera.updateProjectionMatrix();
         renderTargetCamera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderTarget.setSize(2 * window.innerWidth, 2 * window.innerHeight);
+        renderTarget.setSize(window.innerWidth, window.innerHeight);
 
         const scale = Math.min(1, .75 * camera.aspect);
         gsap.set(logoMeshWrapper.scale, {

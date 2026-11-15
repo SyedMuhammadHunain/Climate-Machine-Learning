@@ -794,9 +794,9 @@
                 const isAllCrops = crop === "ALL";
                 const endpoint = isAllCrops ? `${API_BASE}/api/v1/recommend` : `${API_BASE}/api/v1/predict`;
 
-                const payload = isAllCrops ? {
-                    province: province,
-                    area: area,
+                const basePayload = {
+                    province,
+                    area,
                     precipitation_sum: precip,
                     temperature_2m_mean: temp,
                     temperature_2m_max: temp_max,
@@ -804,21 +804,12 @@
                     fao_evapotranspiration: et0,
                     shortwave_radiation: radiation,
                     precipitation_hours: precip_hours,
-                    climate_index: climate_index,
-                    scenario_name: `Agroclimatic Simulation (${province})`
-                } : {
-                    province: province,
-                    crop: crop.toLowerCase(),
-                    area: area,
-                    precipitation_sum: precip,
-                    temperature_2m_mean: temp,
-                    temperature_2m_max: temp_max,
-                    temperature_2m_min: temp_min,
-                    fao_evapotranspiration: et0,
-                    shortwave_radiation: radiation,
-                    precipitation_hours: precip_hours,
-                    climate_index: climate_index
+                    climate_index
                 };
+
+                const payload = isAllCrops
+                    ? { ...basePayload, scenario_name: `Agroclimatic Simulation (${province})` }
+                    : { ...basePayload, crop: crop.toLowerCase() };
 
                 // Abort request after 3.5s if backend is unreachable or hanging
                 const controller = new AbortController();
@@ -1046,6 +1037,33 @@
                 advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${cropDisplay} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
             }
         };
+
+        // Auto-sync advanced temperature and evapotranspiration when primary parameters are changed
+        const deactivatePresetPills = () => {
+            document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
+        };
+
+        document.getElementById("field-temperature").addEventListener("input", function(e) {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+                deactivatePresetPills();
+                const maxEl = document.getElementById("field-temp-max");
+                const minEl = document.getElementById("field-temp-min");
+                if (maxEl) maxEl.value = (val + 6.0).toFixed(1);
+                if (minEl) minEl.value = (val - 6.0).toFixed(1);
+            }
+        });
+
+        document.getElementById("field-precipitation").addEventListener("input", function(e) {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+                deactivatePresetPills();
+                const et0El = document.getElementById("field-et0");
+                if (et0El) {
+                    et0El.value = val >= 40.0 ? "4.0" : val >= 20.0 ? "4.5" : "7.8";
+                }
+            }
+        });
     </script>
 </body>
 </html>

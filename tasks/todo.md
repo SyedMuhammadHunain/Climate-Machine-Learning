@@ -1,74 +1,39 @@
-# Tasks: Agroclimatic Ranking & Model Elasticity
+# Tasks: Slogan Customization & Branding Maintenance
 
-## Phase 1: Model Service Elasticity & Ranking
+## Phase 1: Brand & Slogan Customization
 
-### Task 1: Implement Dynamic Agroclimatic Elasticity in `ModelService`
-**Description:** Modify `app/services/model_service.py` so meteorological inputs (`precipitation_sum`, `temperature_2m_mean`, `temperature_2m_max`, `fao_evapotranspiration`) actively modulate crop yield predictions via physiological response curves, overcoming the Random Forest's categorical bias.
-
-**Acceptance criteria:**
-- [x] Changing rainfall from 2mm to 100mm produces noticeable, realistic yield changes (>10% variance, tested 64.68%).
-- [x] Temperatures exceeding critical thresholds (>38°C) incur heat-stress yield penalties (tested 31.50%).
-- [x] Both single prediction and recommendation endpoints reflect meteorological elasticity.
-
-**Verification:**
-- [x] Automated verification script comparing predictions under 2mm vs 100mm rainfall shows >10% variance.
-- [x] Run `.venv/bin/python scripts/verify_backend.py`.
-
-**Dependencies:** None
-**Files likely touched:**
-- `app/services/model_service.py`
-**Estimated scope:** S (1 file)
-
----
-
-### Task 2: Implement Water-Use Efficiency & Relative Drought-Resilience Ranking
-**Description:** Update `recommend_crops()` in `app/services/model_service.py` to rank candidate crops using a composite Drought Resilience & Water-Use Efficiency (WUE) score instead of raw unnormalized biomass weight. This ensures low-water tree and grain crops (Dates, Pomegranate, Wheat) rank ahead of water-sensitive vegetables when moisture deficit is acute.
+### Task 1: Landing Page (`index.html`) Slogan Customization
+**Description:** Replace generic template tagline ("There is no limit for those who think infinite") with project-focused climate resilience slogan in both static and GSAP-animated footer elements, retaining the "Infinite Field" brand identity per user instruction.
 
 **Acceptance criteria:**
-- [x] Ranking uses relative resilience score instead of raw unnormalized kg/ha biomass.
-- [x] Severe drought (<10mm) elevates high-arid tolerant crops (Dates, Pomegranate).
-- [x] Baseline normal conditions (>40mm) elevate higher-producing crops (Wheat, Onion).
+- [x] `<title>` reflects "Infinite Field — Guarding harvests against drought with climate intelligence".
+- [x] Header and 3D mesh branding restored to "Infinite Field".
+- [x] Footer slogan updated to:
+  - Line 1: `Guarding harvests against drought`
+  - Line 2: `with climate intelligence`
+- [x] Mission overlay text references Infinite Field with agricultural AI context.
 
 **Verification:**
-- [x] Run test comparing severe drought scenario vs baseline normal scenario; top crop changes from Dates/Pomegranate to Wheat/Onion.
-- [x] Update `scripts/verify_backend.py` to assert top recommended crop under severe drought is Dates or Pomegranate.
-
-**Dependencies:** Task 1
-**Files likely touched:**
-- `app/services/model_service.py`
-- `scripts/verify_backend.py`
-**Estimated scope:** S (2 files)
+- [x] Inspect `index.html` via HTTP response; verified slogans and Infinite Field brand identity live.
 
 ---
 
-## Checkpoint: Backend Logic
-- [x] All verification tests pass: `.venv/bin/python scripts/verify_backend.py` (10/10 tests passed)
-- [x] Severe drought and baseline normal scenarios produce different #1 recommended crops (Dates in drought vs Onion in normal).
-
----
-
-## Phase 2: Verification & Scenario Responsiveness
-
-### Task 3: End-to-End Verification Across Climate Presets
-**Description:** Test all standard climate presets ("Severe Drought", "Moderate Drought", "Baseline Normal", "Extreme Heatwave") through API calls and verify the frontend recommendations respond dynamically.
+### Task 2: Predictor & Advisory Interfaces (`predict.html`, `careers.html`)
+**Description:** Maintain "Infinite Field" wordmark and titles while preserving auto-sync parameters and drought advisory engine.
 
 **Acceptance criteria:**
-- [x] Presets produce distinct crop rankings and narrative summaries.
-- [x] Onion is no longer unconditionally #1 across every climate condition.
-- [x] No regression in API contracts (`SinglePredictionResponse` and `RecommendationResponse`).
+- [x] Header logo renders original "Infinite Field" SVG wordmark.
+- [x] Page `<title>` reflects "Infinite Field — Crop Yield Prediction & Drought Advisory".
+- [x] Auto-sync listeners for advanced meteorological features preserved.
 
 **Verification:**
-- [x] Run verification script covering all preset scenarios.
-- [x] Check HTTP responses for each scenario.
-
-**Dependencies:** Task 1, Task 2
-**Files likely touched:**
-- `scripts/verify_backend.py`
-**Estimated scope:** XS (1 file)
+- [x] Inspect `predict.html` and `careers.html`; confirmed clean header wordmark and title.
 
 ---
 
-## Checkpoint: Complete
-- [x] Onion is no longer unconditionally #1 across every climate condition.
-- [x] Rankings respond intelligently to drought severity.
-- [x] Review with human before deployment.
+## Checkpoint: Verification
+- [x] All pages load with 200 OK.
+- [x] "Infinite Field" brand identity fully preserved across 3D model, SVG wordmarks, headers, and titles.
+- [x] Project slogan ("Guarding harvests against drought" / "with climate intelligence") active in footer.
+- [x] Crop ecological niches calibrated: Dates (extreme drought/heat), Grapes (moderate drought 20-35mm / 25-30°C), Pomegranate (warm drought 34°C), Onion (normal moisture >35mm / 22°C).
+- [ ] Review with human before finalization.

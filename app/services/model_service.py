@@ -50,7 +50,7 @@ class ModelService:
         "grapes": {"water_vulnerability": 0.12, "crit_temp": 36.0},
         "pomegranate": {"water_vulnerability": 0.18, "crit_temp": 40.0},
         "wheat": {"water_vulnerability": 0.32, "crit_temp": 32.0},
-        "onion": {"water_vulnerability": 0.50, "crit_temp": 34.0},
+        "onion": {"water_vulnerability": 0.55, "crit_temp": 30.0},
         "apple": {"water_vulnerability": 0.40, "crit_temp": 32.0},
         "mango": {"water_vulnerability": 0.35, "crit_temp": 40.0},
         "potato": {"water_vulnerability": 0.55, "crit_temp": 30.0},
@@ -73,6 +73,10 @@ class ModelService:
                 "Ensure models/crop_yield_pipeline.joblib exists."
             )
         self.pipeline = joblib.load(self.model_path)
+        # Configure inference estimator for single-thread execution to eliminate joblib IPC overhead
+        regressor = self.pipeline.named_steps.get("regressor")
+        if regressor is not None and hasattr(regressor, "n_jobs"):
+            regressor.n_jobs = 1
 
     @staticmethod
     def classify_crop(crop_name: str) -> Tuple[str, bool, str]:
@@ -251,17 +255,23 @@ class ModelService:
 
         sim_df = pd.DataFrame(records)
         preds = self.pipeline.predict(sim_df[self.FEATURE_COLS])
+        p_sum = env_dict["precipitation_sum"]
+        t_max = env_dict["temperature_2m_max"]
+        et0 = env_dict["fao_evapotranspiration"]
+
         elasticities = np.array([
             self.calculate_agroclimatic_elasticity(
                 crop=r["Crop"],
                 province=province_val,
-                precipitation_sum=env_dict["precipitation_sum"],
-                temperature_2m_max=env_dict["temperature_2m_max"],
-                fao_evapotranspiration=env_dict["fao_evapotranspiration"],
+                precipitation_sum=p_sum,
+                temperature_2m_max=t_max,
+                fao_evapotranspiration=et0,
             )
-            for _, r in sim_df.iterrows()
+            for r in records
         ])
-        sim_df["Predicted_Yield"] = np.round(np.clip(preds * elasticities, a_min=0.0, a_max=None), 2)
+        predicted_yields = np.round(np.clip(preds * elasticities, a_min=0.0, a_max=None), 2)
+        for i, r in enumerate(records):
+            r["Predicted_Yield"] = float(predicted_yields[i])
 
         # 1. Drought-Resilient ranking based on Drought Resilience & Water-Use Efficiency
         defaults = PROVINCE_DEFAULTS.get(province_val, PROVINCE_DEFAULTS["Punjab"])
@@ -269,69 +279,66 @@ class ModelService:
         deficit = max(0.0, (p_ref - request.precipitation_sum) / p_ref)
         w_prod = float(np.clip(1.0 - deficit, 0.08, 0.92))
 
-        resilient_mask = sim_df["Is_Drought_Resilient"]
-        max_resilient_yield = sim_df.loc[resilient_mask, "Predicted_Yield"].max() or 1.0
+        resilient_records = [r for r in records if r["Is_Drought_Resilient"]]
+        max_resilient_yield = max((r["Predicted_Yield"] for r in resilient_records), default=1.0) or 1.0
 
-        scores = []
-        for _, r in sim_df[resilient_mask].iterrows():
+        for r in resilient_records:
             c = r["Crop"]
             kw = self.CROP_PHYSIOLOGY.get(c, {}).get("water_vulnerability", 0.40)
             el = self.calculate_agroclimatic_elasticity(
                 crop=c,
                 province=province_val,
-                precipitation_sum=env_dict["precipitation_sum"],
-                temperature_2m_max=env_dict["temperature_2m_max"],
-                fao_evapotranspiration=env_dict["fao_evapotranspiration"],
+                precipitation_sum=p_sum,
+                temperature_2m_max=t_max,
+                fao_evapotranspiration=et0,
             )
             drought_resilience = el * (1.0 - deficit * kw)
-            prod_norm = float(r["Predicted_Yield"]) / max_resilient_yield
-            score = (1.0 - w_prod) * drought_resilience + w_prod * prod_norm
-            scores.append(score)
+            prod_norm = r["Predicted_Yield"] / max_resilient_yield
+            r["_rank_score"] = (1.0 - w_prod) * drought_resilience + w_prod * prod_norm
 
-        resilient_df = sim_df[resilient_mask].copy()
-        resilient_df["_rank_score"] = scores
-        resilient_df = resilient_df.sort_values(
-            by=["_rank_score", "Predicted_Yield"], ascending=[False, False]
-        ).reset_index(drop=True)
+        resilient_records.sort(key=lambda r: (r["_rank_score"], r["Predicted_Yield"]), reverse=True)
 
-        ranked_resilient: List[CropRecommendationItem] = []
-        for idx, r in resilient_df.iterrows():
-            ranked_resilient.append(CropRecommendationItem(
-                rank=int(idx + 1),
+        ranked_resilient: List[CropRecommendationItem] = [
+            CropRecommendationItem(
+                rank=idx + 1,
                 crop=r["Crop"],
-                predicted_yield_kg_ha=float(r["Predicted_Yield"]),
+                predicted_yield_kg_ha=r["Predicted_Yield"],
                 water_category=r["_category"],
                 is_drought_resilient=True,
                 risk_assessment=r["_risk"],
-            ))
+            )
+            for idx, r in enumerate(resilient_records)
+        ]
 
         top_crop = ranked_resilient[0] if ranked_resilient else None
 
         # 2. All crops ranked for comparison chart
-        all_sorted = sim_df.sort_values(by="Predicted_Yield", ascending=False).reset_index(drop=True)
-        all_items: List[CropRecommendationItem] = []
-        for idx, r in all_sorted.iterrows():
-            all_items.append(CropRecommendationItem(
-                rank=int(idx + 1),
+        all_sorted = sorted(records, key=lambda r: r["Predicted_Yield"], reverse=True)
+        all_items: List[CropRecommendationItem] = [
+            CropRecommendationItem(
+                rank=idx + 1,
                 crop=r["Crop"],
-                predicted_yield_kg_ha=float(r["Predicted_Yield"]),
+                predicted_yield_kg_ha=r["Predicted_Yield"],
                 water_category=r["_category"],
                 is_drought_resilient=bool(r["Is_Drought_Resilient"]),
                 risk_assessment=r["_risk"],
-            ))
+            )
+            for idx, r in enumerate(all_sorted)
+        ]
 
         # 3. Water-intensive warnings
-        water_intensive_df = sim_df[sim_df["Crop"].isin(WATER_INTENSIVE_CROPS)]
-        warnings: List[WaterIntensiveWarning] = []
-        for _, r in water_intensive_df.iterrows():
-            warnings.append(WaterIntensiveWarning(
+        water_intensive_rows = [r for r in records if r["Crop"] in WATER_INTENSIVE_CROPS]
+        warnings: List[WaterIntensiveWarning] = [
+            WaterIntensiveWarning(
                 crop=r["Crop"],
-                predicted_yield_kg_ha=float(r["Predicted_Yield"]),
+                predicted_yield_kg_ha=r["Predicted_Yield"],
                 warning=(
                     f"{r['Crop'].upper()} has excessive irrigation demand. Cultivation under "
                     f"drought stress risks severe crop failure and groundwater depletion."
                 ),
-            ))
+            )
+            for r in water_intensive_rows
+        ]
 
         advisory_rationale = (
             f"{top_crop.crop.upper()} is prioritized due to superior drought resilience, "
