@@ -22,12 +22,12 @@ Resolve the issue where "Onion is always #1" across all scenario inputs in the c
 - [x] All backend verification tests pass.
 
 ### Phase 2: Verification & Scenario Responsiveness
-- [ ] Task 3: End-to-End Verification Across Climate Presets
+- [x] Task 3: End-to-End Verification Across Climate Presets
 
 ### Checkpoint: Complete
-- [ ] Presets produce distinct top-ranked crops (Dates/Pomegranate in severe drought/arid, Wheat/Onion in moderate rainfall).
-- [ ] Varying rainfall from 2mm to 200mm visibly scales yield predictions.
-- [ ] No regression in API contracts.
+- [x] Presets produce distinct top-ranked crops (Dates/Pomegranate in severe drought/arid, Wheat/Onion in moderate rainfall).
+- [x] Varying rainfall from 2mm to 200mm visibly scales yield predictions.
+- [x] No regression in API contracts.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |

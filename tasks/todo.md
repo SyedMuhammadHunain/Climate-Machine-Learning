@@ -53,13 +53,13 @@
 **Description:** Test all standard climate presets ("Severe Drought", "Moderate Drought", "Baseline Normal", "Extreme Heatwave") through API calls and verify the frontend recommendations respond dynamically.
 
 **Acceptance criteria:**
-- [ ] Presets produce distinct crop rankings and narrative summaries.
-- [ ] Onion is no longer unconditionally #1 across every climate condition.
-- [ ] No regression in API contracts (`SinglePredictionResponse` and `RecommendationResponse`).
+- [x] Presets produce distinct crop rankings and narrative summaries.
+- [x] Onion is no longer unconditionally #1 across every climate condition.
+- [x] No regression in API contracts (`SinglePredictionResponse` and `RecommendationResponse`).
 
 **Verification:**
-- [ ] Run verification script covering all preset scenarios.
-- [ ] Check HTTP responses for each scenario.
+- [x] Run verification script covering all preset scenarios.
+- [x] Check HTTP responses for each scenario.
 
 **Dependencies:** Task 1, Task 2
 **Files likely touched:**
@@ -69,6 +69,6 @@
 ---
 
 ## Checkpoint: Complete
-- [ ] Onion is no longer unconditionally #1 across every climate condition.
-- [ ] Rankings respond intelligently to drought severity.
-- [ ] Review with human before deployment.
+- [x] Onion is no longer unconditionally #1 across every climate condition.
+- [x] Rankings respond intelligently to drought severity.
+- [x] Review with human before deployment.
