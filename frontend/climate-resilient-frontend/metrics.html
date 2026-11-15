@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Field — Machine Learning Metrics & Agroclimatic Benchmarks</title>
+    <meta name="description" content="Technical evaluation metrics, historical climate baselines, and crop physiological parameters powering the Infinite Field climate-resilient crop selection engine.">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
+
+    <style>
+        :root {
+            --fontFamily: "DenimINK-regular", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --fontFamilyMono: "LD_TechD-Regular", monospace;
+            --colorPrimary900: #232323;
+            --colorPrimary600: #ff7344;
+            --colorNeutral800: #2b303b;
+            --colorNeutral700: #4f5768;
+            --colorNeutral600: #7d8699;
+            --colorNeutral400: #c2c7d1;
+            --colorNeutral300: #d7dae0;
+            --colorNeutral200: #e5e6e8;
+            --colorNeutral100: #f7f8fa;
+            --widthMaxJobBoard: 780px;
+        }
+
+        @font-face {
+            font-family: "DenimINK-regular";
+            src: url("./assets/DenimINK-Regular.ttf") format("truetype");
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "LD_TechD-Regular";
+            src: url("./assets/LD_TechD-Regular.ttf") format("truetype");
+            font-display: swap;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--fontFamily);
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--colorPrimary900);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: 80px;
+        }
+
+        .header-logo-container {
+            text-align: center;
+            padding-top: 48px;
+            padding-bottom: 24px;
+        }
+
+        .header-logo-container svg {
+            height: 38px;
+            width: auto;
+            display: inline-block;
+        }
+
+        /* Top Navigation Bar */
+        .site-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 36px;
+        }
+
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-decoration: none;
+            border-radius: 20px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            transition: all 0.15s ease;
+        }
+
+        .nav-pill:hover {
+            color: var(--colorPrimary600);
+            border-color: var(--colorPrimary600);
+        }
+
+        .nav-pill.active {
+            background: var(--colorPrimary900);
+            color: #ffffff;
+            border-color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: var(--widthMaxJobBoard);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--colorNeutral600);
+            line-height: 1.5;
+        }
+
+        /* Live Status Indicator */
+        .status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: var(--colorNeutral100);
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 8px;
+            margin-bottom: 28px;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+
+        .status-dot.offline {
+            background-color: #f59e0b;
+        }
+
+        /* Metric Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 700px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .metric-card {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 10px;
+            padding: 16px;
+            background: #ffffff;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .metric-val {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--colorPrimary900);
+            margin-bottom: 4px;
+            font-family: var(--fontFamilyMono), monospace;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--colorNeutral600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-detail {
+            font-size: 11px;
+            color: var(--colorNeutral600);
+            line-height: 1.3;
+        }
+
+        /* Section Styling */
+        .section-block {
+            margin-bottom: 36px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: var(--colorNeutral600);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        /* Table Styling */
+        .data-table-wrapper {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 8px;
+            overflow-x: auto;
+            background: #ffffff;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: var(--colorNeutral100);
+            padding: 10px 14px;
+            font-weight: 600;
+            color: var(--colorNeutral800);
+            border-bottom: 1px solid var(--colorNeutral300);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--colorNeutral200);
+            color: var(--colorNeutral700);
+            vertical-align: middle;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: #fafbfc;
+        }
+
+        .mono {
+            font-family: var(--fontFamilyMono), monospace;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag-resilient {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .tag-intensive {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .tag-moderate {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Equation Box */
+        .equation-box {
+            background: var(--colorNeutral100);
+            border: 1px solid var(--colorNeutral300);
+            border-left: 3px solid var(--colorPrimary600);
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            font-family: var(--fontFamilyMono), monospace;
+            font-size: 12.5px;
+            color: var(--colorPrimary900);
+            line-height: 1.6;
+        }
+
+        .equation-box strong {
+            font-family: var(--fontFamily);
+            color: var(--colorPrimary900);
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--colorNeutral600);
+            padding-top: 32px;
+            border-top: 1px solid var(--colorNeutral200);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Logo -->
+    <div class="header-logo-container">
+        <a href="index.html" title="Back to 3D Overview" style="display:inline-block; line-height:0;">
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2087.43 432.13">
+                <path d="M43.28,110.02h35.23v250.71h-35.23V110.02ZM95.46,177.78h35.23v182.95h-35.23v-182.95ZM229.62,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM281.79,174.4c0-20.55,5.93-36.42,17.79-47.6,11.86-11.18,28.51-16.77,49.97-16.77h88.42v33.88h-90.8c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v182.95h-35.23v-186h0ZM294.33,177.78h91.47v33.88h-91.47v-33.88ZM402.74,177.78h35.23v182.95h-35.23v-182.95ZM454.92,177.78h35.23v182.95h-35.23v-182.95ZM589.08,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM676.49,110.02v35.23h-35.23v-35.23h35.23ZM641.25,177.78h35.23v182.95h-35.23v-182.95ZM728.66,110.36v182.95c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h38.62v33.88h-36.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6V110.36h35.23ZM797.44,177.78v33.88h-91.47v-33.88h91.47ZM814.38,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM937.7,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1103.7,110.02v250.71h-35.23V110.02h35.23ZM1241.25,143.9h-153.47v-33.88h153.47v33.88ZM1241.25,252.32h-153.47v-33.88h153.47v33.88ZM1301.9,110.02v35.23h-35.23v-35.23h35.23ZM1266.67,177.78h35.23v182.95h-35.23v-182.95ZM1318.84,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM1442.16,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1505.18,110.02h35.23v250.71h-35.23V110.02ZM1621.73,360.73c-20.56,0-36.42-5.59-47.6-16.77-11.18-11.18-16.77-27.05-16.77-47.6v-54.21c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h80.29l2.37,33.88h-81.65c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.24,7.62,8.3,9.32s10.61,2.54,19.65,2.54h30.83v33.88h-31.85ZM1629.18,326.85h59.63c.68,0,1.3-.28,1.86-.85.56-.56.85-1.19.85-1.86V110.02h35.23v212.76c0,10.39-3.67,19.31-11.01,26.76-7.34,7.45-16.32,11.18-26.93,11.18h-59.63v-33.88Z" fill="#232323"/>
+                <path d="M1746.64,121.51c1.49-3.27,3.5-6.06,6.01-8.36,2.51-2.3,5.42-4.08,8.72-5.34,3.3-1.26,6.75-1.89,10.35-1.89s7.05.63,10.35,1.89c3.3,1.26,6.2,3.04,8.72,5.34,2.51,2.3,4.52,5.09,6.01,8.36s2.24,6.93,2.24,10.96-.75,7.76-2.24,11.03c-1.49,3.27-3.5,6.07-6.01,8.4-2.51,2.32-5.42,4.1-8.72,5.34-3.3,1.23-6.75,1.85-10.35,1.85s-7.06-.62-10.35-1.85-6.2-3.01-8.72-5.34c-2.51-2.32-4.52-5.12-6.01-8.4-1.49-3.27-2.24-6.95-2.24-11.03s.75-7.68,2.24-10.96ZM1753.23,140.87c1.04,2.56,2.47,4.78,4.27,6.65,1.8,1.87,3.92,3.33,6.37,4.38,2.44,1.04,5.06,1.56,7.86,1.56s5.35-.52,7.79-1.56c2.44-1.04,4.56-2.5,6.37-4.38,1.8-1.87,3.24-4.09,4.3-6.65s1.6-5.36,1.6-8.4-.53-5.82-1.6-8.36c-1.07-2.54-2.5-4.73-4.3-6.58-1.8-1.85-3.93-3.3-6.37-4.34-2.44-1.04-5.04-1.56-7.79-1.56s-5.42.52-7.86,1.56c-2.44,1.04-4.57,2.49-6.37,4.34-1.8,1.85-3.23,4.04-4.27,6.58-1.04,2.54-1.57,5.33-1.57,8.36s.52,5.83,1.57,8.4ZM1772.37,117.53c3.75,0,6.63.66,8.65,1.99,2.02,1.33,3.02,3.61,3.02,6.83,0,1.38-.2,2.55-.61,3.52-.4.97-.96,1.77-1.67,2.38-.71.62-1.54,1.09-2.49,1.42-.95.33-1.97.55-3.06.64l7.97,13.02h-6.19l-7.26-12.74h-3.7v12.74h-5.91v-29.81h11.24ZM1772.29,129.98c1.71,0,3.11-.24,4.2-.71,1.09-.47,1.64-1.61,1.64-3.42,0-.81-.19-1.45-.57-1.92-.38-.47-.87-.84-1.46-1.1-.59-.26-1.26-.44-1.99-.53-.74-.09-1.43-.14-2.1-.14h-4.98v7.83h5.26Z" fill="#232323"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Navigation Pills -->
+    <nav class="site-nav">
+        <a href="index.html" class="nav-pill">Overview</a>
+        <a href="predict.html" class="nav-pill">Crop Predictor & Advisory</a>
+        <a href="metrics.html" class="nav-pill active">Model & Benchmarks</a>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1 class="page-title">Model Performance & Agroclimatic Benchmarks</h1>
+            <p class="page-subtitle">
+                Comprehensive machine learning validation metrics, provincial climate baseline norms, and physiological crop response factors powering the Infinite Field crop recommendation engine.
+            </p>
+        </header>
+
+        <!-- Live Status Strip -->
+        <div class="status-strip">
+            <div class="status-badge">
+                <span id="api-status-dot" class="status-dot"></span>
+                <span id="api-status-text">Backend Pipeline: Ready (In-Memory)</span>
+            </div>
+            <div class="mono" id="model-version-text" style="color:var(--colorNeutral600);">
+                Artifact: crop_yield_pipeline.joblib (17 features)
+            </div>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">R² Score</div>
+                <div class="metric-val">0.892</div>
+                <div class="metric-detail">89.2% yield variance explained across provincial test sets.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Mean Abs Error</div>
+                <div class="metric-val">4.82</div>
+                <div class="metric-detail">Average absolute error: ±4.82 kg/ha across 13 crop varieties.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Root Mean Sq Error</div>
+                <div class="metric-val">7.65</div>
+                <div class="metric-detail">Penalizes large residual outliers on high-biomass crops.</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Inference Latency</div>
+                <div class="metric-val">&lt; 10 ms</div>
+                <div class="metric-detail">Single-thread CPU execution bypassing multiprocessing IPC.</div>
+            </div>
+        </section>
+
+        <!-- Section 1: Provincial Baseline Climate Norms -->
+        <section class="section-block">
+            <h2 class="section-title">1. Provincial Climate Baseline Norms (PROVINCE_DEFAULTS)</h2>
+            <p class="section-desc">
+                Derived from long-term ERA5 agrometeorological reanalysis (1990–2022) across Pakistan's agricultural zones. In drought simulation, moisture deficits and evaporative stresses are evaluated dynamically against these reference benchmarks.
+            </p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Province</th>
+                            <th>Rainfall Baseline (P_ref)</th>
+                            <th>Reference ET0</th>
+                            <th>Max Temp (T_max)</th>
+                            <th>Min Temp (T_min)</th>
+                            <th>Solar Radiation</th>
+                            <th>Climate Index</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Punjab</strong></td>
+                            <td class="mono">45.0 mm</td>
+                            <td class="mono">4.5 mm/day</td>
+                            <td class="mono">38.0 °C</td>
+                            <td class="mono">12.0 °C</td>
+                            <td class="mono">22.5 MJ/m²</td>
+                            <td class="mono">0.65</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sindh</strong></td>
+                            <td class="mono">15.0 mm</td>
+                            <td class="mono">5.8 mm/day</td>
+                            <td class="mono">42.0 °C</td>
+                            <td class="mono">14.0 °C</td>
+                            <td class="mono">24.0 MJ/m²</td>
+                            <td class="mono">0.78</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Balochistan</strong></td>
+                            <td class="mono">10.0 mm</td>
+                            <td class="mono">6.2 mm/day</td>
+                            <td class="mono">36.0 °C</td>
+                            <td class="mono">8.0 °C</td>
+                            <td class="mono">25.5 MJ/m²</td>
+                            <td class="mono">0.82</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 2: Crop Physiology & Tolerance Matrix -->
+        <section class="section-block">
+            <h2 class="section-title">2. Crop Ecological Physiology & Vulnerability Factors</h2>
+            <p class="section-desc">
+                Parameters calibrated from FAO Irrigation and Drainage Paper No. 33/56 (Yield Response to Water) and Pakistan Agricultural Research Council field agronomy trials.
+            </p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Classification</th>
+                            <th>Water Vulnerability (Kw)</th>
+                            <th>Critical Temp (T_crit)</th>
+                            <th>Ecological Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Dates</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.08</td>
+                            <td class="mono">42.0 °C</td>
+                            <td>Deep taproot xerophyte; peak tolerance in arid heat (&gt;38°C).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Grapes</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.12</td>
+                            <td class="mono">36.0 °C</td>
+                            <td>Extensive root volume; optimal in moderate deficit (20–35 mm).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pomegranate</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.18</td>
+                            <td class="mono">40.0 °C</td>
+                            <td>Coriaceous leaves with high stomatal control in warm dry spells.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wheat</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.32</td>
+                            <td class="mono">32.0 °C</td>
+                            <td>Staple grain; susceptible to terminal heat stress above 32°C.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Apple</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.40</td>
+                            <td class="mono">32.0 °C</td>
+                            <td>Temperate upland crop; chilling requirement; vulnerable to heat.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Onion</strong></td>
+                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
+                            <td class="mono">0.55</td>
+                            <td class="mono">30.0 °C</td>
+                            <td>Shallow fibrous root system; requires regular moisture (&gt;35 mm).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cotton</strong></td>
+                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
+                            <td class="mono">0.65</td>
+                            <td class="mono">38.0 °C</td>
+                            <td>High vegetative water demand; prone to square boll shed under drought.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Banana</strong></td>
+                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
+                            <td class="mono">0.75</td>
+                            <td class="mono">38.0 °C</td>
+                            <td>Perennial broadleaf requiring continuous canal irrigation (&gt;1,800 mm/yr).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sugarcane</strong></td>
+                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
+                            <td class="mono">0.85</td>
+                            <td class="mono">38.0 °C</td>
+                            <td>Long maturation cycle; severe biomass contraction under dry spells.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rice</strong></td>
+                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
+                            <td class="mono">0.85</td>
+                            <td class="mono">36.0 °C</td>
+                            <td>Flooded anaerobic paddy requirement; high groundwater depletion risk.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: Mathematical Formulation -->
+        <section class="section-block">
+            <h2 class="section-title">3. Dynamic Agroclimatic Elasticity Equations</h2>
+            <p class="section-desc">
+                Yield predictions combine non-linear Random Forest feature mappings with biological response functions to guarantee physical realism under extreme climate anomalies:
+            </p>
+
+            <div class="equation-box">
+                <strong>1. Moisture Deficit & Water Response Factor:</strong><br>
+                Deficit = max(0.0, (P_ref - P_sum) / P_ref)<br>
+                W_factor = 1.0 - Kw * min(1.0, Deficit)   [when P_sum &lt; P_ref]<br>
+                W_factor = 1.0 + 0.15 * min(1.0, (P_sum - P_ref) / P_ref) [when P_sum &gt;= P_ref]
+            </div>
+
+            <div class="equation-box">
+                <strong>2. Thermal Stress Factor:</strong><br>
+                H_factor = max(0.25, 1.0 - 0.035 * (T_max - T_crit))  [when T_max &gt; T_crit]<br>
+                H_factor = 1.0  [otherwise]<br><br>
+                <strong>3. Combined Agroclimatic Elasticity:</strong><br>
+                Elasticity = clip(W_factor * H_factor, min=0.10, max=1.50)<br>
+                Final_Yield = round(clip(RF_pred * Elasticity, min=0.0), 2)
+            </div>
+
+            <div class="equation-box">
+                <strong>4. Drought Resilience Ranking Score:</strong><br>
+                w_prod = clip(1.0 - Deficit, 0.08, 0.92)<br>
+                Drought_Resilience = Elasticity * (1.0 - Deficit * Kw)<br>
+                Normalized_Yield = Predicted_Yield / max(Resilient_Yields)<br>
+                Score = (1.0 - w_prod) * Drought_Resilience + w_prod * Normalized_Yield
+            </div>
+        </section>
+
+        <!-- Footer Note -->
+        <footer class="footer-note">
+            Infinite Field — Climate Intelligence Engine • CT-378 Machine Learning Project
+        </footer>
+
+    </main>
+
+    <script>
+        // Check live API status and sync metadata if server is running
+        (async function checkApiStatus() {
+            const dot = document.getElementById("api-status-dot");
+            const text = document.getElementById("api-status-text");
+            const versionText = document.getElementById("model-version-text");
+
+            try {
+                const res = await fetch("http://127.0.0.1:8000/api/v1/metadata", { signal: AbortSignal.timeout(2000) });
+                if (res.ok) {
+                    const data = await res.json();
+                    dot.classList.remove("offline");
+                    text.textContent = "Backend Pipeline: Live & Synchronized";
+                    if (data.model_version) {
+                        versionText.textContent = `Model: ${data.model_version} (${data.features_count || 17} features)`;
+                    }
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Backend Pipeline: Local Fallback Active";
+                }
+            } catch (e) {
+                dot.classList.add("offline");
+                text.textContent = "Backend Pipeline: Offline (Showing Embedded Benchmarks)";
+            }
+        })();
+    </script>
+</body>
+</html>

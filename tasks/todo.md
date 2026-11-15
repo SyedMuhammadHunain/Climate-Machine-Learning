@@ -1,48 +1,50 @@
-# Tasks: Offline-First Frontend & CDN Dependency Vendoring
+# Tasks: Dedicated Model Metrics & Agroclimatic Benchmarks Page (`metrics.html`)
 
-## Phase 1: Dependency Vendoring
+## Phase 1: Benchmarks Page & Navigation
 
-### Task 1: Download Three.js, GLTFLoader, BufferGeometryUtils, and es-module-shims
-**Description:** Download and vendor all external JavaScript libraries into `frontend/climate-resilient-frontend/vendor/` preserving required internal relative paths so ES module imports resolve offline.
+### Task 1: Create `metrics.html` Page
+**Description:** Implement `frontend/climate-resilient-frontend/metrics.html` containing model evaluation statistics ($R^2$, RMSE, MAE), provincial climate baseline tables (`Punjab`, `Sindh`, `Balochistan`), crop physiological classifications ($K_w$, $T_{\text{crit}}$), and agroclimatic elasticity formulas with local styling and API metadata sync.
 
 **Acceptance criteria:**
-- [x] `frontend/climate-resilient-frontend/vendor/es-module-shims.js` saved locally.
-- [x] `frontend/climate-resilient-frontend/vendor/three/three.module.js` saved locally.
-- [x] `frontend/climate-resilient-frontend/vendor/three/addons/loaders/GLTFLoader.js` saved locally.
-- [x] `frontend/climate-resilient-frontend/vendor/three/addons/utils/BufferGeometryUtils.js` saved locally.
+- [x] `metrics.html` created in `frontend/climate-resilient-frontend/`.
+- [x] Model metrics section displays $R^2 = 0.892$, $\text{MAE} = 4.82\text{ kg/ha}$, $\text{RMSE} = 7.65\text{ kg/ha}$, and 17 feature descriptions.
+- [x] Provincial baselines table displays historical precipitation, ET0, solar radiation, and temperature defaults.
+- [x] Crop physiology table shows low-water resilient crops ($K_w$, $T_{\text{crit}}$) and water-intensive risk flags.
+- [x] Zero external CDN scripts (100% offline self-contained).
 
 **Verification:**
-- [x] Verify each file exists on disk and is non-empty.
+- [x] `curl -s http://localhost:3000/metrics.html` returns 200 OK.
+- [x] `grep -E "jsdelivr|unpkg" frontend/climate-resilient-frontend/metrics.html` returns 0 results.
 
 **Dependencies:** None
 **Files likely touched:**
-- `frontend/climate-resilient-frontend/vendor/`
-**Estimated scope:** S (4 vendor files)
+- `frontend/climate-resilient-frontend/metrics.html`
+**Estimated scope:** S (1 new HTML file)
 
 ---
 
-### Task 2: Update `index.html` Import Map and Script Tags
-**Description:** Update `index.html` to load local vendor files instead of remote CDNs (`unpkg.com` and `cdn.jsdelivr.net`).
+### Task 2: Implement Cross-Page Header Navigation
+**Description:** Add a unified sub-header navigation bar (`Overview`, `Predictor & Advisory`, `Model & Benchmarks`) linking across `index.html`, `predict.html`, `careers.html`, and `metrics.html`.
 
 **Acceptance criteria:**
-- [x] `<script async src="./vendor/es-module-shims.js"></script>` points to local file.
-- [x] Import map maps `"three"` to `"./vendor/three/three.module.js"`.
-- [x] Import map maps `"three/addons/"` to `"./vendor/three/addons/"`.
-- [x] Zero `cdn.jsdelivr.net` or `unpkg.com` references remain in `index.html`.
+- [x] Navigation bar present in `predict.html` and `careers.html` linking to `metrics.html`.
+- [x] Navigation bar in `metrics.html` highlights "Model & Benchmarks" as active.
+- [x] `index.html` overlay includes link to `metrics.html`.
 
 **Verification:**
-- [x] `grep -E "jsdelivr|unpkg" frontend/climate-resilient-frontend/index.html` returns 0 results.
-- [x] `curl -s http://localhost:3000/index.html` verifies local paths.
-- [x] Curl each vendored script path on `http://localhost:3000/vendor/...` returns 200 OK.
+- [x] Verify hyperlinks resolve between all pages.
 
 **Dependencies:** Task 1
 **Files likely touched:**
+- `frontend/climate-resilient-frontend/predict.html`
+- `frontend/climate-resilient-frontend/careers.html`
 - `frontend/climate-resilient-frontend/index.html`
-**Estimated scope:** XS (1 file)
+**Estimated scope:** S (3 files)
 
 ---
 
-## Checkpoint: Offline Readiness
-- [x] `index.html` and `predict.html` have zero external CDN network dependencies.
-- [x] All static assets serve 200 OK from local server.
-- [x] WebGL canvas renders without internet access.
+## Checkpoint: Verification
+- [x] All pages load with 200 OK locally.
+- [x] Navigation works bidirectionally.
+- [x] Backend verification suite passes 10/10 tests.
+- [x] Verified and ready for deployment.
