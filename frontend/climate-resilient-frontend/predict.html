@@ -72,6 +72,39 @@
             display: inline-block;
         }
 
+        .site-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-decoration: none;
+            border-radius: 20px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            transition: all 0.15s ease;
+        }
+
+        .nav-pill:hover {
+            color: var(--colorPrimary600);
+            border-color: var(--colorPrimary600);
+        }
+
+        .nav-pill.active {
+            background: var(--colorPrimary900);
+            color: #ffffff;
+            border-color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
         .job-board-container {
             max-width: var(--widthMaxJobBoard);
             margin: 0 auto;
@@ -416,6 +449,13 @@
             </svg>
         </a>
     </div>
+
+    <!-- Navigation Pills -->
+    <nav class="site-nav">
+        <a href="index.html" class="nav-pill">Overview</a>
+        <a href="predict.html" class="nav-pill active">Crop Predictor & Advisory</a>
+        <a href="metrics.html" class="nav-pill">Model & Benchmarks</a>
+    </nav>
 
     <!-- Main Content Container (Ashby 720px) -->
     <div class="job-board-container">
