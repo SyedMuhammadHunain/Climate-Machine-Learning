@@ -62,16 +62,40 @@ app.include_router(v1_router, prefix="/api/v1")
 app.include_router(v1_router, prefix="")
 
 
-# Serve static frontend files if directory exists
-if STATIC_DIR.exists():
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "climate-resilient-frontend"
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+WEB_DIR = FRONTEND_DIR if FRONTEND_DIR.exists() else STATIC_DIR
+
+# Mount static asset folders if frontend directory exists
+if WEB_DIR.exists():
+    if (WEB_DIR / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=WEB_DIR / "assets"), name="assets")
+    if (WEB_DIR / "vendor").exists():
+        app.mount("/vendor", StaticFiles(directory=WEB_DIR / "vendor"), name="vendor")
+    app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
     @app.get("/", include_in_schema=False)
     async def serve_index():
-        index_file = STATIC_DIR / "index.html"
+        index_file = WEB_DIR / "index.html"
         if index_file.exists():
             return FileResponse(index_file)
-        return JSONResponse({"message": "Frontend static assets directory exists but index.html not yet built."})
+        return JSONResponse({"message": "Frontend index.html not found."})
+
+    @app.get("/predict", include_in_schema=False)
+    @app.get("/predict.html", include_in_schema=False)
+    async def serve_predict():
+        predict_file = WEB_DIR / "predict.html"
+        if predict_file.exists():
+            return FileResponse(predict_file)
+        return JSONResponse({"message": "predict.html not found."})
+
+    @app.get("/careers", include_in_schema=False)
+    @app.get("/careers.html", include_in_schema=False)
+    async def serve_careers():
+        careers_file = WEB_DIR / "careers.html"
+        if careers_file.exists():
+            return FileResponse(careers_file)
+        return JSONResponse({"message": "careers.html not found."})
 else:
     @app.get("/", include_in_schema=False)
     async def root():
