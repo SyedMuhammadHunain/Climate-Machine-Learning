@@ -1,39 +1,30 @@
-# Implementation Plan: Website Rebranding to Agcl & Project Slogan
+# Implementation Plan: Offline-First Frontend & CDN Dependency Vendoring
 
 ## Overview
-Rebrand the website from "Infinite Field" to **"Agcl"** and update generic template slogans ("There is no limit for those who think infinite") with project-specific messaging centered on climate-resilient agriculture, low-water crop selection, and drought adaptation.
-
-## Proposed Copy & Branding
-- **Brand Name**: **Agcl** (Agricultural Climate Intelligence)
-- **Primary Slogan (2-Line Footer Animation on `index.html`)**:
-  - Line 1: `Guarding harvests against drought`
-  - Line 2: `with climate intelligence`
-- **Hero Title**: `Agcl — Low-Water Crop Selection Under Drought`
-- **Introductory Mission (`index.html`)**:
-  `"At Agcl, we use machine learning and climate data to protect agriculture against drought. Our models predict crop yields and recommend low-water, climate-resilient crops to secure sustainable harvests across Pakistan."`
-- **Predictor Wordmark (`predict.html` / `careers.html`)**:
-  Clean modern wordmark badge: **Agcl** • *Climate AI*
+`index.html` currently crashes and renders blank when internet connectivity is lost because it relies on external CDN links (`cdn.jsdelivr.net` and `unpkg.com`) for `three.module.js`, `GLTFLoader.js`, `BufferGeometryUtils.js`, and `es-module-shims.js`. While `predict.html` is already completely self-contained, `index.html` needs these 3D/module dependencies stored locally in `./vendor/` so the entire frontend runs 100% offline.
 
 ## Architecture Decisions
-- **SplitText Compatibility**: Maintain the exact DOM structure (`.dark-footer`, `.white-footer`, `.white-footer-typer`) so GSAP and SplitText animation runs smoothly on the new slogan without script breakage.
-- **SVG / Wordmark Replacement**: Replace the static "Infinite Field" SVG path in `predict.html` with an accessible, crisp typographical wordmark for "Agcl" linking back to `index.html`.
+- **Local Vendor Directory Structure**: Store Three.js and its JSM addons directly in `frontend/climate-resilient-frontend/vendor/`:
+  - `vendor/es-module-shims.js` (polyfill for ES module import maps)
+  - `vendor/three/three.module.js` (Three.js v0.164.0 core)
+  - `vendor/three/addons/loaders/GLTFLoader.js` (GLTF/GLB 3D model loader)
+  - `vendor/three/addons/utils/BufferGeometryUtils.js` (Required helper imported by GLTFLoader)
+- **Local Import Map**: Update `<script type="importmap">` in `index.html` to map `"three"` to `"./vendor/three/three.module.js"` and `"three/addons/"` to `"./vendor/three/addons/"`.
+- **Zero External Network Dependencies**: Eliminate all `https://cdn.jsdelivr.net` and `https://unpkg.com` requests from `index.html`.
 
 ## Task List
 
-### Phase 1: Rebranding & Copy Updates
-- [ ] Task 1: Update Landing Page (`index.html`) Brand & Slogan
-- [ ] Task 2: Update Predictor & Advisory Interfaces (`predict.html`, `careers.html`)
+### Phase 1: Dependency Vendoring
+- [ ] Task 1: Download and organize Three.js core, GLTFLoader, BufferGeometryUtils, and es-module-shims into `vendor/`
+- [ ] Task 2: Update `index.html` import map and script tags to relative local paths
 
-### Checkpoint: Verification
-- [ ] Both pages render "Agcl" correctly.
-- [ ] Animated SplitText footer types the new slogan cleanly without errors.
-- [ ] No layout regression on mobile or desktop viewports.
+### Checkpoint: Offline Readiness
+- [ ] No external CDN links remain in `index.html`
+- [ ] Local static server serves all module scripts with 200 OK
+- [ ] Three.js WebGL canvas and 3D logo render with network disconnected
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| SplitText char animation misalignment | Low | Keep line lengths balanced (~30 characters per line) to maintain centered typography. |
-| Broken logo link navigation | Low | Retain `<a href="index.html">` wrapper around the new Agcl wordmark. |
-
-## Open Questions
-- None.
+| GLTFLoader internal imports fail | High | Verify `BufferGeometryUtils.js` is positioned at exact relative path `../utils/BufferGeometryUtils.js` matching GLTFLoader's import specifier. |
+| Browser import map caching issue | Low | Use standard relative path `./vendor/` compatible with native browser import maps. |
