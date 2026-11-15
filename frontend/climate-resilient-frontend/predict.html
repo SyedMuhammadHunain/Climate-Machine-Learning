@@ -1046,6 +1046,31 @@
                 advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${cropDisplay} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
             }
         };
+
+        // Auto-sync advanced temperature and evapotranspiration when primary parameters are changed
+        document.getElementById("field-temperature").addEventListener("input", function(e) {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+                document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
+                const maxEl = document.getElementById("field-temp-max");
+                const minEl = document.getElementById("field-temp-min");
+                if (maxEl) maxEl.value = (val + 6.0).toFixed(1);
+                if (minEl) minEl.value = (val - 6.0).toFixed(1);
+            }
+        });
+
+        document.getElementById("field-precipitation").addEventListener("input", function(e) {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+                document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
+                const et0El = document.getElementById("field-et0");
+                if (et0El) {
+                    if (val >= 40.0) et0El.value = "4.0";
+                    else if (val >= 20.0) et0El.value = "4.5";
+                    else et0El.value = "7.8";
+                }
+            }
+        });
     </script>
 </body>
 </html>
