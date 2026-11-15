@@ -47,9 +47,9 @@ class ModelService:
 
     CROP_PHYSIOLOGY: Dict[str, Dict[str, float]] = {
         "dates": {"water_vulnerability": 0.08, "crit_temp": 42.0},
-        "pomegranate": {"water_vulnerability": 0.15, "crit_temp": 39.0},
-        "grapes": {"water_vulnerability": 0.22, "crit_temp": 37.0},
-        "wheat": {"water_vulnerability": 0.32, "crit_temp": 33.0},
+        "grapes": {"water_vulnerability": 0.12, "crit_temp": 36.0},
+        "pomegranate": {"water_vulnerability": 0.18, "crit_temp": 40.0},
+        "wheat": {"water_vulnerability": 0.32, "crit_temp": 32.0},
         "onion": {"water_vulnerability": 0.50, "crit_temp": 34.0},
         "apple": {"water_vulnerability": 0.40, "crit_temp": 32.0},
         "mango": {"water_vulnerability": 0.35, "crit_temp": 40.0},
