@@ -15,11 +15,11 @@ Resolve the issue where "Onion is always #1" across all scenario inputs in the c
 
 ### Phase 1: Model Service Elasticity & Ranking
 - [x] Task 1: Implement Dynamic Agroclimatic Elasticity in `ModelService`
-- [ ] Task 2: Implement Water-Use Efficiency & Relative Drought-Resilience Ranking
+- [x] Task 2: Implement Water-Use Efficiency & Relative Drought-Resilience Ranking
 
 ### Checkpoint: Backend Logic
-- [ ] Automated verification script demonstrates dynamic yield shifts and proper crop re-ranking across drought levels.
-- [ ] All backend verification tests pass.
+- [x] Automated verification script demonstrates dynamic yield shifts and proper crop re-ranking across drought levels.
+- [x] All backend verification tests pass.
 
 ### Phase 2: Verification & Scenario Responsiveness
 - [ ] Task 3: End-to-End Verification Across Climate Presets

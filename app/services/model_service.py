@@ -263,9 +263,35 @@ class ModelService:
         ])
         sim_df["Predicted_Yield"] = np.round(np.clip(preds * elasticities, a_min=0.0, a_max=None), 2)
 
-        # 1. Drought-Resilient ranking
-        resilient_df = sim_df[sim_df["Is_Drought_Resilient"]].sort_values(
-            by="Predicted_Yield", ascending=False
+        # 1. Drought-Resilient ranking based on Drought Resilience & Water-Use Efficiency
+        defaults = PROVINCE_DEFAULTS.get(province_val, PROVINCE_DEFAULTS["Punjab"])
+        p_ref = defaults["precipitation_sum"]
+        deficit = max(0.0, (p_ref - request.precipitation_sum) / p_ref)
+        w_prod = float(np.clip(1.0 - deficit, 0.08, 0.92))
+
+        resilient_mask = sim_df["Is_Drought_Resilient"]
+        max_resilient_yield = sim_df.loc[resilient_mask, "Predicted_Yield"].max() or 1.0
+
+        scores = []
+        for _, r in sim_df[resilient_mask].iterrows():
+            c = r["Crop"]
+            kw = self.CROP_PHYSIOLOGY.get(c, {}).get("water_vulnerability", 0.40)
+            el = self.calculate_agroclimatic_elasticity(
+                crop=c,
+                province=province_val,
+                precipitation_sum=env_dict["precipitation_sum"],
+                temperature_2m_max=env_dict["temperature_2m_max"],
+                fao_evapotranspiration=env_dict["fao_evapotranspiration"],
+            )
+            drought_resilience = el * (1.0 - deficit * kw)
+            prod_norm = float(r["Predicted_Yield"]) / max_resilient_yield
+            score = (1.0 - w_prod) * drought_resilience + w_prod * prod_norm
+            scores.append(score)
+
+        resilient_df = sim_df[resilient_mask].copy()
+        resilient_df["_rank_score"] = scores
+        resilient_df = resilient_df.sort_values(
+            by=["_rank_score", "Predicted_Yield"], ascending=[False, False]
         ).reset_index(drop=True)
 
         ranked_resilient: List[CropRecommendationItem] = []
@@ -307,11 +333,18 @@ class ModelService:
                 ),
             ))
 
+        advisory_rationale = (
+            f"{top_crop.crop.upper()} is prioritized due to superior drought resilience, "
+            f"minimal water vulnerability, and deep root architecture under moisture deficit."
+            if deficit > 0.4
+            else f"{top_crop.crop.upper()} is prioritized due to high productivity and optimal water-use efficiency."
+        )
+
         summary = (
-            f"For {province_val} under drought stress (Precipitation={request.precipitation_sum:.1f}mm, "
+            f"For {province_val} (Precipitation={request.precipitation_sum:.1f}mm, "
             f"Mean Temp={request.temperature_2m_mean:.1f}°C), the optimal low-water crop is "
             f"{top_crop.crop.upper()} with an expected yield of {top_crop.predicted_yield_kg_ha:,.1f} kg/ha. "
-            f"High-water crops ({', '.join(WATER_INTENSIVE_CROPS)}) should be avoided."
+            f"{advisory_rationale} High-water crops ({', '.join(WATER_INTENSIVE_CROPS)}) should be avoided."
         )
 
         return RecommendationResponse(

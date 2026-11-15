@@ -75,6 +75,8 @@ def run_verification():
         top_crop = data["top_resilient_crop"]
         assert top_crop is not None
         assert top_crop["is_drought_resilient"] is True
+        assert top_crop["crop"] in ["dates", "pomegranate"], f"Expected deep-root crop under severe drought, got {top_crop['crop']}"
+        assert top_crop["crop"] != "onion", "Onion must not be unconditionally #1 in severe drought"
         assert len(data["ranked_drought_resilient"]) == 5
         assert len(data["all_crops_ranked"]) == 13
         assert len(data["water_intensive_warnings"]) >= 3
@@ -95,6 +97,8 @@ def run_verification():
         assert res.status_code == 200, f"Expected 200, got {res.status_code}"
         b_data = res.json()
         b_top = b_data["top_resilient_crop"]
+        assert b_top["crop"] in ["dates", "pomegranate"], f"Expected arid-hardy crop, got {b_top['crop']}"
+        assert b_top["crop"] != "onion", "Onion must not be #1 in 0.5mm arid condition"
         print(f"  -> PASSED: Top Balochistan arid crop: {b_top['crop'].upper()} ({b_top['predicted_yield_kg_ha']} kg/ha)")
 
         # 7. Validation Error Handling: Temperature Inversion (T_max < T_min)
@@ -140,8 +144,29 @@ def run_verification():
         assert res.status_code == 422, f"Expected 422, got {res.status_code}"
         print("  -> PASSED: Correctly rejected unknown province.")
 
+        # 10. Recommendation Dynamic Shift (Baseline Normal vs Severe Drought)
+        print("\n[TEST 10] POST /api/v1/recommend (Baseline Normal vs Severe Drought Dynamic Shift)")
+        normal_payload = {
+            "province": "Punjab",
+            "area": 50.0,
+            "precipitation_sum": 50.0,
+            "temperature_2m_mean": 24.0,
+            "fao_evapotranspiration": 4.0,
+            "scenario_name": "Punjab Baseline Normal"
+        }
+        res = client.post("/api/v1/recommend", json=normal_payload)
+        assert res.status_code == 200, f"Expected 200, got {res.status_code}"
+        normal_data = res.json()
+        normal_top = normal_data["top_resilient_crop"]
+        print(f"  -> Normal conditions top crop: {normal_top['crop'].upper()} ({normal_top['predicted_yield_kg_ha']} kg/ha)")
+        assert normal_top["crop"] == "onion", f"Expected Onion elevated in normal rainfall, got {normal_top['crop']}"
+        assert normal_top["crop"] != top_crop["crop"], (
+            f"Top crop must differ between normal ({normal_top['crop']}) and drought ({top_crop['crop']})"
+        )
+        print("  -> PASSED: Ranking dynamically switches between drought (Dates) and normal moisture (Onion).")
+
     print("\n" + "=" * 70)
-    print("ALL 9 BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
+    print("ALL 10 BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)
 
 if __name__ == "__main__":

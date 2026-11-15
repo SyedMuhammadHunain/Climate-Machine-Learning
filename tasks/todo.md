@@ -25,13 +25,13 @@
 **Description:** Update `recommend_crops()` in `app/services/model_service.py` to rank candidate crops using a composite Drought Resilience & Water-Use Efficiency (WUE) score instead of raw unnormalized biomass weight. This ensures low-water tree and grain crops (Dates, Pomegranate, Wheat) rank ahead of water-sensitive vegetables when moisture deficit is acute.
 
 **Acceptance criteria:**
-- [ ] Ranking uses relative resilience score instead of raw unnormalized kg/ha biomass.
-- [ ] Severe drought (<10mm) elevates high-arid tolerant crops (Dates, Pomegranate).
-- [ ] Baseline normal conditions (>40mm) elevate higher-producing crops (Wheat, Onion).
+- [x] Ranking uses relative resilience score instead of raw unnormalized kg/ha biomass.
+- [x] Severe drought (<10mm) elevates high-arid tolerant crops (Dates, Pomegranate).
+- [x] Baseline normal conditions (>40mm) elevate higher-producing crops (Wheat, Onion).
 
 **Verification:**
-- [ ] Run test comparing severe drought scenario vs baseline normal scenario; top crop changes from Dates/Pomegranate to Wheat/Onion.
-- [ ] Update `scripts/verify_backend.py` to assert top recommended crop under severe drought is Dates or Pomegranate.
+- [x] Run test comparing severe drought scenario vs baseline normal scenario; top crop changes from Dates/Pomegranate to Wheat/Onion.
+- [x] Update `scripts/verify_backend.py` to assert top recommended crop under severe drought is Dates or Pomegranate.
 
 **Dependencies:** Task 1
 **Files likely touched:**
@@ -42,8 +42,8 @@
 ---
 
 ## Checkpoint: Backend Logic
-- [ ] All verification tests pass: `.venv/bin/python scripts/verify_backend.py`
-- [ ] Severe drought and baseline normal scenarios produce different #1 recommended crops.
+- [x] All verification tests pass: `.venv/bin/python scripts/verify_backend.py` (10/10 tests passed)
+- [x] Severe drought and baseline normal scenarios produce different #1 recommended crops (Dates in drought vs Onion in normal).
 
 ---
 
