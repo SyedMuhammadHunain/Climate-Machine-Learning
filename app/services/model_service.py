@@ -45,6 +45,22 @@ class ModelService:
         "Is_Drought_Resilient",
     ]
 
+    CROP_PHYSIOLOGY: Dict[str, Dict[str, float]] = {
+        "dates": {"water_vulnerability": 0.08, "crit_temp": 42.0},
+        "pomegranate": {"water_vulnerability": 0.15, "crit_temp": 39.0},
+        "grapes": {"water_vulnerability": 0.22, "crit_temp": 37.0},
+        "wheat": {"water_vulnerability": 0.32, "crit_temp": 33.0},
+        "onion": {"water_vulnerability": 0.50, "crit_temp": 34.0},
+        "apple": {"water_vulnerability": 0.40, "crit_temp": 32.0},
+        "mango": {"water_vulnerability": 0.35, "crit_temp": 40.0},
+        "potato": {"water_vulnerability": 0.55, "crit_temp": 30.0},
+        "tomato": {"water_vulnerability": 0.48, "crit_temp": 35.0},
+        "cotton": {"water_vulnerability": 0.65, "crit_temp": 38.0},
+        "banana": {"water_vulnerability": 0.75, "crit_temp": 38.0},
+        "sugarcane": {"water_vulnerability": 0.85, "crit_temp": 38.0},
+        "rice": {"water_vulnerability": 0.85, "crit_temp": 36.0},
+    }
+
     def __init__(self, model_path: Path = MODEL_PATH):
         self.model_path = model_path
         self.pipeline = None
@@ -120,6 +136,48 @@ class ModelService:
             "Climate_Index": float(c_index),
         }
 
+    @classmethod
+    def calculate_agroclimatic_elasticity(
+        cls,
+        crop: str,
+        province: str,
+        precipitation_sum: float,
+        temperature_2m_max: float,
+        fao_evapotranspiration: float,
+    ) -> float:
+        """Computes physiological yield response factor based on water deficit and heat stress."""
+        crop_clean = crop.lower().strip()
+        params = cls.CROP_PHYSIOLOGY.get(
+            crop_clean, {"water_vulnerability": 0.40, "crit_temp": 35.0}
+        )
+        kw = params["water_vulnerability"]
+        tcrit = params["crit_temp"]
+
+        defaults = PROVINCE_DEFAULTS.get(province, PROVINCE_DEFAULTS["Punjab"])
+        p_ref = defaults["precipitation_sum"]
+        et0_ref = defaults["fao_evapotranspiration"]
+
+        # 1. Moisture balance factor
+        if precipitation_sum < p_ref:
+            moisture_stress = max(0.0, (p_ref - precipitation_sum) / p_ref)
+            w_factor = 1.0 - kw * min(1.0, moisture_stress)
+        else:
+            w_factor = 1.0 + 0.15 * min(1.0, (precipitation_sum - p_ref) / p_ref)
+
+        # Evaporative stress
+        if fao_evapotranspiration > et0_ref:
+            et0_stress = min(0.20, ((fao_evapotranspiration - et0_ref) / et0_ref) * 0.15 * kw)
+            w_factor = max(0.15, w_factor - et0_stress)
+
+        # 2. Thermal stress factor
+        if temperature_2m_max > tcrit:
+            excess = temperature_2m_max - tcrit
+            h_factor = max(0.25, 1.0 - 0.035 * excess)
+        else:
+            h_factor = 1.0
+
+        return float(np.clip(w_factor * h_factor, a_min=0.10, a_max=1.50))
+
     def predict_single(self, request: SinglePredictionRequest) -> SinglePredictionResponse:
         province_val = request.province.value
         crop_val = request.crop.value
@@ -146,7 +204,14 @@ class ModelService:
 
         input_df = pd.DataFrame([row])[self.FEATURE_COLS]
         raw_pred = float(self.pipeline.predict(input_df)[0])
-        predicted_yield = float(np.round(np.clip(raw_pred, a_min=0.0, a_max=None), 2))
+        elasticity = self.calculate_agroclimatic_elasticity(
+            crop=crop_val,
+            province=province_val,
+            precipitation_sum=env_dict["precipitation_sum"],
+            temperature_2m_max=env_dict["temperature_2m_max"],
+            fao_evapotranspiration=env_dict["fao_evapotranspiration"],
+        )
+        predicted_yield = float(np.round(np.clip(raw_pred * elasticity, a_min=0.0, a_max=None), 2))
 
         return SinglePredictionResponse(
             crop=crop_val,
@@ -186,7 +251,17 @@ class ModelService:
 
         sim_df = pd.DataFrame(records)
         preds = self.pipeline.predict(sim_df[self.FEATURE_COLS])
-        sim_df["Predicted_Yield"] = np.round(np.clip(preds, a_min=0.0, a_max=None), 2)
+        elasticities = np.array([
+            self.calculate_agroclimatic_elasticity(
+                crop=r["Crop"],
+                province=province_val,
+                precipitation_sum=env_dict["precipitation_sum"],
+                temperature_2m_max=env_dict["temperature_2m_max"],
+                fao_evapotranspiration=env_dict["fao_evapotranspiration"],
+            )
+            for _, r in sim_df.iterrows()
+        ])
+        sim_df["Predicted_Yield"] = np.round(np.clip(preds * elasticities, a_min=0.0, a_max=None), 2)
 
         # 1. Drought-Resilient ranking
         resilient_df = sim_df[sim_df["Is_Drought_Resilient"]].sort_values(
