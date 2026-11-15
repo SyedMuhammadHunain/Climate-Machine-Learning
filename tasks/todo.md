@@ -1,39 +1,48 @@
-# Tasks: Slogan Customization & Branding Maintenance
+# Tasks: Offline-First Frontend & CDN Dependency Vendoring
 
-## Phase 1: Brand & Slogan Customization
+## Phase 1: Dependency Vendoring
 
-### Task 1: Landing Page (`index.html`) Slogan Customization
-**Description:** Replace generic template tagline ("There is no limit for those who think infinite") with project-focused climate resilience slogan in both static and GSAP-animated footer elements, retaining the "Infinite Field" brand identity per user instruction.
+### Task 1: Download Three.js, GLTFLoader, BufferGeometryUtils, and es-module-shims
+**Description:** Download and vendor all external JavaScript libraries into `frontend/climate-resilient-frontend/vendor/` preserving required internal relative paths so ES module imports resolve offline.
 
 **Acceptance criteria:**
-- [x] `<title>` reflects "Infinite Field — Guarding harvests against drought with climate intelligence".
-- [x] Header and 3D mesh branding restored to "Infinite Field".
-- [x] Footer slogan updated to:
-  - Line 1: `Guarding harvests against drought`
-  - Line 2: `with climate intelligence`
-- [x] Mission overlay text references Infinite Field with agricultural AI context.
+- [x] `frontend/climate-resilient-frontend/vendor/es-module-shims.js` saved locally.
+- [x] `frontend/climate-resilient-frontend/vendor/three/three.module.js` saved locally.
+- [x] `frontend/climate-resilient-frontend/vendor/three/addons/loaders/GLTFLoader.js` saved locally.
+- [x] `frontend/climate-resilient-frontend/vendor/three/addons/utils/BufferGeometryUtils.js` saved locally.
 
 **Verification:**
-- [x] Inspect `index.html` via HTTP response; verified slogans and Infinite Field brand identity live.
+- [x] Verify each file exists on disk and is non-empty.
+
+**Dependencies:** None
+**Files likely touched:**
+- `frontend/climate-resilient-frontend/vendor/`
+**Estimated scope:** S (4 vendor files)
 
 ---
 
-### Task 2: Predictor & Advisory Interfaces (`predict.html`, `careers.html`)
-**Description:** Maintain "Infinite Field" wordmark and titles while preserving auto-sync parameters and drought advisory engine.
+### Task 2: Update `index.html` Import Map and Script Tags
+**Description:** Update `index.html` to load local vendor files instead of remote CDNs (`unpkg.com` and `cdn.jsdelivr.net`).
 
 **Acceptance criteria:**
-- [x] Header logo renders original "Infinite Field" SVG wordmark.
-- [x] Page `<title>` reflects "Infinite Field — Crop Yield Prediction & Drought Advisory".
-- [x] Auto-sync listeners for advanced meteorological features preserved.
+- [x] `<script async src="./vendor/es-module-shims.js"></script>` points to local file.
+- [x] Import map maps `"three"` to `"./vendor/three/three.module.js"`.
+- [x] Import map maps `"three/addons/"` to `"./vendor/three/addons/"`.
+- [x] Zero `cdn.jsdelivr.net` or `unpkg.com` references remain in `index.html`.
 
 **Verification:**
-- [x] Inspect `predict.html` and `careers.html`; confirmed clean header wordmark and title.
+- [x] `grep -E "jsdelivr|unpkg" frontend/climate-resilient-frontend/index.html` returns 0 results.
+- [x] `curl -s http://localhost:3000/index.html` verifies local paths.
+- [x] Curl each vendored script path on `http://localhost:3000/vendor/...` returns 200 OK.
+
+**Dependencies:** Task 1
+**Files likely touched:**
+- `frontend/climate-resilient-frontend/index.html`
+**Estimated scope:** XS (1 file)
 
 ---
 
-## Checkpoint: Verification
-- [x] All pages load with 200 OK.
-- [x] "Infinite Field" brand identity fully preserved across 3D model, SVG wordmarks, headers, and titles.
-- [x] Project slogan ("Guarding harvests against drought" / "with climate intelligence") active in footer.
-- [x] Crop ecological niches calibrated: Dates (extreme drought/heat), Grapes (moderate drought 20-35mm / 25-30°C), Pomegranate (warm drought 34°C), Onion (normal moisture >35mm / 22°C).
-- [ ] Review with human before finalization.
+## Checkpoint: Offline Readiness
+- [x] `index.html` and `predict.html` have zero external CDN network dependencies.
+- [x] All static assets serve 200 OK from local server.
+- [x] WebGL canvas renders without internet access.
