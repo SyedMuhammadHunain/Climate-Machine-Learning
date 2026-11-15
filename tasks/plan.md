@@ -1,48 +1,37 @@
-# Implementation Plan: Interactive Submit Feedback & Result State Management
+# Implementation Plan: Model Sensitivity & Agroclimatic Ranking
 
 ## Overview
-Address the issue where clicking "Run Crop Yield Prediction" provides no perceptible visual feedback to the user ("nothing happens"). This occurs because static results were pre-rendered on page load, the offline fallback resolved instantaneously without scrolling or transition, and no visual timestamp/status badge indicated execution. This phase adds clean initial state hiding, smooth auto-scroll to results, a noticeable 350ms perceptible loading transition, an Ashby-style execution timestamp badge, and live FastAPI server integration.
+Investigate and resolve why "Onion is always #1 and Pomegranate is always #2" across all inputs. Analysis reveals two root causes:
+1. **Model Feature Importance Imbalance**: The trained Random Forest regressor in `models/crop_yield_pipeline.joblib` gives 99.7% of split importance to `Crop`, `Area`, and `Province`. Climate variables (`precipitation_sum`, `temperature`, `evapotranspiration`) hold less than 0.3% combined importance. The model outputs essentially static crop-level baseline yields for each province.
+2. **Raw Absolute Yield Sorting**: `ModelService.recommend_crops()` sorts drought-resilient crops purely by raw `predicted_yield_kg_ha` descending. Because onion biologically produces higher bulb biomass (~95–136 kg/ha) than grains like wheat (~28 kg/ha) or tree crops like dates (~69 kg/ha), onion will always be #1 when sorting by raw weight.
 
 ## Architecture Decisions
-- **Empty Initial State**: Hide the results container on initial page load (or display a subtle empty placeholder), ensuring that clicking "Run Crop Yield Prediction" causes an unmistakable visual transition when results appear.
-- **Perceptible Transition Window**: Guarantee a minimum 350ms execution window before hiding the spinner so users visibly see the pipeline processing, avoiding 0ms invisible blinks when network calls failover immediately.
-- **Smooth Viewport Auto-Scroll**: Upon successful inference or fallback calculation, trigger `resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' })` so user focus immediately tracks to the newly calculated metrics.
-- **Execution Badge & Source Indicator**: Display an Ashby-style pill badge above results displaying the timestamp and data source (`Live ML Model (Port 8000)` vs `Agronomic Simulation Mode`).
-- **Live Backend Runner**: Provide verified startup for the FastAPI service (`uvicorn app.main:app --port 8000`) so the frontend can query the real Scikit-Learn pipeline directly.
+- **Drought Resilience Index (DRI) / Water-Use Efficiency Ranking**: Move beyond naive raw yield sorting. Compute an agroclimatic score that accounts for moisture deficit elasticity, crop-specific water requirements, and climate index stress:
+  $$\text{Resilience Score} = \frac{\text{Predicted Yield}}{\text{Crop Baseline Yield}} \times \left(1 - \alpha \cdot \text{Moisture Deficit} \cdot \text{Crop Water Vulnerability}\right)$$
+- **Agroclimatic Response Elasticity**: In `ModelService`, incorporate physical agronomic penalties for extreme heat (>38°C) and acute drought (<10mm) relative to each crop's biological tolerance thresholds, making recommendations genuinely dynamic to climate changes.
+- **Frontend Scenario Responsiveness**: Verify that changing presets (Severe Drought vs Baseline Normal vs Extreme Heatwave) visibly changes crop rankings and yield projections.
 
 ---
 
 ## Task List
 
-### Phase 3: Submit Responsiveness, Visual State Transitions & Live Backend
+### Phase 4: Agroclimatic Ranking & Model Elasticity
 
-- [ ] **Task 1: Refactor Results Container to Initial Empty State with Smooth Auto-Scroll**
-  - Hide `#results-container` on initial load; reveal it dynamically upon form submission.
-  - Add smooth auto-scrolling to `#results-container` when prediction calculation completes.
-  - Implement a minimum 350ms perceptible loading window to avoid instant 0ms blinks.
+- [ ] **Task 1: Implement Dynamic Agroclimatic Elasticity in `ModelService`**
+  - Add crop-specific physiological drought sensitivity and optimal temperature thresholds.
+  - Apply moisture-deficit and temperature-stress adjustment factors to model predictions so yields dynamically react to rainfall and heatwave inputs.
 
-- [ ] **Task 2: Add Real-Time Inference Badge and Cache-Busting Headers**
-  - Add an Ashby-style status badge showing inference timestamp and execution source (Live Model vs Local Agronomic Engine).
-  - Add cache-busting meta headers to prevent browsers from caching stale JavaScript files.
-  - Sync updates between `predict.html` and `careers.html`.
+- [ ] **Task 2: Implement Water-Use Efficiency & Relative Drought-Resilience Ranking**
+  - Update `recommend_crops()` to rank by Water-Use Efficiency (WUE) and drought adaptation index rather than raw unnormalized biomass weight.
+  - Ensure Severe Drought prioritizes deepest root / lowest water demand crops (e.g. Dates, Pomegranate), while Moderate Drought or Baseline rainfall elevates Wheat and high-yield vegetables.
 
-- [ ] **Task 3: Launch & Connect Live FastAPI Backend Service**
-  - Launch FastAPI application (`app.main:app`) on port 8000 using project Python environment.
-  - Verify live API communication between frontend and backend via CDP automated test.
+- [ ] **Task 3: End-to-End Verification Across Climate Presets**
+  - Test preset switching ("Severe Drought" vs "Baseline Normal" vs "Extreme Heatwave") via automated CDP tests.
+  - Verify that different scenarios produce different top-ranked crops and dynamic advisory summaries.
 
 ---
 
-## Checkpoint: Phase 3 Verification
-- [ ] Initial page load shows form cleanly without pre-baked results cluttering the page.
-- [ ] Clicking "Run Crop Yield Prediction" displays loading spinner for at least 350ms, reveals results container, and auto-scrolls down smoothly.
-- [ ] Status badge explicitly confirms timestamp and engine source.
-- [ ] Automated headless Chrome DevTools test verifies DOM mutation, visibility, and click reaction.
-
----
-
-## Risks and Mitigations
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| User browser disk-caching old HTML/JS | High | Add HTML `Cache-Control` meta tags and verify via headless Chrome with cache disabled. |
-| Fast failover feels like an unresponsive button | High | Introduce 350ms artificial transition delay so users register the action. |
-| Backend port 8000 conflict | Medium | Check port availability before launching uvicorn daemon. |
+## Checkpoint: Dynamic Ranking Verification
+- [ ] Presets produce distinct top-ranked crops (e.g., Dates/Pomegranate in extreme heat/arid, Wheat/Onion in moderate rainfall).
+- [ ] Varying rainfall from 2mm to 200mm visibly scales yield predictions.
+- [ ] No regression in API contracts (`SinglePredictionResponse` and `RecommendationResponse`).

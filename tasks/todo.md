@@ -1,56 +1,52 @@
-# Tasks: Interactive Submit Feedback & Result State Management
+# Tasks: Agroclimatic Ranking & Model Elasticity
 
-## Phase 3: Submit Responsiveness, Visual State Transitions & Live Backend
+## Phase 4: Agroclimatic Ranking & Model Elasticity
 
-### Task 1: Refactor Results Container to Initial Empty State with Smooth Auto-Scroll
-**Description:** Modify `frontend/climate-resilient-frontend/predict.html` and `careers.html` so the `#results-container` is hidden by default (`display: none`) on initial page load. When the user clicks "Run Crop Yield Prediction", enforce a minimum 350ms loading duration so the inference step is visually apparent, reveal `#results-container`, and smoothly scroll into view.
+### Task 1: Implement Dynamic Agroclimatic Elasticity in `ModelService`
+**Description:** Modify `app/services/model_service.py` so that meteorological inputs (`precipitation_sum`, `temperature_2m_mean`, `temperature_2m_max`, `fao_evapotranspiration`, `climate_index`) actively modulate crop yield predictions via crop-specific physiological response curves, overcoming the Random Forest's 99.7% categorical bias.
 
 **Acceptance criteria:**
-- [x] `#results-container` starts hidden on page load so form is uncluttered.
-- [x] Loading spinner displays for at least 350ms to provide perceptible tactile feedback.
-- [x] Viewport smoothly scrolls to `#results-container` once results are calculated.
+- [ ] Changing rainfall from 2mm to 100mm produces noticeable, realistic yield changes.
+- [ ] Temperatures exceeding critical thresholds (e.g., >38°C) incur heat-stress yield penalties.
+- [ ] Single crop and multi-crop endpoints both reflect meteorological elasticity.
 
 **Verification:**
-- [x] On clean page load, results container is not visible.
-- [x] On button click, spinner displays, results container appears, and page scrolls.
+- [ ] Run automated script comparing predictions under 2mm vs 100mm rainfall; yield difference is greater than 10%.
 
 **Dependencies:** None
 **Files likely touched:**
-- `frontend/climate-resilient-frontend/predict.html`
-- `frontend/climate-resilient-frontend/careers.html`
-**Estimated scope:** S (2 files)
+- `app/services/model_service.py`
+**Estimated scope:** S (1 file)
 
 ---
 
-### Task 2: Add Real-Time Inference Badge and Cache-Busting Headers
-**Description:** Add an Ashby-style indicator pill above the results list displaying `• Updated at [HH:MM:SS] • [Engine Source]`. Add `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">` to prevent browser cache from holding stale versions.
+### Task 2: Implement Water-Use Efficiency & Relative Drought-Resilience Ranking
+**Description:** Update `recommend_crops()` in `app/services/model_service.py` to rank candidate crops using a composite Drought Resilience & Water-Use Efficiency (WUE) score instead of raw unnormalized biomass weight. This ensures low-water tree/grain crops (Dates, Pomegranate, Wheat) rank ahead of water-sensitive vegetables when moisture deficit is acute.
 
 **Acceptance criteria:**
-- [x] Status badge appears above recommendations showing exact execution timestamp.
-- [x] Badge clearly distinguishes `Live ML Model (FastAPI)` from `Agronomic Simulation Engine`.
-- [x] Cache-control meta headers present in `<head>`.
+- [ ] Ranking uses relative resilience score instead of raw kg/ha biomass.
+- [ ] Severe drought (<10mm) elevates high-arid tolerant crops (Dates, Pomegranate).
+- [ ] Baseline normal conditions (>40mm) elevate higher-producing crops (Wheat, Onion).
 
 **Verification:**
-- [x] Submitting form updates badge with new timestamp.
-- [x] Cache headers present in HTTP/HTML inspect.
+- [ ] Severe drought scenario test shows different top crop than baseline normal scenario.
 
 **Dependencies:** Task 1
 **Files likely touched:**
-- `frontend/climate-resilient-frontend/predict.html`
-- `frontend/climate-resilient-frontend/careers.html`
-**Estimated scope:** S (2 files)
+- `app/services/model_service.py`
+**Estimated scope:** S (1 file)
 
 ---
 
-### Task 3: Launch & Connect Live FastAPI Backend Service
-**Description:** Start the FastAPI application on `http://127.0.0.1:8000` using `.venv/bin/python -m uvicorn app.main:app --port 8000`. Test end-to-end inference from the frontend form to verify live model predictions work alongside the fallback.
+### Task 3: End-to-End Verification Across Climate Presets
+**Description:** Restart the FastAPI backend daemon with updated logic and run automated headless Chrome DevTools tests verifying that selecting different presets ("Severe Drought", "Moderate Drought", "Baseline Normal", "Extreme Heatwave") visibly re-orders the recommended crop cards in the UI.
 
 **Acceptance criteria:**
-- [x] Backend responds with 200 OK on `/docs` and `/api/v1/recommend`.
-- [x] Form submission successfully queries live API and renders ML pipeline outputs.
+- [ ] Presets produce distinct crop rankings and narrative summaries in the UI.
+- [ ] Screenshot captured demonstrating dynamic ranking response.
 
 **Verification:**
-- [x] Automated CDP test verifies live API submission and badge text `Live ML Model (FastAPI)`.
+- [ ] CDP test confirms #1 crop changes across presets.
 
 **Dependencies:** Task 1, Task 2
 **Files likely touched:**
@@ -59,6 +55,6 @@
 
 ---
 
-## Checkpoint: Phase 3 Verification
-- [x] Button click provides unmistakable visual feedback (spinner -> auto-scroll -> results).
-- [x] Works both with live FastAPI server running and offline fallback.
+## Checkpoint: Dynamic Ranking Verification
+- [ ] Onion is no longer unconditionally #1 across every climate condition.
+- [ ] Rankings respond intelligently to drought severity.
