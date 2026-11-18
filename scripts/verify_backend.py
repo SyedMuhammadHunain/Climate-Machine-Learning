@@ -41,8 +41,16 @@ def run_verification():
         data = res.json()
         assert len(data["provinces"]) == 3, f"Unexpected provinces count: {data['provinces']}"
         assert len(data["all_crops"]) == 13, f"Unexpected crops count: {data['all_crops']}"
-        assert len(data["preset_scenarios"]) >= 3, "Missing preset scenarios"
-        print(f"  -> PASSED: Retrieved 3 provinces ({data['provinces']}) and 13 crops.")
+        assert sorted(data["all_crops"]) == sorted(REFERENCE["crops"])
+        for gone in ("drought_resilient_crops", "water_intensive_crops", "moderate_water_crops",
+                     "preset_scenarios", "province_defaults"):
+            assert gone not in data, f"hand-made field still served: {gone}"
+        assert len(data["scenarios"]) == 6, "driest + wettest real training year per province"
+        for sc in data["scenarios"]:
+            assert sc["year"] <= 2016 and sc["kind"] in ("driest", "wettest")
+            r = client.post("/api/v1/recommend", json={"province": sc["province"], **sc["inputs"]})
+            assert r.status_code == 200, (sc["id"], r.text)
+        print(f"  -> PASSED: Retrieved 3 provinces ({data['provinces']}), 13 crops, 6 real-year scenarios that the API accepts.")
 
         # 3. Single Prediction (valid, inside the trained range)
         print("\n[TEST 3] POST /api/v1/predict (valid Wheat input)")
@@ -282,6 +290,45 @@ def run_verification():
             assert res.json() == saved, f"{path} body differs from models/metrics.json"
         assert res.json()["chosen"]["name"] in res.json()["models"]
         print("  -> PASSED: endpoint body equals the file (no recomputed or hardcoded values).")
+
+        # 22. No hand-made logic or hardcoded numbers left in app/
+        print("\n[TEST 22] app/ has no banned words and no hardcoded model numbers")
+        import ast
+        banned = ("bajra", "jowar", "fallback", "simulat", "demo", "dummy", "mock", "physiolog", "elasticit",
+                  "drought_resilient", "water_intensive", "moderate_water", "province_defaults",
+                  "preset_scenarios", "kg/ha", "legacy")
+        allowed_floats = {0.0, 1.0, 100.0}  # 100.0 = percent conversion
+        problems = []
+        for path in sorted((ROOT_DIR / "app").rglob("*.py")):
+            text = path.read_text()
+            for word in banned:
+                if word in text.lower():
+                    problems.append(f"{path.relative_to(ROOT_DIR)}: banned word {word!r}")
+            tree = ast.parse(text)
+            in_field = set()
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call) and getattr(node.func, "id", getattr(node.func, "attr", "")) in ("Field", "Query"):
+                    in_field.update(id(n) for n in ast.walk(node))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Constant) and isinstance(node.value, float) and id(node) not in in_field:
+                    if node.value not in allowed_floats:
+                        problems.append(f"{path.relative_to(ROOT_DIR)}:{node.lineno}: hardcoded number {node.value}")
+        assert not problems, "\n".join(problems)
+        from app.schemas.common import CropEnum, ProvinceEnum
+        assert sorted(c.value for c in CropEnum) == sorted(REFERENCE["crops"]), "CropEnum differs from trained crops"
+        assert sorted(p.value for p in ProvinceEnum) == sorted(REFERENCE["provinces"]), "ProvinceEnum differs from trained provinces"
+        print("  -> PASSED: clean. Enums match the trained crops and provinces.")
+
+        # 23. Data completeness is reported per crop
+        print("\n[TEST 23] responses say how many training rows exist vs possible")
+        possible = len(REFERENCE["provinces"]) * (REFERENCE["train_years"][1] - REFERENCE["train_years"][0] + 1)
+        r = client.post("/api/v1/recommend", json={"province": "Punjab", "precipitation_sum": 350.0, "temperature_2m_mean": 25.0}).json()
+        for it in r["ranked_crops"]:
+            assert it["training_rows_possible"] == possible, it
+            assert it["training_rows_for_crop"] == REFERENCE["train_rows_per_crop"][it["crop"]]
+        p = client.post("/api/v1/predict", json={"province": "Punjab", "crop": "grapes", "precipitation_sum": 350.0, "temperature_2m_mean": 25.0}).json()
+        assert p["training_rows_possible"] == possible and p["training_rows_for_crop"] < possible
+        print(f"  -> PASSED: grapes has {p['training_rows_for_crop']} of {possible} possible training rows.")
 
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")

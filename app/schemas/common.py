@@ -21,9 +21,3 @@ class CropEnum(str, Enum):
     SUGARCANE = "sugarcane"
     TOMATO = "tomato"
     WHEAT = "wheat"
-
-
-class WaterCategoryEnum(str, Enum):
-    LOW_WATER = "Low-Water Resilient"
-    MODERATE = "Moderate Water"
-    HIGH_WATER = "High-Water Intensive"

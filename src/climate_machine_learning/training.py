@@ -224,11 +224,23 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         ],
     }
 
-    ref_out = dict(reference)
-    ref_out["train_rows_per_crop"] = {k: int(v) for k, v in tr.groupby("Crop").size().items()}
-    ref_out["train_years"] = list(TRAIN_YEARS)
-
     joblib.dump(best_pipe, out_dir / "crop_yield_pipeline.joblib")
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
-    (out_dir / "reference.json").write_text(json.dumps(ref_out, indent=2))
+    (out_dir / "reference.json").write_text(json.dumps(reference_document(reference, tr), indent=2))
     return metrics
+
+
+def reference_document(reference: Dict[str, Any], train: pd.DataFrame) -> Dict[str, Any]:
+    """The content of models/reference.json (derived from the training years only)."""
+    doc = dict(reference)
+    doc["train_rows_per_crop"] = {k: int(v) for k, v in train.groupby("Crop").size().items()}
+    doc["train_years"] = list(TRAIN_YEARS)
+    return doc
+
+
+def write_reference(out_dir: Path) -> Dict[str, Any]:
+    """Rebuild models/reference.json from the data alone (no model fitting)."""
+    _, _, reference, splits = load_tables()
+    doc = reference_document(reference, splits["train"])
+    (Path(out_dir) / "reference.json").write_text(json.dumps(doc, indent=2))
+    return doc

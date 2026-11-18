@@ -171,12 +171,14 @@ historical scenarios: pick the driest real year per province from the data and l
 that year. Add a guard test that greps app/ and frontend/ for banned words and banned functions.
 
 **Acceptance criteria:**
-- [ ] No hardcoded climate or yield numbers in `app/` except schema bounds
-- [ ] Scenarios are real (province, year) rows from the dataset
+- [x] No hardcoded climate or yield numbers in `app/` except schema bounds
+- [x] Scenarios are real (province, year) rows from the dataset
 
 **Verification:**
-- [ ] Guard test in `verify_backend.py` passes
-- [ ] All tests pass
+- [x] Guard test in `verify_backend.py` passes
+- [x] All tests pass
+
+**Notes (done 2026-11-18):** Deleted `DROUGHT_RESILIENT_CROPS`, `WATER_INTENSIVE_CROPS`, `MODERATE_WATER_CROPS`, `PROVINCE_DEFAULTS`, `PRESET_SCENARIOS`, `PROVINCES`, `ALL_CROPS`, `DATA_PATH`, `WaterCategoryEnum`; `config.py` is now only file paths. `/metadata` serves provinces/crops from `reference.json` and 6 real scenarios: driest and wettest training year per province (Sindh 2002/2011, Punjab 2009/2015, Balochistan 2010/2006). `reference.json` gained `historical_years` (regenerated from data via `training.write_reference`, model and metrics files untouched). Quick-fill pills fill every input from that real year. Added `training_rows_possible` so the UI shows e.g. '18 of 48 possible rows (incomplete data for this crop)' instead of an arbitrary low-data threshold. Guards: verify_backend TEST 22 (banned words + AST scan for hardcoded floats outside Field bounds; checked it fails on a planted file; enums must equal trained crops/provinces), verify_frontend banned wording across all pages. Copy fixed: index.html no longer claims it recommends 'low-water, climate-resilient crops'.
 
 **Dependencies:** T4, T5, T6
 **Files:** `app/core/config.py`, `app/services/model_service.py`, `app/api/v1/endpoints.py`, `scripts/verify_backend.py`

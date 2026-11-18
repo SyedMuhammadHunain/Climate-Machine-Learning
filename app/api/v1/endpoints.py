@@ -1,16 +1,7 @@
 from fastapi import APIRouter, Request, status, HTTPException
-from app.core.config import (
-    PROVINCES,
-    ALL_CROPS,
-    DROUGHT_RESILIENT_CROPS,
-    WATER_INTENSIVE_CROPS,
-    MODERATE_WATER_CROPS,
-    PRESET_SCENARIOS,
-    PROVINCE_DEFAULTS,
-)
 from app.schemas.predict import SinglePredictionRequest, SinglePredictionResponse
 from app.schemas.recommend import DroughtScenarioRequest, RecommendationResponse
-from app.schemas.metadata import MetadataResponse
+from app.schemas.metadata import MetadataResponse, Scenario
 
 router = APIRouter()
 
@@ -36,26 +27,33 @@ async def health_check(request: Request):
     "/metadata",
     response_model=MetadataResponse,
     summary="Agricultural & Climate Metadata",
-    description="Fetch available provinces, crop classification categories, and historical default benchmarks.",
+    description="Provinces, crops, real driest/wettest training years, and the climate ranges the model was trained on.",
     tags=["Metadata"],
 )
 async def get_metadata(request: Request):
     svc = request.app.state.model_service
+    ref = svc.reference
+    scenarios = [
+        Scenario(
+            id=f"{province.lower()}_{kind}_{info['year']}",
+            name=f"{kind.capitalize()} real year in the training data: {province} {info['year']}",
+            province=province,
+            year=info["year"],
+            kind=kind,
+            inputs=info["inputs"],
+        )
+        for province, kinds in ref["historical_years"].items()
+        for kind, info in kinds.items()
+    ]
     return MetadataResponse(
-        provinces=PROVINCES,
-        all_crops=ALL_CROPS,
-        drought_resilient_crops=DROUGHT_RESILIENT_CROPS,
-        water_intensive_crops=WATER_INTENSIVE_CROPS,
-        moderate_water_crops=MODERATE_WATER_CROPS,
-        preset_scenarios=PRESET_SCENARIOS,
-        province_defaults=PROVINCE_DEFAULTS,
-        model_version=(
-            f"{svc.metrics['models'][svc.metrics['chosen']['name']]['label']} "
-            f"(trained {svc.metrics['trained_at']})"
-        ),
-        features_count=len(svc.reference["feature_cols"]),
-        reference=svc.reference["provinces"],
-        train_rows_per_crop=svc.reference["train_rows_per_crop"],
+        provinces=list(ref["provinces"]),
+        all_crops=list(ref["crops"]),
+        scenarios=scenarios,
+        model_version=f"{svc.model_name} (trained {svc.metrics['trained_at']})",
+        features_count=len(ref["feature_cols"]),
+        reference=ref["provinces"],
+        train_rows_per_crop=ref["train_rows_per_crop"],
+        training_rows_possible=svc.training_rows_possible,
     )
 
 

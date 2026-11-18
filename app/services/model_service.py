@@ -60,6 +60,12 @@ class ModelService:
 
     # ------------------------------------------------------------------ helpers
     @property
+    def training_rows_possible(self) -> int:
+        """Rows a crop would have if every province-year were reported."""
+        first, last = self.reference["train_years"]
+        return len(self.reference["provinces"]) * (last - first + 1)
+
+    @property
     def model_name(self) -> str:
         return self.metrics["models"][self.metrics["chosen"]["name"]]["label"]
 
@@ -114,6 +120,7 @@ class ModelService:
             normal_yield=normal,
             pct_of_normal=predicted / normal * 100.0,
             training_rows_for_crop=int(self.reference["train_rows_per_crop"][crop]),
+            training_rows_possible=self.training_rows_possible,
             inputs={k: InputValue(value=float(row.iloc[0][k]), source=sources[k]) for k in F.BASE_INPUTS},
             model_name=self.model_name,
         )
@@ -154,6 +161,7 @@ class ModelService:
             CropRecommendationItem(
                 rank=i + 1,
                 training_rows_for_crop=int(self.reference["train_rows_per_crop"][r["crop"]]),
+                training_rows_possible=self.training_rows_possible,
                 fao_water_need=self._fao_item(r["crop"]),
                 **r,
             )

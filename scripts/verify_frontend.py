@@ -55,6 +55,18 @@ def main() -> int:
     if re.search(r'class="metric-val"[^>]*>[^<]*\d', metrics_page):
         failures.append("metrics.html: a metric value is typed into the HTML")
 
+    # T7: no demo/simulation wording or old hand-made concepts in any page
+    for name in PAGES:
+        text = (FRONTEND / name).read_text(encoding="utf-8").lower()
+        for word in ("simulat", "demo", "dummy", "mock", "illustrat", "kg/ha", "physiolog", "elasticit",
+                     "low-water, climate-resilient crops"):
+            if word in text:
+                failures.append(f"{name}: banned wording {word!r}")
+    if "driest real year" not in predict.lower() or "scenarios" not in predict:
+        failures.append("predict.html: quick-fill must use real-year scenarios from /metadata")
+    if "training_rows_possible" not in predict:
+        failures.append("predict.html: training row completeness not shown")
+
     if failures:
         print("FAILED:")
         for f in failures:

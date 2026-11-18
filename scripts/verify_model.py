@@ -208,6 +208,23 @@ def reference_json_matches_training_data():
 
 
 @test
+def reference_has_real_driest_and_wettest_training_years():
+    _, _, ref = _load_artifacts()
+    table, _ = F.build_yearly_table(RAW)
+    train = table[table.Year <= 2016].drop_duplicates(["Province", "Year"])
+    for prov, grp in train.groupby("Province"):
+        for kind, idx in (("driest", grp["precipitation_sum"].idxmin()), ("wettest", grp["precipitation_sum"].idxmax())):
+            real = grp.loc[idx]
+            got = ref["historical_years"][prov][kind]
+            assert got["year"] == int(real["Year"]), (prov, kind)
+            assert got["year"] <= 2016
+            for k in F.BASE_INPUTS:
+                assert np.isclose(got["inputs"][k], real[k]), (prov, kind, k)
+                lo, hi = ref["provinces"][prov]["range"][k]
+                assert lo <= got["inputs"][k] <= hi, (prov, kind, k)
+
+
+@test
 def weather_changes_predictions_sensitivity():
     """Rain from province min to max (other inputs at median) must move at least one crop."""
     pipe, _, ref = _load_artifacts()

@@ -116,8 +116,19 @@ def build_reference(train: pd.DataFrame) -> Dict[str, Any]:
             "range": {k: [float(grp[k].min()), float(grp[k].max())] for k in BASE_INPUTS},
             "years": [int(grp["Year"].min()), int(grp["Year"].max())],
         }
+    # Real observed years (training years only) for quick-fill scenarios: driest and wettest by annual rain
+    historical: Dict[str, Any] = {}
+    for province, grp in climate.groupby("Province"):
+        historical[province] = {}
+        for kind, idx in (("driest", grp["precipitation_sum"].idxmin()), ("wettest", grp["precipitation_sum"].idxmax())):
+            row = grp.loc[idx]
+            historical[province][kind] = {
+                "year": int(row["Year"]),
+                "inputs": {k: float(row[k]) for k in BASE_INPUTS},
+            }
     return {
         "provinces": provinces,
+        "historical_years": historical,
         "crops": sorted(train["Crop"].unique().tolist()),
         "feature_cols": FEATURE_COLS,
     }

@@ -466,7 +466,7 @@
 
         <!-- Quick fill from real training years (filled from /api/v1/metadata) -->
         <div class="presets-bar">
-            <span class="presets-label">Quick fill from real data:</span>
+            <span class="presets-label">Quick fill from real years in the training data:</span>
             <div class="presets-pills" id="presets-pills"></div>
         </div>
 
@@ -665,12 +665,9 @@
 
         // Province reference (training-year medians and ranges), loaded from the API. Nothing is hardcoded.
         let REFERENCE = null;
+        let SCENARIOS = [];   // real driest / wettest training years per province, from /api/v1/metadata
         let activePreset = "median";
-        const PRESETS = [
-            { key: "driest", label: "Driest year's rain" },
-            { key: "median", label: "Typical (median) year" },
-            { key: "wettest", label: "Wettest year's rain" },
-        ];
+        const scenarioFor = (province, kind) => SCENARIOS.find(sc => sc.province === province && sc.kind === kind);
         const OPTIONAL_FIELDS = [
             { id: "field-temp-max", key: "temperature_2m_max", digits: 1 },
             { id: "field-temp-min", key: "temperature_2m_min", digits: 1 },
@@ -678,17 +675,14 @@
             { id: "field-radiation", key: "shortwave_radiation", digits: 1 },
             { id: "field-precip-hours", key: "precipitation_hours", digits: 0 },
         ];
-        const ceilTo = (x, d) => Math.ceil(x * 10 ** d) / 10 ** d;
-        const floorTo = (x, d) => Math.floor(x * 10 ** d) / 10 ** d;
 
         async function loadReference() {
             try {
                 const res = await fetch(`${API_BASE}/api/v1/metadata`, { signal: AbortSignal.timeout(30000) });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                REFERENCE = (await res.json()).reference;
-                document.getElementById("presets-pills").innerHTML = PRESETS.map(p =>
-                    `<button type="button" class="preset-pill" data-key="${p.key}" onclick="applyPreset('${p.key}')">${p.label}</button>`
-                ).join("");
+                const meta = await res.json();
+                REFERENCE = meta.reference;
+                SCENARIOS = meta.scenarios;
                 applyPreset(activePreset);
                 clearValidationError();
             } catch (err) {
@@ -711,24 +705,38 @@
             });
         }
 
+        function buildPills() {
+            const province = document.getElementById("field-province").value;
+            const dry = scenarioFor(province, "driest"), wet = scenarioFor(province, "wettest");
+            const pills = [
+                { key: "driest", label: `Driest real year (${dry.year})` },
+                { key: "median", label: "Typical (median) year" },
+                { key: "wettest", label: `Wettest real year (${wet.year})` },
+            ];
+            document.getElementById("presets-pills").innerHTML = pills.map(p =>
+                `<button type="button" class="preset-pill" data-key="${p.key}" onclick="applyPreset('${p.key}')">${p.label}</button>`
+            ).join("");
+        }
+
         function applyPreset(key) {
             if (!REFERENCE) return;
             activePreset = key;
-            const ref = REFERENCE[document.getElementById("field-province").value];
-            const [lo, hi] = ref.range.precipitation_sum;
-            const rain = key === "driest" ? ceilTo(lo, 1) : key === "wettest" ? floorTo(hi, 1) : ref.median.precipitation_sum;
-            document.getElementById("field-precipitation").value = Number(rain.toFixed(1));
-            document.getElementById("field-temperature").value = Number(ref.median.temperature_2m_mean.toFixed(1));
-            OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = ""; });
+            const province = document.getElementById("field-province").value;
+            const ref = REFERENCE[province];
+            buildPills();
+            if (key === "median") {
+                document.getElementById("field-precipitation").value = Number(ref.median.precipitation_sum.toFixed(1));
+                document.getElementById("field-temperature").value = Number(ref.median.temperature_2m_mean.toFixed(1));
+                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = ""; });
+            } else {
+                // A real observed year: fill every input with that year's values (full precision, so they stay in range)
+                const sc = scenarioFor(province, key);
+                document.getElementById("field-precipitation").value = sc.inputs.precipitation_sum;
+                document.getElementById("field-temperature").value = sc.inputs.temperature_2m_mean;
+                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = sc.inputs[f.key]; });
+            }
             updateHints();
             document.querySelectorAll(".preset-pill").forEach(el => el.classList.toggle("active", el.dataset.key === key));
-        }
-
-        function toggleAdvancedPanel() {
-            const panel = document.getElementById("advanced-panel");
-            const chevron = document.getElementById("advanced-chevron");
-            const isOpen = panel.classList.toggle("open");
-            chevron.classList.toggle("open", isOpen);
         }
 
         function showValidationError(message, canRetry = false, retryFn = submitPredictionForm) {
@@ -926,7 +934,7 @@
                         <div class="job-post-item">
                             <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
                             <div class="job-metadata">Rank #${item.rank} • ${fmt(item.pct_of_normal)}% of a typical year • Predicted yield ${fmt(item.predicted_yield)} (typical ${fmt(item.normal_yield)}) ${esc(data.yield_unit)}</div>
-                            <div class="job-metadata">${fao} • ${item.training_rows_for_crop} training rows</div>
+                            <div class="job-metadata">${fao} • ${item.training_rows_for_crop} of ${item.training_rows_possible} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
                         </div>`;
                 }).join("");
 
@@ -959,7 +967,7 @@
                         <div class="job-metadata">Predicted yield: ${fmt(data.predicted_yield)} (${data.yield_unit})</div>
                         <div class="job-metadata">Typical year in ${data.province}: ${fmt(data.normal_yield)} • This scenario: ${fmt(data.pct_of_normal)}% of typical</div>
                         <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
-                        <div class="job-metadata" style="margin-top: 4px;">Model: ${data.model_name} • trained on ${data.training_rows_for_crop} yearly rows of this crop</div>
+                        <div class="job-metadata" style="margin-top: 4px;">Model: ${data.model_name} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
                     </div>
                 `;
 

@@ -151,6 +151,86 @@
       ]
     }
   },
+  "historical_years": {
+    "Balochistan": {
+      "driest": {
+        "year": 2010,
+        "inputs": {
+          "precipitation_sum": 29.2,
+          "temperature_2m_mean": 19.135,
+          "temperature_2m_max": 25.103333333333335,
+          "temperature_2m_min": 12.271666666666667,
+          "fao_evapotranspiration": 5.756666666666667,
+          "shortwave_radiation": 22.2525,
+          "precipitation_hours": 97.0
+        }
+      },
+      "wettest": {
+        "year": 2006,
+        "inputs": {
+          "precipitation_sum": 235.9,
+          "temperature_2m_mean": 19.00166666666667,
+          "temperature_2m_max": 24.8025,
+          "temperature_2m_min": 12.494166666666667,
+          "fao_evapotranspiration": 5.52,
+          "shortwave_radiation": 21.849999999999998,
+          "precipitation_hours": 272.0
+        }
+      }
+    },
+    "Punjab": {
+      "driest": {
+        "year": 2009,
+        "inputs": {
+          "precipitation_sum": 289.1,
+          "temperature_2m_mean": 25.320000000000004,
+          "temperature_2m_max": 31.723333333333333,
+          "temperature_2m_min": 19.175833333333333,
+          "fao_evapotranspiration": 4.843333333333333,
+          "shortwave_radiation": 19.695833333333333,
+          "precipitation_hours": 344.0
+        }
+      },
+      "wettest": {
+        "year": 2015,
+        "inputs": {
+          "precipitation_sum": 684.3,
+          "temperature_2m_mean": 24.110833333333332,
+          "temperature_2m_max": 29.874166666666667,
+          "temperature_2m_min": 18.666666666666668,
+          "fao_evapotranspiration": 4.29,
+          "shortwave_radiation": 18.50916666666667,
+          "precipitation_hours": 758.0
+        }
+      }
+    },
+    "Sindh": {
+      "driest": {
+        "year": 2002,
+        "inputs": {
+          "precipitation_sum": 14.7,
+          "temperature_2m_mean": 27.780833333333334,
+          "temperature_2m_max": 34.72666666666667,
+          "temperature_2m_min": 21.156666666666666,
+          "fao_evapotranspiration": 6.654166666666666,
+          "shortwave_radiation": 22.21166666666667,
+          "precipitation_hours": 28.0
+        }
+      },
+      "wettest": {
+        "year": 2011,
+        "inputs": {
+          "precipitation_sum": 398.59999999999997,
+          "temperature_2m_mean": 27.046666666666667,
+          "temperature_2m_max": 33.23,
+          "temperature_2m_min": 21.139166666666664,
+          "fao_evapotranspiration": 5.729166666666667,
+          "shortwave_radiation": 20.785833333333333,
+          "precipitation_hours": 349.0
+        }
+      }
+    }
+  },
   "crops": [
     "apple",
     "banana",

@@ -24,6 +24,7 @@ class CropRecommendationItem(BaseModel):
     normal_yield: float
     pct_of_normal: float
     training_rows_for_crop: int
+    training_rows_possible: int
     fao_water_need: Optional[FaoWaterNeed] = None  # None = crop is not in the FAO table
 
 

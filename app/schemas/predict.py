@@ -48,5 +48,6 @@ class SinglePredictionResponse(BaseModel):
     normal_yield: float
     pct_of_normal: float
     training_rows_for_crop: int
+    training_rows_possible: int
     inputs: Dict[str, InputValue]
     model_name: str
