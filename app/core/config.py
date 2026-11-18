@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-MODEL_PATH = BASE_DIR / "models" / "crop_yield_pipeline.joblib"
+MODEL_PATH = BASE_DIR / "models" / "legacy_pipeline.joblib"  # TEMP until T4/T5 switch to the retrained model
 DATA_PATH = BASE_DIR / "data" / "raw" / "pakistan_crop_yield_climate.csv"
 
 PROVINCES: List[str] = ["Punjab", "Sindh", "Balochistan"]

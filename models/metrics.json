@@ -1,0 +1,222 @@
+{
+  "trained_at": "2026-11-18T16:21:03+00:00",
+  "versions": {
+    "python": "3.13.18",
+    "scikit_learn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.4"
+  },
+  "seed": 42,
+  "target": "Yield in dataset yield units (unit not confirmed); fitted on log scale",
+  "split": {
+    "train_years": [
+      2001,
+      2016
+    ],
+    "val_years": [
+      2017,
+      2019
+    ],
+    "test_years": [
+      2020,
+      2022
+    ]
+  },
+  "data": {
+    "file": "data/raw/pakistan_crop_yield_climate.parquet",
+    "sha256": "998ac2e23c39581a074dc443a33fbba3bc8818be42859737be1f40f9da67113a",
+    "raw_monthly_rows": 10296,
+    "yearly_rows_after_drop": 773,
+    "dropped_zero_yield_rows": {
+      "apple": 22,
+      "grapes": 41,
+      "pomegranate": 22
+    },
+    "n_train": 565,
+    "n_val": 106,
+    "n_test": 102
+  },
+  "features": [
+    "precipitation_sum",
+    "temperature_2m_mean",
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "fao_evapotranspiration",
+    "shortwave_radiation",
+    "precipitation_hours",
+    "rain_deficit_pct",
+    "water_balance_mm",
+    "aridity_index",
+    "Crop",
+    "Province"
+  ],
+  "baselines": {
+    "global_mean": {
+      "val": {
+        "mae": 91.74660527633993,
+        "rmse": 150.66858018501364,
+        "r2": -0.002128078007495704,
+        "log_mae": 0.9712802824236322,
+        "skill_vs_crop_province_mean_log": -12.327956539779002
+      },
+      "test": {
+        "mae": 100.35463682110014,
+        "rmse": 173.64978558421848,
+        "r2": -0.03012416334992074,
+        "log_mae": 0.937333398657978,
+        "skill_vs_crop_province_mean_log": -6.955516066749684
+      }
+    },
+    "crop_province_mean": {
+      "val": {
+        "mae": 20.92064858490566,
+        "rmse": 52.7433419872395,
+        "r2": 0.8771958260123016,
+        "log_mae": 0.19448555783194255,
+        "skill_vs_crop_province_mean_log": 0.0
+      },
+      "test": {
+        "mae": 34.709264705882354,
+        "rmse": 70.10475282830436,
+        "r2": 0.832105682845823,
+        "log_mae": 0.3120929823242512,
+        "skill_vs_crop_province_mean_log": 0.0
+      }
+    }
+  },
+  "models": {
+    "ridge": {
+      "label": "Ridge (regularised linear regression)",
+      "best_params": {
+        "alpha": 1.0
+      },
+      "cv_folds": 5,
+      "cv_grouped_by": "Year",
+      "cv_log_mae": 0.3087047779741725,
+      "val": {
+        "mae": 52.93824574792312,
+        "rmse": 89.60327695798834,
+        "r2": 0.6455739579924389,
+        "log_mae": 0.5542612202672513,
+        "skill_vs_crop_province_mean_log": -2.7066968667204154
+      },
+      "test": {
+        "mae": 71.05584790648808,
+        "rmse": 120.17482546401087,
+        "r2": 0.5066353011105609,
+        "log_mae": 0.6783716000571884,
+        "skill_vs_crop_province_mean_log": -2.0427477491305055
+      }
+    },
+    "random_forest": {
+      "label": "Random Forest",
+      "best_params": {
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 400
+      },
+      "cv_folds": 5,
+      "cv_grouped_by": "Year",
+      "cv_log_mae": 0.1881650375214653,
+      "val": {
+        "mae": 23.47502254832607,
+        "rmse": 56.0694611472958,
+        "r2": 0.8612188110694385,
+        "log_mae": 0.23560080135377684,
+        "skill_vs_crop_province_mean_log": -0.3977474166885717
+      },
+      "test": {
+        "mae": 39.53331053901456,
+        "rmse": 77.44164290806545,
+        "r2": 0.7951244241083478,
+        "log_mae": 0.4016841756883419,
+        "skill_vs_crop_province_mean_log": -0.9489372397872644
+      }
+    },
+    "gradient_boosting": {
+      "label": "Gradient Boosting",
+      "best_params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 300
+      },
+      "cv_folds": 5,
+      "cv_grouped_by": "Year",
+      "cv_log_mae": 0.19961189570632562,
+      "val": {
+        "mae": 24.81495262800791,
+        "rmse": 59.60035317845698,
+        "r2": 0.8431893678463928,
+        "log_mae": 0.2582335689152386,
+        "skill_vs_crop_province_mean_log": -0.5891226467551751
+      },
+      "test": {
+        "mae": 41.829419365126284,
+        "rmse": 78.77446679018885,
+        "r2": 0.7880116395260158,
+        "log_mae": 0.4307268826922675,
+        "skill_vs_crop_province_mean_log": -1.1815165993764616
+      }
+    }
+  },
+  "chosen": {
+    "name": "random_forest",
+    "selected_on": "lowest validation log-MAE (relative error, comparable across crops)",
+    "beats_crop_province_mean_on_test": false
+  },
+  "permutation_importance_val_log_mae": {
+    "Crop": {
+      "mean": 0.9339648975937841,
+      "std": 0.08771240209033482
+    },
+    "shortwave_radiation": {
+      "mean": 0.02808161231245818,
+      "std": 0.009737509346255103
+    },
+    "temperature_2m_min": {
+      "mean": 0.021380499816681574,
+      "std": 0.00544211221060502
+    },
+    "temperature_2m_max": {
+      "mean": 0.019910945882512316,
+      "std": 0.005819434527335496
+    },
+    "temperature_2m_mean": {
+      "mean": 0.017786159620528767,
+      "std": 0.005916809926087657
+    },
+    "Province": {
+      "mean": 0.014597900618896249,
+      "std": 0.0036400868425405944
+    },
+    "water_balance_mm": {
+      "mean": 0.013516223958441539,
+      "std": 0.004513817965103406
+    },
+    "precipitation_sum": {
+      "mean": 0.0034250893522110647,
+      "std": 0.0015168609282970322
+    },
+    "aridity_index": {
+      "mean": 0.0033571996787071273,
+      "std": 0.0015046810281805181
+    },
+    "fao_evapotranspiration": {
+      "mean": 0.0027660088029548835,
+      "std": 0.003609050871171948
+    },
+    "rain_deficit_pct": {
+      "mean": 0.002218398327471628,
+      "std": 0.0036609386688734634
+    },
+    "precipitation_hours": {
+      "mean": 0.0020331187412374312,
+      "std": 0.0013228559552159835
+    }
+  },
+  "notes": [
+    "Metrics on the test years are reported once and were not used to choose the model.",
+    "skill_vs_crop_province_mean_log > 0 means the model beats the crop-province mean baseline.",
+    "Year/trend is not a feature, so yield growth over time is not modelled."
+  ]
+}

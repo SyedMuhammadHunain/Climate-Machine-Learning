@@ -149,6 +149,97 @@ def unknown_crop_or_province_is_rejected():
         raise AssertionError(f"accepted {prov}/{crop}")
 
 
+# ----------------------------------------------------------------------- trained artifacts
+import hashlib  # noqa: E402
+import json  # noqa: E402
+import tempfile  # noqa: E402
+
+import joblib  # noqa: E402
+
+MODELS = ROOT / "models"
+
+
+def _load_artifacts():
+    pipe = joblib.load(MODELS / "crop_yield_pipeline.joblib")
+    metrics = json.loads((MODELS / "metrics.json").read_text())
+    ref = json.loads((MODELS / "reference.json").read_text())
+    return pipe, metrics, ref
+
+
+@test
+def artifacts_exist_and_pipeline_predicts():
+    pipe, _, ref = _load_artifacts()
+    row, _ = F.build_inference_row(
+        "Punjab", "wheat", {"precipitation_sum": 300.0, "temperature_2m_mean": 24.0}, ref
+    )
+    pred = float(pipe.predict(row)[0])
+    assert np.isfinite(pred) and pred > 0, pred
+
+
+@test
+def metrics_are_complete_and_honest_about_splits():
+    _, m, _ = _load_artifacts()
+    assert m["split"]["train_years"] == [2001, 2016]
+    assert m["split"]["val_years"] == [2017, 2019]
+    assert m["split"]["test_years"] == [2020, 2022]
+    assert {"global_mean", "crop_province_mean"} <= set(m["baselines"])
+    assert {"ridge", "random_forest", "gradient_boosting"} <= set(m["models"])
+    assert m["chosen"]["name"] in m["models"]
+    for name, info in m["models"].items():
+        for part in ("val", "test"):
+            assert {"mae", "rmse", "r2", "log_mae", "skill_vs_crop_province_mean_log"} <= set(info[part]), name
+        assert info["cv_folds"] == 5 and info["cv_grouped_by"] == "Year"
+    table, _ = F.build_yearly_table(RAW)
+    assert m["data"]["n_train"] == int((table.Year <= 2016).sum())
+    assert m["data"]["n_test"] == int((table.Year >= 2020).sum())
+    assert m["data"]["sha256"] == hashlib.sha256(RAW_PATH.read_bytes()).hexdigest()
+
+
+@test
+def reference_json_matches_training_data():
+    _, _, ref = _load_artifacts()
+    table, _ = F.build_yearly_table(RAW)
+    expected = F.build_reference(table[table.Year <= 2016])
+    assert ref["provinces"].keys() == expected["provinces"].keys()
+    for prov in expected["provinces"]:
+        assert np.isclose(ref["provinces"][prov]["mean_annual_rain"], expected["provinces"][prov]["mean_annual_rain"])
+    assert ref["crops"] == expected["crops"]
+    assert sum(ref["train_rows_per_crop"].values()) == int((table.Year <= 2016).sum())
+
+
+@test
+def weather_changes_predictions_sensitivity():
+    """Rain from province min to max (other inputs at median) must move at least one crop."""
+    pipe, _, ref = _load_artifacts()
+    moved = {}
+    for prov, info in ref["provinces"].items():
+        lo, hi = info["range"]["precipitation_sum"]
+        for crop in ref["crops"]:
+            med = {"temperature_2m_mean": info["median"]["temperature_2m_mean"]}
+            a, _ = F.build_inference_row(prov, crop, {**med, "precipitation_sum": lo}, ref)
+            b, _ = F.build_inference_row(prov, crop, {**med, "precipitation_sum": hi}, ref)
+            pa, pb = float(pipe.predict(a)[0]), float(pipe.predict(b)[0])
+            if abs(pb - pa) / pa > 0.01:
+                moved.setdefault(prov, []).append(crop)
+    print("    crops moved >1% by rain (min->max):", {k: len(v) for k, v in moved.items()})
+    assert moved, "model ignores rain for every crop in every province"
+
+
+@test
+def retraining_is_deterministic():
+    from climate_machine_learning import training
+
+    _, m, _ = _load_artifacts()
+    with tempfile.TemporaryDirectory() as tmp:
+        again = training.train(Path(tmp), verbose=False)
+    for name in m["models"]:
+        # parallel forest sums trees in a different order per run: ~1e-14 float noise only
+        for k, v in m["models"][name]["test"].items():
+            assert np.isclose(v, again["models"][name]["test"][k], rtol=1e-9, atol=1e-9), (name, k)
+        assert m["models"][name]["best_params"] == again["models"][name]["best_params"], name
+    assert m["chosen"]["name"] == again["chosen"]["name"]
+
+
 def main() -> int:
     failed = 0
     for fn in TESTS:

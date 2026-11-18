@@ -59,7 +59,7 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 
 ### Phase 1: Honest model
 - [x] **T2** Shared feature module + yearly crop-province-year table (M)
-- [ ] **T3** Retrain with year-grouped CV, save pipeline + metrics.json + reference.json, update notebook (M)
+- [x] **T3** Retrain with year-grouped CV, save pipeline + metrics.json + reference.json, update notebook (M)
 
 ### Checkpoint A: Model review (stop and show user)
 - [ ] Test-set metrics vs crop-mean baseline reported, even if weak

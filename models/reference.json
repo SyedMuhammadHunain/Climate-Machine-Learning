@@ -1,0 +1,202 @@
+{
+  "provinces": {
+    "Balochistan": {
+      "median": {
+        "precipitation_sum": 122.0,
+        "temperature_2m_mean": 18.734583333333333,
+        "temperature_2m_max": 24.59125,
+        "temperature_2m_min": 11.867916666666666,
+        "fao_evapotranspiration": 5.644583333333333,
+        "shortwave_radiation": 22.244166666666665,
+        "precipitation_hours": 220.0
+      },
+      "mean_annual_rain": 126.025,
+      "temp_offsets": {
+        "max_minus_mean": 5.928333333333333,
+        "min_minus_mean": -6.6374999999999975
+      },
+      "range": {
+        "precipitation_sum": [
+          29.2,
+          235.9
+        ],
+        "temperature_2m_mean": [
+          17.5975,
+          19.3625
+        ],
+        "temperature_2m_max": [
+          23.287499999999998,
+          25.351666666666663
+        ],
+        "temperature_2m_min": [
+          11.160833333333334,
+          12.565
+        ],
+        "fao_evapotranspiration": [
+          5.363333333333333,
+          5.918333333333333
+        ],
+        "shortwave_radiation": [
+          21.849999999999998,
+          22.881666666666664
+        ],
+        "precipitation_hours": [
+          94.0,
+          381.0
+        ]
+      },
+      "years": [
+        2001,
+        2016
+      ]
+    },
+    "Punjab": {
+      "median": {
+        "precipitation_sum": 422.09999999999997,
+        "temperature_2m_mean": 25.018749999999997,
+        "temperature_2m_max": 31.200833333333335,
+        "temperature_2m_min": 19.110833333333332,
+        "fao_evapotranspiration": 4.647083333333334,
+        "shortwave_radiation": 19.139166666666668,
+        "precipitation_hours": 543.0
+      },
+      "mean_annual_rain": 435.10625,
+      "temp_offsets": {
+        "max_minus_mean": 6.148333333333333,
+        "min_minus_mean": -5.895
+      },
+      "range": {
+        "precipitation_sum": [
+          289.1,
+          684.3
+        ],
+        "temperature_2m_mean": [
+          24.110833333333332,
+          25.71666666666667
+        ],
+        "temperature_2m_max": [
+          29.874166666666667,
+          32.00083333333333
+        ],
+        "temperature_2m_min": [
+          18.400000000000002,
+          19.855
+        ],
+        "fao_evapotranspiration": [
+          4.29,
+          5.0475
+        ],
+        "shortwave_radiation": [
+          18.50916666666667,
+          19.755
+        ],
+        "precipitation_hours": [
+          344.0,
+          758.0
+        ]
+      },
+      "years": [
+        2001,
+        2016
+      ]
+    },
+    "Sindh": {
+      "median": {
+        "precipitation_sum": 145.9,
+        "temperature_2m_mean": 27.582083333333337,
+        "temperature_2m_max": 33.88583333333334,
+        "temperature_2m_min": 21.26958333333333,
+        "fao_evapotranspiration": 6.114999999999999,
+        "shortwave_radiation": 21.48375,
+        "precipitation_hours": 144.5
+      },
+      "mean_annual_rain": 177.3,
+      "temp_offsets": {
+        "max_minus_mean": 6.434583333333331,
+        "min_minus_mean": -6.217500000000003
+      },
+      "range": {
+        "precipitation_sum": [
+          14.7,
+          398.59999999999997
+        ],
+        "temperature_2m_mean": [
+          26.889166666666668,
+          28.30666666666667
+        ],
+        "temperature_2m_max": [
+          33.23,
+          34.745
+        ],
+        "temperature_2m_min": [
+          20.764166666666664,
+          22.081666666666667
+        ],
+        "fao_evapotranspiration": [
+          5.729166666666667,
+          6.654166666666666
+        ],
+        "shortwave_radiation": [
+          20.785833333333333,
+          22.21166666666667
+        ],
+        "precipitation_hours": [
+          28.0,
+          349.0
+        ]
+      },
+      "years": [
+        2001,
+        2016
+      ]
+    }
+  },
+  "crops": [
+    "apple",
+    "banana",
+    "cotton",
+    "dates",
+    "grapes",
+    "mango",
+    "onion",
+    "pomegranate",
+    "potato",
+    "rice",
+    "sugarcane",
+    "tomato",
+    "wheat"
+  ],
+  "feature_cols": [
+    "precipitation_sum",
+    "temperature_2m_mean",
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "fao_evapotranspiration",
+    "shortwave_radiation",
+    "precipitation_hours",
+    "rain_deficit_pct",
+    "water_balance_mm",
+    "aridity_index",
+    "Crop",
+    "Province"
+  ],
+  "train_rows_per_crop": {
+    "apple": 35,
+    "banana": 48,
+    "cotton": 48,
+    "dates": 48,
+    "grapes": 18,
+    "mango": 48,
+    "onion": 48,
+    "pomegranate": 32,
+    "potato": 48,
+    "rice": 48,
+    "sugarcane": 48,
+    "tomato": 48,
+    "wheat": 48
+  },
+  "train_years": [
+    2001,
+    2016
+  ]
+}

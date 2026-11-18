@@ -72,15 +72,17 @@ class + citation per crop, training row count per crop). Update the notebook mod
 call these functions and plot results.
 
 **Acceptance criteria:**
-- [ ] Every number in metrics.json comes from a run of train.py. Re-running gives the same values (fixed seeds).
-- [ ] No test-year data is used in fitting or tuning.
-- [ ] Notebook runs top to bottom and its numbers match metrics.json.
+- [x] Every number in metrics.json comes from a run of train.py. Re-running gives the same values (fixed seeds).
+- [x] No test-year data is used in fitting or tuning.
+- [x] Notebook runs top to bottom and its numbers match metrics.json.
 
 **Verification:**
-- [ ] `.venv/bin/python scripts/train.py` succeeds and prints the comparison table
-- [ ] `verify_model.py`: artifacts exist, loading the pipeline and predicting one row works
-- [ ] `verify_model.py` sensitivity: raising rain from the province minimum to its maximum changes the prediction for at least one crop (print which ones)
-- [ ] `jupyter nbconvert --execute` on the notebook passes
+- [x] `.venv/bin/python scripts/train.py` succeeds and prints the comparison table
+- [x] `verify_model.py`: artifacts exist, loading the pipeline and predicting one row works
+- [x] `verify_model.py` sensitivity: raising rain from the province minimum to its maximum changes the prediction for at least one crop (print which ones)
+- [x] `jupyter nbconvert --execute` on the notebook passes
+
+**Notes (done 2026-11-18):** model code is in `src/climate_machine_learning/training.py`, `scripts/train.py` is a thin runner. FAO water-class table NOT written to reference.json: no verified FAO citation yet, so it moves to T5 (look up a real source, do not invent one). Old model moved to `models/legacy_pipeline.joblib` and `config.MODEL_PATH` points to it TEMPORARILY so the old app and its 12 tests keep passing; T4 must delete the legacy file and restore `MODEL_PATH`. Target is fitted on log scale (crops differ ~100x).
 
 **Dependencies:** T2
 **Files:** `scripts/train.py`, `models/*`, `notebooks/01_low_water_crop_selection.ipynb`
@@ -96,7 +98,7 @@ call these functions and plot results.
 ## Phase 2: Vertical paths
 
 ### T4: /predict end-to-end
-**Description:** `ModelService.predict_single` returns `pipeline.predict(build_inference_row(...))`
+**Description:** First delete `models/legacy_pipeline.joblib` and set `config.MODEL_PATH` back to `models/crop_yield_pipeline.joblib`. `ModelService.predict_single` returns `pipeline.predict(build_inference_row(...))`
 and nothing else. The response includes the yield, its unit label ("dataset yield units"),
 `pct_of_normal`, the crop's water class, and `inputs` with `input_source` per field. Inputs outside
 the training min/max get a 422 that names the field and the allowed range. Update the request
@@ -117,7 +119,7 @@ the predict.html single-crop view to show these fields.
 **Scope:** M
 
 ### T5: /recommend end-to-end
-**Description:** Predict all 13 crops at the user's climate and at the province median.
+**Description:** Write the crop water-class table (Low/Moderate/High) from a verified FAO source, looked up on the web, into `reference.json`. Predict all 13 crops at the user's climate and at the province median.
 `pct_of_normal` = ratio of the two. Sort by `pct_of_normal` descending, then crop name. Return
 rank, crop, predicted yield, pct_of_normal, water class, and a low-data flag. Replace
 `ranked_drought_resilient`/`top_resilient_crop` with `ranked_crops` and `best_low_water_crop`
