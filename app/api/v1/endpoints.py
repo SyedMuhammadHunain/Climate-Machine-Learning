@@ -39,7 +39,8 @@ async def health_check(request: Request):
     description="Fetch available provinces, crop classification categories, and historical default benchmarks.",
     tags=["Metadata"],
 )
-async def get_metadata():
+async def get_metadata(request: Request):
+    svc = request.app.state.model_service
     return MetadataResponse(
         provinces=PROVINCES,
         all_crops=ALL_CROPS,
@@ -48,8 +49,13 @@ async def get_metadata():
         moderate_water_crops=MODERATE_WATER_CROPS,
         preset_scenarios=PRESET_SCENARIOS,
         province_defaults=PROVINCE_DEFAULTS,
-        model_version="crop_yield_pipeline.joblib (v1.0 - Real Pakistan Data)",
-        features_count=17,
+        model_version=(
+            f"{svc.metrics['models'][svc.metrics['chosen']['name']]['label']} "
+            f"(trained {svc.metrics['trained_at']})"
+        ),
+        features_count=len(svc.reference["feature_cols"]),
+        reference=svc.reference["provinces"],
+        train_rows_per_crop=svc.reference["train_rows_per_crop"],
     )
 
 
@@ -57,7 +63,7 @@ async def get_metadata():
     "/predict",
     response_model=SinglePredictionResponse,
     summary="Single Crop Yield Prediction",
-    description="Predict expected harvest yield (kg/ha) for a single specific crop under given environmental conditions.",
+    description="Predict yield (dataset yield units) for one crop from annual climate inputs. Inputs outside the trained range are rejected.",
     tags=["Inference"],
 )
 async def predict_single_crop(request: Request, payload: SinglePredictionRequest):

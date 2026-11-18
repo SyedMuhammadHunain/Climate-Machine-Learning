@@ -1,8 +1,19 @@
+import sys
 from pathlib import Path
 from typing import Dict, Any, List
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-MODEL_PATH = BASE_DIR / "models" / "legacy_pipeline.joblib"  # TEMP until T4/T5 switch to the retrained model
+
+# The shared feature code lives in src/ (used by training and by the API).
+# Make it importable even when the project package is not pip-installed.
+if str(BASE_DIR / "src") not in sys.path:
+    sys.path.insert(0, str(BASE_DIR / "src"))
+
+MODEL_PATH = BASE_DIR / "models" / "crop_yield_pipeline.joblib"
+REFERENCE_PATH = BASE_DIR / "models" / "reference.json"
+METRICS_PATH = BASE_DIR / "models" / "metrics.json"
+# TEMP: old model, used ONLY by the old /recommend until T5 replaces it. Delete in T5.
+LEGACY_MODEL_PATH = BASE_DIR / "models" / "legacy_pipeline.joblib"
 DATA_PATH = BASE_DIR / "data" / "raw" / "pakistan_crop_yield_climate.csv"
 
 PROVINCES: List[str] = ["Punjab", "Sindh", "Balochistan"]

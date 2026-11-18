@@ -5,8 +5,19 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+SRC_DIR = ROOT_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+import json
+import joblib
+import numpy as np
 from fastapi.testclient import TestClient
 from app.main import app
+from climate_machine_learning import features as F
+
+REFERENCE = json.loads((ROOT_DIR / "models" / "reference.json").read_text())
+PIPELINE = joblib.load(ROOT_DIR / "models" / "crop_yield_pipeline.joblib")
 
 def run_verification():
     print("=" * 70)
@@ -33,25 +44,24 @@ def run_verification():
         assert len(data["preset_scenarios"]) >= 3, "Missing preset scenarios"
         print(f"  -> PASSED: Retrieved 3 provinces ({data['provinces']}) and 13 crops.")
 
-        # 3. Single Prediction (Valid - Wheat in Punjab under low rainfall)
-        print("\n[TEST 3] POST /api/v1/predict (Valid Wheat input)")
+        # 3. Single Prediction (valid, inside the trained range)
+        print("\n[TEST 3] POST /api/v1/predict (valid Wheat input)")
         payload = {
             "province": "Punjab",
             "crop": "wheat",
-            "area": 50.0,
-            "precipitation_sum": 2.5,
-            "temperature_2m_mean": 33.0,
-            "fao_evapotranspiration": 7.5
+            "precipitation_sum": 350.0,
+            "temperature_2m_mean": 25.0,
+            "fao_evapotranspiration": 4.6,
         }
         res = client.post("/api/v1/predict", json=payload)
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
         data = res.json()
         assert data["crop"] == "wheat"
         assert data["province"] == "Punjab"
-        assert data["predicted_yield_kg_ha"] > 0
-        assert data["water_category"] == "Low-Water Resilient"
-        assert data["is_drought_resilient"] is True
-        print(f"  -> PASSED: Predicted Wheat yield: {data['predicted_yield_kg_ha']} kg/ha ({data['water_category']})")
+        assert data["predicted_yield"] > 0
+        assert "unit" in data["yield_unit"]
+        assert data["training_rows_for_crop"] > 0
+        print(f"  -> PASSED: wheat yield {data['predicted_yield']:.2f} ({data['yield_unit']}), {data['pct_of_normal']:.1f}% of normal")
 
         # 4. Root alias /predict (Rubric compliance)
         print("\n[TEST 4] POST /predict (Root alias verification)")
@@ -106,8 +116,7 @@ def run_verification():
         invalid_temp = {
             "province": "Punjab",
             "crop": "wheat",
-            "area": 50.0,
-            "precipitation_sum": 10.0,
+            "precipitation_sum": 350.0,
             "temperature_2m_mean": 25.0,
             "temperature_2m_max": 20.0,
             "temperature_2m_min": 30.0  # Physically impossible: min > max
@@ -123,7 +132,6 @@ def run_verification():
         invalid_precip = {
             "province": "Punjab",
             "crop": "wheat",
-            "area": 50.0,
             "precipitation_sum": -15.0,  # Physically impossible
             "temperature_2m_mean": 25.0
         }
@@ -136,8 +144,7 @@ def run_verification():
         invalid_prov = {
             "province": "Mars",
             "crop": "wheat",
-            "area": 50.0,
-            "precipitation_sum": 10.0,
+            "precipitation_sum": 350.0,
             "temperature_2m_mean": 25.0
         }
         res = client.post("/api/v1/predict", json=invalid_prov)
@@ -191,8 +198,69 @@ def run_verification():
         assert "details" in err_body or "parameter" in err_body
         print("  -> PASSED: Error response conforms to frontend error-parser contract.")
 
+        # 13. API output == direct pipeline output (no post-processing)
+        print("\n[TEST 13] /predict equals pipeline.predict on the same row")
+        for prov, crop, rain, temp in [("Punjab", "wheat", 350.0, 25.0), ("Sindh", "rice", 120.0, 27.5),
+                                       ("Balochistan", "dates", 90.0, 18.5)]:
+            body = {"province": prov, "crop": crop, "precipitation_sum": rain, "temperature_2m_mean": temp}
+            got = client.post("/api/v1/predict", json=body).json()
+            row, _ = F.build_inference_row(prov, crop, {"precipitation_sum": rain, "temperature_2m_mean": temp}, REFERENCE)
+            direct = float(PIPELINE.predict(row)[0])
+            assert np.isclose(got["predicted_yield"], direct, rtol=1e-9), (prov, crop, got["predicted_yield"], direct)
+            normal_row, _ = F.build_inference_row(prov, crop, dict(REFERENCE["provinces"][prov]["median"]), REFERENCE)
+            normal = float(PIPELINE.predict(normal_row)[0])
+            assert np.isclose(got["normal_yield"], normal, rtol=1e-9)
+            assert np.isclose(got["pct_of_normal"], direct / normal * 100.0, rtol=1e-9)
+        print("  -> PASSED: yield, normal yield and pct_of_normal equal direct model output (3 cases).")
+
+        # 14. Out-of-range input: 422 with field name and allowed range
+        print("\n[TEST 14] /predict rejects input outside the trained range")
+        far = {"province": "Punjab", "crop": "wheat", "precipitation_sum": 5.0, "temperature_2m_mean": 25.0}
+        res = client.post("/api/v1/predict", json=far)
+        assert res.status_code == 422, res.text
+        body = res.json()
+        assert body["parameter"] == "precipitation_sum", body
+        lo, hi = REFERENCE["provinces"]["Punjab"]["range"]["precipitation_sum"]
+        assert f"{lo:.1f}" in body["message"] and f"{hi:.1f}" in body["message"], body["message"]
+        hot = {"province": "Punjab", "crop": "wheat", "precipitation_sum": 350.0, "temperature_2m_mean": 42.0}
+        res = client.post("/api/v1/predict", json=hot)
+        assert res.status_code == 422 and res.json()["parameter"] == "temperature_2m_mean"
+        print("  -> PASSED: 422 names the field and the allowed range.")
+
+        # 15. Input sources are reported
+        print("\n[TEST 15] /predict labels where each input came from")
+        body = {"province": "Sindh", "crop": "mango", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
+        data = client.post("/api/v1/predict", json=body).json()
+        inp = data["inputs"]
+        assert inp["precipitation_sum"] == {"value": 150.0, "source": "user"}
+        assert inp["temperature_2m_mean"]["source"] == "user"
+        assert inp["shortwave_radiation"]["source"] == "province_median_training_years"
+        assert inp["temperature_2m_max"]["source"] == "user_mean_plus_province_median_offset"
+        print("  -> PASSED: user vs province-median sources reported.")
+
+        # 16. Removed / unknown fields are rejected, not silently ignored
+        print("\n[TEST 16] /predict rejects unknown fields (area, climate_index)")
+        for extra in ({"area": 50.0}, {"climate_index": 0.5}, {"bajra": 1}):
+            res = client.post("/api/v1/predict", json={**payload, **extra})
+            assert res.status_code == 422, (extra, res.status_code)
+        print("  -> PASSED: unknown fields give 422.")
+
+        # 17. Partial temperature order check
+        print("\n[TEST 17] /predict rejects max below mean")
+        bad = {**payload, "temperature_2m_max": 20.0}
+        assert client.post("/api/v1/predict", json=bad).status_code == 422
+        print("  -> PASSED: max < mean rejected.")
+
+        # 18. Metadata exposes real ranges for the UI
+        print("\n[TEST 18] /api/v1/metadata includes reference ranges")
+        meta = client.get("/api/v1/metadata").json()
+        assert set(meta["reference"]) == {"Punjab", "Sindh", "Balochistan"}
+        assert meta["reference"]["Punjab"]["range"]["precipitation_sum"] == REFERENCE["provinces"]["Punjab"]["range"]["precipitation_sum"]
+        assert meta["features_count"] == len(F.FEATURE_COLS)
+        print("  -> PASSED: metadata carries training ranges and medians.")
+
     print("\n" + "=" * 70)
-    print("ALL 12 BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
+    print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)
 
 if __name__ == "__main__":

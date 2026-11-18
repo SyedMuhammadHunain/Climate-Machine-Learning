@@ -33,6 +33,15 @@ def main() -> int:
     if 'id="btn-retry"' not in predict:
         failures.append("predict.html: Retry button missing")
 
+    # T4: invented inputs and old semantics must be gone from the single-crop path
+    for token in ("PRESET_CONFIGS", "field-area", "field-climate-index", "val + 6.0", "val >= 40.0",
+                  "Total Expected Production", "Seasonal Precipitation", "is_drought_resilient"):
+        if token in predict:
+            failures.append(f"predict.html: old/invented logic still present: {token!r}")
+    for token in ("api/v1/metadata", "pct_of_normal", "predicted_yield", "yield_unit", "inputs"):
+        if token not in predict:
+            failures.append(f"predict.html: expected T4 element missing: {token!r}")
+
     if failures:
         print("FAILED:")
         for f in failures:

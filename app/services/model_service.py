@@ -1,11 +1,17 @@
+import json
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 import joblib
 import numpy as np
 import pandas as pd
 
+from climate_machine_learning import features as F
+from app.core.exceptions import AgronomicValidationError
 from app.core.config import (
     MODEL_PATH,
+    REFERENCE_PATH,
+    METRICS_PATH,
+    LEGACY_MODEL_PATH,
     PROVINCES,
     ALL_CROPS,
     DROUGHT_RESILIENT_CROPS,
@@ -13,7 +19,7 @@ from app.core.config import (
     MODERATE_WATER_CROPS,
     PROVINCE_DEFAULTS,
 )
-from app.schemas.predict import SinglePredictionRequest, SinglePredictionResponse
+from app.schemas.predict import SinglePredictionRequest, SinglePredictionResponse, InputValue
 from app.schemas.recommend import (
     DroughtScenarioRequest,
     CropRecommendationItem,
@@ -25,7 +31,8 @@ from app.schemas.recommend import (
 class ModelService:
     """Encapsulates the pre-trained Scikit-Learn pipeline for low-water crop yield inference."""
 
-    FEATURE_COLS = [
+    # LEGACY (old /recommend only, removed in T5)
+    LEGACY_FEATURE_COLS = [
         "Area",
         "temperature_2m_max",
         "temperature_2m_min",
@@ -61,22 +68,37 @@ class ModelService:
         "rice": {"water_vulnerability": 0.85, "crit_temp": 36.0},
     }
 
+    YIELD_UNIT = "dataset yield units (unit not confirmed)"
+
     def __init__(self, model_path: Path = MODEL_PATH):
         self.model_path = model_path
         self.pipeline = None
+        self.reference: Dict[str, Any] = {}
+        self.metrics: Dict[str, Any] = {}
+        self.legacy_pipeline = None
         self.load_model()
 
+    @staticmethod
+    def _single_thread(pipeline) -> None:
+        """One thread at inference: avoids joblib overhead for single-row predictions."""
+        reg = pipeline.named_steps.get("regressor")
+        reg = getattr(reg, "regressor_", reg)
+        if reg is not None and hasattr(reg, "n_jobs"):
+            reg.n_jobs = 1
+
     def load_model(self) -> None:
-        if not self.model_path.exists():
-            raise FileNotFoundError(
-                f"Trained model artifact not found at: {self.model_path}. "
-                "Ensure models/crop_yield_pipeline.joblib exists."
-            )
+        for path in (self.model_path, REFERENCE_PATH, METRICS_PATH, LEGACY_MODEL_PATH):
+            if not Path(path).exists():
+                raise FileNotFoundError(
+                    f"Required artifact not found: {path}. Run scripts/train.py to create the model files."
+                )
         self.pipeline = joblib.load(self.model_path)
-        # Configure inference estimator for single-thread execution to eliminate joblib IPC overhead
-        regressor = self.pipeline.named_steps.get("regressor")
-        if regressor is not None and hasattr(regressor, "n_jobs"):
-            regressor.n_jobs = 1
+        self._single_thread(self.pipeline)
+        self.reference = json.loads(Path(REFERENCE_PATH).read_text())
+        self.metrics = json.loads(Path(METRICS_PATH).read_text())
+        # LEGACY: old /recommend only (removed in T5)
+        self.legacy_pipeline = joblib.load(LEGACY_MODEL_PATH)
+        self._single_thread(self.legacy_pipeline)
 
     @staticmethod
     def classify_crop(crop_name: str) -> Tuple[str, bool, str]:
@@ -182,49 +204,41 @@ class ModelService:
 
         return float(np.clip(w_factor * h_factor, a_min=0.10, a_max=1.50))
 
+    def _check_training_range(self, province: str, inputs: Dict[str, float]) -> None:
+        """Refuse inputs the model never saw: a tree model cannot extrapolate."""
+        ranges = self.reference["provinces"][province]["range"]
+        for name, value in inputs.items():
+            lo, hi = ranges[name]
+            if value < lo or value > hi:
+                raise AgronomicValidationError(
+                    f"{name} = {value:g} is outside the range the model was trained on for {province} "
+                    f"({lo:.1f} to {hi:.1f}, annual values {self.reference['train_years'][0]}-"
+                    f"{self.reference['train_years'][1]}). The model cannot extrapolate, so no prediction is made.",
+                    parameter=name,
+                )
+
     def predict_single(self, request: SinglePredictionRequest) -> SinglePredictionResponse:
-        province_val = request.province.value
-        crop_val = request.crop.value
+        province, crop = request.province.value, request.crop.value
+        supplied = {k: getattr(request, k) for k in F.BASE_INPUTS if getattr(request, k) is not None}
+        self._check_training_range(province, supplied)
 
-        env_dict = self._resolve_environment(
-            province=province_val,
-            area=request.area,
-            precipitation_sum=request.precipitation_sum,
-            temperature_2m_mean=request.temperature_2m_mean,
-            temperature_2m_max=request.temperature_2m_max,
-            temperature_2m_min=request.temperature_2m_min,
-            fao_evapotranspiration=request.fao_evapotranspiration,
-            shortwave_radiation=request.shortwave_radiation,
-            precipitation_hours=request.precipitation_hours,
-            climate_index=request.climate_index,
-        )
+        row, sources = F.build_inference_row(province, crop, supplied, self.reference)
+        predicted = float(self.pipeline.predict(row)[0])
 
-        category, is_resilient, risk_desc = self.classify_crop(crop_val)
-        row = {
-            **env_dict,
-            "Crop": crop_val,
-            "Is_Drought_Resilient": is_resilient,
-        }
-
-        input_df = pd.DataFrame([row])[self.FEATURE_COLS]
-        raw_pred = float(self.pipeline.predict(input_df)[0])
-        elasticity = self.calculate_agroclimatic_elasticity(
-            crop=crop_val,
-            province=province_val,
-            precipitation_sum=env_dict["precipitation_sum"],
-            temperature_2m_max=env_dict["temperature_2m_max"],
-            fao_evapotranspiration=env_dict["fao_evapotranspiration"],
-        )
-        predicted_yield = float(np.round(np.clip(raw_pred * elasticity, a_min=0.0, a_max=None), 2))
+        median = self.reference["provinces"][province]["median"]
+        normal_row, _ = F.build_inference_row(province, crop, dict(median), self.reference)
+        normal = float(self.pipeline.predict(normal_row)[0])
 
         return SinglePredictionResponse(
-            crop=crop_val,
-            province=province_val,
-            predicted_yield_kg_ha=predicted_yield,
-            water_category=category,
-            is_drought_resilient=is_resilient,
-            risk_assessment=risk_desc,
-            features_used=row,
+            crop=crop,
+            province=province,
+            predicted_yield=predicted,
+            yield_unit=self.YIELD_UNIT,
+            normal_yield=normal,
+            pct_of_normal=predicted / normal * 100.0,
+            training_rows_for_crop=int(self.reference["train_rows_per_crop"][crop]),
+            inputs={k: InputValue(value=float(row.iloc[0][k]), source=sources[k]) for k in F.BASE_INPUTS},
+            model_name=self.metrics["models"][self.metrics["chosen"]["name"]]["label"],
         )
 
     def recommend_crops(self, request: DroughtScenarioRequest) -> RecommendationResponse:
@@ -254,7 +268,7 @@ class ModelService:
             })
 
         sim_df = pd.DataFrame(records)
-        preds = self.pipeline.predict(sim_df[self.FEATURE_COLS])
+        preds = self.legacy_pipeline.predict(sim_df[self.LEGACY_FEATURE_COLS])
         p_sum = env_dict["precipitation_sum"]
         t_max = env_dict["temperature_2m_max"]
         et0 = env_dict["fao_evapotranspiration"]

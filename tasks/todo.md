@@ -106,13 +106,15 @@ schema to match the new features. Remove the `area` field if the model no longer
 the predict.html single-crop view to show these fields.
 
 **Acceptance criteria:**
-- [ ] The API yield exactly equals the direct `pipeline.predict` output for the same row
-- [ ] An out-of-range input returns 422 with a readable message, shown in the UI alert
-- [ ] Defaulted fields show "province median 2001–2022" in the UI
+- [x] The API yield exactly equals the direct `pipeline.predict` output for the same row
+- [x] An out-of-range input returns 422 with a readable message, shown in the UI alert
+- [x] Defaulted fields show "province median 2001–2022" in the UI
 
 **Verification:**
-- [ ] `verify_backend.py`: equality test, 422 test, input_source test
-- [ ] Manual: single-crop prediction on :8000
+- [x] `verify_backend.py`: equality test, 422 test, input_source test
+- [x] Manual: single-crop prediction on :8000
+
+**Notes (done 2026-11-18):** `/predict` takes annual inputs only; `area` and `climate_index` are removed and unknown fields give 422. Response has `predicted_yield`, `yield_unit`, `normal_yield`, `pct_of_normal`, `inputs` with sources, `training_rows_for_crop`, `model_name`. Water class is NOT in the response yet (needs the verified FAO table, T5). `/metadata` now returns `reference` (province medians and ranges); the form's quick-fill pills and range hints come from it, so no hardcoded presets remain in predict.html. The old `/recommend` still runs on `models/legacy_pipeline.joblib` via `LEGACY_*` names in `model_service.py`; T5 must delete them and the legacy file. Not clicked in a real browser: checked by JS syntax, guard test, and live API calls with the preset values.
 
 **Dependencies:** T3
 **Files:** `app/services/model_service.py`, `app/schemas/predict.py`, `app/schemas/common.py`, `app/api/v1/endpoints.py`, `predict.html`, `scripts/verify_backend.py`

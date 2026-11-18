@@ -12,3 +12,5 @@ class MetadataResponse(BaseModel):
     province_defaults: Dict[str, Dict[str, float]]
     model_version: str
     features_count: int
+    reference: Dict[str, Any]
+    train_rows_per_crop: Dict[str, int]
