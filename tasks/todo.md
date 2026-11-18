@@ -48,13 +48,13 @@ and water balance (rain − ET0 × days), (4) drops 0-yield rows, logging the co
 (5) exposes `build_inference_row(province, crop, inputs, reference)` for the API.
 
 **Acceptance criteria:**
-- [ ] Yearly table: 858 groups before the 0-yield drop. The row count after is printed per crop.
-- [ ] Training and inference rows come from the same function (same columns, same order).
-- [ ] No `Area`, no `Is_Drought_Resilient`, no `_normalized` columns in features.
+- [x] Yearly table: 858 groups before the 0-yield drop, 773 after (apple 22, grapes 41, pomegranate 22 dropped; all had Area = 0). Season split (Rabi/Kharif) skipped on purpose: a farmer cannot enter it easily, and it adds features on only 773 rows.
+- [x] Training and inference rows come from the same function (same columns, same order).
+- [x] No `Area`, no `Is_Drought_Resilient`, no `_normalized` columns in features.
 
 **Verification:**
-- [ ] `scripts/verify_model.py`: group count 858, every group has 12 months, feature columns equal between train and inference
-- [ ] Month-order check prints its result. If it fails, Rabi/Kharif features are off.
+- [x] `scripts/verify_model.py`: group count 858, every group has 12 months, feature columns equal between train and inference
+- [x] Month-order check prints its result. If it fails, Rabi/Kharif features are off.
 
 **Dependencies:** None
 **Files:** `src/climate_machine_learning/features.py`, `scripts/verify_model.py`

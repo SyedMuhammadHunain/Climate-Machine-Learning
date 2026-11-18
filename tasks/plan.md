@@ -58,7 +58,7 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 - [x] **T1** Remove Bajra fallback, error + retry, 30 s timeout, delete `careers.html` (S)
 
 ### Phase 1: Honest model
-- [ ] **T2** Shared feature module + yearly crop-province-year table (M)
+- [x] **T2** Shared feature module + yearly crop-province-year table (M)
 - [ ] **T3** Retrain with year-grouped CV, save pipeline + metrics.json + reference.json, update notebook (M)
 
 ### Checkpoint A: Model review (stop and show user)
