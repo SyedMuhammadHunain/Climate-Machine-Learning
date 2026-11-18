@@ -59,6 +59,23 @@ async def get_metadata(request: Request):
     )
 
 
+@router.get(
+    "/metrics",
+    summary="Saved Model Evaluation Results",
+    description="Returns models/metrics.json exactly as written by scripts/train.py: baselines, all tuned models, "
+                "validation and test scores, permutation importance, data hash and split.",
+    tags=["Metadata"],
+)
+async def get_metrics(request: Request):
+    model_service = getattr(request.app.state, "model_service", None)
+    if not model_service:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Machine learning model service is not initialized."
+        )
+    return model_service.metrics
+
+
 @router.post(
     "/predict",
     response_model=SinglePredictionResponse,

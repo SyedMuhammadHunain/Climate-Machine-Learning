@@ -273,6 +273,16 @@ def run_verification():
                 assert item["fao_water_need"] is None, crop
         print("  -> PASSED: FAO values shown for 8 listed crops; none invented for the other 5.")
 
+        # 21. /metrics returns the saved metrics.json untouched
+        print("\n[TEST 21] GET /api/v1/metrics equals models/metrics.json")
+        saved = json.loads((ROOT_DIR / "models" / "metrics.json").read_text())
+        for path in ("/api/v1/metrics", "/metrics"):
+            res = client.get(path)
+            assert res.status_code == 200, (path, res.status_code)
+            assert res.json() == saved, f"{path} body differs from models/metrics.json"
+        assert res.json()["chosen"]["name"] in res.json()["models"]
+        print("  -> PASSED: endpoint body equals the file (no recomputed or hardcoded values).")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

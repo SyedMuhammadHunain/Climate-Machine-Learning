@@ -364,7 +364,7 @@
         <header class="page-header">
             <h1 class="page-title">Model Performance & Agroclimatic Benchmarks</h1>
             <p class="page-subtitle">
-                Comprehensive machine learning validation metrics, provincial climate baseline norms, and physiological crop response factors powering the Infinite Field crop recommendation engine.
+                Evaluation results of the trained model, read from the saved file <code>models/metrics.json</code>, and the climate ranges it was trained on. Nothing on this page is typed in by hand.
             </p>
         </header>
 
@@ -372,219 +372,100 @@
         <div class="status-strip">
             <div class="status-badge">
                 <span id="api-status-dot" class="status-dot"></span>
-                <span id="api-status-text">Backend Pipeline: Ready (In-Memory)</span>
+                <span id="api-status-text">Backend Pipeline: checking...</span>
             </div>
-            <div class="mono" id="model-version-text" style="color:var(--colorNeutral600);">
-                Artifact: crop_yield_pipeline.joblib (17 features)
-            </div>
+            <div class="mono" id="model-version-text" style="color:var(--colorNeutral600);"></div>
+        </div>
         </div>
 
-        <!-- Metrics Summary Panel (Structured Hierarchy) -->
+        <!-- Load error (no numbers are shown when the backend cannot be reached) -->
+        <div id="load-error" style="display:none; border:1px solid #d97706; background:#fffbeb; color:#92400e; border-radius:6px; padding:12px 16px; margin-bottom:24px; font-size:13.5px;">
+            <span id="load-error-text"></span>
+            <button type="button" id="btn-retry" style="margin-left:12px; padding:2px 10px; font-size:12px; cursor:pointer;">Retry</button>
+        </div>
+
+        <div id="content" style="display:none;">
+
+        <!-- Summary of the chosen model on the held-out test years -->
         <section class="metrics-summary-panel">
-            <div class="metrics-primary-row">
-                <div class="metric-cell">
-                    <div class="metric-label">Model Accuracy (R²)</div>
-                    <div class="metric-val">0.892</div>
-                    <div class="metric-detail">89.2% cross-validated variance explained across provincial test partitions.</div>
-                </div>
-                <div class="metric-cell">
-                    <div class="metric-label">Mean Abs Error</div>
-                    <div class="metric-val">±4.82</div>
-                    <div class="metric-detail">kg/ha average error across all 13 agricultural crop varieties.</div>
-                </div>
-                <div class="metric-cell">
-                    <div class="metric-label">Root Mean Sq Error</div>
-                    <div class="metric-val">7.65</div>
-                    <div class="metric-detail">kg/ha error penalizing heavy residual outliers on high-yield biomass.</div>
-                </div>
-                <div class="metric-cell">
-                    <div class="metric-label">Inference Speed</div>
-                    <div class="metric-val">9.5 ms</div>
-                    <div class="metric-detail">Median CPU latency via direct Python sorting and single-thread execution.</div>
-                </div>
-            </div>
-            <div class="metrics-meta-footer">
-                <span><strong>Pipeline:</strong> Scikit-Learn <code>RandomForestRegressor</code> + <code>ColumnTransformer</code></span>
-                <span><strong>Training Basis:</strong> Pakistan Agri-Stats (1990–2022) + ERA5 Agrometeorology</span>
+            <div class="metrics-primary-row" id="summary-cells"></div>
+            <div class="metrics-meta-footer" id="summary-footer"></div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">1. Model comparison</h2>
+            <p class="section-desc" id="cmp-desc"></p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th class="num">Val R²</th>
+                            <th class="num">Val MAE</th>
+                            <th class="num">Test R²</th>
+                            <th class="num">Test MAE</th>
+                            <th class="num">Test RMSE</th>
+                            <th class="num">Test skill vs crop mean</th>
+                            <th class="num">CV log-MAE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmp-body"></tbody>
+                </table>
             </div>
         </section>
 
-        <!-- Section 1: Provincial Baseline Climate Norms -->
         <section class="section-block">
-            <h2 class="section-title">1. Provincial Climate Baseline Norms (PROVINCE_DEFAULTS)</h2>
+            <h2 class="section-title">2. What the chosen model relies on</h2>
             <p class="section-desc">
-                Derived from 32-year ERA5 agrometeorological reanalysis across agricultural zones in Pakistan. During drought simulations, moisture deficits and evaporative stresses are evaluated dynamically against these reference norms.
+                Permutation importance on the validation years: how much the error grows when one input column is shuffled. A larger bar means the model depends on that column more.
+            </p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Input</th><th class="num">Error increase (log-MAE)</th><th style="width:40%;"></th></tr></thead>
+                    <tbody id="imp-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">3. Data and split</h2>
+            <p class="section-desc" id="data-desc"></p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Crop</th><th class="num">Training rows (crop-province-years)</th></tr></thead>
+                    <tbody id="rows-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">4. Climate ranges the model was trained on</h2>
+            <p class="section-desc">
+                Annual values from the training years, shown as median (minimum to maximum). Inputs outside these ranges are rejected by the API because the model cannot extrapolate.
             </p>
             <div class="data-table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Province</th>
-                            <th class="num">Rainfall Baseline (mm)</th>
-                            <th class="num">Reference ET₀ (mm/day)</th>
-                            <th class="num">Max Temp (°C)</th>
-                            <th class="num">Min Temp (°C)</th>
-                            <th class="num">Solar Rad (MJ/m²)</th>
-                            <th class="num">Dryness Index</th>
+                            <th class="num">Annual rain (mm)</th>
+                            <th class="num">Mean temp (°C)</th>
+                            <th class="num">ET₀ (mm/day)</th>
+                            <th class="num">Radiation (MJ/m²)</th>
+                            <th class="num">Rain hours</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Punjab</strong></td>
-                            <td class="num mono">45.0</td>
-                            <td class="num mono">4.5</td>
-                            <td class="num mono">38.0</td>
-                            <td class="num mono">12.0</td>
-                            <td class="num mono">22.5</td>
-                            <td class="num mono">0.65</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Sindh</strong></td>
-                            <td class="num mono">15.0</td>
-                            <td class="num mono">5.8</td>
-                            <td class="num mono">42.0</td>
-                            <td class="num mono">14.0</td>
-                            <td class="num mono">24.0</td>
-                            <td class="num mono">0.78</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Balochistan</strong></td>
-                            <td class="num mono">10.0</td>
-                            <td class="num mono">6.2</td>
-                            <td class="num mono">36.0</td>
-                            <td class="num mono">8.0</td>
-                            <td class="num mono">25.5</td>
-                            <td class="num mono">0.82</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="prov-body"></tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Section 2: Crop Physiology & Tolerance Matrix -->
         <section class="section-block">
-            <h2 class="section-title">2. Crop Ecological Physiology & Vulnerability Factors</h2>
-            <p class="section-desc">
-                Calibrated against FAO Irrigation and Drainage Paper No. 33/56 (Yield Response to Water) and Pakistan Agricultural Research Council field agronomy trials.
-            </p>
-            <div class="data-table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Crop</th>
-                            <th>Classification</th>
-                            <th class="num">Water Vulnerability (Kw)</th>
-                            <th class="num">Critical Temp (°C)</th>
-                            <th>Ecological Profile</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Dates</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.08</td>
-                            <td class="num mono">42.0</td>
-                            <td>Deep taproot xerophyte; peak tolerance in arid heat (&gt;38°C).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Grapes</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.12</td>
-                            <td class="num mono">36.0</td>
-                            <td>Extensive root volume; optimal in moderate deficit (20–35 mm).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Pomegranate</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.18</td>
-                            <td class="num mono">40.0</td>
-                            <td>Coriaceous leaves with high stomatal control in warm dry spells.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Wheat</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.32</td>
-                            <td class="num mono">32.0</td>
-                            <td>Staple grain; susceptible to terminal heat stress above 32°C.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Apple</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.40</td>
-                            <td class="num mono">32.0</td>
-                            <td>Temperate upland crop; chilling requirement; vulnerable to heat.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Onion</strong></td>
-                            <td><span class="tag-pill tag-resilient">Low-Water Resilient</span></td>
-                            <td class="num mono">0.55</td>
-                            <td class="num mono">30.0</td>
-                            <td>Shallow fibrous root system; requires regular moisture (&gt;35 mm).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Cotton</strong></td>
-                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="num mono">0.65</td>
-                            <td class="num mono">38.0</td>
-                            <td>High vegetative water demand; prone to square boll shed under drought.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Banana</strong></td>
-                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="num mono">0.75</td>
-                            <td class="num mono">38.0</td>
-                            <td>Perennial broadleaf requiring continuous canal irrigation (&gt;1,800 mm/yr).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Sugarcane</strong></td>
-                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="num mono">0.85</td>
-                            <td class="num mono">38.0</td>
-                            <td>Long maturation cycle; severe biomass contraction under dry spells.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Rice</strong></td>
-                            <td><span class="tag-pill tag-intensive">High-Water Intensive</span></td>
-                            <td class="num mono">0.85</td>
-                            <td class="num mono">36.0</td>
-                            <td>Flooded anaerobic paddy requirement; high groundwater depletion risk.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h2 class="section-title">5. Limits</h2>
+            <ul class="section-desc" id="notes-list"></ul>
         </section>
 
-        <!-- Section 3: Mathematical Formulation -->
-        <section class="section-block">
-            <h2 class="section-title">3. Dynamic Agroclimatic Elasticity Equations</h2>
-            <p class="section-desc">
-                Yield predictions combine non-linear Random Forest feature mappings with biological response functions to guarantee physical realism under extreme climate anomalies:
-            </p>
-
-            <div class="equation-box">
-                <strong>1. Moisture Deficit & Water Response Factor:</strong><br>
-                Deficit = max(0.0, (P_ref - P_sum) / P_ref)<br>
-                W_factor = 1.0 - Kw * min(1.0, Deficit)   [when P_sum &lt; P_ref]<br>
-                W_factor = 1.0 + 0.15 * min(1.0, (P_sum - P_ref) / P_ref) [when P_sum &gt;= P_ref]
-            </div>
-
-            <div class="equation-box">
-                <strong>2. Thermal Stress Factor:</strong><br>
-                H_factor = max(0.25, 1.0 - 0.035 * (T_max - T_crit))  [when T_max &gt; T_crit]<br>
-                H_factor = 1.0  [otherwise]<br><br>
-                <strong>3. Combined Agroclimatic Elasticity:</strong><br>
-                Elasticity = clip(W_factor * H_factor, min=0.10, max=1.50)<br>
-                Final_Yield = round(clip(RF_pred * Elasticity, min=0.0), 2)
-            </div>
-
-            <div class="equation-box">
-                <strong>4. Drought Resilience Ranking Score:</strong><br>
-                w_prod = clip(1.0 - Deficit, 0.08, 0.92)<br>
-                Drought_Resilience = Elasticity * (1.0 - Deficit * Kw)<br>
-                Normalized_Yield = Predicted_Yield / max(Resilient_Yields)<br>
-                Score = (1.0 - w_prod) * Drought_Resilience + w_prod * Normalized_Yield
-            </div>
-        </section>
+        </div>
 
         <!-- Footer Note -->
         <footer class="footer-note">
@@ -594,26 +475,102 @@
     </main>
 
     <script>
-        (async function syncStatus() {
-            const dot = document.getElementById("api-status-dot");
-            const text = document.getElementById("api-status-text");
-            const versionText = document.getElementById("model-version-text");
-            const apiBase = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
+        const apiBase = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
+        const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const f = (x, d = 3) => Number(x).toFixed(d);
+        const sf = (x, d = 2) => (x >= 0 ? "+" : "") + Number(x).toFixed(d);
+        const $ = id => document.getElementById(id);
 
+        function renderMetrics(m, meta) {
+            const chosen = m.models[m.chosen.name];
+            const base = m.baselines.crop_province_mean.test;
+            const beats = m.chosen.beats_crop_province_mean_on_test;
+            const t = chosen.test;
+
+            $("summary-cells").innerHTML = [
+                ["Test R²", f(t.r2), `${esc(chosen.label)}, test years ${m.split.test_years[0]}-${m.split.test_years[1]}.`],
+                ["Test MAE", f(t.mae, 1), "Average absolute error in dataset yield units."],
+                ["Test RMSE", f(t.rmse, 1), "Like MAE but punishes large misses."],
+                ["Vs crop-average baseline", sf(t.skill_vs_crop_province_mean_log),
+                    `${beats ? "Better than" : "Not better than"} using each crop's average yield per province (baseline test R² ${f(base.r2)}). Above 0 means better.`],
+            ].map(([label, val, detail]) =>
+                `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
+            ).join("");
+
+            $("summary-footer").innerHTML =
+                `<span><strong>Chosen:</strong> ${esc(chosen.label)} (${esc(m.chosen.selected_on)})</span>` +
+                `<span><strong>Trained:</strong> ${esc(m.trained_at)} • scikit-learn ${esc(m.versions.scikit_learn)}</span>`;
+
+            $("cmp-desc").textContent =
+                `Train ${m.split.train_years.join("-")}, validation ${m.split.val_years.join("-")}, test ${m.split.test_years.join("-")}. ` +
+                `Models were tuned with 5-fold cross-validation grouped by year and chosen on validation. The test years were scored once. ` +
+                `Skill above 0 means better than the crop-province mean baseline.`;
+
+            const rows = [];
+            const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield" };
+            Object.entries(m.baselines).forEach(([k, v]) => rows.push([baseLabels[k] || k, v.val, v.test, null, false]));
+            Object.entries(m.models).forEach(([k, v]) => rows.push([v.label, v.val, v.test, v.cv_log_mae, k === m.chosen.name]));
+            $("cmp-body").innerHTML = rows.map(([name, val, test, cv, isChosen]) => `
+                <tr${isChosen ? ' style="font-weight:600;"' : ""}>
+                    <td>${esc(name)}${isChosen ? " (chosen)" : ""}</td>
+                    <td class="num">${f(val.r2)}</td><td class="num">${f(val.mae, 1)}</td>
+                    <td class="num">${f(test.r2)}</td><td class="num">${f(test.mae, 1)}</td><td class="num">${f(test.rmse, 1)}</td>
+                    <td class="num">${sf(test.skill_vs_crop_province_mean_log)}</td>
+                    <td class="num">${cv === null ? "-" : f(cv)}</td>
+                </tr>`).join("");
+
+            const imp = Object.entries(m.permutation_importance_val_log_mae);
+            const top = Math.max(...imp.map(([, v]) => v.mean), 1e-9);
+            $("imp-body").innerHTML = imp.map(([k, v]) => `
+                <tr><td>${esc(k)}</td><td class="num">${f(v.mean, 4)}</td>
+                <td><div style="height:8px; border-radius:4px; background:#3a7d44; width:${Math.max(0, v.mean) / top * 100}%;"></div></td></tr>`).join("");
+
+            const d = m.data;
+            const dropped = Object.entries(d.dropped_zero_yield_rows).map(([c, n]) => `${esc(c)} ${n}`).join(", ");
+            $("data-desc").innerHTML =
+                `The source file has ${d.raw_monthly_rows.toLocaleString()} monthly rows. Yield is one yearly number repeated on 12 rows, so the model trains on one row per crop, province and year: ` +
+                `${d.yearly_rows_after_drop} rows after dropping ${dropped} rows with zero area (not grown or not reported). ` +
+                `Split: ${d.n_train} train, ${d.n_val} validation, ${d.n_test} test. File <code>${esc(d.file)}</code>, SHA-256 <code>${esc(d.sha256.slice(0, 16))}...</code>. ` +
+                `Inputs: ${m.features.map(esc).join(", ")}.`;
+
+            $("rows-body").innerHTML = Object.entries(meta.train_rows_per_crop).sort((a, b) => a[1] - b[1])
+                .map(([c, n]) => `<tr><td>${esc(c)}</td><td class="num">${n}</td></tr>`).join("");
+
+            const rng = (r, k, dg) => `${f(r.median[k], dg)} (${f(r.range[k][0], dg)} to ${f(r.range[k][1], dg)})`;
+            $("prov-body").innerHTML = Object.entries(meta.reference).map(([p, r]) => `
+                <tr><td>${esc(p)}</td><td class="num">${rng(r, "precipitation_sum", 0)}</td><td class="num">${rng(r, "temperature_2m_mean", 1)}</td>
+                <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td></tr>`).join("");
+
+            $("notes-list").innerHTML = m.notes.map(n => `<li>${esc(n)}</li>`).join("") +
+                `<li>${esc(m.target)}.</li>`;
+        }
+
+        async function loadMetrics() {
+            const dot = $("api-status-dot"), text = $("api-status-text");
             try {
-                const res = await fetch(`${apiBase}/api/v1/metadata`, { signal: AbortSignal.timeout(2000) });
-                if (!res.ok) throw new Error("Metadata endpoint non-200");
-                const data = await res.json();
+                const [mRes, metaRes] = await Promise.all([
+                    fetch(`${apiBase}/api/v1/metrics`, { signal: AbortSignal.timeout(30000) }),
+                    fetch(`${apiBase}/api/v1/metadata`, { signal: AbortSignal.timeout(30000) }),
+                ]);
+                if (!mRes.ok || !metaRes.ok) throw new Error(`HTTP ${mRes.status}/${metaRes.status}`);
+                const [m, meta] = [await mRes.json(), await metaRes.json()];
+                renderMetrics(m, meta);
                 dot.classList.remove("offline");
-                text.textContent = "Backend Pipeline: Live & Synchronized";
-                if (data.model_version) {
-                    versionText.textContent = `Model: ${data.model_version} (${data.features_count || 17} features)`;
-                }
-            } catch {
+                text.textContent = "Backend Pipeline: Live";
+                $("model-version-text").textContent = `Model: ${meta.model_version} (${meta.features_count} features)`;
+                $("load-error").style.display = "none";
+                $("content").style.display = "block";
+            } catch (err) {
+                console.error("Could not load metrics", err);
                 dot.classList.add("offline");
-                text.textContent = "Backend Pipeline: Offline (Showing Embedded Benchmarks)";
+                text.textContent = "Backend Pipeline: Offline";
+                $("content").style.display = "none";
+                $("load-error-text").textContent = "Cannot reach the model server. No results are shown.";
+                $("load-error").style.display = "block";
             }
-        })();
+        }
+        $("btn-retry").onclick = loadMetrics;
+        loadMetrics();
     </script>
 </body>
 </html>

@@ -43,6 +43,18 @@ def main() -> int:
         if token not in predict:
             failures.append(f"predict.html: expected T4 element missing: {token!r}")
 
+    # T6: metrics page must read real results, not hold numbers or hand-made formulas
+    metrics_page = (FRONTEND / "metrics.html").read_text(encoding="utf-8")
+    for token in ("0.892", "32-year", "PROVINCE_DEFAULTS", "CROP_PHYSIOLOGY", "Elasticity", "elasticity",
+                  "9.5 ms", "kg/ha", "Embedded Benchmarks", "1990", "17 features", "Kw"):
+        if token in metrics_page:
+            failures.append(f"metrics.html: hardcoded/old content present: {token!r}")
+    for token in ("api/v1/metrics", "api/v1/metadata", "btn-retry"):
+        if token not in metrics_page:
+            failures.append(f"metrics.html: expected element missing: {token!r}")
+    if re.search(r'class="metric-val"[^>]*>[^<]*\d', metrics_page):
+        failures.append("metrics.html: a metric value is typed into the HTML")
+
     if failures:
         print("FAILED:")
         for f in failures:

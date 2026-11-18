@@ -150,12 +150,14 @@ and renders the comparison table, chosen model, importances and data period. Rem
 `0.892` and the "32-year ERA5" text. If the fetch fails, show an error, not numbers.
 
 **Acceptance criteria:**
-- [ ] metrics.html contains no hardcoded metric values
-- [ ] The page values equal the metrics.json values
+- [x] metrics.html contains no hardcoded metric values
+- [x] The page values equal the metrics.json values
 
 **Verification:**
-- [ ] `verify_backend.py`: endpoint body == file contents
-- [ ] `grep -nE "0\.89|32-year" frontend/` is empty
+- [x] `verify_backend.py`: endpoint body == file contents
+- [x] `grep -nE "0\.89|32-year" frontend/` is empty
+
+**Notes (done 2026-11-18):** `GET /api/v1/metrics` (and root alias `/metrics`) returns `models/metrics.json` unchanged. `metrics.html` is rebuilt from `/metrics` + `/metadata`: summary cells, model comparison, importance, data/split with training rows per crop, province ranges, limits. Removed: 0.892, MAE/RMSE/latency figures, PROVINCE_DEFAULTS table, crop physiology table, elasticity equations, '32-year ERA5', '1990-2022' claims. On fetch failure the page shows an error + Retry and no numbers. Render checked by running the page JS in node against real API output (success and failure paths), not in a real browser.
 
 **Dependencies:** T3
 **Files:** `app/api/v1/endpoints.py`, `metrics.html`, `scripts/verify_backend.py`
