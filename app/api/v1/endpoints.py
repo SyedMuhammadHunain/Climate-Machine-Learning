@@ -80,7 +80,7 @@ async def predict_single_crop(request: Request, payload: SinglePredictionRequest
     "/recommend",
     response_model=RecommendationResponse,
     summary="Low-Water Crop Recommendation Engine",
-    description="Simulate multiple crops under drought stress and rank low-water resilient crops while flagging water-intensive risks.",
+    description="Rank all 13 crops by model-predicted yield in your scenario relative to a typical year in the province. FAO water-need ranges are shown as context only.",
     tags=["Inference"],
 )
 async def recommend_crops(request: Request, payload: DroughtScenarioRequest):

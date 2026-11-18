@@ -12,8 +12,7 @@ if str(BASE_DIR / "src") not in sys.path:
 MODEL_PATH = BASE_DIR / "models" / "crop_yield_pipeline.joblib"
 REFERENCE_PATH = BASE_DIR / "models" / "reference.json"
 METRICS_PATH = BASE_DIR / "models" / "metrics.json"
-# TEMP: old model, used ONLY by the old /recommend until T5 replaces it. Delete in T5.
-LEGACY_MODEL_PATH = BASE_DIR / "models" / "legacy_pipeline.joblib"
+FAO_WATER_PATH = BASE_DIR / "data" / "reference" / "fao_crop_water_needs.json"
 DATA_PATH = BASE_DIR / "data" / "raw" / "pakistan_crop_yield_climate.csv"
 
 PROVINCES: List[str] = ["Punjab", "Sindh", "Balochistan"]

@@ -3,13 +3,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.schemas.common import ProvinceEnum, CropEnum
 
 
-class SinglePredictionRequest(BaseModel):
-    """Annual inputs. Unknown fields are rejected, never silently ignored."""
+class ClimateInputs(BaseModel):
+    """Annual inputs shared by /predict and /recommend. Unknown fields are rejected, never silently ignored."""
 
     model_config = ConfigDict(extra="forbid")
 
     province: ProvinceEnum = Field(..., description="Province: Punjab, Sindh or Balochistan")
-    crop: CropEnum = Field(..., description="Crop to predict")
     precipitation_sum: float = Field(..., ge=0.0, le=5000.0, description="Total rain over the year (mm)")
     temperature_2m_mean: float = Field(..., ge=-5.0, le=55.0, description="Mean temperature over the year (deg C)")
     temperature_2m_max: Optional[float] = Field(None, ge=-5.0, le=60.0, description="Mean of the monthly maximum temperature (deg C)")
@@ -19,7 +18,7 @@ class SinglePredictionRequest(BaseModel):
     precipitation_hours: Optional[float] = Field(None, ge=0.0, le=8760.0, description="Total hours with rain over the year")
 
     @model_validator(mode="after")
-    def validate_temperature_order(self) -> "SinglePredictionRequest":
+    def validate_temperature_order(self) -> "ClimateInputs":
         mean, tmax, tmin = self.temperature_2m_mean, self.temperature_2m_max, self.temperature_2m_min
         if tmax is not None and tmin is not None and tmax < tmin:
             raise ValueError(
@@ -30,6 +29,10 @@ class SinglePredictionRequest(BaseModel):
         if tmin is not None and tmin > mean:
             raise ValueError(f"Minimum temperature ({tmin} C) cannot be higher than the mean ({mean} C).")
         return self
+
+
+class SinglePredictionRequest(ClimateInputs):
+    crop: CropEnum = Field(..., description="Crop to predict")
 
 
 class InputValue(BaseModel):

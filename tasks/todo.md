@@ -129,14 +129,16 @@ rank, crop, predicted yield, pct_of_normal, water class, and a low-data flag. Re
 Update the predict.html recommend table and chart.
 
 **Acceptance criteria:**
-- [ ] 13 crops, all in `ALL_CROPS`, ranks 1..13, deterministic order
-- [ ] Each yield equals the direct pipeline output. Each pct equals the ratio of two pipeline outputs.
-- [ ] Onion tagged Moderate (FAO), not Low
-- [ ] No `_rank_score` or any other hand formula
+- [x] 13 crops, all in `ALL_CROPS`, ranks 1..13, deterministic order
+- [x] Each yield equals the direct pipeline output. Each pct equals the ratio of two pipeline outputs.
+- [x] Onion tagged Moderate (FAO), not Low
+- [x] No `_rank_score` or any other hand formula
 
 **Verification:**
-- [ ] `verify_backend.py`: crop set, rank uniqueness, equality checks, same request gives same order
-- [ ] Manual: severe-drought input vs median input gives different rankings (or document that it doesn't)
+- [x] `verify_backend.py`: crop set, rank uniqueness, equality checks, same request gives same order
+- [x] Manual: severe-drought input vs median input gives different rankings (or document that it doesn't)
+
+**Notes (done 2026-11-18):** DEVIATION from the plan: no Low/Moderate/High water class. FAO Training Manual 3 Table 14 lists only 8 of the 13 crops (no apple, dates, grapes, mango, pomegranate; wheat only as 'Barley/Oats/Wheat') and no consistent FAO seasonal figure was found for the other five, so a class would have been invented. Instead `data/reference/fao_crop_water_needs.json` holds FAO's own mm range and drought-sensitivity text for the 8 listed crops (cited, accessed 2026-11-18); the other 5 show `fao_water_need: null`. It is context only and does not change the ranking. No `best_low_water_crop`; response has `top_crop` and `ranked_crops` (13). Legacy model, `LEGACY_*` code, hand-made scores, `WaterIntensiveWarning`, and the `water_intensive_warnings` section are deleted. UI render checked by running the page JS in node against real API output (not in a real browser).
 
 **Dependencies:** T3 (can run in parallel with T4)
 **Files:** `app/services/model_service.py`, `app/schemas/recommend.py`, `predict.html`, `scripts/verify_backend.py`

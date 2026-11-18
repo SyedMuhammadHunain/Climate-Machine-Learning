@@ -68,7 +68,7 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 
 ### Phase 2: Vertical paths on the new model
 - [x] **T4** `/predict` end-to-end: service + schema + predict.html single-crop view (M)
-- [ ] **T5** `/recommend` end-to-end: % of normal ranking, 13 crops, water tags, UI table (M)
+- [x] **T5** `/recommend` end-to-end: % of normal ranking, 13 crops, water tags, UI table (M)
 - [ ] **T6** `/metrics` end-to-end: endpoint + metrics.html reads it (S)
 - [ ] **T7** Remove dead code (`CROP_PHYSIOLOGY`, elasticity, `PRESET_SCENARIOS` demo wording, hardcoded `PROVINCE_DEFAULTS`) + no-fake guard test (S)
 

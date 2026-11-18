@@ -1,0 +1,22 @@
+{
+  "source": {
+    "title": "Irrigation Water Management: Irrigation Water Needs (Training manual no. 3), Table 14 'Indicative values of crop water needs and sensitivity to drought'",
+    "authors": "C. Brouwer and M. Heibloem",
+    "publisher": "FAO",
+    "year": 1986,
+    "url": "https://www.fao.org/4/s2022e/s2022e07.htm",
+    "accessed": "2026-11-18",
+    "note": "FAO says these values 'provide a rough estimate and should only be used if the crop water needs cannot be calculated more accurately'. Apple, dates, grapes, mango and pomegranate are not in this table, so they have no entry here. This file is context shown next to the ranking. It is not a model input and does not change the ranking."
+  },
+  "unit": "mm per total growing period",
+  "crops": {
+    "banana":    {"fao_name": "Banana",            "mm_min": 1200, "mm_max": 2200, "drought_sensitivity": "high"},
+    "cotton":    {"fao_name": "Cotton",            "mm_min": 700,  "mm_max": 1300, "drought_sensitivity": "low"},
+    "onion":     {"fao_name": "Onion",             "mm_min": 350,  "mm_max": 550,  "drought_sensitivity": "medium-high"},
+    "potato":    {"fao_name": "Potato",            "mm_min": 500,  "mm_max": 700,  "drought_sensitivity": "high"},
+    "rice":      {"fao_name": "Rice (paddy)",      "mm_min": 450,  "mm_max": 700,  "drought_sensitivity": "high"},
+    "sugarcane": {"fao_name": "Sugarcane",         "mm_min": 1500, "mm_max": 2500, "drought_sensitivity": "high"},
+    "tomato":    {"fao_name": "Tomato",            "mm_min": 400,  "mm_max": 800,  "drought_sensitivity": "medium-high"},
+    "wheat":     {"fao_name": "Barley/Oats/Wheat", "mm_min": 450,  "mm_max": 650,  "drought_sensitivity": "low-medium"}
+  }
+}

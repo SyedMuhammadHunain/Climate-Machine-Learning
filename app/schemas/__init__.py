@@ -3,7 +3,6 @@ from app.schemas.predict import SinglePredictionRequest, SinglePredictionRespons
 from app.schemas.recommend import (
     DroughtScenarioRequest,
     CropRecommendationItem,
-    WaterIntensiveWarning,
     RecommendationResponse,
 )
 from app.schemas.metadata import MetadataResponse
@@ -16,7 +15,6 @@ __all__ = [
     "SinglePredictionResponse",
     "DroughtScenarioRequest",
     "CropRecommendationItem",
-    "WaterIntensiveWarning",
     "RecommendationResponse",
     "MetadataResponse",
 ]

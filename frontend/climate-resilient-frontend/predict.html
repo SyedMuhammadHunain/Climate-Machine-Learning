@@ -642,16 +642,8 @@
 
             <!-- Multi-Crop Category 1: Drought-Resilient Recommendations -->
             <div class="team-section" id="team-section-1">
-                <h2 class="team-title" id="team-title-1">Drought-Resilient Recommendations</h2>
+                <h2 class="team-title" id="team-title-1">Crop Ranking (model output)</h2>
                 <div id="team-items-1">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
-
-            <!-- Multi-Crop Category 2: Water-Intensive Warnings -->
-            <div class="team-section" id="team-section-2">
-                <h2 class="team-title" id="team-title-2">Water-Intensive Warnings</h2>
-                <div id="team-items-2">
                     <!-- Populated dynamically -->
                 </div>
             </div>
@@ -916,47 +908,32 @@
 
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");
-            const warningsSection = document.getElementById("team-section-2");
             const advisorySummary = document.getElementById("advisory-summary");
             const boardHeading = document.querySelector(".board-heading");
 
             if (isAllCrops) {
+                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
                 singleSection.style.display = "none";
                 resilientSection.style.display = "block";
-                warningsSection.style.display = "block";
+                boardHeading.textContent = `Crop Ranking: ${data.province} (${data.ranked_crops.length} crops)`;
 
-                const count = (data.ranked_drought_resilient || []).length + (data.water_intensive_warnings || []).length;
-                boardHeading.textContent = `Drought-Resilient Crop Advisory (${count})`;
+                document.getElementById("team-items-1").innerHTML = data.ranked_crops.map(item => {
+                    const fao = item.fao_water_need
+                        ? `FAO water need ${item.fao_water_need.mm_min}-${item.fao_water_need.mm_max} mm per growing period, drought sensitivity ${esc(item.fao_water_need.drought_sensitivity)}`
+                        : "not listed in the FAO table";
+                    return `
+                        <div class="job-post-item">
+                            <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
+                            <div class="job-metadata">Rank #${item.rank} • ${fmt(item.pct_of_normal)}% of a typical year • Predicted yield ${fmt(item.predicted_yield)} (typical ${fmt(item.normal_yield)}) ${esc(data.yield_unit)}</div>
+                            <div class="job-metadata">${fao} • ${item.training_rows_for_crop} training rows</div>
+                        </div>`;
+                }).join("");
 
-                let resHtml = "";
-                (data.ranked_drought_resilient || []).forEach(item => {
-                    const yieldKg = Math.round(item.predicted_yield_kg_ha).toLocaleString();
-                    resHtml += `
-                        <div class="job-post-item" onclick="alert('${item.crop}: Predicted Yield ${yieldKg} kg/ha. Water category: ${item.water_category}. ${item.risk_assessment}')">
-                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
-                            <div class="job-metadata">Rank #${item.rank} • Predicted Yield: ${yieldKg} kg/ha • Water Category: ${item.water_category} • ${item.risk_assessment}</div>
-                        </div>
-                    `;
-                });
-                document.getElementById("team-items-1").innerHTML = resHtml;
-
-                let warnHtml = "";
-                (data.water_intensive_warnings || []).forEach(item => {
-                    const yieldKg = Math.round(item.predicted_yield_kg_ha).toLocaleString();
-                    warnHtml += `
-                        <div class="job-post-item" onclick="alert('${item.crop}: Critical Water Deficit! ${item.warning}')">
-                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
-                            <div class="job-metadata">High Water Demand • Predicted Yield: ${yieldKg} kg/ha • ${item.warning}</div>
-                        </div>
-                    `;
-                });
-                document.getElementById("team-items-2").innerHTML = warnHtml;
-
-                advisorySummary.innerHTML = `<strong>Agronomic Advisory (${data.scenario_name || data.province}):</strong> ${data.recommendation_summary}`;
+                advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small>`;
             } else {
                 singleSection.style.display = "block";
                 resilientSection.style.display = "none";
-                warningsSection.style.display = "none";
 
                 const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
                 boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;

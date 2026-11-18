@@ -69,47 +69,40 @@ def run_verification():
         assert res.status_code == 200, f"Expected 200 on /predict, got {res.status_code}"
         print("  -> PASSED: Root /predict endpoint is functional.")
 
-        # 5. Recommendation Engine (Valid Punjab Severe Drought Scenario)
-        print("\n[TEST 5] POST /api/v1/recommend (Severe Punjab Drought Scenario)")
-        drought_payload = {
-            "province": "Punjab",
-            "area": 50.0,
-            "precipitation_sum": 1.8,
-            "temperature_2m_mean": 35.0,
-            "fao_evapotranspiration": 7.8,
-            "scenario_name": "Test Dry Spell"
-        }
-        res = client.post("/api/v1/recommend", json=drought_payload)
+        # 5. Recommendation: ranks all 13 crops by model output
+        print("\n[TEST 5] POST /api/v1/recommend (driest Punjab year)")
+        lo_p, hi_p = REFERENCE["provinces"]["Punjab"]["range"]["precipitation_sum"]
+        dry_rain = float(np.ceil(lo_p * 10) / 10)
+        rec_payload = {"province": "Punjab", "precipitation_sum": dry_rain, "temperature_2m_mean": 25.0,
+                       "scenario_name": "Test driest Punjab"}
+        res = client.post("/api/v1/recommend", json=rec_payload)
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
         data = res.json()
-        top_crop = data["top_resilient_crop"]
-        assert top_crop is not None
-        assert top_crop["is_drought_resilient"] is True
-        assert top_crop["crop"] in ["dates", "pomegranate"], f"Expected deep-root crop under severe drought, got {top_crop['crop']}"
-        assert top_crop["crop"] != "onion", "Onion must not be unconditionally #1 in severe drought"
-        assert len(data["ranked_drought_resilient"]) == 5
-        assert len(data["all_crops_ranked"]) == 13
-        assert len(data["water_intensive_warnings"]) >= 3
-        print(f"  -> PASSED: Top recommended crop: {top_crop['crop'].upper()} ({top_crop['predicted_yield_kg_ha']} kg/ha)")
-        print(f"  -> Flagged {len(data['water_intensive_warnings'])} water-intensive risks (e.g. Sugarcane, Rice).")
+        items = data["ranked_crops"]
+        assert [i["rank"] for i in items] == list(range(1, 14))
+        assert sorted(i["crop"] for i in items) == sorted(REFERENCE["crops"]) and len(items) == 13
+        assert data["top_crop"] == items[0]
+        pcts = [i["pct_of_normal"] for i in items]
+        assert pcts == sorted(pcts, reverse=True), "not sorted by pct_of_normal"
+        for banned in ("water_intensive_warnings", "ranked_drought_resilient", "top_resilient_crop", "all_crops_ranked"):
+            assert banned not in data, banned
+        print(f"  -> PASSED: 13 crops ranked, top={items[0]['crop']} ({items[0]['pct_of_normal']:.1f}% of typical)")
 
-        # 6. Recommendation Engine (Valid Balochistan Arid Scenario)
-        print("\n[TEST 6] POST /api/v1/recommend (Balochistan Arid Scenario)")
-        balochistan_payload = {
-            "province": "Balochistan",
-            "area": 25.0,
-            "precipitation_sum": 0.5,
-            "temperature_2m_mean": 28.0,
-            "fao_evapotranspiration": 6.5,
-            "scenario_name": "Balochistan Arid Test"
-        }
-        res = client.post("/api/v1/recommend", json=balochistan_payload)
-        assert res.status_code == 200, f"Expected 200, got {res.status_code}"
-        b_data = res.json()
-        b_top = b_data["top_resilient_crop"]
-        assert b_top["crop"] in ["dates", "pomegranate"], f"Expected arid-hardy crop, got {b_top['crop']}"
-        assert b_top["crop"] != "onion", "Onion must not be #1 in 0.5mm arid condition"
-        print(f"  -> PASSED: Top Balochistan arid crop: {b_top['crop'].upper()} ({b_top['predicted_yield_kg_ha']} kg/ha)")
+        # 6. Every number equals direct model output
+        print("\n[TEST 6] /recommend numbers equal pipeline.predict")
+        user_in = {"precipitation_sum": dry_rain, "temperature_2m_mean": 25.0}
+        for it in items:
+            row, _ = F.build_inference_row("Punjab", it["crop"], user_in, REFERENCE)
+            direct = float(PIPELINE.predict(row)[0])
+            nrow, _ = F.build_inference_row("Punjab", it["crop"], dict(REFERENCE["provinces"]["Punjab"]["median"]), REFERENCE)
+            normal = float(PIPELINE.predict(nrow)[0])
+            assert np.isclose(it["predicted_yield"], direct, rtol=1e-9), it["crop"]
+            assert np.isclose(it["normal_yield"], normal, rtol=1e-9), it["crop"]
+            assert np.isclose(it["pct_of_normal"], direct / normal * 100.0, rtol=1e-9), it["crop"]
+        assert items[0]["crop"].upper() in data["recommendation_summary"].upper()
+        assert f"{items[0]['pct_of_normal']:.1f}%" in data["recommendation_summary"]
+        assert data["inputs"]["precipitation_sum"]["source"] == "user"
+        print("  -> PASSED: yields, normal yields, ratios and summary match the model.")
 
         # 7. Validation Error Handling: Temperature Inversion (T_max < T_min)
         print("\n[TEST 7] POST /api/v1/predict with Invalid Temperature Physics (T_max < T_min)")
@@ -151,26 +144,22 @@ def run_verification():
         assert res.status_code == 422, f"Expected 422, got {res.status_code}"
         print("  -> PASSED: Correctly rejected unknown province.")
 
-        # 10. Recommendation Dynamic Shift (Baseline Normal vs Severe Drought)
-        print("\n[TEST 10] POST /api/v1/recommend (Baseline Normal vs Severe Drought Dynamic Shift)")
-        normal_payload = {
-            "province": "Punjab",
-            "area": 50.0,
-            "precipitation_sum": 50.0,
-            "temperature_2m_mean": 24.0,
-            "fao_evapotranspiration": 4.0,
-            "scenario_name": "Punjab Baseline Normal"
-        }
-        res = client.post("/api/v1/recommend", json=normal_payload)
-        assert res.status_code == 200, f"Expected 200, got {res.status_code}"
-        normal_data = res.json()
-        normal_top = normal_data["top_resilient_crop"]
-        print(f"  -> Normal conditions top crop: {normal_top['crop'].upper()} ({normal_top['predicted_yield_kg_ha']} kg/ha)")
-        assert normal_top["crop"] == "onion", f"Expected Onion elevated in normal rainfall, got {normal_top['crop']}"
-        assert normal_top["crop"] != top_crop["crop"], (
-            f"Top crop must differ between normal ({normal_top['crop']}) and drought ({top_crop['crop']})"
-        )
-        print("  -> PASSED: Ranking dynamically switches between drought (Dates) and normal moisture (Onion).")
+        # 10. Weather changes the ranking; ties are broken deterministically
+        print("\n[TEST 10] /recommend: dry vs typical year changes the ranking; ties broken by crop name")
+        for prov in ("Sindh", "Balochistan"):
+            info = REFERENCE["provinces"][prov]
+            dry = float(np.ceil(info["range"]["precipitation_sum"][0] * 10) / 10)
+            t = round(info["median"]["temperature_2m_mean"], 1)
+            order_dry = [i["crop"] for i in client.post("/api/v1/recommend", json={"province": prov, "precipitation_sum": dry, "temperature_2m_mean": t}).json()["ranked_crops"]]
+            order_med = [i["crop"] for i in client.post("/api/v1/recommend", json={"province": prov, "precipitation_sum": round(info["median"]["precipitation_sum"], 1), "temperature_2m_mean": t}).json()["ranked_crops"]]
+            assert order_dry != order_med, f"{prov}: ranking identical for driest and typical rain"
+        med = REFERENCE["provinces"]["Punjab"]["median"]
+        tie = client.post("/api/v1/recommend", json={"province": "Punjab", **med}).json()["ranked_crops"]
+        assert all(abs(i["pct_of_normal"] - 100.0) < 1e-9 for i in tie), "median year must equal 100% for every crop"
+        assert [i["crop"] for i in tie] == sorted(i["crop"] for i in tie), "ties must be ordered by crop name"
+        again = client.post("/api/v1/recommend", json={"province": "Punjab", **med}).json()["ranked_crops"]
+        assert [i["crop"] for i in again] == [i["crop"] for i in tie]
+        print("  -> PASSED: ranking depends on weather; exact ties ordered alphabetically and stable.")
 
         # 11. Static Frontend Integration & Unified Local Serving
         print("\n[TEST 11] GET Static HTML Routes & Assets (Unified Local Serving)")
@@ -258,6 +247,31 @@ def run_verification():
         assert meta["reference"]["Punjab"]["range"]["precipitation_sum"] == REFERENCE["provinces"]["Punjab"]["range"]["precipitation_sum"]
         assert meta["features_count"] == len(F.FEATURE_COLS)
         print("  -> PASSED: metadata carries training ranges and medians.")
+
+        # 19. /recommend input rules match /predict
+        print("\n[TEST 19] /recommend rejects out-of-range and unknown fields")
+        base = {"province": "Punjab", "precipitation_sum": 350.0, "temperature_2m_mean": 25.0}
+        assert client.post("/api/v1/recommend", json=base).status_code == 200
+        r = client.post("/api/v1/recommend", json={**base, "precipitation_sum": 5.0})
+        assert r.status_code == 422 and r.json()["parameter"] == "precipitation_sum"
+        for extra in ({"area": 50.0}, {"climate_index": 0.4}, {"crop": "wheat"}):
+            assert client.post("/api/v1/recommend", json={**base, **extra}).status_code == 422, extra
+        print("  -> PASSED: same validation as /predict.")
+
+        # 20. FAO water-need context comes from a cited file, only where FAO lists the crop
+        print("\n[TEST 20] FAO water-need context")
+        fao = json.loads((ROOT_DIR / "data" / "reference" / "fao_crop_water_needs.json").read_text())
+        assert fao["source"]["url"].startswith("https://www.fao.org/") and fao["source"]["accessed"]
+        listed = set(fao["crops"])
+        assert listed == {"banana", "cotton", "onion", "potato", "rice", "sugarcane", "tomato", "wheat"}, listed
+        got = {i["crop"]: i for i in client.post("/api/v1/recommend", json=base).json()["ranked_crops"]}
+        for crop, item in got.items():
+            if crop in listed:
+                assert item["fao_water_need"]["mm_min"] == fao["crops"][crop]["mm_min"], crop
+                assert item["fao_water_need"]["drought_sensitivity"] == fao["crops"][crop]["drought_sensitivity"]
+            else:
+                assert item["fao_water_need"] is None, crop
+        print("  -> PASSED: FAO values shown for 8 listed crops; none invented for the other 5.")
 
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
