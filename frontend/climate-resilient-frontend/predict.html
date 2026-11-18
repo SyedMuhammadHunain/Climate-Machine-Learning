@@ -615,6 +615,7 @@
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
                 <span id="validation-msg">Validation error message</span>
+                <button type="button" id="btn-retry" onclick="submitPredictionForm()" style="display: none; margin-left: 12px; padding: 2px 10px; font-size: 12px; cursor: pointer;">Retry</button>
             </div>
 
             <!-- Primary Action Buttons Row -->
@@ -763,10 +764,12 @@
             }
         }
 
-        function showValidationError(message) {
+        function showValidationError(message, canRetry = false) {
             const alertBox = document.getElementById("validation-alert");
             const msgEl = document.getElementById("validation-msg");
+            const retryBtn = document.getElementById("btn-retry");
             msgEl.textContent = message;
+            if (retryBtn) retryBtn.style.display = canRetry ? "inline-block" : "none";
             alertBox.style.display = "flex";
         }
 
@@ -848,12 +851,12 @@
                 };
 
                 const payload = isAllCrops
-                    ? { ...basePayload, scenario_name: `Agroclimatic Simulation (${province})` }
+                    ? { ...basePayload, scenario_name: `Crop ranking (${province})` }
                     : { ...basePayload, crop: crop.toLowerCase() };
 
-                // Abort request after 3.5s if backend is unreachable or hanging
+                // Abort after 30s (first request loads the model and can be slow)
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3500);
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
 
                 let resultData = null;
                 let isLiveApi = false;
@@ -891,7 +894,14 @@
                     }
                 } catch (networkErr) {
                     clearTimeout(timeoutId);
-                    console.warn("Backend API request failed or timed out. Running local agronomic fallback simulation.", networkErr);
+                    console.error("Backend API request failed or timed out.", networkErr);
+                    const timedOut = networkErr && networkErr.name === "AbortError";
+                    showValidationError(
+                        timedOut
+                            ? "The model server did not answer within 30 seconds. No result is shown."
+                            : "Cannot reach the model server. No result is shown.",
+                        true
+                    );
                 }
 
                 // Minimum 350ms loading duration for tactile feedback
@@ -904,11 +914,10 @@
                     if (window.renderModelResults) {
                         window.renderModelResults(resultData, isAllCrops);
                     }
-                } else if (!document.getElementById("validation-alert").offsetParent) {
-                    // Fallback simulation when live API not reached and no validation error
-                    if (window.renderFallbackSimulation) {
-                        window.renderFallbackSimulation(payload, isAllCrops);
-                    }
+                } else {
+                    // No result: hide any older results so stale numbers are never shown
+                    const stale = document.getElementById("results-container");
+                    if (stale) stale.style.display = "none";
                 }
 
                 // Smooth scroll to results
@@ -995,101 +1004,6 @@
                 `;
 
                 advisorySummary.innerHTML = `<strong>Prediction Risk Assessment:</strong> ${data.risk_assessment}`;
-            }
-        };
-
-        window.renderFallbackSimulation = function(payload, isAllCrops) {
-            const resultsContainer = document.getElementById("results-container");
-            if (resultsContainer) resultsContainer.style.display = "block";
-
-            const statusDot = document.getElementById("status-dot");
-            const badgeText = document.getElementById("status-badge-text");
-            const timeText = document.getElementById("inference-timestamp");
-            const now = new Date().toLocaleTimeString();
-            if (statusDot) statusDot.style.backgroundColor = "#f59e0b";
-            if (badgeText) badgeText.textContent = "Agronomic Simulation Engine (Regional Fallback)";
-            if (timeText) timeText.textContent = `Calculated at ${now}`;
-
-            const singleSection = document.getElementById("single-crop-section");
-            const resilientSection = document.getElementById("team-section-1");
-            const warningsSection = document.getElementById("team-section-2");
-            const advisorySummary = document.getElementById("advisory-summary");
-            const boardHeading = document.querySelector(".board-heading");
-
-            const province = payload.province;
-            const precip = payload.precipitation_sum;
-            const temp = payload.temperature_2m_mean;
-            const area = payload.area || 50;
-
-            if (isAllCrops) {
-                singleSection.style.display = "none";
-                resilientSection.style.display = "block";
-                warningsSection.style.display = "block";
-                boardHeading.textContent = `Drought-Resilient Crop Advisory (5)`;
-
-                const resilientCrops = [
-                    { crop: "Bajra (Pearl Millet)", yield: Math.round(1750 + precip * 6 - (temp - 30) * 12), water: "Low", rank: 1, risk: "Minimal Risk under water stress" },
-                    { crop: "Jowar (Sorghum)", yield: Math.round(1350 + precip * 5 - (temp - 30) * 10), water: "Low", rank: 2, risk: "Low Risk — deep root adaptation" },
-                    { crop: "Gram (Chickpea)", yield: Math.round(890 + precip * 4 - (temp - 30) * 8), water: "Low", rank: 3, risk: "Moderate Risk — drought tolerant pulse" }
-                ];
-
-                const warningCrops = [
-                    { crop: "Sugarcane", yield: Math.round(3800 + precip * 15), warning: "Critical Risk: Requires 1,500-2,500mm water; expected 70%+ harvest loss without canal supply." },
-                    { crop: "Rice", yield: Math.round(980 + precip * 8), warning: "Severe Risk: Flooding-dependent paddy unviable under low seasonal rainfall." }
-                ];
-
-                let resHtml = "";
-                resilientCrops.forEach(item => {
-                    resHtml += `
-                        <div class="job-post-item">
-                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
-                            <div class="job-metadata">Rank #${item.rank} • Predicted Yield: ${item.yield.toLocaleString()} kg/ha • Water Category: ${item.water} • ${item.risk}</div>
-                        </div>
-                    `;
-                });
-                document.getElementById("team-items-1").innerHTML = resHtml;
-
-                let warnHtml = "";
-                warningCrops.forEach(item => {
-                    warnHtml += `
-                        <div class="job-post-item">
-                            <a href="javascript:void(0)" class="job-title">${item.crop}</a>
-                            <div class="job-metadata">High Water Demand • Predicted Yield: ${item.yield.toLocaleString()} kg/ha • ${item.warning}</div>
-                        </div>
-                    `;
-                });
-                document.getElementById("team-items-2").innerHTML = warnHtml;
-
-                advisorySummary.innerHTML = `<strong>Agronomic Advisory (${province}):</strong> At ${precip} mm rainfall and ${temp}°C, coarse grains (Bajra & Jowar) show optimal water-use efficiency. Sugarcane and Rice face catastrophic yield reductions.`;
-            } else {
-                singleSection.style.display = "block";
-                resilientSection.style.display = "none";
-                warningsSection.style.display = "none";
-
-                const crop = payload.crop || "wheat";
-                const cropDisplay = crop.charAt(0).toUpperCase() + crop.slice(1);
-                boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
-
-                const isResilient = ["onion", "pomegranate", "grapes", "wheat", "dates"].includes(crop.toLowerCase());
-                let estYield = 90;
-                if (crop.toLowerCase() === "onion") estYield = Math.round(95 + precip * 0.5);
-                else if (crop.toLowerCase() === "wheat") estYield = Math.round(88 + precip * 0.4);
-                else if (crop.toLowerCase() === "sugarcane") estYield = Math.round(500 + precip * 2);
-                else if (crop.toLowerCase() === "rice") estYield = Math.round(130 + precip * 0.8);
-                else if (crop.toLowerCase() === "cotton") estYield = Math.round(130 + precip * 0.8);
-                else estYield = Math.round(110 + precip * 0.6);
-
-                const totalMetricTons = Math.round((estYield * area) / 1000).toLocaleString();
-
-                document.getElementById("single-crop-items").innerHTML = `
-                    <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">${cropDisplay} (${province})</a>
-                        <div class="job-metadata">Predicted Yield: ${estYield.toLocaleString()} kg/ha • Water Category: ${isResilient ? 'Low-Water Resilient' : 'High-Water Intensive'} • Drought Resilient: ${isResilient ? 'YES' : 'NO'}</div>
-                        <div class="job-metadata" style="margin-top: 4px; color: var(--colorNeutral800);">Total Expected Production: ${totalMetricTons} metric tons across ${area} hectares</div>
-                    </div>
-                `;
-
-                advisorySummary.innerHTML = `<strong>Prediction Summary:</strong> ${cropDisplay} in ${province} under ${precip}mm rainfall produces an estimated ${estYield.toLocaleString()} kg/ha (${isResilient ? 'drought resilient' : 'water intensive'}).`;
             }
         };
 
