@@ -22,7 +22,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Files: `scripts/build_report_figures.py`, `docs/report/figures/*.png`
   - Depends on: none
 
-- [ ] **T3: deployment screenshots** (S)
+- [x] **T3: deployment screenshots** (S) (done 2026-11-19: `scripts/capture_screenshots.py` drives a clean headless Chrome over the DevTools protocol; Streamlit, Vercel (all crops) and local (`/predict`, rice) each show rice 40.85 and 89.3% for Sindh, driest real year 2002; `verify_report.py` 5/5, a tampered check file fails)
   - Acceptance: real headless-Chrome captures of Streamlit (live URL), Vercel (live URL, predict page after a Sindh, driest real year request) and local `uvicorn` app, saved as `docs/report/figures/deploy_*.png`. Shown values match the local model.
   - Verify: open each image; Sindh, driest real year, rice shows 40.85 and 89.3% where that scenario is captured.
   - Files: `scripts/capture_screenshots.py` (or documented one-off commands), `docs/report/figures/deploy_*.png`

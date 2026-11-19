@@ -72,11 +72,41 @@ def figure_build_is_deterministic():
     assert not changed, f"figures changed on rebuild: {changed}"
 
 
+SCREENSHOTS = ["deploy_streamlit.png", "deploy_vercel.png", "deploy_local.png"]
+
+
+def _expected_sindh_driest_rice() -> dict:
+    """What the saved model says now for rice, Sindh, driest real year (through the real API code)."""
+    sys.path.insert(0, str(ROOT))
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    with TestClient(app) as client:
+        meta = client.get("/api/v1/metadata").json()
+        dry = next(s for s in meta["scenarios"] if s["province"] == "Sindh" and s["kind"] == "driest")
+        ranked = client.post("/api/v1/recommend", json={"province": "Sindh", **dry["inputs"]}).json()["ranked_crops"]
+    rice = next(r for r in ranked if r["crop"] == "rice")
+    return {"yield": f"{rice['predicted_yield']:.2f}", "pct": f"{rice['pct_of_normal']:.1f}%", "year": dry["year"]}
+
+
+def deployment_screenshots_show_current_model_values():
+    checks = json.loads((FIG_DIR / "screenshot_checks.json").read_text())
+    exp = _expected_sindh_driest_rice()
+    assert set(checks) == {s.removeprefix("deploy_").removesuffix(".png") for s in SCREENSHOTS}, sorted(checks)
+    for name in SCREENSHOTS:
+        p = FIG_DIR / name
+        assert p.exists() and p.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", f"missing screenshot {name}"
+    for key, c in checks.items():
+        assert c["expected"] == exp, f"{key}: captured against {c['expected']}, model now gives {exp}; recapture"
+        assert c["found_on_page"] == [exp["yield"], exp["pct"]], f"{key}: page text did not show {exp}"
+
+
 TESTS = [
     figures_exist_with_at_least_five_eda_plots,
     comparison_figure_values_equal_metrics_json,
     predicted_vs_actual_reproduces_saved_test_score,
     figure_build_is_deterministic,
+    deployment_screenshots_show_current_model_values,
 ]
 
 

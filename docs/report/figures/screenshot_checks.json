@@ -1,0 +1,41 @@
+{
+  "local": {
+    "captured_at": "2026-11-19",
+    "expected": {
+      "pct": "89.3%",
+      "year": 2002,
+      "yield": "40.85"
+    },
+    "found_on_page": [
+      "40.85",
+      "89.3%"
+    ],
+    "url": "http://127.0.0.1:8765/predict.html"
+  },
+  "streamlit": {
+    "captured_at": "2026-11-19",
+    "expected": {
+      "pct": "89.3%",
+      "year": 2002,
+      "yield": "40.85"
+    },
+    "found_on_page": [
+      "40.85",
+      "89.3%"
+    ],
+    "url": "https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/~/+/"
+  },
+  "vercel": {
+    "captured_at": "2026-11-19",
+    "expected": {
+      "pct": "89.3%",
+      "year": 2002,
+      "yield": "40.85"
+    },
+    "found_on_page": [
+      "40.85",
+      "89.3%"
+    ],
+    "url": "https://climate-machine-learning.vercel.app/predict.html"
+  }
+}
