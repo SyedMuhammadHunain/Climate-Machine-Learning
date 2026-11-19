@@ -276,11 +276,12 @@ def prediction_interval_is_calibrated_on_validation_and_checked_on_test():
     assert lo_q < 0 < hi_q
     _, _, _, splits = training.load_tables()
     va, te = splits["val"], splits["test"]
-    resid = np.log(va["Yield"].to_numpy()) - np.log(pipe.predict(va[F.FEATURE_COLS]))
+    # MODEL_COLS adds Year: training scored the real years, so the check must too (apps pin the year instead)
+    resid = np.log(va["Yield"].to_numpy()) - np.log(pipe.predict(va[training.MODEL_COLS]))
     assert np.allclose(np.quantile(resid, [0.10, 0.90]), [lo_q, hi_q], atol=1e-9)
     assert pi["val_n"] == len(va)
     # coverage on the test years is reported, not tuned
-    pred = pipe.predict(te[F.FEATURE_COLS])
+    pred = pipe.predict(te[training.MODEL_COLS])
     lo, hi = F.prediction_interval(pred, pi["log_residual_quantiles"])
     assert (lo < pred).all() and (pred < hi).all()
     cover = float(((te["Yield"].to_numpy() >= lo) & (te["Yield"].to_numpy() <= hi)).mean())
@@ -714,6 +715,26 @@ def single_thread_predictions_are_bit_identical_between_calls():
     first = pipe.predict(X)
     for _ in range(5):
         assert np.array_equal(first, pipe.predict(X))
+
+
+@test
+def saved_model_is_the_promoted_offset_model():
+    """models/ holds the model chosen under SPEC-promote-offset-model.md (structure and honesty, not typed-in numbers)."""
+    pipe, m, ref = _load_artifacts()
+    assert isinstance(pipe, F.OffsetYieldModel), type(pipe)
+    ch = m["chosen"]
+    assert pipe.trend == ch["trend"] and pipe.inference_year == m["inference_year"] == ref["inference_year"]
+    assert ch["judged_on"] == ["r2", "mae"] and ch["judged_on_chosen_after_test"] is True
+    mt, bt = m["models"][ch["name"]]["test"], m["baselines"]["crop_province_mean"]["test"]
+    assert ch["beats_crop_province_mean_on_test"] is True and mt["r2"] > bt["r2"] and mt["mae"] < bt["mae"]
+    assert ch["beats_by_metric"]["log_mae"] is False and mt["log_mae"] > bt["log_mae"], "the log-MAE loss must stay visible"
+    assert any("after seeing the test" in n for n in m["notes"])
+    d = m["data"]
+    assert (d["n_train"], d["n_val"], d["n_test"]) == (565, 106, 102)
+    assert d["sha256"] == hashlib.sha256(RAW_PATH.read_bytes()).hexdigest()
+    assert [s["sha256"] for s in d["sources"]] == [
+        hashlib.sha256(RAW_PATH.read_bytes()).hexdigest(),
+        hashlib.sha256((ROOT / "data" / "raw" / "nasa_power_monthly.csv").read_bytes()).hexdigest()]
 
 
 # --------------------------------------------------------------------------- offset training (T2)

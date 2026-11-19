@@ -15,7 +15,7 @@
   - Verify: `verify_model.py` minus artifact tests, against a scratch candidate (`scripts/train.py --out`). Candidate
     shows R² 0.885, MAE 29.7, log-MAE 0.341.
   - Files: `features.py`, `training.py`, `inference.py`, `scripts/train.py`, `scripts/verify_model.py`.
-- [ ] **T2** `python scripts/train.py` into `models/`.
+- [x] **T2** `python scripts/train.py` into `models/`.
   - Acceptance: the numbers above at 3 decimals; chosen `gradient_boosting`, trend `per_crop_province`;
     `beats_crop_province_mean_on_test` true and `beats_by_metric.log_mae` false; rows 565 / 106 / 102; sha256 unchanged.
   - Verify: full `verify_model.py` (with retrain determinism), `verify_backend.py`.
