@@ -17,6 +17,17 @@ from app.schemas.recommend import (
 )
 
 
+def tie_notes(top, bottom) -> str:
+    """One sentence for each end of the ranking that is tied (one in total when both ends are the same tie)."""
+    same_tie = round(top.pct_of_normal, 1) == round(bottom.pct_of_normal, 1)
+    ends = [("largest", top)] if same_tie else [("largest", top), ("smallest", bottom)]
+    return "".join(
+        f" The {label} share is tied: {end.crop.upper()} shares it with {end.tied_with} other "
+        f"crop{'s' if end.tied_with > 1 else ''}, and tied crops are ordered by name only."
+        for label, end in ends if end.tied_with
+    )
+
+
 class ModelService:
     """Serves the trained scikit-learn pipeline. Every yield returned is raw model output.
 
@@ -134,11 +145,7 @@ class ModelService:
             f"({bottom.pct_of_normal:.1f}% of typical). "
             "These are model outputs, not adjusted by hand."
         )
-        for end, label in ((top, "largest"), (bottom, "smallest")):
-            if end.tied_with and not (end is bottom and round(bottom.pct_of_normal, 1) == round(top.pct_of_normal, 1)):
-                summary += (f" The {label} share is tied: {end.crop.upper()} shares it with {end.tied_with} other "
-                            f"crop{'s' if end.tied_with > 1 else ''}, and tied crops are ordered by name only.")
-        summary += " " + I.model_caveat(self.metrics)
+        summary += tie_notes(top, bottom) + " " + I.model_caveat(self.metrics)
         return RecommendationResponse(
             scenario_name=request.scenario_name or "Custom scenario",
             province=province,

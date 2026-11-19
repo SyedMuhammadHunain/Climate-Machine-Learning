@@ -445,6 +445,26 @@ def run_verification():
         assert "max-age" not in api.headers.get("cache-control", ""), "API responses must not get the static cache header"
         print("  -> PASSED: gzip on js and ttf, none on woff2; assets cached for a day; HTML and API unchanged.")
 
+        # 33. The sentence about tied ends of the ranking, in every combination (simplification safety net)
+        print("\n[TEST 33] tie_notes: both ends in different ties, one shared tie, no ties, only the bottom tied")
+        from types import SimpleNamespace as Item
+        from app.services.model_service import tie_notes
+
+        def end(crop, pct, tied):
+            return Item(crop=crop, pct_of_normal=pct, tied_with=tied)
+
+        both = tie_notes(end("apple", 100.04, 2), end("rice", 89.3, 1))
+        assert both.count("share is tied") == 2 and both.index("largest") < both.index("smallest"), both
+        assert "APPLE shares it with 2 other crops" in both and "RICE shares it with 1 other crop," in both, both
+        one = tie_notes(end("apple", 100.0, 12), end("wheat", 100.0, 12))
+        assert one.count("share is tied") == 1 and "largest" in one and "smallest" not in one, one
+        assert "APPLE shares it with 12 other crops" in one
+        assert tie_notes(end("apple", 99.2, 0), end("rice", 89.3, 0)) == ""
+        bottom_only = tie_notes(end("apple", 99.2, 0), end("rice", 89.3, 3))
+        assert bottom_only.count("share is tied") == 1 and "smallest" in bottom_only and "RICE shares it with 3 other crops" in bottom_only
+        assert all(s.endswith("tied crops are ordered by name only.") for s in (both, one, bottom_only))
+        print("  -> PASSED: all four combinations produce the expected sentences.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)
