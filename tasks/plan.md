@@ -78,7 +78,7 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 - [ ] `grep -riE "bajra|jowar|gram\b|fallback|simulat|demo" frontend/ app/` is empty
 
 ### Phase 3: Deliverables (from old plan, rewritten)
-- [ ] **T8** README with honest metrics from `metrics.json`, data unit, aggregation, limits (S)
+- [x] **T8** README with honest metrics from `metrics.json`, data unit, aggregation, limits (S)
 - [ ] **T9** `docs/demo_and_viva_guide.md` with 3/4/3 minute script on the real app (S)
 
 ### Checkpoint C: Submission ready

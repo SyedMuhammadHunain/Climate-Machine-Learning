@@ -201,12 +201,14 @@ from the source repo), metrics read from metrics.json, API docs (`/predict`, `/r
 `/metadata`, `/health`), limitations (858 rows, weak weather signal if found, no extrapolation).
 
 **Acceptance criteria:**
-- [ ] Every metric in the README matches metrics.json
-- [ ] Setup commands work on a fresh clone
+- [x] Every metric in the README matches metrics.json
+- [x] Setup commands work on a fresh clone
 
 **Verification:**
-- [ ] Follow the README in a fresh venv: train, run, open the page
-- [ ] Check links
+- [x] Follow the README in a fresh venv: train, run, open the page
+- [x] Check links
+
+**Notes (done 2026-11-19):** README written. The Results table is generated from `models/metrics.json` by `scripts/verify_readme.py --write`; `verify_readme.py` also checks group info, setup commands, endpoints (both directions), relative links, banned wording and that Streamlit/Hugging Face are marked 'not deployed yet' (user decision: deploy those two later). Per user, the baseline result is not a headline; the crop-province mean row and skill column stay in the table and Limitations points readers to them. Data facts the source does not state (collection method, weather source, units) are written as 'not stated'. Dataset licence MIT and Zenodo origin come from the source repo; access date given as the 2026-11-14 commit date. Fresh-clone test in a new Python 3.13 venv: install, 4 checks, retrain (same scores), refresh table, serve and curl all passed.
 
 **Dependencies:** Checkpoint B
 **Files:** `README.md`
