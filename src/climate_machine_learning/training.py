@@ -21,8 +21,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import sklearn
-from sklearn.compose import ColumnTransformer
-from sklearn.dummy import DummyRegressor
+from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.inspection import permutation_importance
@@ -38,11 +37,6 @@ SEED = 42
 TRAIN_YEARS = (2001, 2016)
 VAL_YEARS = (2017, 2019)
 TEST_YEARS = (2020, 2022)
-# Year the saved model is pinned to at prediction time (latest dataset year). It never reaches the inner
-# model and cancels out of the crop ranking; it only sets the level of the absolute yields shown.
-INFERENCE_YEAR = TEST_YEARS[1]
-# Feature columns plus Year: Year feeds the offset only, the inner model drops it.
-MODEL_COLS = F.FEATURE_COLS + ["Year"]
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 RAW_PATH = ROOT / "data" / "raw" / "pakistan_crop_yield_climate.parquet"
@@ -89,16 +83,15 @@ def load_tables() -> Tuple[pd.DataFrame, Dict[str, int], Dict[str, Any], Dict[st
 
 
 # --------------------------------------------------------------------------- model
-def make_pipeline(estimator, trend: str = "none", inference_year: int = INFERENCE_YEAR) -> F.OffsetYieldModel:
-    """Offset model (SPEC-beat-baseline.md): impute + scale + one-hot + regressor learn the log-scale gap
-    from the crop-province training average (plus optional year trend). All fitted on training data only."""
+def make_pipeline(estimator) -> Pipeline:
+    """Impute + scale + one-hot, then a log-target regressor. All fitted on training data only."""
     pre = ColumnTransformer([
         ("num", Pipeline([("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]),
          F.NUMERIC_FEATURES),
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), F.CATEGORICAL_FEATURES),
     ])
-    inner = Pipeline([("preprocessor", pre), ("regressor", estimator)])
-    return F.OffsetYieldModel(inner, trend=trend, inference_year=inference_year)
+    reg = TransformedTargetRegressor(regressor=estimator, func=np.log, inverse_func=np.exp)
+    return Pipeline([("preprocessor", pre), ("regressor", reg)])
 
 
 def _log_mae(y_true, y_pred) -> float:
@@ -110,26 +103,24 @@ LOG_MAE_SCORER = make_scorer(_log_mae, greater_is_better=False)
 CANDIDATES = {
     "ridge": (
         Ridge(random_state=SEED),
-        {"trend": list(F.TRENDS), "inner__regressor__alpha": [0.1, 1.0, 10.0, 100.0]},
+        {"regressor__regressor__alpha": [0.1, 1.0, 10.0, 100.0]},
         "Ridge (regularised linear regression)",
     ),
     "random_forest": (
         RandomForestRegressor(random_state=SEED, n_jobs=-1),
         {
-            "trend": list(F.TRENDS),
-            "inner__regressor__n_estimators": [200, 400],
-            "inner__regressor__max_depth": [None, 8, 15],
-            "inner__regressor__min_samples_leaf": [1, 3, 5],
+            "regressor__regressor__n_estimators": [200, 400],
+            "regressor__regressor__max_depth": [None, 8, 15],
+            "regressor__regressor__min_samples_leaf": [1, 3, 5],
         },
         "Random Forest",
     ),
     "gradient_boosting": (
         GradientBoostingRegressor(random_state=SEED),
         {
-            "trend": list(F.TRENDS),
-            "inner__regressor__n_estimators": [100, 300],
-            "inner__regressor__learning_rate": [0.03, 0.1],
-            "inner__regressor__max_depth": [2, 3],
+            "regressor__regressor__n_estimators": [100, 300],
+            "regressor__regressor__learning_rate": [0.03, 0.1],
+            "regressor__regressor__max_depth": [2, 3],
         },
         "Gradient Boosting",
     ),
@@ -165,22 +156,6 @@ def score(y_true, y_pred, baseline_pred) -> Dict[str, float]:
     }
 
 
-def trend_baseline(tr: pd.DataFrame, va: pd.DataFrame, te: pd.DataFrame, base_preds) -> Dict[str, Any]:
-    """Offset alone, no climate: crop-province training mean plus the year trend. Shows how much of any
-    win over the crop-province mean comes from the trend and how much from climate. The trend variant is
-    picked on validation log-MAE, like the models."""
-    variants: Dict[str, Any] = {}
-    for trend in F.TRENDS:
-        m = F.OffsetYieldModel(
-            Pipeline([("regressor", DummyRegressor(strategy="constant", constant=0.0))]),
-            trend=trend, inference_year=INFERENCE_YEAR,
-        ).fit(tr[MODEL_COLS], tr["Yield"])
-        variants[trend] = {s: score(d["Yield"], m.predict(d[MODEL_COLS]), base_preds[s])
-                           for s, d in {"val": va, "test": te}.items()}
-    best = min(variants, key=lambda t: variants[t]["val"]["log_mae"])
-    return {"trend": best, "variants": variants, **variants[best]}
-
-
 # --------------------------------------------------------------------------- train
 def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
     out_dir = Path(out_dir)
@@ -191,7 +166,7 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
     tr, va, te = splits["train"], splits["val"], splits["test"]
     log(f"rows: train={len(tr)} val={len(va)} test={len(te)} (dropped zero-yield: {dropped})")
 
-    X_tr, y_tr = tr[MODEL_COLS], tr["Yield"]
+    X_tr, y_tr = tr[F.FEATURE_COLS], tr["Yield"]
     cv = GroupKFold(n_splits=5)
 
     base = CropProvinceMean(tr)
@@ -204,7 +179,6 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "crop_province_mean": {
             s: score(d["Yield"], base_preds[s], base_preds[s]) for s, d in {"val": va, "test": te}.items()
         },
-        "crop_province_mean_plus_trend": trend_baseline(tr, va, te, base_preds),
     }
 
     models: Dict[str, Any] = {}
@@ -222,8 +196,8 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
             "cv_folds": 5,
             "cv_grouped_by": "Year",
             "cv_log_mae": float(-gs.best_score_),
-            "val": score(va["Yield"], best.predict(va[MODEL_COLS]), base_preds["val"]),
-            "test": score(te["Yield"], best.predict(te[MODEL_COLS]), base_preds["test"]),
+            "val": score(va["Yield"], best.predict(va[F.FEATURE_COLS]), base_preds["val"]),
+            "test": score(te["Yield"], best.predict(te[F.FEATURE_COLS]), base_preds["test"]),
         }
         log(f"{label:38s} cv_logMAE={models[key]['cv_log_mae']:.3f} "
             f"val_logMAE={models[key]['val']['log_mae']:.3f} test_R2={models[key]['test']['r2']:.3f}")
@@ -235,22 +209,21 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
 
     # Likely range for a prediction: empirical quantiles of log(actual/predicted) on the VALIDATION years.
     # Coverage on the test years is reported afterwards and never used to adjust the range.
-    val_resid = np.log(va["Yield"].to_numpy()) - np.log(best_pipe.predict(va[MODEL_COLS]))
+    val_resid = np.log(va["Yield"].to_numpy()) - np.log(best_pipe.predict(va[F.FEATURE_COLS]))
     lo_q, hi_q = (float(q) for q in np.quantile(val_resid, [0.10, 0.90]))
-    test_pred = best_pipe.predict(te[MODEL_COLS])
+    test_pred = best_pipe.predict(te[F.FEATURE_COLS])
     t_lo, t_hi = F.prediction_interval(test_pred, (lo_q, hi_q))
     test_cov = float(((te["Yield"].to_numpy() >= t_lo) & (te["Yield"].to_numpy() <= t_hi)).mean())
     log(f"prediction interval (80%): x{np.exp(lo_q):.2f} to x{np.exp(hi_q):.2f}; test coverage {test_cov:.2f}")
 
     imp = permutation_importance(
-        best_pipe, va[MODEL_COLS], va["Yield"], scoring=LOG_MAE_SCORER,
+        best_pipe, va[F.FEATURE_COLS], va["Yield"], scoring=LOG_MAE_SCORER,
         n_repeats=30, random_state=SEED,
     )
     importances = {
         col: {"mean": float(m), "std": float(s)}
-        for col, m, s in sorted(zip(MODEL_COLS, imp.importances_mean, imp.importances_std),
+        for col, m, s in sorted(zip(F.FEATURE_COLS, imp.importances_mean, imp.importances_std),
                                 key=lambda t: -t[1])
-        if col != "Year"  # Year only moves the offset; the table lists the model's inputs
     }
 
     metrics = {
@@ -258,8 +231,7 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "versions": {"python": platform.python_version(), "scikit_learn": sklearn.__version__,
                      "pandas": pd.__version__, "numpy": np.__version__},
         "seed": SEED,
-        "target": "Yield in dataset yield units (unit not confirmed); the model learns the log-scale gap from the crop-province training average",
-        "inference_year": INFERENCE_YEAR,
+        "target": "Yield in dataset yield units (unit not confirmed); fitted on log scale",
         "split": {"train_years": list(TRAIN_YEARS), "val_years": list(VAL_YEARS), "test_years": list(TEST_YEARS)},
         "data": {
             "file": str(RAW_PATH.relative_to(ROOT)),
@@ -275,7 +247,6 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "models": models,
         "chosen": {
             "name": chosen,
-            "trend": best_pipe.trend,
             "selected_on": "lowest validation log-MAE (relative error, comparable across crops)",
             "beats_crop_province_mean_on_test": bool(beats),
         },
@@ -291,8 +262,7 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "notes": [
             "Metrics on the test years are reported once and were not used to choose the model.",
             "skill_vs_crop_province_mean_log > 0 means the model beats the crop-province mean baseline.",
-            f"Year is not a model input. Each model learns the gap from the crop-province average of the training years (trend: {best_pipe.trend}); at prediction the year is pinned to {INFERENCE_YEAR}, which cancels out of the crop ranking.",
-            "crop_province_mean_plus_trend is the same offset with no climate: the part of any gain that does not come from the weather inputs.",
+            "Year/trend is not a feature, so yield growth over time is not modelled.",
         ],
     }
 
@@ -307,7 +277,6 @@ def reference_document(reference: Dict[str, Any], train: pd.DataFrame) -> Dict[s
     doc = dict(reference)
     doc["train_rows_per_crop"] = {k: int(v) for k, v in train.groupby("Crop").size().items()}
     doc["train_years"] = list(TRAIN_YEARS)
-    doc["inference_year"] = INFERENCE_YEAR
     return doc
 
 

@@ -24,9 +24,7 @@ import math
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, RegressorMixin, clone
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SOIL_CSV = ROOT / "data" / "raw" / "nasa_power_monthly.csv"
@@ -256,98 +254,3 @@ def prediction_interval(pred, log_quantiles):
     lo_q, hi_q = log_quantiles
     pred = np.asarray(pred, dtype=float)
     return pred * np.exp(lo_q), pred * np.exp(hi_q)
-
-
-# --------------------------------------------------------------------------- offset model
-TRENDS = ("none", "per_crop", "per_crop_province")
-MIN_ROWS_FOR_OWN_SLOPE = 3
-
-
-def _within_slope(dx: np.ndarray, dy: np.ndarray) -> float:
-    """Least-squares slope through already-centred data (0 when there is no spread in x)."""
-    denom = float(np.sum(dx * dx))
-    return float(np.sum(dx * dy) / denom) if denom > 0 else 0.0
-
-
-class OffsetYieldModel(RegressorMixin, BaseEstimator):
-    """Predict yield as exp(offset + gap), where the inner model only learns the gap.
-
-    offset(Crop, Province, Year) is learned from the training rows passed to fit():
-        level  = mean log yield of the crop in the province (falls back to the crop, then to everything)
-        trend  = optional slope per year, in log yield: none | per_crop | per_crop_province
-    The inner model is fitted on log(yield) - offset, so it only has to explain how a year differs
-    from that crop-province's normal (SPEC-beat-baseline.md).
-
-    X must hold Crop, Province and Year when fitting. At prediction time the Year column is used
-    when present; otherwise the pinned `inference_year` is used. The inner model never sees Year.
-    Lives in this module so every consumer that already ships it can unpickle the saved pipeline.
-    """
-
-    def __init__(self, inner, trend: str = "none", inference_year: Optional[int] = None):
-        self.inner = inner
-        self.trend = trend
-        self.inference_year = inference_year
-
-    # -- fitting
-    def fit(self, X: pd.DataFrame, y):
-        if self.trend not in TRENDS:
-            raise ValueError(f"trend must be one of {TRENDS}, got {self.trend!r}")
-        y = np.asarray(y, dtype=float)
-        if not np.all(y > 0):
-            raise ValueError("yields must be positive: the offset works on log yield")
-        d = pd.DataFrame({
-            "Crop": X["Crop"].to_numpy(), "Province": X["Province"].to_numpy(),
-            "Year": X["Year"].to_numpy(dtype=float), "log_y": np.log(y),
-        })
-        d["cp_year"] = d.groupby(["Crop", "Province"])["Year"].transform("mean")
-        d["cp_log"] = d.groupby(["Crop", "Province"])["log_y"].transform("mean")
-        d["dx"], d["dy"] = d["Year"] - d["cp_year"], d["log_y"] - d["cp_log"]
-
-        self.global_ = (float(d["log_y"].mean()), float(d["Year"].mean()))
-        self.level_c_ = {c: (float(g["log_y"].mean()), float(g["Year"].mean())) for c, g in d.groupby("Crop")}
-        self.level_cp_ = {k: (float(g["log_y"].mean()), float(g["Year"].mean()))
-                          for k, g in d.groupby(["Crop", "Province"])}
-        self.slope_c_, self.slope_cp_ = {}, {}
-        if self.trend != "none":
-            self.slope_c_ = {c: _within_slope(g["dx"].to_numpy(), g["dy"].to_numpy()) for c, g in d.groupby("Crop")}
-        if self.trend == "per_crop_province":
-            for k, g in d.groupby(["Crop", "Province"]):
-                if len(g) >= MIN_ROWS_FOR_OWN_SLOPE:
-                    self.slope_cp_[k] = _within_slope(g["dx"].to_numpy(), g["dy"].to_numpy())
-
-        offset = self._offset(X["Crop"], X["Province"], d["Year"].to_numpy())
-        self.inner_ = clone(self.inner).fit(self._inner_view(X), d["log_y"].to_numpy() - offset)
-        return self
-
-    # -- offset
-    def _offset(self, crops, provinces, years) -> np.ndarray:
-        out = np.empty(len(years), dtype=float)
-        for i, (c, p, t) in enumerate(zip(crops, provinces, years)):
-            if (c, p) in self.level_cp_:
-                level, mean_year = self.level_cp_[(c, p)]
-                slope = self.slope_cp_.get((c, p), self.slope_c_.get(c, 0.0))
-            elif c in self.level_c_:
-                level, mean_year = self.level_c_[c]
-                slope = self.slope_c_.get(c, 0.0)
-            else:
-                (level, mean_year), slope = self.global_, 0.0
-            out[i] = level + slope * (t - mean_year)
-        return out
-
-    def _years(self, X: pd.DataFrame) -> np.ndarray:
-        if "Year" in X.columns:
-            return X["Year"].to_numpy(dtype=float)
-        if self.inference_year is None:
-            raise ValueError("X has no Year column and inference_year is not set")
-        return np.full(len(X), float(self.inference_year))
-
-    @staticmethod
-    def _inner_view(X: pd.DataFrame) -> pd.DataFrame:
-        return X.drop(columns="Year", errors="ignore")
-
-    def log_offset(self, X: pd.DataFrame) -> np.ndarray:
-        """The learned offset (log yield units) for each row of X."""
-        return self._offset(X["Crop"], X["Province"], self._years(X))
-
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
-        return np.exp(self.log_offset(X) + self.inner_.predict(self._inner_view(X)))
