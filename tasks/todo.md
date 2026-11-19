@@ -89,9 +89,9 @@ call these functions and plot results.
 **Scope:** M
 
 ### ✅ Checkpoint A: Model review. Stop and show the user.
-- [ ] Comparison table (baseline vs 3 models, val + test)
-- [ ] Sensitivity printout (which crops react to rain/temp)
-- [ ] User accepts the model before Phase 2
+- [x] Comparison table (baseline vs 3 models, val + test) (2026-11-19, T0 of tasks/todo-completion.md): printed by `scripts/train.py`, saved in `models/metrics.json`, generated into the README Results block.
+- [x] Sensitivity printout (which crops react to rain/temp) (2026-11-19, T0 of tasks/todo-completion.md): `verify_model.py` test `weather_changes_predictions_sensitivity` passes (51/51).
+- [x] User accepts the model before Phase 2 (2026-11-19, T0 of tasks/todo-completion.md): superseded; the user accepted the current model in `SPEC-promote-offset-model.md` (implemented 2026-11-19).
 
 ---
 
@@ -185,9 +185,9 @@ that year. Add a guard test that greps app/ and frontend/ for banned words and b
 **Scope:** S
 
 ### ✅ Checkpoint B: App complete
-- [ ] `verify_backend.py` + `verify_model.py` pass
-- [ ] Manual walk-through on :8000 for predict, recommend, metrics, and backend-down
-- [ ] Banned-word grep is empty
+- [x] `verify_backend.py` + `verify_model.py` pass (2026-11-19, T0 of tasks/todo-completion.md): both pass (backend all tests, model 51/51).
+- [x] Manual walk-through on :8000 for predict, recommend, metrics, and backend-down (2026-11-19, T0 of tasks/todo-completion.md): `node scripts/dryrun_demo.js` passes against a local server; `/`, `/predict.html`, `/metrics.html`, `/api/v1/metrics` answer 200. Backend-down is checked statically by `verify_frontend.py` (no fallback data, Retry button, 30 s timeout), not clicked in a real browser in this pass.
+- [x] Banned-word grep is empty (2026-11-19, T0 of tasks/todo-completion.md): only hits are third-party files in `frontend/climate-resilient-frontend/vendor/` (three.js, es-module-shims); none in project code.
 
 ---
 
@@ -234,8 +234,8 @@ Viva Q&A: why aggregate to yearly rows, leakage and the GroupKFold choice, why R
 **Scope:** S
 
 ### ✅ Checkpoint C: Submission ready
-- [ ] Repo: data/, notebooks/, app/, models/, requirements.txt, README.md, docs/
-- [ ] Full flow verified on localhost:8000
+- [x] Repo: data/, notebooks/, app/, models/, requirements.txt, README.md, docs/ (2026-11-19, T0 of tasks/todo-completion.md): all present.
+- [x] Full flow verified on localhost:8000 (2026-11-19, T0 of tasks/todo-completion.md): see the Checkpoint B walk-through above. Final fresh-clone re-test is T8 of `tasks/todo-completion.md`.
 
 ---
 
@@ -265,6 +265,6 @@ Spec: `SPEC-streamlit-and-huggingface.md`. Publishing needs the group's own acco
 - [x] **D2** `streamlit_app/app.py` + `streamlit_app/requirements.txt`; `scripts/verify_streamlit.py` (8 checks with Streamlit's AppTest, numbers equal the model; passed on Python 3.12 and 3.13 with only the app's requirements).
 - [x] **D3** `hf_space/app.py` (Gradio), `scripts/build_hf_bundle.py` (model card generated from `metrics.json`, Space config, bundle); `scripts/verify_hf_bundle.py` (8 checks including a real Gradio server and client run).
 - [x] **D4** `docs/deployment_guide.md`, README deployment table and structure, guide checklist and viva question, `verify_readme.py` and `verify_guide.py` extended.
-- [ ] **Group to do:** deploy to Streamlit Community Cloud, create the HF model repo and Space, choose a licence, then update the README table and the `verify_readme.py` rule that currently requires "not deployed yet".
+- [x] **Group to do:** deploy to Streamlit Community Cloud, create the HF model repo and Space, choose a licence, then update the README table and the `verify_readme.py` rule that currently requires "not deployed yet". (2026-11-19: Streamlit and the HF model repo are live; no Space, by the group's decision in `SPEC-project-completion.md`; republishing the model repo and the docs and checker update are T6 and T7 of `tasks/todo-completion.md`; licence is still a group decision, deferred there.)
 
 Findings: the nominal 80% range covers only 60% of the 2020-2022 test rows (test years differ from validation, no yearly trend). Docker is not installed, so the Space is Gradio. The model file is 20 MB (use `hf upload`, not plain git). `/tmp` is a 3.6 GB tmpfs and hit its quota once from throwaway virtualenvs; they are cleaned up.

@@ -62,9 +62,9 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 - [x] **T3** Retrain with year-grouped CV, save pipeline + metrics.json + reference.json, update notebook (M)
 
 ### Checkpoint A: Model review (stop and show user)
-- [ ] Test-set metrics vs crop-mean baseline reported, even if weak
-- [ ] Sensitivity check: changing rain/temp changes predictions for at least some crops
-- [ ] User accepts the model before the backend is rebuilt on it
+- [x] Test-set metrics vs crop-mean baseline reported, even if weak (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
+- [x] Sensitivity check: changing rain/temp changes predictions for at least some crops (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
+- [x] User accepts the model before the backend is rebuilt on it (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
 
 ### Phase 2: Vertical paths on the new model
 - [x] **T4** `/predict` end-to-end: service + schema + predict.html single-crop view (M)
@@ -73,17 +73,17 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 - [x] **T7** Remove dead code (`CROP_PHYSIOLOGY`, elasticity, `PRESET_SCENARIOS` demo wording, hardcoded `PROVINCE_DEFAULTS`) + no-fake guard test (S)
 
 ### Checkpoint B: App complete
-- [ ] `verify_backend.py` and `verify_model.py` pass
-- [ ] Manual: server on :8000, predict / recommend / metrics pages work; backend stopped shows error and no numbers
-- [ ] `grep -riE "bajra|jowar|gram\b|fallback|simulat|demo" frontend/ app/` is empty
+- [x] `verify_backend.py` and `verify_model.py` pass (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
+- [x] Manual: server on :8000, predict / recommend / metrics pages work; backend stopped shows error and no numbers (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
+- [x] `grep -riE "bajra|jowar|gram\b|fallback|simulat|demo" frontend/ app/` is empty (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
 
 ### Phase 3: Deliverables (from old plan, rewritten)
 - [x] **T8** README with honest metrics from `metrics.json`, data unit, aggregation, limits (S)
 - [x] **T9** `docs/demo_and_viva_guide.md` with 3/4/3 minute script on the real app (S)
 
 ### Checkpoint C: Submission ready
-- [ ] Repo has data/, notebooks/, app/, models/, requirements.txt, README, guide
-- [ ] Full flow verified on localhost:8000
+- [x] Repo has data/, notebooks/, app/, models/, requirements.txt, README, guide (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
+- [x] Full flow verified on localhost:8000 (2026-11-19, evidence in the matching Checkpoint box of `tasks/todo.md`)
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
