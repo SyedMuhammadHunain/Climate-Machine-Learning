@@ -27,6 +27,19 @@ class CropRecommendationItem(BaseModel):
     training_rows_for_crop: int
     training_rows_possible: int
     fao_water_need: Optional[FaoWaterNeed] = None  # None = crop is not in the FAO table
+    barely_grown: bool  # typical predicted yield under 1% of the largest in this result (inference.BARELY_GROWN_SHARE)
+
+
+class CropGroup(BaseModel):
+    """Crops that show the same share of a typical year at one decimal: one rank for the whole group."""
+    rank: int  # 1 = largest share, 2 = next different share, ...
+    pct_of_normal: float  # the share shown, at one decimal
+    crops: List[str]  # in ranking order (by name inside the group)
+
+
+class ScenarioFact(BaseModel):
+    label: str
+    value: str
 
 
 class RecommendationResponse(BaseModel):
@@ -37,6 +50,9 @@ class RecommendationResponse(BaseModel):
     inputs: Dict[str, InputValue]
     top_crop: CropRecommendationItem
     ranked_crops: List[CropRecommendationItem]
+    groups: List[CropGroup]
+    headline: str  # one sentence: largest and smallest share; a tie is named as a group, never as one best crop
+    scenario_facts: List[ScenarioFact]
     recommendation_summary: str
     model_name: str
     absolute_yield_note: str  # why one predicted number is rough (generated from metrics.json)

@@ -720,6 +720,113 @@ def sort_uses_the_displayed_share_for_near_ties():
     assert I.tied_with(ordered) == {"banana": 1, "tomato": 1, "rice": 0}
 
 
+# --------------------------------------------------------------------------- tie groups, barely grown, headline (SPEC-responsive.md R5, R10)
+def _crop_item(crop, pct, normal=10.0):
+    from climate_machine_learning import inference as I
+
+    return I.CropResult(crop, normal * pct / 100.0, normal, pct)
+
+
+@test
+def tie_groups_put_crops_with_the_same_displayed_share_in_one_group_with_one_rank():
+    from climate_machine_learning import inference as I
+
+    items = sorted([_crop_item("rice", 89.3), _crop_item("tomato", 97.74), _crop_item("apple", 99.24), _crop_item("banana", 97.66)],
+                   key=I.rank_key)
+    groups = I.tie_groups(items)
+    assert [(g.rank, g.pct_of_normal, g.crops) for g in groups] == [
+        (1, 99.2, ["apple"]), (2, 97.7, ["banana", "tomato"]), (3, 89.3, ["rice"])], groups
+    assert I.tie_groups([]) == []
+    everyone = I.tie_groups([_crop_item("a", 100.04), _crop_item("b", 99.96), _crop_item("c", 100.0)])
+    assert [(g.rank, g.pct_of_normal, g.crops) for g in everyone] == [(1, 100.0, ["a", "b", "c"])], everyone
+
+
+@test
+def barely_grown_means_typical_yield_under_one_percent_of_the_largest_in_the_result():
+    from climate_machine_learning import inference as I
+
+    assert I.BARELY_GROWN_SHARE == 0.01
+    items = [_crop_item("a", 100.0, normal=100.0), _crop_item("b", 100.0, normal=1.0),
+             _crop_item("c", 100.0, normal=0.99), _crop_item("d", 100.0, normal=0.01)]
+    assert I.barely_grown(items) == {"a": False, "b": False, "c": True, "d": True}, "exactly 1% is still grown"
+    assert I.barely_grown([_crop_item("only", 100.0, normal=0.001)]) == {"only": False}, "relative to the result itself"
+    assert I.barely_grown([]) == {}
+
+
+@test
+def headline_never_names_a_sole_best_crop_when_crops_tie_and_skips_barely_grown_ones():
+    from climate_machine_learning import inference as I
+
+    def headline(*pairs):
+        return I.ranking_headline(sorted([_crop_item(c, p, n) for c, p, n in pairs], key=I.rank_key))
+
+    unique = headline(("pomegranate", 99.2, 40.0), ("rice", 89.3, 40.0), ("wheat", 95.0, 40.0))
+    assert "POMEGRANATE" in unique and "RICE" in unique and "99.2%" in unique and "89.3%" in unique, unique
+    assert "WHEAT" not in unique, unique
+
+    tied_top = headline(("apple", 97.7, 40.0), ("banana", 97.7, 40.0), ("rice", 89.3, 40.0))
+    assert "2 crops" in tied_top and "RICE" in tied_top, tied_top
+    assert "APPLE" not in tied_top and "BANANA" not in tied_top, "a tie names no single best crop: " + tied_top
+
+    tied_all = headline(("apple", 100.0, 40.0), ("banana", 100.04, 40.0), ("rice", 99.96, 40.0))
+    assert "no difference" in tied_all and "3 crops" in tied_all and "100.0%" in tied_all, tied_all
+    assert not any(c in tied_all for c in ("APPLE", "BANANA", "RICE")), tied_all
+
+    barely_first = headline(("apple", 100.5, 0.01), ("banana", 99.0, 50.0), ("rice", 89.3, 50.0))
+    assert "BANANA" in barely_first and "APPLE" not in barely_first, "a barely grown crop never leads: " + barely_first
+
+    barely_tie = headline(("apple", 97.7, 0.01), ("banana", 97.7, 50.0), ("rice", 89.3, 50.0), ("wheat", 97.7, 50.0))
+    assert "2 crops" in barely_tie, "barely grown crops are not counted in the tie: " + barely_tie
+
+
+@test
+def scenario_facts_state_the_inputs_the_model_used():
+    from climate_machine_learning import inference as I
+
+    pipe, m, ref = _load_artifacts()
+    few = I.predict_crops(pipe, ref, "Punjab", {"precipitation_sum": 300.0, "temperature_2m_mean": 25.0})
+    facts = dict((f["label"], f["value"]) for f in I.scenario_facts("Punjab", few.inputs, few.sources, "Gradient Boosting"))
+    assert facts == {"Province": "Punjab", "Annual rain": "300.0 mm", "Mean temperature": "25.0 °C",
+                     "Optional inputs entered": "0 of 7", "Model": "Gradient Boosting"}, facts
+    every = I.predict_crops(pipe, ref, "Sindh", ref["historical_years"]["Sindh"]["driest"]["inputs"])
+    facts = dict((f["label"], f["value"]) for f in I.scenario_facts("Sindh", every.inputs, every.sources, "Gradient Boosting"))
+    assert facts["Optional inputs entered"] == "7 of 7", facts
+
+
+@test
+def service_ranking_equals_direct_predict_crops_for_every_province_and_preset():
+    """The API (ModelService) and inference.predict_crops give the same ranking for all 9 province x preset cases,
+    and the groups, headline and barely-grown flags are the shared functions' output."""
+    sys.path.insert(0, str(ROOT))
+    from app.schemas.recommend import DroughtScenarioRequest
+    from app.services.model_service import ModelService
+    from climate_machine_learning import inference as I, presentation as P
+
+    service = ModelService()
+    pipe, m, ref = _load_artifacts()
+    I.single_thread(pipe)
+    cases = 0
+    for province in ref["provinces"]:
+        for preset in (P.TYPICAL, P.DRIEST, P.WETTEST):
+            inputs = P.preset_inputs(ref, province, preset)
+            direct = I.predict_crops(pipe, ref, province, inputs)
+            got = service.recommend_crops(DroughtScenarioRequest(province=province, **inputs))
+            where = (province, preset)
+            assert [c.crop for c in got.ranked_crops] == [i.crop for i in direct.items], where
+            assert all(c.pct_of_normal == i.pct_of_normal and c.predicted_yield == i.predicted_yield
+                       for c, i in zip(got.ranked_crops, direct.items)), where
+            groups = I.tie_groups(direct.items)
+            assert [(g.rank, g.pct_of_normal, g.crops) for g in got.groups] == [(g.rank, g.pct_of_normal, g.crops) for g in groups], where
+            flags = I.barely_grown(direct.items)
+            assert {c.crop: c.barely_grown for c in got.ranked_crops} == flags, where
+            assert got.headline == I.ranking_headline(direct.items), where
+            lead = next(g for g in groups if any(not flags[c] for c in g.crops))
+            if len([c for c in lead.crops if not flags[c]]) > 1:
+                assert not any(c.upper() in got.headline for c in lead.crops), (where, got.headline)
+            cases += 1
+    assert cases == 9
+
+
 # --------------------------------------------------------------------------- promote (SPEC-promote-offset-model.md)
 @test
 def beats_by_metric_needs_strictly_better_r2_and_mae_for_the_flag():

@@ -66,6 +66,83 @@ def tied_with(items: Sequence[CropResult], digits: int = TIE_DIGITS) -> Dict[str
     return {i.crop: shown.count(s) - 1 for i, s in zip(items, shown)}
 
 
+@dataclass
+class TieGroup:
+    """Crops that show the same share of a typical year. Their order carries no information, so they share one rank."""
+    rank: int                # 1 = the group with the largest share, 2 = the next different share, ...
+    pct_of_normal: float     # the share shown, at TIE_DIGITS decimals
+    crops: List[str]         # in the order of the ranking (by name inside the group)
+
+
+def tie_groups(items: Sequence[CropResult], digits: int = TIE_DIGITS) -> List[TieGroup]:
+    """Group a ranked list (sorted by rank_key) by displayed share. Equal shares share a rank."""
+    groups: List[TieGroup] = []
+    for item in items:
+        share = round(item.pct_of_normal, digits)
+        if groups and groups[-1].pct_of_normal == share:
+            groups[-1].crops.append(item.crop)
+        else:
+            groups.append(TieGroup(rank=len(groups) + 1, pct_of_normal=share, crops=[item.crop]))
+    return groups
+
+
+BARELY_GROWN_SHARE = 0.01  # a crop whose typical predicted yield is under this fraction of the largest one counts as barely grown
+
+
+def barely_grown(items: Sequence[CropResult]) -> Dict[str, bool]:
+    """Crops the model predicts almost no typical yield for in this province (apple in Sindh: 0.01), judged against the
+    largest typical predicted yield among the crops in the same result. Built only from the model's own median-year output."""
+    if not items:
+        return {}
+    cutoff = BARELY_GROWN_SHARE * max(i.normal_yield for i in items)
+    return {i.crop: i.normal_yield < cutoff for i in items}
+
+
+def ranking_headline(items: Sequence[CropResult]) -> str:
+    """One sentence for the top of a ranking: who keeps the largest and the smallest share of a typical year.
+
+    Crops that tie are named as a group ("2 crops tie"), never as a single best crop, and barely grown crops are neither
+    counted nor named, so a crop with no real yield cannot lead the advisory. When every remaining crop shows the same
+    share, the sentence says the model sees no difference.
+    """
+    flags = barely_grown(items)
+    groups = []
+    for g in tie_groups(items):
+        crops = [c for c in g.crops if not flags[c]]
+        if crops:
+            groups.append((crops, g.pct_of_normal))
+    if not groups:
+        return "The model gives no usable yield for any crop in this scenario."
+    if len(groups) == 1:
+        crops, share = groups[0]
+        return (f"The model sees no difference between crops for this scenario: {len(crops)} crops keep "
+                f"{share:.1f}% of a typical year's yield.")
+
+    def who(crops, share, verb):
+        if len(crops) == 1:
+            return f"{crops[0].upper()} {verb}"
+        return f"{len(crops)} crops tie for"
+
+    (top, top_share), (low, low_share) = groups[0], groups[-1]
+    first = f"{who(top, top_share, 'keeps')} the largest share of a typical year's yield ({top_share:.1f}%)"
+    second = (f"{low[0].upper()} the smallest ({low_share:.1f}%)" if len(low) == 1
+              else f"{len(low)} crops tie for the smallest ({low_share:.1f}%)")
+    return f"{first}, {second}."
+
+
+def scenario_facts(province: str, inputs: Dict[str, float], sources: Dict[str, str], model_name: str) -> List[Dict[str, str]]:
+    """Label and value pairs describing the scenario that was run, for the structured advisory on every front end."""
+    optional = [k for k in F.BASE_INPUTS if k not in F.REQUIRED_INPUTS]
+    entered = sum(1 for k in optional if sources[k] == F.SRC_USER)
+    return [
+        {"label": "Province", "value": province},
+        {"label": "Annual rain", "value": f"{inputs['precipitation_sum']:.1f} mm"},
+        {"label": "Mean temperature", "value": f"{inputs['temperature_2m_mean']:.1f} °C"},
+        {"label": "Optional inputs entered", "value": f"{entered} of {len(optional)}"},
+        {"label": "Model", "value": model_name},
+    ]
+
+
 _METRIC_NAMES = {"r2": "R²", "mae": "MAE", "rmse": "RMSE", "log_mae": "log-MAE"}
 _METRIC_FORMATS = {"r2": ".3f", "mae": ".1f", "rmse": ".1f", "log_mae": ".3f"}
 

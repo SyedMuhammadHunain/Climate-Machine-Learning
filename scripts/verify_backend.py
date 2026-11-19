@@ -112,6 +112,48 @@ def run_verification():
         assert data["inputs"]["precipitation_sum"]["source"] == "user"
         print("  -> PASSED: yields, normal yields, ratios and summary match the model.")
 
+        # 6b. /recommend tie groups, headline, scenario facts, barely-grown flags (SPEC-responsive.md R5, R10)
+        print("\n[TEST 6b] /recommend groups, headline, facts and barely-grown flags")
+        for province, kind in (("Sindh", "driest"), ("Sindh", "typical"), ("Punjab", "wettest")):
+            if kind == "typical":
+                median = REFERENCE["provinces"][province]["median"]
+                scenario = {"precipitation_sum": median["precipitation_sum"], "temperature_2m_mean": median["temperature_2m_mean"]}
+            else:
+                scenario = dict(REFERENCE["historical_years"][province][kind]["inputs"])
+            res = client.post("/api/v1/recommend", json={"province": province, **scenario})
+            assert res.status_code == 200, res.text
+            body = res.json()
+            ranked = body["ranked_crops"]
+            groups = body["groups"]
+            assert [g["rank"] for g in groups] == list(range(1, len(groups) + 1)), groups
+            assert [c for g in groups for c in g["crops"]] == [r["crop"] for r in ranked], "groups cover the ranking in order"
+            for g in groups:
+                for crop in g["crops"]:
+                    item = next(r for r in ranked if r["crop"] == crop)
+                    assert round(item["pct_of_normal"], 1) == g["pct_of_normal"], (province, kind, crop)
+                    assert item["tied_with"] == len(g["crops"]) - 1, (province, kind, crop)
+            assert all(isinstance(r["barely_grown"], bool) for r in ranked)
+            grown = {r["crop"]: r["barely_grown"] for r in ranked}
+            lead = next(g for g in groups if any(not grown[c] for c in g["crops"]))
+            counted = [c for c in lead["crops"] if not grown[c]]
+            head = body["headline"]
+            assert isinstance(head, str) and head and head.count(".") >= 1
+            if len(groups) == 1 or len({g["rank"] for g in groups if any(not grown[c] for c in g["crops"])}) == 1:
+                assert "no difference" in head, (province, kind, head)
+                assert not any(c.upper() in head for c in lead["crops"]), (province, kind, head)
+            elif len(counted) > 1:
+                assert f"{len(counted)} crops tie" in head and not any(c.upper() in head for c in counted), (province, kind, head)
+            else:
+                assert counted[0].upper() in head, (province, kind, head)
+            assert not grown[counted[0]], "a barely grown crop never leads"
+            labels = [f["label"] for f in body["scenario_facts"]]
+            assert labels == ["Province", "Annual rain", "Mean temperature", "Optional inputs entered", "Model"], labels
+            assert body["scenario_facts"][0]["value"] == province
+            assert body["recommendation_summary"], "the existing summary stays"
+            if province == "Sindh":
+                assert grown["apple"] is True, "apple has typical yield 0.01 in Sindh"
+        print("  -> PASSED: groups, headline, facts and barely-grown flags are consistent with the ranking.")
+
         # 7. Validation Error Handling: Temperature Inversion (T_max < T_min)
         print("\n[TEST 7] POST /api/v1/predict with Invalid Temperature Physics (T_max < T_min)")
         invalid_temp = {

@@ -123,7 +123,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
 
 ## Phase 3: Ranking
 
-- [ ] **T6: Tie groups, barely grown, API fields** (module `ranking`, M)
+- [x] **T6: Tie groups, barely grown, API fields** (module `ranking`, M)
   - Description: In `inference.py` add `tie_groups(items)` (groups by share at `TIE_DIGITS`, rank
     = group position) and `barely_grown(items)` (typical predicted yield < `BARELY_GROWN_SHARE`
     = 1% of the largest typical predicted yield in the same result). `ModelService.recommend_crops`
@@ -138,6 +138,13 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: single tests via CLAUDE.md snippet; `scripts/verify_backend.py`.
   - Files: `src/climate_machine_learning/inference.py`, `app/services/model_service.py`, `app/schemas/recommend.py`, `scripts/verify_model.py`, `scripts/verify_backend.py`.
   - Depends on: T1.
+  - Done 2026-11-19. `inference.tie_groups`, `barely_grown`, `ranking_headline`, `scenario_facts`; `/recommend` gains
+    `groups`, `headline`, `scenario_facts` and per-item `barely_grown` (nothing removed). 5 new `verify_model.py` tests
+    (written first, failed, then passed) incl. service vs direct `predict_crops` for all 9 province x preset cases; TEST 6b
+    in `verify_backend.py` (written after the code). `./run_checks.sh --all` 10/10.
+    Real output: 5 of 9 cases are one tie group (12 or 13 crops) so the headline says "no difference"; Sindh apple is
+    flagged (typical 0.01); Balochistan cotton is also flagged (typical 3.97 vs a much larger largest crop there).
+    The Hugging Face model repo is not republished: its copy of `inference.py` now lags the repo's.
 
 - [ ] **T7: Result rows and tie groups on the page** (module `ranking`, S)
   - Description: `predict.html` renders `groups`: group heading "Rank N · X% of typical" (with

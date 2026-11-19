@@ -11,10 +11,12 @@ from climate_machine_learning import inference as I
 from app.core.exceptions import AgronomicValidationError
 from app.schemas.predict import InputValue, SinglePredictionRequest, SinglePredictionResponse
 from app.schemas.recommend import (
+    CropGroup,
     CropRecommendationItem,
     DroughtScenarioRequest,
     FaoWaterNeed,
     RecommendationResponse,
+    ScenarioFact,
 )
 
 
@@ -123,6 +125,7 @@ class ModelService:
         province = request.province.value
         result = self._predict(province, self._supplied(request))
         ties = I.tied_with(result.items)
+        grown = I.barely_grown(result.items)
         items = [
             CropRecommendationItem(
                 rank=i + 1,
@@ -134,6 +137,7 @@ class ModelService:
                 training_rows_for_crop=int(self.reference["train_rows_per_crop"][r.crop]),
                 training_rows_possible=self.training_rows_possible,
                 fao_water_need=self._fao_item(r.crop),
+                barely_grown=grown[r.crop],
             )
             for i, r in enumerate(result.items)
         ]
@@ -155,6 +159,9 @@ class ModelService:
             inputs=self._inputs(result),
             top_crop=top,
             ranked_crops=items,
+            groups=[CropGroup(rank=g.rank, pct_of_normal=g.pct_of_normal, crops=g.crops) for g in I.tie_groups(result.items)],
+            headline=I.ranking_headline(result.items),
+            scenario_facts=[ScenarioFact(**f) for f in I.scenario_facts(province, result.inputs, result.sources, self.model_name)],
             recommendation_summary=summary,
             model_name=self.model_name,
             absolute_yield_note=I.absolute_yield_caveat(self.metrics),
