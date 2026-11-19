@@ -95,8 +95,10 @@ def main() -> int:
     for platform in ("streamlit", "hugging face"):
         if platform not in low:
             failures.append(f"deployment checklist missing {platform}")
-    if not re.search(r"- \[ \][^\n]*streamlit", low) or not re.search(r"- \[ \][^\n]*hugging face", low):
-        failures.append("Streamlit and Hugging Face must be open checklist items (not deployed yet)")
+    if not re.search(r"- \[x\][^\n]*streamlit[^\n]*streamlit\.app", low):
+        failures.append("Streamlit checklist item must be ticked and show the live streamlit.app URL")
+    if not re.search(r"- \[ \][^\n]*hugging face", low):
+        failures.append("Hugging Face checklist item must stay open (the Space is not deployed)")
     for word in ("bajra", "jowar"):
         if word in low:
             failures.append(f"banned wording: {word}")

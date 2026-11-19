@@ -78,6 +78,7 @@ src/climate_machine_learning/
     features.py       yearly aggregation, merge of both sources, engineered features, inference rows (shared by training and API)
     training.py       split, tuning, evaluation, saving
     inference.py      prediction and ranking from the trained pipeline (shared by the API, Streamlit and Gradio apps)
+    presentation.py   tables and wording shown by the Streamlit and Gradio apps (one copy, so both say the same)
 streamlit_app/        Streamlit app (app.py) and its own minimal requirements.txt
 hf_space/             Gradio app (app.py) and requirements for the Hugging Face Space
 data/raw/             crop yield and climate dataset (parquet + csv)
@@ -242,10 +243,10 @@ The course guidelines ask for three deployments. Status:
 | Platform | Status |
 |---|---|
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
-| Streamlit Community Cloud | App built and tested locally (`streamlit_app/app.py`, own `streamlit_app/requirements.txt`): input form, prediction with a likely range, one chart. **Not deployed yet.** |
+| Streamlit Community Cloud | **Live:** <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> (deployed from branch `hunain-deploy`; app code in `streamlit_app/app.py`, own `streamlit_app/requirements.txt`). Input form, prediction with a likely range, one chart. Tested in a real browser on 2026-11-19: it loads for a logged-out visitor in about 20 to 30 seconds, its numbers equal the local model, and the chart draws all 13 crops. Free apps may sleep when idle, so open it before a demo. |
 | Hugging Face (model card + Space) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code; a token-less download runs the bundled example). **Space: not deployed yet.** The bundle (`python scripts/build_hf_bundle.py`, Space app in `hf_space/app.py`) is built and tested, but the Hub refuses Gradio Spaces on a free account (free CPU hosting of Gradio and Docker Spaces needs a PRO subscription; only static Spaces are free). |
 
-Publishing needs your own accounts, so the two cloud deployments are still to do. Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
+Streamlit is deployed. Only the Hugging Face Space is still to do (blocked by the free plan, see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
 
 The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 

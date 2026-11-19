@@ -108,8 +108,14 @@ def main() -> int:
     for platform in ("streamlit", "hugging face"):
         if platform not in low:
             failures.append(f"deployment status for {platform} missing")
-    if not re.search(r"streamlit[^\n]*not (yet )?deployed", low) or not re.search(r"hugging face[^\n]*not (yet )?deployed", low):
-        failures.append("Streamlit and Hugging Face must be marked 'not deployed yet'")
+    rows = {name: next((l for l in text.splitlines() if l.startswith(f"| {name}")), "") for name in ("Streamlit", "Hugging Face")}
+    for name, row in rows.items():
+        if not row:
+            failures.append(f"README deployment table has no row starting with '| {name}'")
+    if "https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/" not in rows["Streamlit"] or "not deployed" in rows["Streamlit"].lower():
+        failures.append("README Streamlit row must show the live URL and must not say 'not deployed'")
+    if "SMHunain/crop-yield-drought-pakistan" not in rows["Hugging Face"] or "not deployed yet" not in rows["Hugging Face"].lower():
+        failures.append("README Hugging Face row must link the live model repo and say the Space is 'not deployed yet' (free plan)")
 
     # no fake / demo wording, no old model numbers
     for word in ("bajra", "jowar", "0.892", "elasticity", "simulation", "demo mode", "fallback"):

@@ -1,6 +1,6 @@
 # Deployment guide: Streamlit Community Cloud and Hugging Face
 
-The course guidelines ask for three deployments. The local FastAPI app is done. The other two are **built and tested locally, but not deployed yet**, because publishing needs your own accounts. This guide lists exactly what to click and type.
+The course guidelines ask for three deployments. The local FastAPI app is done and **Streamlit is deployed** (status in section 1). The Hugging Face **model repo is live**, but the **Space is not deployed**: the Hub needs a PRO plan for a free-CPU Gradio Space (status in section 2). This guide lists exactly what to click and type.
 
 ## What was tested here, and what was not
 
@@ -15,6 +15,8 @@ Tested on this machine:
 Before you start, push the branch that contains these files to GitHub. The repository is <https://github.com/SyedMuhammadHunain/Climate-Machine-Learning>.
 
 ## 1. Streamlit Community Cloud
+
+**Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the plain `Hunain` branch could not be pushed because the remote `Hunain` and `main` had been force-rewritten). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model. The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
 
 From Streamlit's deploy docs:
 
@@ -48,6 +50,8 @@ hf auth login                                   # paste the token when asked
 python scripts/build_hf_bundle.py               # writes hf_bundle/model and hf_bundle/space (git-ignored)
 ```
 
+The builder only replaces `model/` and `space/` inside its output folder, and refuses a folder that is not empty and was not made by it (it never deletes anything else). If you built a bundle with an older version of the script, delete that `hf_bundle` folder once, or pass a new folder with `--out`.
+
 Model repo (model card, pipeline, reference, metrics, inference code):
 
 ```bash
@@ -74,11 +78,11 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 
 **Decide a licence.** The model card has no `license` field on purpose: the group has not chosen one. Add `license: <id>` to the card's front matter in `build_hf_bundle.py` when you decide. The data licences are stated in the card (crop dataset MIT; NASA POWER "License not specified", citation requested).
 
-## 3. After both are live
+## 3. When the Hugging Face Space goes live (Streamlit is already done)
 
-- Edit the README deployment table with the two URLs and the dates.
-- `scripts/verify_readme.py` currently insists that both rows say "not deployed yet". Update that check at the same time, or it will fail.
-- Tick the two items in the "Before you present" list of `docs/demo_and_viva_guide.md`.
+- Edit the Hugging Face row of the README deployment table with the Space URL and the date.
+- `scripts/verify_readme.py` requires the Streamlit row to show the live URL and not say "not deployed", and the Hugging Face row to link the model repo and say the Space is "not deployed yet". Change that second rule at the same time, or it will fail. `scripts/verify_guide.py` likewise keeps the Hugging Face checklist item open until you tick it.
+- Tick the Hugging Face item in the "Before you present" list of `docs/demo_and_viva_guide.md`.
 - Rehearse the live demo with the three URLs open.
 
 ## Re-checking the local builds
