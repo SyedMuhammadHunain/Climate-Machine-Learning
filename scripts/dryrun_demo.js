@@ -12,11 +12,12 @@ const els = {};
 const mk = (init = "") => { let v = init; return {
     get value() { return v; }, set value(x) { v = String(x); },
     style: {}, innerHTML: "", textContent: "", dataset: {}, placeholder: "", onclick: null,
+    children: [], replaceChildren(...kids) { this.children = kids; },
     classList: { add() {}, remove() {}, toggle() {} }, addEventListener() {}, scrollIntoView() {} }; };
 const el = id => els[id] || (els[id] = mk());
 el("field-province").value = "Punjab";   // the page's default
 el("field-crop").value = "ALL";
-const document = { getElementById: el, querySelector: () => el("heading"), querySelectorAll: () => [], addEventListener() {} };
+const document = { createElement: () => mk(), getElementById: el, querySelector: () => el("heading"), querySelectorAll: () => [], addEventListener() {} };
 const ctx = { document, fetch: (u, o) => fetch(BASE + String(u).replace(/^https?:\/\/[^/]+/, ""), o),
     console: { error() {}, log() {} }, performance, AbortSignal, AbortController, setTimeout, clearTimeout };
 ctx.window = ctx; ctx.window.API_BASE = ""; ctx.location = { origin: "http://x" };
@@ -33,10 +34,13 @@ const run = async () => { await ctx.submitPredictionForm(); await sleep(700); };
     await sleep(1500);
     const meta = await (await fetch(BASE + "/api/v1/metadata")).json();
     const dry = meta.scenarios.find(s => s.province === "Sindh" && s.kind === "driest");
+    const pills = el("presets-pills").children;
+    check(pills.length === 3 && pills.every(b => b.className === "preset-pill" && b.textContent && !b.textContent.includes("<")),
+        `3 preset buttons built as DOM nodes: ${pills.map(b => b.textContent).join(" | ")}`);
     console.log(`1. Sindh, Driest real year (${dry.year}), all crops`);
     el("field-province").value = "Sindh";
     ctx.applyPreset("driest");
-    check(strip(el("presets-pills").innerHTML).includes(`Driest real year (${dry.year})`), "preset pill label shows the real year");
+    check(el("presets-pills").children.map(b => b.textContent).join(" ").includes(`Driest real year (${dry.year})`), "preset pill label shows the real year");
     check(Number(el("field-precipitation").value) === dry.inputs.precipitation_sum, "rain field filled from the real year");
     await run();
     let api = await post("/api/v1/recommend", { province: "Sindh", ...dry.inputs });

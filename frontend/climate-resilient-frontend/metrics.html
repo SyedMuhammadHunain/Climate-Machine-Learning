@@ -498,7 +498,8 @@
             const base = m.baselines.crop_province_mean.test;
             const t = chosen.test;
             // Win per metric against the crop-province mean (from /metrics: chosen.beats_by_metric). Nothing is typed here.
-            const by = m.chosen.beats_by_metric;
+            const by = m.chosen.beats_by_metric ?? {};
+            const hasPerMetric = Object.keys(by).length > 0;  // an older metrics.json has no per-metric comparison
             const mname = { r2: "R²", mae: "MAE", rmse: "RMSE", log_mae: "log-MAE" };
             const mdigits = { r2: 3, mae: 1, rmse: 1, log_mae: 3 };
             const better = Object.keys(mname).filter(k => by[k]).map(k => mname[k]);
@@ -506,7 +507,8 @@
             const pair = k => `${mname[k]} ${f(t[k], mdigits[k])} vs ${f(base[k], mdigits[k])}${by[k] ? " (better)" : " (not better)"}`;
             const judged = m.chosen.judged_on_chosen_after_test
                 ? ` The pass test (${m.chosen.judged_on.map(k => mname[k]).join(" and ")}) was chosen after seeing the test results.` : "";
-            const vsBase = (better.length ? `Better on ${better.join(", ")}` : "Not better on any metric") +
+            const vsBase = !hasPerMetric ? "Per-metric comparison not in this metrics file"
+                : (better.length ? `Better on ${better.join(", ")}` : "Not better on any metric") +
                 (worse.length && better.length ? `; not on ${worse.join(", ")}` : "");
 
             $("summary-cells").innerHTML = [
@@ -514,7 +516,9 @@
                 ["Test MAE", f(t.mae, 1), "Average absolute error in dataset yield units."],
                 ["Test RMSE", f(t.rmse, 1), "Like MAE but punishes large misses."],
                 ["Vs crop-average baseline", vsBase,
-                    `Model against using each crop's average yield per province, test years: ${Object.keys(mname).map(pair).join("; ")}.${judged}`],
+                    hasPerMetric
+                        ? `Model against using each crop's average yield per province, test years: ${Object.keys(mname).map(pair).join("; ")}.${judged}`
+                        : `Test R² ${f(t.r2)} for the model against ${f(base.r2)} for using each crop's average yield per province.`],
             ].map(([label, val, detail]) =>
                 `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
             ).join("");
@@ -530,7 +534,7 @@
 
             const rows = [];
             const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield",
-                crop_province_mean_plus_trend: `Baseline: crop-province mean + year trend (${m.baselines.crop_province_mean_plus_trend.trend.replace(/_/g, " ")}), no climate` };
+                crop_province_mean_plus_trend: `Baseline: crop-province mean + year trend (${(m.baselines.crop_province_mean_plus_trend?.trend ?? "trend").replace(/_/g, " ")}), no climate` };
             Object.entries(m.baselines).forEach(([k, v]) => rows.push([baseLabels[k] || k, v.val, v.test, null, false]));
             Object.entries(m.models).forEach(([k, v]) => rows.push([v.label, v.val, v.test, v.cv_log_mae, k === m.chosen.name]));
             $("cmp-body").innerHTML = rows.map(([name, val, test, cv, isChosen]) => `

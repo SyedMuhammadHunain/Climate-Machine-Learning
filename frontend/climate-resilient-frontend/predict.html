@@ -728,9 +728,16 @@
                 { key: "median", label: "Typical (median) year" },
                 { key: "wettest", label: `Wettest real year (${wet.year})` },
             ];
-            document.getElementById("presets-pills").innerHTML = pills.map(p =>
-                `<button type="button" class="preset-pill" data-key="${p.key}" onclick="applyPreset('${p.key}')">${p.label}</button>`
-            ).join("");
+            // DOM calls, not innerHTML: labels come from /metadata and must never be parsed as markup
+            document.getElementById("presets-pills").replaceChildren(...pills.map(p => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "preset-pill";
+                button.dataset.key = p.key;
+                button.textContent = p.label;
+                button.addEventListener("click", () => applyPreset(p.key));
+                return button;
+            }));
         }
 
         function applyPreset(key) {

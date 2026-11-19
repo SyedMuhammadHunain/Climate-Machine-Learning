@@ -394,6 +394,30 @@ def run_verification():
         assert "tied" in typ["recommendation_summary"].lower() and "ordered by name" in typ["recommendation_summary"]
         print("  -> PASSED: tied_with is set from the displayed shares and the summary says so.")
 
+        # 29. One dependency guards every model endpoint: no service means 503, never a 500 (review O2)
+        print("\n[TEST 29] model endpoints answer 503 when the model service is missing; /health says degraded")
+        saved_service = app.state.model_service
+        app.state.model_service = None
+        try:
+            body = {"province": "Sindh", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
+            for method, path, payload in (("get", "/api/v1/metadata", None), ("get", "/api/v1/metrics", None),
+                                          ("post", "/api/v1/predict", {**body, "crop": "rice"}),
+                                          ("post", "/api/v1/recommend", body)):
+                res = client.get(path) if method == "get" else client.post(path, json=payload)
+                assert res.status_code == 503, (path, res.status_code, res.text[:100])
+            health = client.get("/api/v1/health").json()
+            assert health["status"] == "degraded" and health["model_loaded"] is False, health
+        finally:
+            app.state.model_service = saved_service
+        print("  -> PASSED: 503 on all four model endpoints, /health degraded.")
+
+        # 30. No dead fallback in app/main.py: the frontend folder is mounted directly (review O3)
+        print("\n[TEST 30] app/main.py has no dead static fallback")
+        import app.main as app_main
+        assert not hasattr(app_main, "STATIC_DIR") and not hasattr(app_main, "SERVE_DIR"), "dead fallback still present"
+        assert "async def root" not in (ROOT_DIR / "app" / "main.py").read_text(), "JSON root fallback still present"
+        print("  -> PASSED: frontend folder is mounted unconditionally.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

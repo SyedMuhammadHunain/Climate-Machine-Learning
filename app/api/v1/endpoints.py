@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Request, status, HTTPException
+from fastapi import APIRouter, Depends, Request, status, HTTPException
 from app.schemas.predict import SinglePredictionRequest, SinglePredictionResponse
 from app.schemas.recommend import DroughtScenarioRequest, RecommendationResponse
 from app.schemas.metadata import MetadataResponse, Scenario
 
 router = APIRouter()
+
+
+def get_service(request: Request):
+    """The loaded model service. Every model endpoint depends on this, so a missing service is always a 503."""
+    service = getattr(request.app.state, "model_service", None)
+    if service is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Machine learning model service is not initialized.",
+        )
+    return service
 
 
 @router.get(
@@ -30,8 +41,7 @@ async def health_check(request: Request):
     description="Provinces, crops, real driest/wettest training years, and the climate ranges the model was trained on.",
     tags=["Metadata"],
 )
-async def get_metadata(request: Request):
-    svc = request.app.state.model_service
+async def get_metadata(svc=Depends(get_service)):
     ref = svc.reference
     scenarios = [
         Scenario(
@@ -64,13 +74,7 @@ async def get_metadata(request: Request):
                 "validation and test scores, permutation importance, data hash and split.",
     tags=["Metadata"],
 )
-async def get_metrics(request: Request):
-    model_service = getattr(request.app.state, "model_service", None)
-    if not model_service:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Machine learning model service is not initialized."
-        )
+async def get_metrics(model_service=Depends(get_service)):
     return model_service.metrics
 
 
@@ -81,13 +85,7 @@ async def get_metrics(request: Request):
     description="Predict yield (dataset yield units) for one crop from annual climate inputs. Inputs outside the trained range are rejected.",
     tags=["Inference"],
 )
-async def predict_single_crop(request: Request, payload: SinglePredictionRequest):
-    model_service = getattr(request.app.state, "model_service", None)
-    if not model_service:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Machine learning model service is not initialized."
-        )
+async def predict_single_crop(payload: SinglePredictionRequest, model_service=Depends(get_service)):
     return model_service.predict_single(payload)
 
 
@@ -98,11 +96,5 @@ async def predict_single_crop(request: Request, payload: SinglePredictionRequest
     description="Rank all 13 crops by model-predicted yield in your scenario relative to a typical year in the province. FAO water-need ranges are shown as context only.",
     tags=["Inference"],
 )
-async def recommend_crops(request: Request, payload: DroughtScenarioRequest):
-    model_service = getattr(request.app.state, "model_service", None)
-    if not model_service:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Machine learning model service is not initialized."
-        )
+async def recommend_crops(payload: DroughtScenarioRequest, model_service=Depends(get_service)):
     return model_service.recommend_crops(payload)

@@ -62,6 +62,15 @@ def main() -> int:
     if re.search(r'class="metric-val"[^>]*>[^<]*\d', metrics_page):
         failures.append("metrics.html: a metric value is typed into the HTML")
 
+    # review O4: an older metrics.json must not blank the page (no eager access to newer fields)
+    if re.search(r"crop_province_mean_plus_trend\.trend", metrics_page):
+        failures.append("metrics.html: crop_province_mean_plus_trend.trend is read without optional chaining")
+    if re.search(r"m\.chosen\.beats_by_metric\s*;", metrics_page):
+        failures.append("metrics.html: m.chosen.beats_by_metric is read without a fallback")
+    # review O1: preset buttons are built with DOM calls, not innerHTML with inline onclick
+    if "onclick=\"applyPreset" in predict:
+        failures.append("predict.html: preset buttons still use innerHTML with an inline onclick")
+
     # T7: no demo/simulation wording or old hand-made concepts in any page
     for name in PAGES:
         text = (FRONTEND / name).read_text(encoding="utf-8").lower()

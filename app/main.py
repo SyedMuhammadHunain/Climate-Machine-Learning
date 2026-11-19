@@ -3,7 +3,6 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.core.config import MODEL_PATH
@@ -16,7 +15,6 @@ from app.services.model_service import ModelService
 from app.api.v1.endpoints import router as v1_router
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "climate-resilient-frontend"
-STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 
 @asynccontextmanager
@@ -73,23 +71,5 @@ app.include_router(v1_router, prefix="/api/v1")
 app.include_router(v1_router, prefix="")
 
 
-# Serve static frontend files (prefers frontend/climate-resilient-frontend, falls back to app/static)
-SERVE_DIR = FRONTEND_DIR if FRONTEND_DIR.exists() else (STATIC_DIR if STATIC_DIR.exists() else None)
-
-if SERVE_DIR:
-    app.mount("/", StaticFiles(directory=SERVE_DIR, html=True), name="frontend")
-else:
-    @app.get("/", include_in_schema=False)
-    async def root():
-        return {
-            "name": "Climate-Resilient Low-Water Crop Selection API",
-            "version": "0.1.0",
-            "status": "online",
-            "docs_url": "/docs",
-            "endpoints": {
-                "health": "/health",
-                "metadata": "/api/v1/metadata",
-                "predict": "/api/v1/predict",
-                "recommend": "/api/v1/recommend",
-            }
-        }
+# Serve the frontend pages. The folder ships with every deployment; a missing folder fails loudly at startup.
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
