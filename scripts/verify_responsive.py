@@ -165,9 +165,13 @@ MEASURE_JS = r"""
   const actions = { submit: rect(document.getElementById("btn-submit-prediction")), reset: rect(document.querySelector(".btn-reset")), row: rect(document.querySelector(".form-actions-row")) };
   const gridLefts = [...document.querySelectorAll(".inputs-grid .input-group")].map(el => Math.round(el.getBoundingClientRect().left));
   const visible = id => { const el = document.getElementById(id); return !!el && shown(el); };
-  const results = { container: visible("results-container"), rankedItems: document.querySelectorAll("#team-items-1 .job-post-item").length,
+  const results = { container: visible("results-container"), rankedItems: document.querySelectorAll("#team-items-1 .rank-row").length,
                     singleItems: document.querySelectorAll("#single-crop-items .job-post-item").length,
-                    rankedShown: visible("team-section-1"), singleShown: visible("single-crop-section") };
+                    rankedShown: visible("team-section-1"), singleShown: visible("single-crop-section"),
+                    rankHeads: [...document.querySelectorAll("#team-items-1 .rank-group-head")].map(el => el.innerText.replace(/\s+/g, " ").trim()),
+                    rankRows: [...document.querySelectorAll("#team-items-1 .rank-row")].map(el => { const r = el.getBoundingClientRect();
+                        return { text: el.innerText.replace(/\s+/g, " ").trim(), h: r.height, left: r.left, right: r.right }; }),
+                    unitCount: ((document.getElementById("results-container") || { innerText: "" }).innerText.match(/dataset yield units/g) || []).length };
   const canvas = document.getElementById("mesh-canvas");
   const landing = document.querySelector(".paragraph-container") ? {
     header: rect(document.querySelector(".header")), footer: rect(document.querySelector(".footer")),
@@ -263,7 +267,7 @@ def _scroll_to_text(chrome: Chrome) -> None:
 
 SETUP = {
     "index-text": _scroll_to_text,
-    "predict-result": lambda c: _predict(c, "ALL", "document.querySelectorAll('#team-items-1 .job-post-item').length > 0"),
+    "predict-result": lambda c: _predict(c, "ALL", "document.querySelectorAll('#team-items-1 .rank-row').length > 0"),
     "predict-single": lambda c: _predict(c, "rice", "document.querySelectorAll('#single-crop-items .job-post-item').length > 0"),
     "predict-advanced": _open_advanced,
 }
@@ -598,6 +602,64 @@ def prediction_results_are_drawn_at_every_size():
     _fail(problems, "prediction results")
 
 
+def _expected_sindh_driest_ranking() -> dict:
+    """The API's own ranking for the scenario the predict-result page runs (Sindh, driest real year)."""
+    base = RUN.base()
+    meta = json.load(urllib.request.urlopen(f"{base}/api/v1/metadata", timeout=30))
+    inputs = next(s["inputs"] for s in meta["scenarios"] if s["province"] == "Sindh" and s["kind"] == "driest")
+    request = urllib.request.Request(f"{base}/api/v1/recommend", data=json.dumps({"province": "Sindh", **inputs}).encode(),
+                                     headers={"Content-Type": "application/json"})
+    return json.load(urllib.request.urlopen(request, timeout=30))
+
+
+def result_rows_show_only_crop_rank_share_and_yield():
+    """Each crop row shows its name, rank, share of a typical year and yield, nothing else; tied crops sit under one
+    heading with one rank; the yield unit is stated once (R8, R5)."""
+    import re
+    api = _expected_sindh_driest_ranking()
+    by_crop = {c["crop"]: c for c in api["ranked_crops"]}
+    unique = re.compile(r"^(\w+)( barely grown here)? Rank (\d+) \u00b7 (\d+\.\d)% of a typical year \u00b7 Yield (\d+\.\d\d)$")
+    member = re.compile(r"^(\w+)( barely grown here)? Yield (\d+\.\d\d)$")
+    head = re.compile(r"^Rank (\d+) \u00b7 (\d+\.\d)% of a typical year \u00b7 (\d+) crops tied$")
+    tied_groups = [g for g in api["groups"] if len(g["crops"]) > 1]
+    problems = []
+    for page, size, m in RUN.each(("predict-result",)):
+        where, r = f"{page} {size[0]}", m["results"]
+        if len(r["rankRows"]) != 13:
+            problems.append(f"{where}: {len(r['rankRows'])} crop rows, expected 13")
+            continue
+        heads = [head.match(h) for h in r["rankHeads"]]
+        if not all(heads) or [(int(h[1]), float(h[2]), int(h[3])) for h in heads] != [(g["rank"], g["pct_of_normal"], len(g["crops"])) for g in tied_groups]:
+            problems.append(f"{where}: tie group headings {r['rankHeads']} differ from the API's groups {[(g['rank'], g['pct_of_normal'], len(g['crops'])) for g in tied_groups]}")
+        order = []
+        for row in r["rankRows"]:
+            mu, mm = unique.match(row["text"]), member.match(row["text"])
+            if not (mu or mm):
+                problems.append(f"{where}: row text {row['text']!r} is not crop, rank, share, yield")
+                continue
+            crop = (mu or mm)[1].lower()
+            order.append(crop)
+            c = by_crop[crop]
+            yield_shown = (mu[5] if mu else mm[3])
+            if yield_shown != f"{c['predicted_yield']:.2f}":
+                problems.append(f"{where}: {crop} yield {yield_shown}, API {c['predicted_yield']:.2f}")
+            if bool(mu or mm) and (" barely grown here" in row["text"]) != c["barely_grown"]:
+                problems.append(f"{where}: {crop} barely grown tag does not match the API ({c['barely_grown']})")
+            if mu and (int(mu[3]) != next(g["rank"] for g in api["groups"] if crop in g["crops"]) or float(mu[4]) != c["pct_of_normal"].__round__(1)):
+                problems.append(f"{where}: {crop} rank/share {mu[3]} / {mu[4]} differ from the API")
+            if any(word in row["text"] for word in ("FAO", "training", "Predicted yield", "tied with", "dataset yield units")):
+                problems.append(f"{where}: row {row['text']!r} carries more than rank, share and yield")
+            if row["h"] < MIN_TARGET_PX:
+                problems.append(f"{where}: {crop} row is {row['h']:.0f} px tall")
+            if row["left"] < -1 or row["right"] > m["vw"] + 1:
+                problems.append(f"{where}: {crop} row spans {row['left']:.0f} to {row['right']:.0f} px")
+        if order != [c["crop"] for c in api["ranked_crops"]]:
+            problems.append(f"{where}: crop order {order} differs from the API's ranking")
+        if r["unitCount"] != 1:
+            problems.append(f"{where}: the yield unit is stated {r['unitCount']} times, expected once")
+    _fail(problems, "result rows")
+
+
 def landing_text_phase_fits():
     """When the paragraph and the Start button are shown (scrolled intro, or reduced motion), header, paragraph, button
     and footer sit in that order without overlapping, all inside the screen (R4.8)."""
@@ -721,6 +783,7 @@ TESTS = [
     jargon_headers_are_explained,
     predictor_form_layout,
     prediction_results_are_drawn_at_every_size,
+    result_rows_show_only_crop_rank_share_and_yield,
     landing_text_phase_fits,
     landing_scene_is_lighter_on_phones,
     landing_canvas_survives_address_bar,

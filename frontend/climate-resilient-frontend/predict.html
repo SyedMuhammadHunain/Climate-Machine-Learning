@@ -473,6 +473,74 @@
             overflow-wrap: anywhere;
         }
 
+        /* Ranking: crops with the same share of a typical year are one group with one rank */
+        .rank-group {
+            margin-bottom: 20px;
+        }
+
+        .rank-group-head {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--colorNeutral700);
+            border-bottom: 1px solid var(--colorNeutral300);
+        }
+
+        .rank-group-head strong {
+            color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
+        .rank-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 2px;
+            min-height: var(--minTarget);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--colorNeutral200);
+            overflow-wrap: anywhere;
+        }
+
+        .crop-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--colorPrimary900);
+            text-transform: capitalize;
+        }
+
+        .rank-values {
+            font-size: 14px;
+            color: var(--colorNeutral700);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .tag-barely {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 1px 8px;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-transform: none;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 480px) {
+            .rank-row {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+            }
+
+            .rank-values {
+                text-align: right;
+            }
+        }
+
         .bottom-divider {
             border-top: 1px solid var(--colorNeutral200);
             margin-top: 64px;
@@ -1016,16 +1084,23 @@
                 resilientSection.style.display = "block";
                 boardHeading.textContent = `Crop Ranking: ${data.province} (${data.ranked_crops.length} crops)`;
 
-                document.getElementById("team-items-1").innerHTML = data.ranked_crops.map(item => {
-                    const fao = item.fao_water_need
-                        ? `FAO water need ${esc(item.fao_water_need.mm_min)}-${esc(item.fao_water_need.mm_max)} mm per growing period, drought sensitivity ${esc(item.fao_water_need.drought_sensitivity)}`
-                        : "not listed in the FAO table";
-                    return `
-                        <div class="job-post-item">
-                            <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
-                            <div class="job-metadata">Rank #${esc(item.rank)} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}${item.tied_with ? ` • <strong>tied with ${esc(item.tied_with)} other crop${item.tied_with > 1 ? "s" : ""}</strong> (same share, ordered by name only)` : ""}</div>
-                            <div class="job-metadata">${fao} • ${esc(item.training_rows_for_crop)} of ${esc(item.training_rows_possible)} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
-                        </div>`;
+                document.getElementById("team-title-1").textContent = `Crop ranking, yield in ${data.yield_unit}`;
+                const byCrop = Object.fromEntries(data.ranked_crops.map(item => [item.crop, item]));
+                // One block per group the API returns: crops with the same share of a typical year share one rank
+                document.getElementById("team-items-1").innerHTML = data.groups.map(group => {
+                    const tied = group.crops.length > 1;
+                    const row = crop => {
+                        const item = byCrop[crop];
+                        const tag = item.barely_grown ? ` <span class="tag-barely">barely grown here</span>` : "";  // the space keeps "Apple barely grown here" readable as text
+                        const values = tied
+                            ? `Yield ${yl(item.predicted_yield)}`
+                            : `Rank ${esc(group.rank)} \u00b7 ${pct(group.pct_of_normal)}% of a typical year \u00b7 Yield ${yl(item.predicted_yield)}`;
+                        return `<div class="rank-row"><span class="crop-name">${esc(crop)}${tag}</span><span class="rank-values">${values}</span></div>`;
+                    };
+                    const head = tied
+                        ? `<div class="rank-group-head"><strong>Rank ${esc(group.rank)}</strong> \u00b7 ${pct(group.pct_of_normal)}% of a typical year \u00b7 ${group.crops.length} crops tied</div>`
+                        : "";
+                    return `<div class="rank-group">${head}${group.crops.map(row).join("")}</div>`;
                 }).join("");
 
                 advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small><br><small>${esc(data.absolute_yield_note)}</small>`;

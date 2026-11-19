@@ -40,7 +40,8 @@ def main() -> int:
                   "water_intensive_warnings", "ranked_drought_resilient", "kg/ha", "alert('"):
         if token in predict:
             failures.append(f"predict.html: old/invented logic still present: {token!r}")
-    for token in ("api/v1/metadata", "pct_of_normal", "predicted_yield", "yield_unit", "inputs", "ranked_crops", "fao_water_need", "tied_with", "absolute_yield_note"):
+    for token in ("api/v1/metadata", "pct_of_normal", "predicted_yield", "yield_unit", "inputs", "ranked_crops", "groups", "barely_grown", "absolute_yield_note"):
+        # fao_water_need and tied_with left the ranking rows (rank, share and yield only); crop.html reads them (T10, T11)
         if token not in predict:
             failures.append(f"predict.html: expected T4 element missing: {token!r}")
 

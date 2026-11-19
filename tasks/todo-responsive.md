@@ -146,7 +146,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     flagged (typical 0.01); Balochistan cotton is also flagged (typical 3.97 vs a much larger largest crop there).
     The Hugging Face model repo is not republished: its copy of `inference.py` now lags the repo's.
 
-- [ ] **T7: Result rows and tie groups on the page** (module `ranking`, S)
+- [x] **T7: Result rows and tie groups on the page** (module `ranking`, S)
   - Description: `predict.html` renders `groups`: group heading "Rank N · X% of typical" (with
     "N crops tied" when tied), rows with crop name (link to `crop.html?...`, built in T10, link
     present now) and "Yield Y"; unique crops show rank, share, yield on one row. Unit once in the
@@ -159,6 +159,13 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `node scripts/dryrun_demo.js http://127.0.0.1:8000`; `verify_responsive.py --only predict,rows`; `scripts/verify_frontend.py`.
   - Files: `frontend/climate-resilient-frontend/predict.html`, `scripts/dryrun_demo.js`, `scripts/verify_responsive.py`.
   - Depends on: T4, T6.
+  - Done 2026-11-19. Ranking is built from the API's `groups`: a heading "Rank N . X% of a typical year . K crops tied"
+    over rows of crop and yield; a unique crop is one row "Rank N . X% of a typical year . Yield Y"; the unit is in the
+    results heading only; Sindh apple carries "barely grown here". New `result_rows_show_only_crop_rank_share_and_yield`
+    (compares every row with the API) and group checks in `dryrun_demo.js`, both written first. 22/22 responsive, 8/8 checks.
+    Rows are `div`s, not links: `crop.html` does not exist yet, so T10 turns them into links (no dead links in between).
+    The single-crop card is unchanged until T10/T12. `verify_frontend.py` no longer expects `fao_water_need` and `tied_with`
+    on `predict.html`; T11 must expect them on `crop.html`.
 
 - [ ] **T8: Structured advisory and exact median preset** (module `ranking`, S)
   - Description: Advisory card shows `headline` (larger), `scenario_facts` grid (1 column under
