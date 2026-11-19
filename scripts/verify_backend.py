@@ -231,9 +231,13 @@ def run_verification():
         assert r_metrics.status_code == 200, f"Expected 200 on /metrics.html, got {r_metrics.status_code}"
         assert "Model Performance & Agroclimatic Benchmarks" in r_metrics.text
 
+        r_crop = client.get("/crop.html?crop=rice&province=Sindh&precipitation_sum=150&temperature_2m_mean=27.5")
+        assert r_crop.status_code == 200, f"Expected 200 on /crop.html, got {r_crop.status_code}"
+        assert 'id="crop-title"' in r_crop.text and "api/v1/recommend" in r_crop.text
+
         r_asset = client.get("/assets/wordmark.svg")
         assert r_asset.status_code == 200, f"Expected 200 on /assets/wordmark.svg, got {r_asset.status_code}"
-        print("  -> PASSED: Successfully served root index, predict.html, metrics.html, and static SVG asset.")
+        print("  -> PASSED: Successfully served root index, predict.html, metrics.html, crop.html, and static SVG asset.")
 
         # 12. Error Contract Verification
         print("\n[TEST 12] Error Detail Contract Verification")
@@ -408,7 +412,7 @@ def run_verification():
 
         # 26. Pages are revalidated, so an edited page is never served stale (Chrome did exactly that)
         print("\n[TEST 26] HTML pages carry Cache-Control: no-cache")
-        for path in ("/", "/predict.html", "/metrics.html"):
+        for path in ("/", "/predict.html", "/metrics.html", "/crop.html"):
             cc = client.get(path).headers.get("cache-control", "")
             assert "no-cache" in cc, (path, cc)
         assert "no-cache" not in client.get("/api/v1/metrics").headers.get("cache-control", ""), "API responses need no such header"

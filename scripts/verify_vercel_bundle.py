@@ -45,7 +45,8 @@ def bundle_has_everything_the_app_needs():
                  "models/crop_yield_pipeline.joblib", "models/reference.json", "models/metrics.json",
                  "data/reference/fao_crop_water_needs.json",
                  "frontend/climate-resilient-frontend/index.html", "frontend/climate-resilient-frontend/predict.html",
-                 "frontend/climate-resilient-frontend/metrics.html", "frontend/climate-resilient-frontend/assets/wordmark.svg",
+                 "frontend/climate-resilient-frontend/metrics.html", "frontend/climate-resilient-frontend/crop.html",
+                 "frontend/climate-resilient-frontend/assets/wordmark.svg",
                  "requirements.txt", ".python-version"):
         assert (OUT / name).exists(), name
 
@@ -104,6 +105,7 @@ assert str(Path(F.__file__).resolve()).startswith(bundle), F.__file__
 with TestClient(main.app) as c:
     out = {"health": c.get("/health").status_code, "index": c.get("/").status_code,
            "predict_page": c.get("/predict.html").status_code, "metrics_page": c.get("/metrics.html").status_code,
+           "crop_page": c.get("/crop.html?crop=rice&province=Sindh").status_code,
            "package_json": c.get("/package.json").status_code, "dotenv": c.get("/.env").status_code,
            "metrics_api": c.get("/api/v1/metrics").status_code}
     r = c.post("/api/v1/predict", json={"province": "Sindh", "crop": "rice", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5})
@@ -116,7 +118,7 @@ print("RESULT " + json.dumps(out))
     line = [l for l in done.stdout.splitlines() if l.startswith("RESULT ")]
     assert line, (done.stdout + done.stderr)[-600:]
     got = json.loads(line[0][7:])
-    assert got["health"] == got["index"] == got["predict_page"] == got["metrics_page"] == got["metrics_api"] == 200, got
+    assert got["health"] == got["index"] == got["predict_page"] == got["metrics_page"] == got["crop_page"] == got["metrics_api"] == 200, got
     assert got["package_json"] == 404 and got["dotenv"] == 404, got
     assert got["recommend"] == [200, 13], got
     # same number as the repo's own service

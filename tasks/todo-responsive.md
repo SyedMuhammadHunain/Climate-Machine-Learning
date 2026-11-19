@@ -242,7 +242,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     now restarts Chrome once when the WebGL landing page crashes it. T11 adds `crop.html` to `verify_frontend.py`, `verify_backend.py`,
     `dryrun_demo.js` and `verify_vercel_bundle.py` (it expects `fao_water_need`, `tied_with` style fields there).
 
-- [ ] **T11: Crop page in every check and bundle** (module `crop-page`, S)
+- [x] **T11: Crop page in every check and bundle** (module `crop-page`, S)
   - Description: `verify_frontend.py` PAGES gains `crop.html` (no hardcoded floats, no fallback,
     API-only numbers); `verify_backend.py` serves `/crop.html` 200 and scans it;
     `dryrun_demo.js` runs `crop.html` JS against the API for 13 crops including prev / next
@@ -252,6 +252,13 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `scripts/verify_frontend.py`; `scripts/verify_backend.py`; `node scripts/dryrun_demo.js http://127.0.0.1:8000`; `.venv/bin/python scripts/build_vercel_bundle.py && .venv/bin/python scripts/verify_vercel_bundle.py`.
   - Files: `scripts/verify_frontend.py`, `scripts/verify_backend.py`, `scripts/dryrun_demo.js`, `scripts/verify_vercel_bundle.py`.
   - Depends on: T10.
+  - Done 2026-11-19. `verify_frontend.py`: `crop.html` in PAGES (banned text, div balance, banned wording), required API fields, no
+    typed floats, no empty catch or numeric fallback, an error hides the content and shows an escaped message, and every value
+    reaching an HTML sink is escaped (bare `province`, `crop`, `message` are not trusted). `verify_backend.py`: `/crop.html` served and
+    no-cache. `dryrun_demo.js` section 5: the real `crop.html` script against the API for 13 crops (rank, yields, share, real-year rows,
+    water need, training rows, caveats, unit once, prev/next) and 4 bad addresses. `verify_vercel_bundle.py`: `crop.html` in the bundle
+    and served. Mutation checks confirmed the new checks fail on a wrong number, a typed float, an unescaped province and a renamed
+    field. Bundle rebuilt locally (49 files) and verified 7/7. 8/8 checks.
 
 ### Checkpoint C (after T10-T11)
 - [ ] 13 crop pages open from the ranking; numbers match API; R4/R6 at 9 sizes

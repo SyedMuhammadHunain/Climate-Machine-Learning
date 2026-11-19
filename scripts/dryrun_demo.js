@@ -103,6 +103,59 @@ const run = async () => { await ctx.submitPredictionForm(); await sleep(700); };
     check(el("validation-alert").style.display === "flex", "alert is shown");
     check(el("validation-msg").textContent === bad.message, "alert text equals the API message");
 
+    console.log("5. Crop pages: the real crop.html JavaScript, 13 crops, against the API");
+    const cropHtml = fs.readFileSync(path.join(__dirname, "..", "frontend", "climate-resilient-frontend", "crop.html"), "utf8");
+    const cropJs = [...cropHtml.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join("\n");
+    const loadCrop = async search => {
+        const store = {};
+        const get = id => store[id] || (store[id] = mk());
+        const doc = { getElementById: get, createElement: () => mk(), body: { dataset: {} }, title: "", querySelector: () => mk(), querySelectorAll: () => [] };
+        const c = { document: doc, fetch: (u, o) => fetch(BASE + String(u).replace(/^https?:\/\/[^/]+/, ""), o), console: { error() {}, log() {} },
+            AbortSignal, URLSearchParams, setTimeout, clearTimeout };
+        c.window = c; c.window.API_BASE = ""; c.location = { origin: "http://x", search };
+        vm.createContext(c); vm.runInContext(cropJs, c);
+        for (let i = 0; i < 100 && doc.body.dataset.ready !== "true"; i++) await sleep(100);
+        return { get, doc };
+    };
+    const scenario = meta.scenarios.find(s => s.province === "Sindh" && s.kind === "driest");
+    const wet = meta.scenarios.find(s => s.province === "Sindh" && s.kind === "wettest");
+    const rec = inputs => post("/api/v1/recommend", { province: "Sindh", ...inputs });
+    const base = await rec(scenario.inputs);
+    const years = [["Driest real year (" + scenario.year + ")", await rec(scenario.inputs)], ["Typical (median) year", await rec(meta.reference.Sindh.median)],
+                   ["Wettest real year (" + wet.year + ")", await rec(wet.inputs)]];
+    const order = base.ranked_crops.map(i => i.crop);
+    const groupRank = (r, crop) => r.groups.find(g => g.crops.includes(crop));
+    for (const [at, crop] of order.entries()) {
+        const { get, doc } = await loadCrop("?" + new URLSearchParams({ crop, province: "Sindh", ...scenario.inputs }).toString());
+        const item = base.ranked_crops.find(i => i.crop === crop), text = strip(get("crop-grid").innerHTML);
+        const g = groupRank(base, crop), others = g.crops.length - 1;
+        const rank = others === 0 ? `Rank ${g.rank}` : `Rank ${g.rank}, tied with ${others} other crop${others > 1 ? "s" : ""} at ${g.pct_of_normal.toFixed(1)}%`;
+        const rows = years.map(([label, r]) => { const it = r.ranked_crops.find(i => i.crop === crop); return `${label} ${groupRank(r, crop).rank} ${it.pct_of_normal.toFixed(1)}% ${it.predicted_yield.toFixed(2)}`; });
+        const fao = item.fao_water_need;
+        const water = fao ? `${fao.mm_min}-${fao.mm_max} mm per growing period, drought sensitivity ${fao.drought_sensitivity}` : "not listed in the FAO table";
+        const prev = order[(at + 12) % 13], next = order[(at + 1) % 13];
+        const ok = get("crop-title").textContent === crop && get("crop-province").textContent === "Sindh"
+            && text.includes(`Predicted yield ${item.predicted_yield.toFixed(2)}`) && text.includes(`Typical year yield ${item.normal_yield.toFixed(2)}`)
+            && text.includes(`Share of a typical year ${item.pct_of_normal.toFixed(1)}%`) && text.includes(rank)
+            && rows.every(r => text.includes(r)) && text.includes(water)
+            && text.includes(`Training rows: ${item.training_rows_for_crop} of ${item.training_rows_possible}`)
+            && text.includes(item.barely_grown ? "Barely grown here" : "Training rows") && (item.barely_grown === text.includes("Barely grown here"))
+            && text.includes(base.model_caveat) && text.includes(base.absolute_yield_note) && (text.match(/dataset yield units/g) || []).length === 1
+            && get("crop-prev").href.includes(`crop=${prev}&`) && get("crop-prev").textContent === `Previous: ${prev}`
+            && get("crop-next").href.includes(`crop=${next}&`) && get("crop-next").textContent === `Next: ${next}`
+            && get("crop-content").hidden === false && get("crop-error").hidden === true;
+        check(ok, `${crop}: rank, yields, share, real-year rows, water need, training rows, caveats and prev/next equal the API`);
+    }
+    const badCases = [["?crop=quinoa&province=Sindh", "quinoa"], ["?crop=rice&province=Atlantis", "Atlantis"], ["?province=Sindh", "No crop"],
+        ["?" + new URLSearchParams({ crop: "rice", province: "Sindh", ...scenario.inputs, precipitation_sum: "5" }).toString(),
+         (await post("/api/v1/recommend", { province: "Sindh", ...scenario.inputs, precipitation_sum: 5 })).message]];
+    for (const [search, expected] of badCases) {
+        const { get } = await loadCrop(search);
+        const shown = strip(get("crop-error").innerHTML);
+        check(shown.includes(expected) && get("crop-error").hidden === false && get("crop-content").hidden === true && get("crop-grid").innerHTML === "",
+            `bad address ${search.slice(0, 40)}: the message is shown, no numbers`);
+    }
+
     console.log(failures ? `\nFAILED: ${failures} check(s)` : "\nPASSED: demo click path matches the API.");
     process.exit(failures ? 1 : 0);
 })();

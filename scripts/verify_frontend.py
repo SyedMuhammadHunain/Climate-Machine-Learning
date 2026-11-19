@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend" / "climate-resilient-frontend"
 
 BANNED = re.compile(r"bajra|jowar|renderFallback|fallback simulation|regional fallback", re.IGNORECASE)
-PAGES = ["index.html", "predict.html", "metrics.html"]
+PAGES = ["index.html", "predict.html", "metrics.html", "crop.html"]
 
 
 def main() -> int:
@@ -44,6 +44,35 @@ def main() -> int:
         # fao_water_need and tied_with left the ranking rows (rank, share and yield only); crop.html reads them (T10, T11)
         if token not in predict:
             failures.append(f"predict.html: expected T4 element missing: {token!r}")
+
+    # crop.html: every number comes from the API (metadata and recommend), nothing typed, no fallback
+    crop = (FRONTEND / "crop.html").read_text(encoding="utf-8")
+    crop_script = "\n".join(re.findall(r"<script(?![^>]*src)[^>]*>([\s\S]*?)</script>", crop))
+    for token in ("api/v1/metadata", "api/v1/recommend", "fao_water_need", "training_rows_for_crop", "training_rows_possible", "barely_grown",
+                  "groups", "predicted_yield", "normal_yield", "pct_of_normal", "yield_unit", "model_caveat", "absolute_yield_note",
+                  "scenarios", "ranked_crops", "dataset.ready"):
+        if token not in crop_script:
+            failures.append(f"crop.html: expected element missing: {token!r}")
+    for literal in re.findall(r"(?<![\w.])\d+\.\d+(?![\w.])", crop_script):
+        failures.append(f"crop.html: number {literal} is typed into the script (every number must come from the API)")
+    for lineno, line in enumerate(crop_script.splitlines(), 1):
+        if re.search(r"catch\s*\([^)]*\)\s*\{\s*\}", line) or re.search(r"\|\|\s*\d", line):
+            failures.append(f"crop.html script line {lineno}: an empty catch or a numeric fallback: {line.strip()[:80]}")
+    if "err instanceof PageError" not in crop_script or "no numbers are shown" not in crop_script or "esc(message)" not in crop_script \
+            or '$("crop-content").hidden = true' not in crop_script:
+        failures.append("crop.html: an error must hide the content and show an escaped message, with no numbers shown")
+    # every value that reaches innerHTML is escaped (esc), a number formatter, or a local built from those; text that
+    # goes into an error message or the page title is escaped later (showError uses esc(message); document.title is text)
+    safe_calls = ("esc(", "pct(", "yl(", "fmt(", "facts(", "yearRow(", "card(", "INPUT_KEYS.map(", "cap(",
+                  "meta.all_crops.join(", "Object.keys(meta.reference).join(")
+    sink_code = crop_script[crop_script.index("function showError"):crop_script.index("async function main")]
+    sink_code = "\n".join(l for l in sink_code.splitlines() if not re.search(r"document\.title =|\.textContent =|\.href =", l))  # text, not HTML
+    for raw in re.findall(r"\$\{([^}]*)\}", sink_code):
+        bare = raw.strip()
+        if bare.startswith(safe_calls) or (re.fullmatch(r"[A-Za-z_]\w*", bare) and bare not in ("province", "crop", "message")) or bare in ("g.rank", "g.crops.length - 1", "others > 1 ? \"s\" : \"\""):
+            continue
+        if re.search(r"\b(item|response|fao|meta|data|err)\.|\bprovince\b|\bcrop\b|\bmessage\b", bare) and not bare.startswith(("`", "(")):
+            failures.append(f"crop.html: unescaped value in a template: ${{{bare}}}")
 
     # T6: metrics page must read real results, not hold numbers or hand-made formulas
     metrics_page = (FRONTEND / "metrics.html").read_text(encoding="utf-8")
