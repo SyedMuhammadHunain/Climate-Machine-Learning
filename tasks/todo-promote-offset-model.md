@@ -71,8 +71,8 @@
 
 - [x] **T8a** Vercel: deploy the rebuilt `vercel_bundle/` with the Vercel CLI and update the `vercel-deploy` branch.
   Logged-out check: metrics page caveat, Sindh driest-year rice numbers.
-- [ ] **T8b** Streamlit: diff `hunain-deploy` against local `Hunain`, bring over the needed paths, push `hunain-deploy`.
+- [x] **T8b** Streamlit: diff `hunain-deploy` against local `Hunain`, bring over the needed paths, push `hunain-deploy`.
   Logged-out check: "About" caveat, same demo numbers.
-- [ ] **Checkpoint C** Both live sites match local.
+- [x] **Checkpoint C** Both live sites match local.
 - [ ] **T9** `SPEC-promote-offset-model.md` set to `Status: implemented`; outcome folded into `SPEC.md`; cross-link
   from `SPEC-beat-baseline.md` Results.

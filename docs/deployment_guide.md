@@ -26,7 +26,9 @@ Before you start, push the branch that contains these files to GitHub. The repos
 
 ## 1. Streamlit Community Cloud
 
-**Status 2026-11-19: deployed and checked (on the earlier model; the promoted model is not deployed yet, see `tasks/todo-promote-offset-model.md` T8b).** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model of that day (the earlier one; the promoted model shows 40.85 and 89.3% for the same click). The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
+**Status 2026-11-19: deployed and checked, then redeployed with the promoted model (see the note at the end of this section).** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model of that day (the earlier one; the promoted model shows 40.85 and 89.3% for the same click). The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
+
+**Redeploy note (2026-11-19).** After a plain push to `hunain-deploy` the app did not restart: it ran the new `streamlit_app/app.py` against the old `inference` module and the old cached model, and showed an `AttributeError` for `I.model_caveat` at the bottom of the page (the rest still showed the old numbers). Touching `streamlit_app/requirements.txt` (commit `1ea700f`) made Streamlit Cloud rebuild the process, and a real headless Chrome with a clean profile then showed the promoted model (rice, Punjab, typical year: 21.10, range 17.34 to 28.23, 100.0%, range note 58%). Next time a code change must reach the running app: push, then use **Manage app, Reboot app** in the Streamlit dashboard, or touch the requirements file again.
 
 From Streamlit's deploy docs:
 
@@ -43,7 +45,7 @@ If the install fails, read the log. Do **not** change the `scikit-learn==1.9.1` 
 Check the live app (each of these should work):
 
 - It loads with Punjab, "Typical (median) year", crop rice, no error.
-- Province **Sindh**, **Driest real year**, crop rice: predicted yield 40.85, share of a typical year 89.3%, and the same ranking as the demo guide. (An app still showing 19.71 and 58.5% is running the earlier model: redeploy it. Vercel was redeployed on 2026-11-19 and shows the new numbers; Streamlit is the one still to update.)
+- Province **Sindh**, **Driest real year**, crop rice: predicted yield 40.85, share of a typical year 89.3%, and the same ranking as the demo guide. (An app still showing 19.71 and 58.5% is running the earlier model: redeploy it. Both Vercel and Streamlit were redeployed on 2026-11-19 and show the new numbers.)
 - The chart and the table of 13 crops show. The note under the prediction says the likely range covered 58% of the test rows.
 
 Then put the URL in the README deployment table.
