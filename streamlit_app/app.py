@@ -127,6 +127,7 @@ m2.metric(f"Likely range (nominal {interval['level']:.0%})", f"{chosen.low:.2f} 
 m3.metric("Share of a typical year", f"{chosen.pct_of_normal:.1f}%",
           help=f"Typical {province} year: {chosen.normal_yield:.2f}. This is the model's yield in your scenario divided by its yield in a typical year.")
 st.caption(f"Yield unit: {P.YIELD_UNIT}.")
+st.caption(I.absolute_yield_caveat(met))
 st.caption(P.interval_note(met))
 
 # ---------------------------------------------------------------- explanatory chart + ranking

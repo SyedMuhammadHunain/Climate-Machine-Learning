@@ -799,6 +799,48 @@ def model_caveat_states_wins_losses_and_the_after_the_fact_choice():
     assert "was better on" not in loss and "was not better on" in loss
 
 
+# --------------------------------------------------------------------------- R1: absolute yields at the pinned year
+@test
+def pinned_year_check_equals_an_independent_recomputation():
+    """metrics.json says how far the pinned-year typical yield is from recent actuals; recompute it another way."""
+    from climate_machine_learning import training
+
+    pipe, m, ref = _load_artifacts()
+    chk = m["pinned_year_check"]
+    table, _ = F.build_yearly_table(RAW)
+    recent = table[table.Year.between(*training.TEST_YEARS)].groupby(["Crop", "Province"])["Yield"].mean()
+    ratios = {}
+    for (crop, prov), actual in recent.items():
+        row, _ = F.build_inference_row(prov, crop, dict(ref["provinces"][prov]["median"]), ref)
+        ratios[(crop, prov)] = float(pipe.predict(row)[0]) / float(actual)
+    vals = np.array(list(ratios.values()))
+    assert chk["year"] == pipe.inference_year == ref["inference_year"]
+    assert chk["compared_with_years"] == list(training.TEST_YEARS)
+    assert chk["n_pairs"] == len(vals) and len(vals) > 20
+    for key, q in (("ratio_median", 50), ("ratio_p25", 25), ("ratio_p75", 75)):
+        assert np.isclose(chk[key], np.percentile(vals, q)), key
+    lo, hi = min(ratios, key=ratios.get), max(ratios, key=ratios.get)
+    assert (chk["ratio_min"]["crop"], chk["ratio_min"]["province"]) == lo and np.isclose(chk["ratio_min"]["value"], ratios[lo])
+    assert (chk["ratio_max"]["crop"], chk["ratio_max"]["province"]) == hi and np.isclose(chk["ratio_max"]["value"], ratios[hi])
+    assert "not used to choose" in chk["note"]
+
+
+@test
+def absolute_yield_caveat_states_the_pinned_year_spread_from_metrics():
+    from climate_machine_learning import inference as I
+
+    metrics = {"pinned_year_check": {
+        "year": 2022, "compared_with_years": [2020, 2022], "n_pairs": 34,
+        "ratio_median": 0.93, "ratio_p25": 0.8, "ratio_p75": 1.15,
+        "ratio_min": {"value": 0.21, "crop": "mango", "province": "Balochistan"},
+        "ratio_max": {"value": 2.19, "crop": "cotton", "province": "Sindh"},
+        "note": "Descriptive only; not used to choose the model."}}
+    text = I.absolute_yield_caveat(metrics)
+    for needle in ("2022", "2020-2022", "34", "0.80", "1.15", "0.21", "mango", "Balochistan", "2.19", "cotton", "Sindh"):
+        assert needle in text, (needle, text)
+    assert "rough" in text and "ranking" in text
+
+
 # --------------------------------------------------------------------------- offset training (T2)
 _CANDIDATE = {}
 
@@ -852,6 +894,7 @@ def candidate_metrics_report_trend_baseline_and_selection_on_validation():
     assert ch["beats_crop_province_mean_on_test"] == (ch["beats_by_metric"]["r2"] and ch["beats_by_metric"]["mae"])
     assert any("after seeing the test" in n for n in m["notes"]), "notes must say the metric choice came after the test results"
     assert m["inference_year"] == 2022
+    assert set(m["pinned_year_check"]) >= {"year", "n_pairs", "ratio_median", "ratio_p25", "ratio_p75", "ratio_min", "ratio_max", "note"}
     d = m["data"]
     assert (d["n_train"], d["n_val"], d["n_test"]) == (565, 106, 102), "row counts changed: no added or dropped data"
 

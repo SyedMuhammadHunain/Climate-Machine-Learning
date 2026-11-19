@@ -67,6 +67,7 @@ def predict(province, crop, *values):
         f"- **Share of a typical year:** {chosen.pct_of_normal:.1f}% (typical {province} year: {chosen.normal_yield:.2f})\n\n"
         + P.interval_note(met)
         + "\n\n" + I.model_caveat(met)
+        + "\n\n" + I.absolute_yield_caveat(met)
     )
     table = P.ranking_table(result, ref, fao)
     fig = Figure(figsize=(7, 4.5))

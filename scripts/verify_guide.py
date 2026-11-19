@@ -87,6 +87,10 @@ def main() -> int:
     need(f"{base['mae']:.1f}", "baseline test MAE")
     need(f"{metrics['baselines']['crop_province_mean_plus_trend']['test']['r2']:.3f}", "trend-only baseline test R2")
     need(f"{chosen['test']['log_mae']:.3f}", "chosen model test log-MAE")
+    spread = metrics["pinned_year_check"]
+    need(f"{spread['ratio_min']['value']:.2f}", "the pinned-year spread: lowest ratio")
+    need(f"{spread['ratio_max']['value']:.2f}", "the pinned-year spread: highest ratio")
+    need("point number", "the guide must say the point yield is rough")
     need("tied with", "the pages mark tied crops (the guide may only claim what the pages do)")
     need("log-MAE", "the log-MAE loss")
     need("after seeing the test results", "the metric choice came after the test results")

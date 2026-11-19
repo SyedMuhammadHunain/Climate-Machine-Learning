@@ -56,3 +56,4 @@ class SinglePredictionResponse(BaseModel):
     training_rows_possible: int
     inputs: Dict[str, InputValue]
     model_name: str
+    absolute_yield_note: str  # why one predicted number is rough (generated from metrics.json)

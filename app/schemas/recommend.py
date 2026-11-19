@@ -39,3 +39,4 @@ class RecommendationResponse(BaseModel):
     ranked_crops: List[CropRecommendationItem]
     recommendation_summary: str
     model_name: str
+    absolute_yield_note: str  # why one predicted number is rough (generated from metrics.json)

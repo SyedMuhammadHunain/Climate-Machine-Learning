@@ -418,6 +418,16 @@ def run_verification():
         assert "async def root" not in (ROOT_DIR / "app" / "main.py").read_text(), "JSON root fallback still present"
         print("  -> PASSED: frontend folder is mounted unconditionally.")
 
+        # 31. Every response that shows a point yield also carries the pinned-year caveat (review R1)
+        print("\n[TEST 31] /predict and /recommend carry absolute_yield_note from metrics.json")
+        from climate_machine_learning import inference as I31
+        note = I31.absolute_yield_caveat(json.loads((ROOT_DIR / "models" / "metrics.json").read_text()))
+        rec = client.post("/api/v1/recommend", json={"province": "Sindh", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5}).json()
+        one = client.post("/api/v1/predict", json={"province": "Sindh", "crop": "rice", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5}).json()
+        assert rec["absolute_yield_note"] == note and one["absolute_yield_note"] == note
+        assert "pinned" in note and "rough" in note
+        print("  -> PASSED: both responses carry the generated note.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

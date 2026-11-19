@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-11-19T07:36:24+00:00",
+  "trained_at": "2026-11-19T09:24:29+00:00",
   "versions": {
     "python": "3.13.18",
     "scikit_learn": "1.9.1",
@@ -9,6 +9,28 @@
   "seed": 42,
   "target": "Yield in dataset yield units (unit not confirmed); the model learns the log-scale gap from the crop-province training average",
   "inference_year": 2022,
+  "pinned_year_check": {
+    "year": 2022,
+    "compared_with_years": [
+      2020,
+      2022
+    ],
+    "n_pairs": 34,
+    "ratio_median": 0.9329144642311262,
+    "ratio_p25": 0.8032312457374,
+    "ratio_p75": 1.1494747964205585,
+    "ratio_min": {
+      "value": 0.20887804083046427,
+      "crop": "mango",
+      "province": "Balochistan"
+    },
+    "ratio_max": {
+      "value": 2.193259781377602,
+      "crop": "cotton",
+      "province": "Sindh"
+    },
+    "note": "Typical-year prediction at the pinned year divided by the mean actual yield of the test years. Descriptive only; not used to choose the model."
+  },
   "split": {
     "train_years": [
       2001,
@@ -208,7 +230,7 @@
       },
       "cv_folds": 5,
       "cv_grouped_by": "Year",
-      "cv_log_mae": 0.15268786600785839,
+      "cv_log_mae": 0.1526878660078584,
       "val": {
         "mae": 15.182439010966757,
         "rmse": 43.41900978162829,

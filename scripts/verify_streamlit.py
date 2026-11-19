@@ -150,6 +150,14 @@ def one_explanatory_chart_is_shown():
 
 
 @test
+def point_yield_comes_with_the_pinned_year_caveat():
+    """Review R1: the predicted yield on screen is never shown without the pinned-year spread."""
+    at = fresh()
+    text = " ".join([c.value for c in at.caption] + [m.value for m in at.markdown])
+    assert I.absolute_yield_caveat(MET) in text, text[-600:]
+
+
+@test
 def about_section_states_the_win_with_the_caveat():
     """SPEC-promote-offset-model.md: the win is never shown without the log-MAE loss and the after-the-fact choice."""
     at = fresh()

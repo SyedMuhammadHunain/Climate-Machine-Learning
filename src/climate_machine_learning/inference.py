@@ -95,6 +95,24 @@ def model_caveat(metrics: Dict[str, Any]) -> str:
     return text
 
 
+def absolute_yield_caveat(metrics: Dict[str, Any]) -> str:
+    """Why a single predicted yield is rough: the model is pinned to one year past the training data.
+
+    Built only from metrics.json (`pinned_year_check`, written by training), so every front end shows the
+    same measured spread and none types a number.
+    """
+    check = metrics["pinned_year_check"]
+    first, last = check["compared_with_years"]
+    low, high = check["ratio_min"], check["ratio_max"]
+    return (
+        f"Absolute yields are rough: the model is pinned to {check['year']}, and its typical-year prediction, set against "
+        f"the mean actual yield of {first}-{last}, was {check['ratio_p25']:.2f} to {check['ratio_p75']:.2f} times the actual "
+        f"for the middle half of the {check['n_pairs']} crop-province pairs, but {low['value']:.2f} times for "
+        f"{low['crop']} in {low['province']} and {high['value']:.2f} times for {high['crop']} in {high['province']}. "
+        "Trust the ends of the ranking more than a single predicted number."
+    )
+
+
 def check_training_range(reference: Dict[str, Any], province: str, inputs: Dict[str, float]) -> None:
     """Refuse inputs the model never saw."""
     ranges = reference["provinces"][province]["range"]

@@ -191,6 +191,33 @@ def judgement_note(by_metric: Dict[str, bool], model: Dict[str, float], base: Di
     return note
 
 
+def pinned_year_check(pipeline, reference: Dict[str, Any], test: pd.DataFrame) -> Dict[str, Any]:
+    """How far the typical-year prediction at the pinned year is from the mean actual yield of the test years.
+
+    One ratio per crop-province pair that has test rows. Descriptive only: it is written after the model is
+    chosen and never used to choose or tune anything.
+    """
+    recent = test.groupby(["Crop", "Province"])["Yield"].mean()
+    ratios: Dict[Tuple[str, str], float] = {}
+    for (crop, province), actual in recent.items():
+        row, _ = F.build_inference_row(province, crop, dict(reference["provinces"][province]["median"]), reference)
+        ratios[(crop, province)] = float(pipeline.predict(row)[0]) / float(actual)
+    values = np.array(list(ratios.values()))
+    lo, hi = min(ratios, key=ratios.get), max(ratios, key=ratios.get)
+    return {
+        "year": INFERENCE_YEAR,
+        "compared_with_years": list(TEST_YEARS),
+        "n_pairs": int(len(values)),
+        "ratio_median": float(np.percentile(values, 50)),
+        "ratio_p25": float(np.percentile(values, 25)),
+        "ratio_p75": float(np.percentile(values, 75)),
+        "ratio_min": {"value": ratios[lo], "crop": lo[0], "province": lo[1]},
+        "ratio_max": {"value": ratios[hi], "crop": hi[0], "province": hi[1]},
+        "note": "Typical-year prediction at the pinned year divided by the mean actual yield of the test years. "
+                "Descriptive only; not used to choose the model.",
+    }
+
+
 def trend_baseline(tr: pd.DataFrame, va: pd.DataFrame, te: pd.DataFrame, base_preds) -> Dict[str, Any]:
     """Offset alone, no climate: crop-province training mean plus the year trend. Shows how much of any
     win over the crop-province mean comes from the trend and how much from climate. The trend variant is
@@ -287,6 +314,7 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "seed": SEED,
         "target": "Yield in dataset yield units (unit not confirmed); the model learns the log-scale gap from the crop-province training average",
         "inference_year": INFERENCE_YEAR,
+        "pinned_year_check": pinned_year_check(best_pipe, reference, te),
         "split": {"train_years": list(TRAIN_YEARS), "val_years": list(VAL_YEARS), "test_years": list(TEST_YEARS)},
         "data": {
             "file": str(RAW_PATH.relative_to(ROOT)),

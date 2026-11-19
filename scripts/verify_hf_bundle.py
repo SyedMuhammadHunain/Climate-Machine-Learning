@@ -79,6 +79,7 @@ def model_card_metadata_and_honest_content():
     assert f"{MET['prediction_interval']['test_coverage']:.0%}" in text, "interval coverage must be stated"
     # SPEC-promote-offset-model.md: the win is stated with the log-MAE loss and the after-the-fact metric choice
     assert I.model_caveat(MET) in text, "the card must carry the generated caveat"
+    assert I.absolute_yield_caveat(MET) in text, "the card must carry the pinned-year caveat"
     trend = MET["baselines"]["crop_province_mean_plus_trend"]["test"]
     assert f"{trend['r2']:.3f}" in text, "the trend-only baseline row must be in the card"
     assert "no yearly trend" not in text.lower(), "stale limitation"
@@ -207,6 +208,7 @@ def space_functions_equal_the_model():
     assert isinstance(fig, matplotlib.figure.Figure)
     assert f"{MET['prediction_interval']['test_coverage']:.0%}" in summary
     assert I.model_caveat(MET) in summary, "the win must come with the log-MAE loss and the after-the-fact note"
+    assert I.absolute_yield_caveat(MET) in summary, "the predicted yield must come with the pinned-year caveat"
 
 
 @test

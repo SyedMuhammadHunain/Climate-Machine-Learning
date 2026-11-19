@@ -46,6 +46,7 @@ def model_card(met: dict, ref: dict) -> str:
     from climate_machine_learning import inference as I  # same sentence the apps and README show
 
     caveat = I.model_caveat(met)
+    absolute_note = I.absolute_yield_caveat(met)
     chosen = met["models"][met["chosen"]["name"]]
     d, pi, split = met["data"], met["prediction_interval"], met["split"]
     sources = "\n".join(
@@ -98,6 +99,8 @@ Yields are in dataset yield units.
 {_table(met)}
 
 {caveat}
+
+{absolute_note}
 
 "Skill" compares a model with the crop-province mean baseline on a log scale; above 0 means better than that baseline. Read the baseline row and the skill column before treating small differences between crops as meaningful. Most of the model's signal is which crop it is.
 

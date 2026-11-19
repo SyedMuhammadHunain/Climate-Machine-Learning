@@ -962,7 +962,7 @@
                         </div>`;
                 }).join("");
 
-                advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small>`;
+                advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small><br><small>${esc(data.absolute_yield_note)}</small>`;
             } else {
                 singleSection.style.display = "block";
                 resilientSection.style.display = "none";
@@ -995,6 +995,7 @@
                         <div class="job-metadata">Typical year in ${esc(data.province)}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
                         <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
                         <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
+                        <div class="job-metadata" style="margin-top: 4px;">${esc(data.absolute_yield_note)}</div>
                     </div>
                 `;
 

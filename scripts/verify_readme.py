@@ -46,6 +46,8 @@ def metrics_block(m: dict) -> str:
         "",
         I.model_caveat(m),
         "",
+        I.absolute_yield_caveat(m),
+        "",
         f"Likely range shown in the Streamlit and Hugging Face apps: nominal {pi['level']:.0%} "
         f"(x{math.exp(pi['log_residual_quantiles'][0]):.2f} to x{math.exp(pi['log_residual_quantiles'][1]):.2f} "
         f"of the prediction), from the validation-year errors. It covered {pi['test_coverage']:.0%} of the "

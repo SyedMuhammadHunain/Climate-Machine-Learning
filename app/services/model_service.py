@@ -103,6 +103,7 @@ class ModelService:
             training_rows_possible=self.training_rows_possible,
             inputs=self._inputs(result),
             model_name=self.model_name,
+            absolute_yield_note=I.absolute_yield_caveat(self.metrics),
         )
 
     # ------------------------------------------------------------------ /recommend
@@ -148,4 +149,5 @@ class ModelService:
             ranked_crops=items,
             recommendation_summary=summary,
             model_name=self.model_name,
+            absolute_yield_note=I.absolute_yield_caveat(self.metrics),
         )

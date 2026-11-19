@@ -165,9 +165,11 @@ Train 2001-2016 (565 rows), validation 2017-2019 (106 rows), test 2020-2022 (102
 
 On the 2020-2022 test years, compared with using each crop's average yield per province, the model was better on R² 0.885 against 0.832, MAE 29.7 against 34.7 and RMSE 58.0 against 70.1; it was not better on log-MAE 0.341 against 0.312. The pass test (R² and MAE) was chosen after seeing the test results. A year trend alone, with no climate inputs, scores R² 0.875. Small differences between crops are weak evidence.
 
+Absolute yields are rough: the model is pinned to 2022, and its typical-year prediction, set against the mean actual yield of 2020-2022, was 0.80 to 1.15 times the actual for the middle half of the 34 crop-province pairs, but 0.21 times for mango in Balochistan and 2.19 times for cotton in Sindh. Trust the ends of the ranking more than a single predicted number.
+
 Likely range shown in the Streamlit and Hugging Face apps: nominal 80% (x0.82 to x1.34 of the prediction), from the validation-year errors. It covered 58% of the 2020-2022 test rows, so it is optimistic.
 
-Chosen on the validation years: **Gradient Boosting**. Trained 2026-11-19T07:36:24+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
+Chosen on the validation years: **Gradient Boosting**. Trained 2026-11-19T09:24:29+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
 <!-- METRICS:END -->
 
 "Skill" compares the model to the crop-province mean baseline on a log scale. Above 0 means better than that baseline. The model is judged against that baseline on test R² and MAE, the metrics the proposal names. That choice was made after the test results had been seen; on log-MAE, where every crop counts equally, the model is not better, and most of the gain over the plain crop-province mean comes from the year trend (see the trend-only baseline row). The proposal's success target was R² above 0.7 on the test set and a clear margin over a mean-yield baseline.
