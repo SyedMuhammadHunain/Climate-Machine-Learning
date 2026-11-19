@@ -114,3 +114,5 @@ Source spec: SPEC-second-source-nasa-power.md. Phases 0-3 above are complete.
 | Checkpoint D | Show the new scores and whether soil wetness helps | S3 |
 | S4 | API inputs, quick-fill, Metrics page sources section, guards | S3 |
 | S5 | README, guide, final checks | S4 |
+
+Status 2026-11-19: S1-S5 and Checkpoint D done. See tasks/todo.md for the notes and results.

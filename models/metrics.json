@@ -1,5 +1,5 @@
 {
-  "trained_at": "2026-11-18T16:21:03+00:00",
+  "trained_at": "2026-11-19T01:49:42+00:00",
   "versions": {
     "python": "3.13.18",
     "scikit_learn": "1.9.1",
@@ -25,6 +25,25 @@
   "data": {
     "file": "data/raw/pakistan_crop_yield_climate.parquet",
     "sha256": "998ac2e23c39581a074dc443a33fbba3bc8818be42859737be1f40f9da67113a",
+    "sources": [
+      {
+        "role": "crop yield and climate",
+        "name": "Pakistan crop yield vs climate (GitHub Abdullah-Masood-05, origin Zenodo 15486470)",
+        "file": "data/raw/pakistan_crop_yield_climate.parquet",
+        "sha256": "998ac2e23c39581a074dc443a33fbba3bc8818be42859737be1f40f9da67113a",
+        "licence": "MIT (stated by the repository)"
+      },
+      {
+        "role": "soil wetness",
+        "name": "NASA POWER (Prediction Of Worldwide Energy Resources), monthly point API",
+        "file": "data/raw/nasa_power_monthly.csv",
+        "sha256": "30646a48ac2e35e2116c097bf73b4412109256e92dc792510c4b2224ad8bd6bd",
+        "licence": "License not specified in the POWER catalog entry. Free to use; POWER asks users to cite its Reference and Data Reference.",
+        "api_version": "v2.10.1",
+        "accessed": "2026-11-19",
+        "points": 9
+      }
+    ],
     "raw_monthly_rows": 10296,
     "yearly_rows_after_drop": 773,
     "dropped_zero_yield_rows": {
@@ -44,6 +63,8 @@
     "fao_evapotranspiration",
     "shortwave_radiation",
     "precipitation_hours",
+    "soil_wetness_mean",
+    "soil_wetness_max",
     "rain_deficit_pct",
     "water_balance_mm",
     "aridity_index",
@@ -92,20 +113,20 @@
       },
       "cv_folds": 5,
       "cv_grouped_by": "Year",
-      "cv_log_mae": 0.3087047779741725,
+      "cv_log_mae": 0.30964415783905713,
       "val": {
-        "mae": 52.93824574792312,
-        "rmse": 89.60327695798834,
-        "r2": 0.6455739579924389,
-        "log_mae": 0.5542612202672513,
-        "skill_vs_crop_province_mean_log": -2.7066968667204154
+        "mae": 55.45360074993438,
+        "rmse": 93.95646802016681,
+        "r2": 0.6102992836095689,
+        "log_mae": 0.5895770167584914,
+        "skill_vs_crop_province_mean_log": -3.055055894104706
       },
       "test": {
-        "mae": 71.05584790648808,
-        "rmse": 120.17482546401087,
-        "r2": 0.5066353011105609,
-        "log_mae": 0.6783716000571884,
-        "skill_vs_crop_province_mean_log": -2.0427477491305055
+        "mae": 70.59682548726867,
+        "rmse": 120.63189305927834,
+        "r2": 0.5028752815571184,
+        "log_mae": 0.6711563539633866,
+        "skill_vs_crop_province_mean_log": -1.9775000065508066
       }
     },
     "random_forest": {
@@ -117,20 +138,20 @@
       },
       "cv_folds": 5,
       "cv_grouped_by": "Year",
-      "cv_log_mae": 0.1881650375214653,
+      "cv_log_mae": 0.18543061953947787,
       "val": {
-        "mae": 23.47502254832607,
-        "rmse": 56.0694611472958,
-        "r2": 0.8612188110694385,
-        "log_mae": 0.23560080135377684,
-        "skill_vs_crop_province_mean_log": -0.3977474166885717
+        "mae": 24.529542817854892,
+        "rmse": 58.45527242559784,
+        "r2": 0.849156980702452,
+        "log_mae": 0.23659132333623978,
+        "skill_vs_crop_province_mean_log": -0.3926772547445434
       },
       "test": {
-        "mae": 39.53331053901456,
-        "rmse": 77.44164290806545,
-        "r2": 0.7951244241083478,
-        "log_mae": 0.4016841756883419,
-        "skill_vs_crop_province_mean_log": -0.9489372397872644
+        "mae": 40.89785409702476,
+        "rmse": 77.73614720897783,
+        "r2": 0.7935632106875498,
+        "log_mae": 0.40412517111214674,
+        "skill_vs_crop_province_mean_log": -0.7592451976515227
       }
     },
     "gradient_boosting": {
@@ -142,20 +163,20 @@
       },
       "cv_folds": 5,
       "cv_grouped_by": "Year",
-      "cv_log_mae": 0.19961189570632562,
+      "cv_log_mae": 0.19397968925044234,
       "val": {
-        "mae": 24.81495262800791,
-        "rmse": 59.60035317845698,
-        "r2": 0.8431893678463928,
-        "log_mae": 0.2582335689152386,
-        "skill_vs_crop_province_mean_log": -0.5891226467551751
+        "mae": 23.772627875610908,
+        "rmse": 54.80881127595496,
+        "r2": 0.867389288576165,
+        "log_mae": 0.23933290364346943,
+        "skill_vs_crop_province_mean_log": -0.3162520150012844
       },
       "test": {
-        "mae": 41.829419365126284,
-        "rmse": 78.77446679018885,
-        "r2": 0.7880116395260158,
-        "log_mae": 0.4307268826922675,
-        "skill_vs_crop_province_mean_log": -1.1815165993764616
+        "mae": 41.007290176554555,
+        "rmse": 73.93884848641144,
+        "r2": 0.8132388941036539,
+        "log_mae": 0.4133996874908417,
+        "skill_vs_crop_province_mean_log": -0.6765331003294264
       }
     }
   },
@@ -166,52 +187,60 @@
   },
   "permutation_importance_val_log_mae": {
     "Crop": {
-      "mean": 0.9339648975937841,
-      "std": 0.08771240209033482
+      "mean": 0.9325838778088602,
+      "std": 0.08725952805270434
     },
     "shortwave_radiation": {
-      "mean": 0.02808161231245818,
-      "std": 0.009737509346255103
+      "mean": 0.02639289662801519,
+      "std": 0.008986061405967301
     },
     "temperature_2m_min": {
-      "mean": 0.021380499816681574,
-      "std": 0.00544211221060502
+      "mean": 0.018492706979781292,
+      "std": 0.0050278536644177
     },
     "temperature_2m_max": {
-      "mean": 0.019910945882512316,
-      "std": 0.005819434527335496
-    },
-    "temperature_2m_mean": {
-      "mean": 0.017786159620528767,
-      "std": 0.005916809926087657
-    },
-    "Province": {
-      "mean": 0.014597900618896249,
-      "std": 0.0036400868425405944
+      "mean": 0.015937978290965972,
+      "std": 0.005637130461624913
     },
     "water_balance_mm": {
-      "mean": 0.013516223958441539,
-      "std": 0.004513817965103406
+      "mean": 0.01576001931033437,
+      "std": 0.004445114318003604
+    },
+    "temperature_2m_mean": {
+      "mean": 0.014091912902736667,
+      "std": 0.005134964564646872
+    },
+    "Province": {
+      "mean": 0.012165567460153508,
+      "std": 0.0033816666379386908
+    },
+    "soil_wetness_mean": {
+      "mean": 0.009839728379388119,
+      "std": 0.003639716971068613
     },
     "precipitation_sum": {
-      "mean": 0.0034250893522110647,
-      "std": 0.0015168609282970322
+      "mean": 0.00330390583109516,
+      "std": 0.0014784948171436237
     },
     "aridity_index": {
-      "mean": 0.0033571996787071273,
-      "std": 0.0015046810281805181
-    },
-    "fao_evapotranspiration": {
-      "mean": 0.0027660088029548835,
-      "std": 0.003609050871171948
+      "mean": 0.003300081642331685,
+      "std": 0.0017851982272019938
     },
     "rain_deficit_pct": {
-      "mean": 0.002218398327471628,
-      "std": 0.0036609386688734634
+      "mean": 0.0029301236259319436,
+      "std": 0.0031570948606292437
     },
     "precipitation_hours": {
-      "mean": 0.0020331187412374312,
-      "std": 0.0013228559552159835
+      "mean": 0.0019267218220117002,
+      "std": 0.0010287854709133792
+    },
+    "fao_evapotranspiration": {
+      "mean": 0.0011587983936438746,
+      "std": 0.003347577490930057
+    },
+    "soil_wetness_max": {
+      "mean": -0.0013378512903533155,
+      "std": 0.0017698591711236885
     }
   },
   "notes": [

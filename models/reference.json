@@ -8,7 +8,9 @@
         "temperature_2m_min": 11.867916666666666,
         "fao_evapotranspiration": 5.644583333333333,
         "shortwave_radiation": 22.244166666666665,
-        "precipitation_hours": 220.0
+        "precipitation_hours": 220.0,
+        "soil_wetness_mean": 0.4243055555555555,
+        "soil_wetness_max": 0.4566666666666667
       },
       "mean_annual_rain": 126.025,
       "temp_offsets": {
@@ -43,6 +45,14 @@
         "precipitation_hours": [
           94.0,
           381.0
+        ],
+        "soil_wetness_mean": [
+          0.41250000000000003,
+          0.44
+        ],
+        "soil_wetness_max": [
+          0.42,
+          0.49333333333333335
         ]
       },
       "years": [
@@ -58,7 +68,9 @@
         "temperature_2m_min": 19.110833333333332,
         "fao_evapotranspiration": 4.647083333333334,
         "shortwave_radiation": 19.139166666666668,
-        "precipitation_hours": 543.0
+        "precipitation_hours": 543.0,
+        "soil_wetness_mean": 0.3970833333333333,
+        "soil_wetness_max": 0.45333333333333337
       },
       "mean_annual_rain": 435.10625,
       "temp_offsets": {
@@ -93,6 +105,14 @@
         "precipitation_hours": [
           344.0,
           758.0
+        ],
+        "soil_wetness_mean": [
+          0.3758333333333334,
+          0.4075
+        ],
+        "soil_wetness_max": [
+          0.39999999999999997,
+          0.51
         ]
       },
       "years": [
@@ -108,7 +128,9 @@
         "temperature_2m_min": 21.26958333333333,
         "fao_evapotranspiration": 6.114999999999999,
         "shortwave_radiation": 21.48375,
-        "precipitation_hours": 144.5
+        "precipitation_hours": 144.5,
+        "soil_wetness_mean": 0.3566666666666667,
+        "soil_wetness_max": 0.39666666666666667
       },
       "mean_annual_rain": 177.3,
       "temp_offsets": {
@@ -143,6 +165,14 @@
         "precipitation_hours": [
           28.0,
           349.0
+        ],
+        "soil_wetness_mean": [
+          0.34805555555555556,
+          0.3863888888888889
+        ],
+        "soil_wetness_max": [
+          0.35000000000000003,
+          0.5566666666666666
         ]
       },
       "years": [
@@ -162,7 +192,9 @@
           "temperature_2m_min": 12.271666666666667,
           "fao_evapotranspiration": 5.756666666666667,
           "shortwave_radiation": 22.2525,
-          "precipitation_hours": 97.0
+          "precipitation_hours": 97.0,
+          "soil_wetness_mean": 0.4247222222222222,
+          "soil_wetness_max": 0.4566666666666667
         }
       },
       "wettest": {
@@ -174,7 +206,9 @@
           "temperature_2m_min": 12.494166666666667,
           "fao_evapotranspiration": 5.52,
           "shortwave_radiation": 21.849999999999998,
-          "precipitation_hours": 272.0
+          "precipitation_hours": 272.0,
+          "soil_wetness_mean": 0.4238888888888888,
+          "soil_wetness_max": 0.49333333333333335
         }
       }
     },
@@ -188,7 +222,9 @@
           "temperature_2m_min": 19.175833333333333,
           "fao_evapotranspiration": 4.843333333333333,
           "shortwave_radiation": 19.695833333333333,
-          "precipitation_hours": 344.0
+          "precipitation_hours": 344.0,
+          "soil_wetness_mean": 0.381388888888889,
+          "soil_wetness_max": 0.39999999999999997
         }
       },
       "wettest": {
@@ -200,7 +236,9 @@
           "temperature_2m_min": 18.666666666666668,
           "fao_evapotranspiration": 4.29,
           "shortwave_radiation": 18.50916666666667,
-          "precipitation_hours": 758.0
+          "precipitation_hours": 758.0,
+          "soil_wetness_mean": 0.3986111111111111,
+          "soil_wetness_max": 0.4533333333333333
         }
       }
     },
@@ -214,7 +252,9 @@
           "temperature_2m_min": 21.156666666666666,
           "fao_evapotranspiration": 6.654166666666666,
           "shortwave_radiation": 22.21166666666667,
-          "precipitation_hours": 28.0
+          "precipitation_hours": 28.0,
+          "soil_wetness_mean": 0.34805555555555556,
+          "soil_wetness_max": 0.35333333333333333
         }
       },
       "wettest": {
@@ -226,7 +266,9 @@
           "temperature_2m_min": 21.139166666666664,
           "fao_evapotranspiration": 5.729166666666667,
           "shortwave_radiation": 20.785833333333333,
-          "precipitation_hours": 349.0
+          "precipitation_hours": 349.0,
+          "soil_wetness_mean": 0.3863888888888889,
+          "soil_wetness_max": 0.5566666666666666
         }
       }
     }
@@ -254,6 +296,8 @@
     "fao_evapotranspiration",
     "shortwave_radiation",
     "precipitation_hours",
+    "soil_wetness_mean",
+    "soil_wetness_max",
     "rain_deficit_pct",
     "water_balance_mm",
     "aridity_index",

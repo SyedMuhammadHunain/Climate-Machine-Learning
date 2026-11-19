@@ -244,8 +244,10 @@ Viva Q&A: why aggregate to yearly rows, leakage and the GroupKFold choice, why R
 Spec: `SPEC-second-source-nasa-power.md`. Chosen by the user on 2026-11-19.
 
 - [x] **S1** (done 2026-11-19; 2,376 rows, API v2.10.1, MERRA2; POWER rain agrees only moderately with the dataset's rain, correlation 0.46 Balochistan / 0.57 Punjab / 0.67 Sindh; driest-month soil wetness is flat so `soil_wetness_max` replaces `_min`) `scripts/fetch_nasa_power.py`; `data/raw/nasa_power/*.json`, `data/raw/nasa_power_monthly.csv`, `data/reference/nasa_power_source.json`. Verify: 9 points x 264 months, no fill values, wet monsoon months wetter than dry ones.
-- [ ] **S2** `features.py` merges soil wetness by Province+Year, adds `soil_wetness_mean/max` to inputs, ranges and reference. Verify: 858 of 858 groups matched; training and inference rows equal; leakage test still passes.
-- [ ] **S3** Retrain; `metrics.json` lists both sources with hashes; notebook has the source-agreement and soil-wetness plots. Verify: verify_model passes.
-- [ ] **Checkpoint D** Show scores and importance; user reviews before S4.
-- [ ] **S4** API fields, form fields, metadata, metrics page "data sources" section. Verify: backend, frontend, dry-run checks.
-- [ ] **S5** README (two sources, licence, citation, limits), guide numbers, all checks.
+- [x] **S2** `features.py` merges soil wetness by Province+Year, adds `soil_wetness_mean/max` to inputs, ranges and reference. Verify: 858 of 858 groups matched; training and inference rows equal; leakage test still passes.
+- [x] **S3** Retrain; `metrics.json` lists both sources with hashes; notebook has the source-agreement and soil-wetness plots. Verify: verify_model passes.
+- [x] **Checkpoint D** Show scores and importance; user reviews before S4.
+- [x] **S4** API fields, form fields, metadata, metrics page "data sources" section. Verify: backend, frontend, dry-run checks.
+- [x] **S5** README (two sources, licence, citation, limits), guide numbers, all checks.
+
+**Notes (done 2026-11-19).** S2, S3 and the API fields were committed together because the saved model, the feature list and the scenario inputs must change at the same time. New inputs `soil_wetness_mean/max` are optional, labelled by source, range-checked per province, and filled by the real-year quick-fill. Checkpoint D result (shown to the user in the final message): Random Forest still chosen on validation, test R² 0.794 (was 0.795), Gradient Boosting test R² 0.813 (not chosen, validation is the rule); test skill vs crop-average baseline improved from -0.95 to -0.76 but is still below zero; permutation importance: soil wetness mean 0.0098 (mid-pack among weather columns), wettest-month soil wetness about 0. POWER rain agrees only moderately with the dataset rain (yearly correlation 0.39 Punjab, 0.60 Balochistan, 0.75 Sindh). The metrics page now has a Data sources section (both sources, licences, hashes). README, guide and checks updated; guide numbers re-verified by `verify_guide.py`; click path re-verified by `dryrun_demo.js`. Not done: second source for more crops, fresh-clone re-test after this change, real-browser walk-through.

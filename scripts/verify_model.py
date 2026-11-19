@@ -196,6 +196,20 @@ def metrics_are_complete_and_honest_about_splits():
 
 
 @test
+def metrics_record_both_sources_with_hashes():
+    _, m, _ = _load_artifacts()
+    sources = m["data"]["sources"]
+    assert len(sources) == 2, sources
+    by_name = {s["role"]: s for s in sources}
+    assert set(by_name) == {"crop yield and climate", "soil wetness"}
+    assert by_name["crop yield and climate"]["sha256"] == hashlib.sha256(RAW_PATH.read_bytes()).hexdigest()
+    assert by_name["soil wetness"]["sha256"] == hashlib.sha256(POWER_CSV.read_bytes()).hexdigest()
+    assert "not specified" in by_name["soil wetness"]["licence"].lower()
+    assert m["data"]["raw_monthly_rows"] == len(RAW)
+    assert "soil_wetness_mean" in m["features"] and "soil_wetness_max" in m["features"]
+
+
+@test
 def reference_json_matches_training_data():
     _, _, ref = _load_artifacts()
     table, _ = F.build_yearly_table(RAW)
@@ -227,6 +241,38 @@ def reference_has_real_driest_and_wettest_training_years():
 # ----------------------------------------------------------------------- second source (NASA POWER)
 POWER_CSV = ROOT / "data" / "raw" / "nasa_power_monthly.csv"
 POWER_DOC = ROOT / "data" / "reference" / "nasa_power_source.json"
+
+
+@test
+def soil_inputs_are_model_inputs():
+    for name in ("soil_wetness_mean", "soil_wetness_max"):
+        assert name in F.BASE_INPUTS and name in F.NUMERIC_FEATURES, name
+    assert "soil_wetness_min" not in F.BASE_INPUTS  # flat in every year, no signal
+
+
+@test
+def soil_wetness_is_merged_by_province_and_year():
+    table, _ = F.build_yearly_table(RAW)
+    assert table[["soil_wetness_mean", "soil_wetness_max"]].notna().all().all()
+    soil = pd.read_csv(POWER_CSV)
+    monthly = soil[(soil.Province == "Punjab") & (soil.Year == 2010)].groupby("Month")["GWETROOT"].mean()
+    row = table[(table.Crop == "wheat") & (table.Province == "Punjab") & (table.Year == 2010)].iloc[0]
+    assert np.isclose(row["soil_wetness_mean"], monthly.mean())
+    assert np.isclose(row["soil_wetness_max"], monthly.max())
+    same_year = table[(table.Province == "Sindh") & (table.Year == 2005)]
+    assert same_year["soil_wetness_mean"].nunique() == 1, "soil wetness is province-level, same for every crop"
+
+
+@test
+def soil_merge_fails_loudly_when_a_year_is_missing():
+    soil = pd.read_csv(POWER_CSV)
+    soil = soil[~((soil.Province == "Sindh") & (soil.Year == 2010))]
+    try:
+        F.build_yearly_table(RAW, soil)
+    except ValueError as err:
+        assert "Sindh" in str(err) and "2010" in str(err), err
+        return
+    raise AssertionError("missing soil year was accepted")
 
 
 @test

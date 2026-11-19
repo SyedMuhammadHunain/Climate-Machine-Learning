@@ -43,6 +43,30 @@ RAW_PATH = ROOT / "data" / "raw" / "pakistan_crop_yield_climate.parquet"
 
 
 # --------------------------------------------------------------------------- data
+def data_sources() -> list:
+    """Both data sources with file hashes, for metrics.json."""
+    power = json.loads((ROOT / "data" / "reference" / "nasa_power_source.json").read_text())
+    return [
+        {
+            "role": "crop yield and climate",
+            "name": "Pakistan crop yield vs climate (GitHub Abdullah-Masood-05, origin Zenodo 15486470)",
+            "file": str(RAW_PATH.relative_to(ROOT)),
+            "sha256": hashlib.sha256(RAW_PATH.read_bytes()).hexdigest(),
+            "licence": "MIT (stated by the repository)",
+        },
+        {
+            "role": "soil wetness",
+            "name": power["source"]["name"],
+            "file": power["csv_file"],
+            "sha256": hashlib.sha256((ROOT / power["csv_file"]).read_bytes()).hexdigest(),
+            "licence": power["source"]["licence"],
+            "api_version": power["source"]["api_version"],
+            "accessed": power["source"]["accessed"],
+            "points": len(power["points"]),
+        },
+    ]
+
+
 def load_tables() -> Tuple[pd.DataFrame, Dict[str, int], Dict[str, Any], Dict[str, pd.DataFrame]]:
     """Returns (full table with engineered features, dropped counts, reference, splits)."""
     raw = pd.read_parquet(RAW_PATH)
@@ -203,7 +227,8 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "data": {
             "file": str(RAW_PATH.relative_to(ROOT)),
             "sha256": hashlib.sha256(RAW_PATH.read_bytes()).hexdigest(),
-            "raw_monthly_rows": 10296,
+            "sources": data_sources(),
+            "raw_monthly_rows": int(len(pd.read_parquet(RAW_PATH))),
             "yearly_rows_after_drop": int(len(table)),
             "dropped_zero_yield_rows": dropped,
             "n_train": int(len(tr)), "n_val": int(len(va)), "n_test": int(len(te)),

@@ -16,6 +16,8 @@ class ClimateInputs(BaseModel):
     fao_evapotranspiration: Optional[float] = Field(None, ge=0.5, le=20.0, description="Mean FAO evapotranspiration (mm/day)")
     shortwave_radiation: Optional[float] = Field(None, ge=5.0, le=40.0, description="Mean shortwave radiation (MJ/m2)")
     precipitation_hours: Optional[float] = Field(None, ge=0.0, le=8760.0, description="Total hours with rain over the year")
+    soil_wetness_mean: Optional[float] = Field(None, ge=0.0, le=1.0, description="NASA POWER root-zone soil wetness (0-1), mean of the 12 monthly values")
+    soil_wetness_max: Optional[float] = Field(None, ge=0.0, le=1.0, description="NASA POWER root-zone soil wetness (0-1), wettest month")
 
     @model_validator(mode="after")
     def validate_temperature_order(self) -> "ClimateInputs":
@@ -28,6 +30,9 @@ class ClimateInputs(BaseModel):
             raise ValueError(f"Maximum temperature ({tmax} C) cannot be lower than the mean ({mean} C).")
         if tmin is not None and tmin > mean:
             raise ValueError(f"Minimum temperature ({tmin} C) cannot be higher than the mean ({mean} C).")
+        wet_mean, wet_max = self.soil_wetness_mean, self.soil_wetness_max
+        if wet_mean is not None and wet_max is not None and wet_max < wet_mean:
+            raise ValueError(f"Wettest-month soil wetness ({wet_max}) cannot be lower than the mean ({wet_mean}).")
         return self
 
 

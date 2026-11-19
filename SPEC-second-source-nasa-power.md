@@ -1,6 +1,6 @@
 # Delta SPEC: Second data source (NASA POWER soil wetness)
 
-Status: in progress
+Status: implemented
 Parent specs: `SPEC.md`, `SPEC-model-only-output.md` (all nine tasks done). This delta only adds a second public source.
 
 ## Why

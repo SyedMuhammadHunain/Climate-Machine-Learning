@@ -330,6 +330,24 @@ def run_verification():
         assert p["training_rows_possible"] == possible and p["training_rows_for_crop"] < possible
         print(f"  -> PASSED: grapes has {p['training_rows_for_crop']} of {possible} possible training rows.")
 
+        # 24. Soil wetness inputs (second data source)
+        print("\n[TEST 24] soil wetness inputs: accepted, labelled, validated")
+        base = {"province": "Sindh", "crop": "rice", "precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
+        none = client.post("/api/v1/predict", json=base).json()
+        assert none["inputs"]["soil_wetness_mean"]["source"] == "province_median_training_years"
+        assert none["inputs"]["soil_wetness_max"]["source"] == "province_median_training_years"
+        lo, hi = REFERENCE["provinces"]["Sindh"]["range"]["soil_wetness_mean"]
+        given = client.post("/api/v1/predict", json={**base, "soil_wetness_mean": (lo + hi) / 2}).json()
+        assert given["inputs"]["soil_wetness_mean"] == {"value": (lo + hi) / 2, "source": "user"}
+        assert set(REFERENCE["provinces"]["Sindh"]["range"]) >= {"soil_wetness_mean", "soil_wetness_max"}
+        out = client.post("/api/v1/predict", json={**base, "soil_wetness_mean": hi + 0.1})
+        assert out.status_code == 422 and out.json()["parameter"] == "soil_wetness_mean", out.text
+        for bad in ({"soil_wetness_mean": 1.5}, {"soil_wetness_mean": 0.45, "soil_wetness_max": 0.40}):
+            assert client.post("/api/v1/predict", json={**base, **bad}).status_code == 422, bad
+        r = client.post("/api/v1/recommend", json={k: v for k, v in base.items() if k != "crop"} | {"soil_wetness_mean": (lo + hi) / 2})
+        assert r.status_code == 200
+        print("  -> PASSED: soil wetness accepted, labelled, range-checked.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

@@ -11,13 +11,23 @@ All inputs are annual aggregates:
     fao_evapotranspiration  mean over the 12 monthly values (mm/day)
     shortwave_radiation     mean over the 12 monthly values (MJ/m2)
     precipitation_hours     total over the year (hours)
+    soil_wetness_mean       NASA POWER root-zone soil wetness (0-1): mean of the 12 monthly values
+    soil_wetness_max        NASA POWER root-zone soil wetness (0-1): wettest month
+
+The two soil wetness inputs come from a second public source (NASA POWER, monthly, 3 farming-area
+points per province, equal weight). They are province-level like the weather and are merged by
+Province + Year.
 """
 from __future__ import annotations
 
 import math
-from typing import Any, Dict, Tuple
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
 
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent.parent
+SOIL_CSV = ROOT / "data" / "raw" / "nasa_power_monthly.csv"
 
 GROUP_KEYS = ["Crop", "Province", "Year"]
 
@@ -29,6 +39,8 @@ BASE_INPUTS = [
     "fao_evapotranspiration",
     "shortwave_radiation",
     "precipitation_hours",
+    "soil_wetness_mean",
+    "soil_wetness_max",
 ]
 REQUIRED_INPUTS = ["precipitation_sum", "temperature_2m_mean"]
 ENGINEERED = ["rain_deficit_pct", "water_balance_mm", "aridity_index"]
@@ -79,9 +91,31 @@ def check_month_order(with_month: pd.DataFrame) -> None:
             )
 
 
+# --------------------------------------------------------------------------- second source
+def load_soil_monthly(path: Optional[Path] = None) -> pd.DataFrame:
+    """Monthly NASA POWER table: Province, Point, Year, Month, GWETROOT, PRECTOTCORR."""
+    return pd.read_csv(path or SOIL_CSV)
+
+
+def soil_annual(soil_monthly: pd.DataFrame) -> pd.DataFrame:
+    """Province-Year soil wetness: average the points first, then take the mean and max over 12 months."""
+    monthly = soil_monthly.groupby(["Province", "Year", "Month"])["GWETROOT"].mean().reset_index()
+    counts = monthly.groupby(["Province", "Year"]).size()
+    if not (counts == 12).all():
+        bad = counts[counts != 12].index.tolist()
+        raise ValueError(f"soil data must have 12 months for every Province-Year; incomplete: {bad}")
+    return (
+        monthly.groupby(["Province", "Year"])["GWETROOT"]
+        .agg(soil_wetness_mean="mean", soil_wetness_max="max")
+        .reset_index()
+    )
+
+
 # --------------------------------------------------------------------------- yearly table
-def build_yearly_table(raw: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, int]]:
-    """One row per Crop x Province x Year. Zero-yield rows are dropped.
+def build_yearly_table(
+    raw: pd.DataFrame, soil_monthly: Optional[pd.DataFrame] = None
+) -> Tuple[pd.DataFrame, Dict[str, int]]:
+    """One row per Crop x Province x Year, with soil wetness merged in. Zero-yield rows are dropped.
 
     In the source, every zero-yield row also has Area = 0, i.e. the crop was not
     grown or not reported. It is missing data, not a real yield of zero.
@@ -90,6 +124,14 @@ def build_yearly_table(raw: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, int]]
     with_month = add_month(raw)
     check_month_order(with_month)
     table = with_month.groupby(GROUP_KEYS, sort=True).agg(_AGG).reset_index()
+
+    # second source: soil wetness by Province + Year (fails loudly if any year is missing)
+    soil = soil_annual(load_soil_monthly() if soil_monthly is None else soil_monthly)
+    table = table.merge(soil, on=["Province", "Year"], how="left", validate="many_to_one")
+    missing = table.loc[table["soil_wetness_mean"].isna(), ["Province", "Year"]].drop_duplicates()
+    if len(missing):
+        pairs = [f"{p} {y}" for p, y in missing.itertuples(index=False)]
+        raise ValueError(f"no soil wetness data for: {', '.join(pairs)}")
 
     zero = table["Yield"] <= 0
     dropped = table.loc[zero, "Crop"].value_counts().sort_index().to_dict()
