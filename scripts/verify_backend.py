@@ -428,6 +428,23 @@ def run_verification():
         assert "pinned" in note and "rough" in note
         print("  -> PASSED: both responses carry the generated note.")
 
+        # 32. Static files are compressed and cacheable; pages and the API are not (web performance quick wins)
+        print("\n[TEST 32] static files: gzip for text-like files, cache headers; HTML no-cache; API untouched")
+        frontend_dir = ROOT_DIR / "frontend" / "climate-resilient-frontend"
+        js = client.get("/vendor/gsap.min.js", headers={"Accept-Encoding": "gzip"})
+        assert js.status_code == 200 and js.headers.get("content-encoding") == "gzip", js.headers
+        assert js.content == (frontend_dir / "vendor" / "gsap.min.js").read_bytes(), "decoded body must equal the file"
+        assert js.num_bytes_downloaded < (frontend_dir / "vendor" / "gsap.min.js").stat().st_size, "gzip must make it smaller on the wire"
+        for path in ("/vendor/gsap.min.js", "/assets/DenimINK-Regular.ttf", "/assets/logo-3d.glb", "/assets/fonts/WhitneySSm-Book_Web.woff2"):
+            cache = client.get(path).headers.get("cache-control", "")
+            assert "max-age=86400" in cache and "stale-while-revalidate" in cache and "public" in cache, (path, cache)
+        woff = client.get("/assets/fonts/WhitneySSm-Book_Web.woff2", headers={"Accept-Encoding": "gzip"})
+        assert "content-encoding" not in woff.headers, "woff2 is already compressed; gzip would only cost CPU"
+        assert "no-cache" in client.get("/index.html").headers["cache-control"]
+        api = client.get("/api/v1/metrics")
+        assert "max-age" not in api.headers.get("cache-control", ""), "API responses must not get the static cache header"
+        print("  -> PASSED: gzip on js and ttf, none on woff2; assets cached for a day; HTML and API unchanged.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

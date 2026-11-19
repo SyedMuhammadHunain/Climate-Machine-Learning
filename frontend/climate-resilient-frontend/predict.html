@@ -7,6 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Low-Water Crops — Crop Yield Prediction & Drought Advisory</title>
+    <meta name="description" content="Predict crop yield for 13 crops in Punjab, Sindh and Balochistan from annual climate inputs and rank them by how well they hold up in a dry year. Every number is model output.">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/site_favicon.png">
 
     <style>
@@ -15,6 +16,7 @@
             src: url('assets/fonts/WhitneySSm-Book_Web.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
+            font-display: swap;
         }
 
         @font-face {
@@ -22,6 +24,7 @@
             src: url('assets/fonts/WhitneySSm-Medium_Web.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
+            font-display: swap;
         }
 
         @font-face {
@@ -29,6 +32,7 @@
             src: url('assets/fonts/WhitneySSm-Semibold_Web.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
+            font-display: swap;
         }
 
         :root {
@@ -459,7 +463,7 @@
     </nav>
 
     <!-- Main Content Container (Ashby 720px) -->
-    <div class="job-board-container">
+    <main class="job-board-container">
 
         <!-- Heading -->
         <h1 class="board-heading">Crop Yield Prediction & Drought Advisory</h1>
@@ -671,7 +675,7 @@
         <!-- Faint bottom divider matching Ashby -->
         <div class="bottom-divider"></div>
 
-    </div>
+    </main>
 
     <script>
         const API_BASE = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");

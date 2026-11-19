@@ -118,6 +118,32 @@ def main() -> int:
         if not (0.44 <= width <= 0.50 and 0.03 <= height <= 0.12 and abs(pos["max"][0] + pos["min"][0]) < 0.02):
             failures.append(f"logo-3d.glb: size {width:.3f} x {height:.3f} is not the size the page was built for (about 0.475 wide, centred)")
 
+    # web performance quick wins (Lighthouse review): no render-blocking vendor scripts, swap fonts,
+    # zoomable viewport, one <main> landmark, a meta description, text split only after the fonts are in
+    # Measured (Lighthouse 13.6, mobile emulation, real app with gzip): `defer` on these five scripts moved first paint and
+    # LCP from 1.4 s to 2.55 s, because this page's visible text appears only after GSAP runs; the lower blocking time
+    # was an artefact (it is counted from first paint). Do not add `defer` without re-measuring.
+    for tag in re.findall(r"<script[^>]*src=['\"]\./vendor/[^'\"]+['\"][^>]*>", index_page):
+        if "es-module-shims" not in tag and "defer" in tag:
+            failures.append(f"index.html: defer on {tag} delays first paint (LCP 1.4 s to 2.55 s when measured)")
+    for name in PAGES:
+        page_text = (FRONTEND / name).read_text(encoding="utf-8")
+        for block in re.findall(r"@font-face\s*\{[^}]*\}", page_text):
+            if "font-display" not in block:
+                failures.append(f"{name}: an @font-face has no font-display")
+        viewport = re.search(r'<meta name="viewport" content="([^"]*)"', page_text)
+        if not viewport or re.search(r"user-scalable\s*=\s*(no|0)|maximum-scale", viewport.group(1)):
+            failures.append(f"{name}: the viewport meta blocks pinch zoom")
+        if not re.search(r"<main[\s>]", page_text):
+            failures.append(f"{name}: no <main> landmark")
+        if 'name="description"' not in page_text:
+            failures.append(f"{name}: no meta description")
+    container_css = re.search(r"\n\s*\.container\s*\{([^}]*)\}", index_page)
+    if not container_css or not re.search(r"(^|[;\s])height\s*:", container_css.group(1)):
+        failures.append("index.html: .container needs an explicit height, or the centred text jumps when the canvas is sized (CLS 0.14)")
+    if "document.fonts.ready" not in index_page:
+        failures.append("index.html: the text split must wait for document.fonts.ready (layout shift)")
+
     # T7: no demo/simulation wording or old hand-made concepts in any page
     for name in PAGES:
         text = (FRONTEND / name).read_text(encoding="utf-8").lower()

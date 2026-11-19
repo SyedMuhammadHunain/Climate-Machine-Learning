@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Meta Title -->
     <title>Low-Water Crops — Guarding harvests against drought with climate intelligence</title>
@@ -53,11 +53,13 @@
         @font-face {
             font-family: DenimINK-regular;
             src: url(./assets/DenimINK-Regular.ttf);
+            font-display: swap;
         }
 
         @font-face {
             font-family: LD_TechD-Regular;
             src: url(./assets/LD_TechD-Regular.ttf);
+            font-display: swap;
         }
 
         * {
@@ -79,6 +81,7 @@
             top: 0;
             left: 0;
             width: 100%;
+            height: 100%; /* full height from first paint: otherwise it is as tall as the unsized canvas and the centred text jumps when the script sizes it */
             overflow: hidden;
         }
         .text-overlay {
@@ -282,7 +285,7 @@
 <body>
 <div id="scroll-space">
 </div>
-<div class="container">
+<main class="container">
     <canvas id="mesh-canvas"></canvas>
     <div class="header">
         <div class="logo dark-logo">
@@ -324,7 +327,7 @@
             <a href="metrics.html" class="careers-button">Model & Benchmarks</a>
         </div>
     </div>
-</div>
+</main>
 
 
 <script async src="./vendor/es-module-shims.js"></script>
@@ -523,8 +526,12 @@
         createWaves();
 
 
+        // SplitText measures line breaks: wait for the fonts (at most 3 s) so the lines are final, not re-wrapped later
+        const fontsReady = () => Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 3000))]);
+
         new GLTFLoader()
-            .load('./assets/logo-3d.glb', (gltf) => {
+            .load('./assets/logo-3d.glb', async (gltf) => {
+                await fontsReady();
                 logoMeshWrapper = new THREE.Group();
                 logoMesh = gltf.scene.children[0];
                 updateSceneSize();
@@ -1087,10 +1094,12 @@
         renderTarget.setSize(window.innerWidth, window.innerHeight);
 
         const scale = Math.min(1, .75 * camera.aspect);
-        gsap.set(logoMeshWrapper.scale, {
-            x: scale,
-            y: scale
-        })
+        if (logoMeshWrapper) {
+            gsap.set(logoMeshWrapper.scale, {
+                x: scale,
+                y: scale
+            })
+        }
     }
 
     function buildMainSequence() {
