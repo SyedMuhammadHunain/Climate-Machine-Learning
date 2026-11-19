@@ -12,7 +12,7 @@
     - Fallbacks.
     - Ratio identical across pinned years.
   - Files: `src/climate_machine_learning/features.py`, `scripts/verify_model.py`.
-- [ ] **T2** `training.py`: model × trend grid, `crop_province_mean_plus_trend` baseline, metrics fields
+- [x] **T2** `training.py`: model × trend grid, `crop_province_mean_plus_trend` baseline, metrics fields
   (`chosen.trend`, `inference_year`, new baseline), notes text driven by the result. `inference_year` also written to
   `reference.json`.
   - Acceptance: `train(out_dir=scratch)` runs, selects on validation, scores test once, leaves `models/` untouched.

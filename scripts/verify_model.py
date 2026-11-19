@@ -656,6 +656,74 @@ def offset_model_predicts_exp_of_offset_plus_inner_gap_on_real_data():
     assert clone(m).get_params()["trend"] == "per_crop"
 
 
+# --------------------------------------------------------------------------- offset training (T2)
+_CANDIDATE = {}
+
+
+def _models_dir_hash():
+    import hashlib
+    d = ROOT / "models"
+    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(d.iterdir()) if p.is_file()}
+
+
+def _candidate():
+    """Train once per run into a scratch folder (about 3 minutes); models/ must stay untouched."""
+    if not _CANDIDATE:
+        from climate_machine_learning import training
+
+        before = _models_dir_hash()
+        tmp = tempfile.TemporaryDirectory()
+        metrics = training.train(Path(tmp.name), verbose=False)
+        _CANDIDATE.update(tmp=tmp, dir=Path(tmp.name), metrics=metrics, models_before=before,
+                          models_after=_models_dir_hash())
+    return _CANDIDATE
+
+
+@test
+def training_leaves_models_dir_untouched_when_given_another_folder():
+    c = _candidate()
+    assert c["models_before"] == c["models_after"]
+    assert {"crop_yield_pipeline.joblib", "metrics.json", "reference.json"} <= {p.name for p in c["dir"].iterdir()}
+
+
+@test
+def candidate_metrics_report_trend_baseline_and_selection_on_validation():
+    m = _candidate()["metrics"]
+    base = m["baselines"]["crop_province_mean_plus_trend"]
+    assert base["trend"] in F.TRENDS and set(base["variants"]) == set(F.TRENDS)
+    assert set(base["val"]) >= {"mae", "rmse", "r2", "log_mae"} and set(base["test"]) >= {"mae", "rmse", "r2", "log_mae"}
+    # the trend baseline's own variant is picked on validation log-MAE, never on test
+    assert base["trend"] == min(base["variants"], key=lambda t: base["variants"][t]["val"]["log_mae"])
+    assert base["val"] == base["variants"][base["trend"]]["val"]
+    assert base["test"] == base["variants"][base["trend"]]["test"]
+    # the chosen model is the lowest validation log-MAE, and its trend is one of the allowed variants
+    chosen = min(m["models"], key=lambda k: m["models"][k]["val"]["log_mae"])
+    assert m["chosen"]["name"] == chosen
+    assert m["chosen"]["trend"] in F.TRENDS and m["models"][chosen]["best_params"]["trend"] == m["chosen"]["trend"]
+    assert m["chosen"]["beats_crop_province_mean_on_test"] == (
+        m["models"][chosen]["test"]["skill_vs_crop_province_mean_log"] > 0)
+    assert m["inference_year"] == 2022
+    d = m["data"]
+    assert (d["n_train"], d["n_val"], d["n_test"]) == (565, 106, 102), "row counts changed: no added or dropped data"
+
+
+@test
+def candidate_pipeline_is_an_offset_model_with_the_pinned_year_everywhere():
+    import joblib
+
+    c = _candidate()
+    pipe = joblib.load(c["dir"] / "crop_yield_pipeline.joblib")
+    ref = json.loads((c["dir"] / "reference.json").read_text())
+    assert isinstance(pipe, F.OffsetYieldModel)
+    assert pipe.inference_year == ref["inference_year"] == c["metrics"]["inference_year"] == 2022
+    assert pipe.trend == c["metrics"]["chosen"]["trend"]
+    assert "Year" not in F.FEATURE_COLS and "Year" not in ref["feature_cols"]
+    # predicts from the app's feature columns alone (no Year column), as the apps call it
+    row, _ = F.build_inference_row("Sindh", "rice", {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5}, ref)
+    assert list(row.columns) == F.FEATURE_COLS
+    assert np.isfinite(pipe.predict(row)).all()
+
+
 @test
 def retraining_is_deterministic():
     from climate_machine_learning import training
