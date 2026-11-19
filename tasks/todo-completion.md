@@ -65,7 +65,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
 
 ### Checkpoint 2
 - [x] Every main-venv check passes; `node scripts/dryrun_demo.js` passes against local server (2026-11-19: model 51/51, backend, frontend, readme, guide, report 13/13, vercel bundle 7/7, dry run; `verify_hf_bundle.py` 12/12 in T6; `verify_streamlit.py` not re-run, `streamlit_app/` unchanged)
-- [ ] README links open logged out
+- [x] README links open logged out (2026-11-19: Streamlit loads after the push with no error, Vercel captured in T3, model repo downloaded without a token in T6)
 
 ## Phase 4: submission
 
