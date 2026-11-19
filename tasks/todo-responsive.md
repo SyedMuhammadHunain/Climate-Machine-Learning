@@ -53,7 +53,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     `--colorAccentText #b93a0a` (5.7:1, `#FF7344` kept for borders and fills only). Tabs stack one per row under 480 px.
     Columns: predict 720 to 960 px, metrics 780 to 1100 px, fluid between. `metrics.html` Infinite Field wordmark replaced.
 
-- [ ] **T3: Metrics tables** (module `layout`, S)
+- [x] **T3: Metrics tables** (module `layout`, S)
   - Description: Render JS sets `data-label` from each column's `<th>`; under 600 px tables 1, 3, 5
     become cards, tables 2 and 4 fit. From 600 px real tables with sticky header and sticky first
     column inside `.data-table-wrapper`, edge shadow when scrollable. Body text >= 14 px, headers
@@ -67,6 +67,12 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only tables`; `scripts/verify_frontend.py`; `scripts/verify_backend.py`.
   - Files: `frontend/climate-resilient-frontend/metrics.html`, `scripts/verify_responsive.py`.
   - Depends on: T2.
+  - Done 2026-11-19. 6 new tests in `verify_responsive.py` (cards, fit/scroll/sticky, text size, identical values,
+    chosen row, legends) pass at 9 sizes, as do the shared layout tests on `metrics.html`. Also in this task:
+    metrics column `clamp(780px, 76vw, 1100px)` (the 8-column tables fit from 1440 px), range cells as median over
+    "(min to max)", narrow importance table keeps input names whole, stat grid 1/2/4 columns, section text 14 px,
+    prose lines at most 75ch, logo link 44 px tall on both pages. Remaining responsive failures: predictor form (T4),
+    landing (T5). Legends duplicate part of `cmp-desc`; T12 trims the description.
 
 - [ ] **T4: Predictor form and widths** (module `layout`, S)
   - Description: Inputs one column under 600 px, two above; selects and inputs 16 px text and

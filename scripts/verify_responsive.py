@@ -157,6 +157,50 @@ MEASURE_JS = r"""
 """
 
 
+# The five tables of metrics.html (R3, R6): 1 model comparison, 2 importance, 3 data sources, 4 rows per crop, 5 ranges.
+TABLE_NAMES = ["model comparison", "importance", "data sources", "rows per crop", "climate ranges"]
+CARD_TABLES = (0, 2, 4)        # under CARD_BELOW_PX these turn into one card per row
+CARD_BELOW_PX = 600
+FIT_WITHOUT_SCROLL = (0, 4)    # the two wide tables fit their column from this width up
+FIT_FROM_PX = 1440
+MIN_CELL_FONT_PX = 14
+MIN_HEAD_FONT_PX = 13
+
+TABLES_JS = r"""
+(() => {
+  const norm = s => s.replace(/\s+/g, " ").trim();
+  return [...document.querySelectorAll(".data-table")].map((table, index) => {
+    const wrapper = table.closest(".data-table-wrapper");
+    const heads = [...table.querySelectorAll("thead th")];
+    const headStyle = heads.length ? getComputedStyle(heads[0]) : null;
+    const rows = [...table.querySelectorAll("tbody tr")].map(tr => {
+      const cs = getComputedStyle(tr);
+      const first = tr.cells[0] ? getComputedStyle(tr.cells[0]) : null;
+      return {
+        bg: first && first.backgroundColor !== "rgba(0, 0, 0, 0)" ? first.backgroundColor : cs.backgroundColor, weight: first ? parseInt(first.fontWeight) : 0,
+        cells: [...tr.cells].map((td, i) => {
+          const s = getComputedStyle(td);
+          return { text: norm(td.innerText), label: td.getAttribute("data-label"), head: heads[i] ? norm(heads[i].textContent) : null,
+                   num: td.classList.contains("num"), align: s.textAlign, font: parseFloat(s.fontSize), whiteSpace: s.whiteSpace,
+                   position: s.position };
+        })
+      };
+    });
+    const section = table.closest(".section-block");
+    return {
+      index, rows,
+      scrolls: wrapper.scrollWidth > wrapper.clientWidth + 1,
+      wrapperWidth: wrapper.clientWidth, tableWidth: table.scrollWidth,
+      headVisible: heads.length > 0 && headStyle.display !== "none" && heads[0].getBoundingClientRect().height > 0,
+      heads: heads.map(h => ({ text: norm(h.textContent), font: parseFloat(getComputedStyle(h).fontSize), num: h.classList.contains("num"),
+                               align: getComputedStyle(h).textAlign, position: getComputedStyle(h).position })),
+      legend: section.querySelector(".table-legend") ? norm(section.querySelector(".table-legend").innerText) : null,
+    };
+  });
+})()
+"""
+
+
 class _Run:
     """Lazily started server + browser, and the measurements per (page, size). Shared by all tests."""
 
@@ -191,6 +235,8 @@ class _Run:
             chrome.wait_for(PAGES[page], 60, f"{page}.html to finish loading at {name}")
             time.sleep(0.5)  # let late layout (fonts swapped in, API text) settle
             self.cache[key] = chrome.eval(MEASURE_JS.replace("DEVICE_WIDTH", str(w)))
+            if page == "metrics":
+                self.cache[key]["tables"] = chrome.eval(TABLES_JS)
             self.shots.mkdir(parents=True, exist_ok=True)
             chrome.screenshot(self.shots / f"{page}_{name}.png")
         return self.cache[key]
@@ -214,6 +260,16 @@ class _Run:
 
 
 RUN = _Run()
+
+
+def _group(problems: list) -> list:
+    """One line per (place, kind of problem) with a count and one example, so a failing table is not 400 lines.
+    Each problem is a (place, kind, example) tuple."""
+    seen = {}
+    for place, kind, example in problems:
+        entry = seen.setdefault((place, kind), [0, example])
+        entry[0] += 1
+    return [f"{place}: {kind} x{n}, e.g. {example}" for (place, kind), (n, example) in seen.items()]
 
 
 def _fail(problems: list, title: str) -> None:
@@ -309,6 +365,129 @@ def tabs_fully_visible():
     _fail(problems, "tabs")
 
 
+# --------------------------------------------------------------------------- tables (R3, R6)
+def _tables():
+    """(size, table) for every table of metrics.html at every selected size."""
+    for page, size, m in RUN.each(("metrics",)):
+        assert len(m["tables"]) == len(TABLE_NAMES), f"metrics {size[0]}: {len(m['tables'])} tables, expected {len(TABLE_NAMES)}"
+        for tb in m["tables"]:
+            yield size, tb
+
+
+def tables_become_cards_on_phones():
+    """Under 600 px the wide tables (1, 3, 5) show one card per row with a label on every value, taken from the
+    column header; the narrow tables (2, 4) stay tables and fit the screen with no scroll (R3)."""
+    problems = []
+    for size, tb in _tables():
+        if size[1] >= CARD_BELOW_PX:
+            continue
+        where = f"metrics {size[0]} table {tb['index'] + 1} ({TABLE_NAMES[tb['index']]})"
+        if tb["index"] in CARD_TABLES:
+            if tb["headVisible"]:
+                problems.append((where, "header row still shown, expected cards", ""))
+            for r in tb["rows"]:
+                for c in r["cells"]:
+                    if not c["label"] or c["label"] != c["head"]:
+                        problems.append((where, "cell without the label of its column", f"{c['text'][:25]!r} has {c['label']!r}, header {c['head']!r}"))
+        else:
+            if not tb["headVisible"]:
+                problems.append((where, "header row hidden, expected a normal table", ""))
+            if tb["scrolls"]:
+                problems.append((where, "table wider than its box", f"needs {tb['tableWidth']} px, has {tb['wrapperWidth']} px"))
+    _fail(_group(problems), "phone tables")
+
+
+def wide_tables_fit_or_scroll_inside_wrapper():
+    """From 600 px: real tables. A table wider than its box scrolls inside it with the first column and the header
+    row sticky; tables 1 and 5 need no scroll from 1440 px (R3, R6). The page itself never scrolls (other test)."""
+    problems = []
+    for size, tb in _tables():
+        if size[1] < CARD_BELOW_PX:
+            continue
+        where = f"metrics {size[0]} table {tb['index'] + 1} ({TABLE_NAMES[tb['index']]})"
+        if not tb["headVisible"]:
+            problems.append(f"{where}: header row hidden")
+        if tb["scrolls"]:
+            first_col = all(r["cells"][0]["position"] == "sticky" for r in tb["rows"])
+            sticky_head = all(h["position"] == "sticky" for h in tb["heads"])
+            if not first_col:
+                problems.append(f"{where}: scrolls ({tb['tableWidth']} > {tb['wrapperWidth']} px) but first column is not sticky")
+            if not sticky_head:
+                problems.append(f"{where}: scrolls but header cells are not sticky")
+            if size[1] >= FIT_FROM_PX and tb["index"] in FIT_WITHOUT_SCROLL:
+                problems.append(f"{where}: needs {tb['tableWidth']} px, has {tb['wrapperWidth']} px; must fit from {FIT_FROM_PX} px")
+    _fail(problems, "wide tables")
+
+
+def table_text_is_readable():
+    """Body text 14 px, headers 13 px, numbers right-aligned under right-aligned headers, numbers never broken (R6)."""
+    problems = []
+    for size, tb in _tables():
+        where = f"metrics {size[0]} table {tb['index'] + 1}"
+        for h in tb["heads"]:
+            if h["font"] < MIN_HEAD_FONT_PX:
+                problems.append((where, f"header under {MIN_HEAD_FONT_PX} px", f"{h['text']!r} is {h['font']:g} px"))
+            if h["num"] and h["align"] != "right" and tb["headVisible"]:
+                problems.append((where, "numeric header not right-aligned", f"{h['text']!r} is {h['align']}"))
+        for r in tb["rows"]:
+            for c in r["cells"]:
+                if c["font"] < MIN_CELL_FONT_PX:
+                    problems.append((where, f"cell under {MIN_CELL_FONT_PX} px", f"{c['text'][:30]!r} is {c['font']:g} px"))
+                if c["num"] and c["whiteSpace"] != "nowrap":
+                    problems.append((where, "numeric cell may wrap", f"{c['text'][:30]!r} white-space {c['whiteSpace']}"))
+                if c["num"] and size[1] >= CARD_BELOW_PX and c["align"] != "right":
+                    problems.append((where, "numeric cell not right-aligned", f"{c['text'][:30]!r} is {c['align']}"))
+    _fail(_group(problems), "table text")
+
+
+def table_values_identical_at_every_size():
+    """Every cell shows the same text at every size: only the presentation changes (R3)."""
+    ref_size = next(s for s in SIZES if s[0] == "1440x900")
+    ref = {tb["index"]: [[c["text"] for c in r["cells"]] for r in tb["rows"]] for tb in RUN.measure("metrics", ref_size)["tables"]}
+    problems = []
+    for size, tb in _tables():
+        got = [[c["text"] for c in r["cells"]] for r in tb["rows"]]
+        if got != ref[tb["index"]]:
+            problems.append(f"metrics {size[0]} table {tb['index'] + 1}: cell texts differ from {ref_size[0]}")
+    _fail(problems, "table values")
+
+
+def chosen_model_row_is_highlighted():
+    """The chosen model's row is tinted and bold, not only marked "(chosen)" in the text (R6)."""
+    problems = []
+    for size, tb in _tables():
+        if tb["index"] != 0:
+            continue
+        chosen = [r for r in tb["rows"] if "(chosen)" in r["cells"][0]["text"]]
+        where = f"metrics {size[0]}"
+        if len(chosen) != 1:
+            problems.append(f"{where}: {len(chosen)} rows marked chosen")
+            continue
+        r = chosen[0]
+        if r["bg"] in ("rgba(0, 0, 0, 0)", "rgb(255, 255, 255)"):
+            problems.append(f"{where}: chosen row has no tint ({r['bg']})")
+        if r["weight"] < 600:
+            problems.append(f"{where}: chosen row font weight is {r['weight']}")
+    _fail(problems, "chosen row")
+
+
+def jargon_headers_are_explained():
+    """A one-line legend under the model comparison and importance tables explains each short header (R6)."""
+    problems = []
+    wanted = {0: ["R²", "MAE", "RMSE", "log-MAE", "skill", "Val", "Test"], 1: ["log-MAE", "weight"]}
+    for size, tb in _tables():
+        if size[0] != "1440x900" or tb["index"] not in wanted:
+            continue
+        legend = tb["legend"]
+        if not legend:
+            problems.append(f"table {tb['index'] + 1} ({TABLE_NAMES[tb['index']]}): no .table-legend")
+            continue
+        problems += [f"table {tb['index'] + 1} legend does not explain {w!r}" for w in wanted[tb["index"]] if w.lower() not in legend.lower()]
+        if tb["index"] == 1 and "Relative weight" not in [h["text"] for h in tb["heads"]]:
+            problems.append("table 2: bar column has no 'Relative weight' header")
+    _fail(problems, "table legends")
+
+
 # --------------------------------------------------------------------------- landing page (R1)
 def landing_has_one_start_button():
     """index.html shows exactly one button, "Start", linking to predict.html relatively (R1)."""
@@ -343,6 +522,12 @@ TESTS = [
     form_text_16px_on_phones,
     text_contrast_meets_wcag_aa,
     tabs_fully_visible,
+    tables_become_cards_on_phones,
+    wide_tables_fit_or_scroll_inside_wrapper,
+    table_text_is_readable,
+    table_values_identical_at_every_size,
+    chosen_model_row_is_highlighted,
+    jargon_headers_are_explained,
     landing_has_one_start_button,
 ]
 

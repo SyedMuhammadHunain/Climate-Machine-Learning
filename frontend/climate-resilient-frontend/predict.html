@@ -73,6 +73,14 @@
             padding: clamp(24px, 5vw, 52px) var(--gutter) clamp(24px, 4vw, 48px);
         }
 
+        .header-logo-container a {
+            display: inline-flex !important; /* the link is the tap target: at least 44 px tall */
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            max-width: 100%;
+        }
+
         .header-logo-container svg {
             width: min(100%, clamp(240px, 24vw, 420px)); /* 330 px wide on 1440 px screens, never wider than the screen */
             height: auto;

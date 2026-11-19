@@ -22,7 +22,7 @@
             --colorNeutral200: #e5e6e8;
             --colorNeutral100: #f7f8fa;
             --gutter: clamp(16px, 4vw, 32px);
-            --widthMaxJobBoard: clamp(780px, 57.3vw, 1100px); /* 780 px up to 1360 px screens, 1100 px from 1920 px */
+            --widthMaxJobBoard: clamp(780px, 76vw, 1100px); /* 780 px up to 1026 px screens, 1100 px from 1447 px: the 8-column tables fit */
             --fontNav: clamp(14px, 0.35vw + 11px, 16px);
             --minTarget: 44px; /* WCAG 2.5.5 */
         }
@@ -57,6 +57,14 @@
         .header-logo-container {
             text-align: center;
             padding: clamp(24px, 5vw, 52px) var(--gutter) clamp(16px, 3vw, 32px);
+        }
+
+        .header-logo-container a {
+            display: inline-flex !important; /* the link is the tap target: at least 44 px tall */
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            max-width: 100%;
         }
 
         .header-logo-container svg {
@@ -147,7 +155,9 @@
             border: 1px solid var(--colorNeutral300);
             border-radius: 6px;
             margin-bottom: 28px;
-            font-size: 12.5px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 4px 16px;
         }
 
         .status-badge {
@@ -178,23 +188,34 @@
 
         .metrics-primary-row {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr; /* 1 column under 400 px, 2 to 1023 px, 4 from 1024 px */
+            gap: 1px;
+            background: var(--colorNeutral200);
             border-bottom: 1px solid var(--colorNeutral200);
         }
 
-        @media (max-width: 650px) {
+        @media (min-width: 400px) {
             .metrics-primary-row {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
-        .metric-cell {
-            padding: 16px 18px;
-            border-right: 1px solid var(--colorNeutral200);
+        @media (min-width: 1024px) {
+            .metrics-primary-row {
+                grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            }
         }
 
-        .metric-cell:last-child {
-            border-right: none;
+        .metric-cell {
+            padding: 16px 18px;
+            background: #ffffff;
+            min-width: 0;
+        }
+
+        .metric-val--text {
+            font-family: var(--fontFamily);
+            font-size: 16px;
+            line-height: 1.3;
         }
 
         .metric-val {
@@ -207,7 +228,7 @@
         }
 
         .metric-label {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--colorNeutral600);
             text-transform: uppercase;
@@ -216,7 +237,7 @@
         }
 
         .metric-detail {
-            font-size: 11.5px;
+            font-size: 13px;
             color: var(--colorNeutral700);
             line-height: 1.35;
         }
@@ -247,34 +268,66 @@
         }
 
         .section-desc {
-            font-size: 13.5px;
+            font-size: 14px;
             color: var(--colorNeutral700);
             line-height: 1.5;
             margin-bottom: 14px;
+            max-width: 75ch; /* lines stay readable on wide screens */
         }
 
-        /* Table Styling */
+        .page-subtitle {
+            max-width: 75ch;
+        }
+
+        /* Table Styling
+           From 600 px: real tables. One wider than its box scrolls inside it, first column and header row stay put.
+           Under 600 px: the wide tables (.cards) show one card per row, every value labelled by its column header. */
+        :root {
+            --colorChosen: #eaf4ec;
+        }
+
         .data-table-wrapper {
             border: 1px solid var(--colorNeutral300);
             border-radius: 6px;
             overflow-x: auto;
-            background: #ffffff;
+            background-color: #ffffff;
+            /* shadows at the edge that still has more to scroll to */
+            background-image:
+                linear-gradient(to right, #ffffff 30%, rgba(255, 255, 255, 0)),
+                linear-gradient(to left, #ffffff 30%, rgba(255, 255, 255, 0)),
+                radial-gradient(farthest-side at 0 50%, rgba(35, 35, 35, 0.22), rgba(35, 35, 35, 0)),
+                radial-gradient(farthest-side at 100% 50%, rgba(35, 35, 35, 0.22), rgba(35, 35, 35, 0));
+            background-position: left center, right center, left center, right center;
+            background-repeat: no-repeat;
+            background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+            background-attachment: local, local, scroll, scroll;
+        }
+
+        @media (min-width: 600px) {
+            .data-table-wrapper {
+                max-height: min(70vh, 640px);
+                overflow-y: auto;
+            }
         }
 
         .data-table {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+            line-height: 1.4;
             text-align: left;
         }
 
         .data-table th {
             background-color: var(--colorNeutral100);
-            padding: 10px 14px;
+            padding: 10px 12px;
+            font-size: 13px;
             font-weight: 600;
+            line-height: 1.3;
+            vertical-align: bottom;
             color: var(--colorPrimary900);
             border-bottom: 1px solid var(--colorNeutral300);
-            white-space: nowrap;
         }
 
         .data-table th.num,
@@ -283,24 +336,171 @@
             font-feature-settings: "tnum";
         }
 
+        .data-table td.num {
+            white-space: nowrap; /* a number is never broken across lines */
+        }
+
         .data-table td {
-            padding: 10px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--colorNeutral200);
             color: var(--colorPrimary900);
             vertical-align: middle;
+            overflow-wrap: anywhere;
         }
 
         .data-table tr:last-child td {
             border-bottom: none;
         }
 
-        .data-table tr:hover td {
-            background-color: #fcfcfd;
+        .data-table code {
+            font-family: var(--fontFamilyMono), monospace;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .data-table .range {
+            display: block;
+            font-size: 13px;
+            color: var(--colorNeutral700);
+        }
+
+        .data-table .bar-col {
+            width: 40%;
+            min-width: 40px;
+        }
+
+        .data-table .bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #3a7d44;
+        }
+
+        .data-table tr.is-chosen td {
+            background-color: var(--colorChosen);
+            font-weight: 600;
+        }
+
+        @media (hover: hover) {
+            .data-table tr:hover td {
+                background-color: #fcfcfd;
+            }
+
+            .data-table tr.is-chosen:hover td {
+                background-color: var(--colorChosen);
+            }
+        }
+
+        @media (min-width: 600px) {
+            .data-table thead th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+            }
+
+            .data-table th:first-child,
+            .data-table td:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 1;
+                background-color: #ffffff;
+                box-shadow: 1px 0 0 var(--colorNeutral200);
+            }
+
+            .data-table thead th:first-child {
+                z-index: 3;
+                background-color: var(--colorNeutral100);
+            }
+        }
+
+        @media (max-width: 599px) {
+            .data-table.cards,
+            .data-table.cards tbody,
+            .data-table.cards tr,
+            .data-table.cards td {
+                display: block;
+            }
+
+            .data-table.cards thead {
+                display: none;
+            }
+
+            .data-table.cards tr {
+                padding: 12px 14px;
+                border-bottom: 1px solid var(--colorNeutral300);
+            }
+
+            .data-table.cards tr:last-child {
+                border-bottom: none;
+            }
+
+            .data-table.cards td {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                gap: 16px;
+                padding: 5px 0;
+                border-bottom: none;
+                text-align: right;
+            }
+
+            .data-table.cards td::before {
+                content: attr(data-label);
+                flex: 0 1 45%;
+                font-size: 13px;
+                font-weight: 600;
+                text-align: left;
+                color: var(--colorNeutral600);
+            }
+
+            .data-table.cards td:first-child {
+                display: block;
+                padding: 0 0 8px;
+                font-weight: 600;
+                text-align: left;
+            }
+
+            .data-table.cards td:first-child::before {
+                display: none;
+            }
+
+            .data-table.cards tr.is-chosen {
+                background-color: var(--colorChosen);
+            }
+
+            .data-table.cards tr.is-chosen td {
+                background-color: transparent;
+            }
+
+            /* narrow tables stay tables: tighter cells, input names never broken in the middle of a word */
+            .data-table.keep-names th,
+            .data-table.keep-names td {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+        }
+
+        .data-table.keep-names td:first-child {
+            overflow-wrap: normal;
+            white-space: nowrap;
+        }
+
+        .table-legend {
+            margin-top: 10px;
+            padding-left: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--colorNeutral700);
+            max-width: 75ch;
+        }
+
+        .table-legend strong {
+            color: var(--colorPrimary900);
+            font-weight: 600;
         }
 
         .mono {
             font-family: var(--fontFamilyMono), monospace;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .tag-pill {
@@ -409,7 +609,7 @@
             <h2 class="section-title">1. Model comparison</h2>
             <p class="section-desc" id="cmp-desc"></p>
             <div class="data-table-wrapper">
-                <table class="data-table">
+                <table class="data-table cards">
                     <thead>
                         <tr>
                             <th>Model</th>
@@ -425,6 +625,14 @@
                     <tbody id="cmp-body"></tbody>
                 </table>
             </div>
+            <ul class="table-legend">
+                <li><strong>Val, Test:</strong> validation years and test years.</li>
+                <li><strong>R²:</strong> share of the yield variation the model explains; higher is better.</li>
+                <li><strong>MAE:</strong> average error in dataset yield units; lower is better.</li>
+                <li><strong>RMSE:</strong> like MAE, but punishes large misses more.</li>
+                <li><strong>Test skill vs crop mean:</strong> gain over the crop-province mean on a log scale; above 0 is better.</li>
+                <li><strong>CV log-MAE:</strong> average error on a log scale across the cross-validation folds; lower is better.</li>
+            </ul>
         </section>
 
         <section class="section-block">
@@ -433,18 +641,22 @@
                 Permutation importance on the validation years: how much the error grows when one input column is shuffled. A larger bar means the model depends on that column more.
             </p>
             <div class="data-table-wrapper">
-                <table class="data-table">
-                    <thead><tr><th>Input</th><th class="num">Error increase (log-MAE)</th><th style="width:40%;"></th></tr></thead>
+                <table class="data-table keep-names">
+                    <thead><tr><th>Input</th><th class="num">Error increase (log-MAE)</th><th class="bar-col">Relative weight</th></tr></thead>
                     <tbody id="imp-body"></tbody>
                 </table>
             </div>
+            <ul class="table-legend">
+                <li><strong>Error increase (log-MAE):</strong> how much the error grows when that input is shuffled.</li>
+                <li><strong>Relative weight:</strong> bar length compared with the largest increase.</li>
+            </ul>
         </section>
 
         <section class="section-block">
             <h2 class="section-title">3. Data sources</h2>
             <p class="section-desc">Two public sources are merged by province and year.</p>
             <div class="data-table-wrapper">
-                <table class="data-table">
+                <table class="data-table cards">
                     <thead><tr><th>Role</th><th>Source</th><th>Licence</th><th>Accessed</th><th>SHA-256</th></tr></thead>
                     <tbody id="sources-body"></tbody>
                 </table>
@@ -468,7 +680,7 @@
                 Annual values from the training years, shown as median (minimum to maximum). Inputs outside these ranges are rejected by the API because the model cannot extrapolate.
             </p>
             <div class="data-table-wrapper">
-                <table class="data-table">
+                <table class="data-table cards">
                     <thead>
                         <tr>
                             <th>Province</th>
@@ -533,8 +745,8 @@
                     hasPerMetric
                         ? `Model against using each crop's average yield per province, test years: ${Object.keys(mname).map(pair).join("; ")}.${judged}`
                         : `Test R² ${f(t.r2)} for the model against ${f(base.r2)} for using each crop's average yield per province.`],
-            ].map(([label, val, detail]) =>
-                `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
+            ].map(([label, val, detail], i, all) =>
+                `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val${i === all.length - 1 ? " metric-val--text" : ""}">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
             ).join("");
 
             $("summary-footer").innerHTML =
@@ -552,7 +764,7 @@
             Object.entries(m.baselines).forEach(([k, v]) => rows.push([baseLabels[k] || k, v.val, v.test, null, false]));
             Object.entries(m.models).forEach(([k, v]) => rows.push([v.label, v.val, v.test, v.cv_log_mae, k === m.chosen.name]));
             $("cmp-body").innerHTML = rows.map(([name, val, test, cv, isChosen]) => `
-                <tr${isChosen ? ' style="font-weight:600;"' : ""}>
+                <tr${isChosen ? ' class="is-chosen"' : ""}>
                     <td>${esc(name)}${isChosen ? " (chosen)" : ""}</td>
                     <td class="num">${f(val.r2)}</td><td class="num">${f(val.mae, 1)}</td>
                     <td class="num">${f(test.r2)}</td><td class="num">${f(test.mae, 1)}</td><td class="num">${f(test.rmse, 1)}</td>
@@ -564,7 +776,7 @@
             const top = Math.max(...imp.map(([, v]) => v.mean), 1e-9);
             $("imp-body").innerHTML = imp.map(([k, v]) => `
                 <tr><td>${esc(k)}</td><td class="num">${f(v.mean, 4)}</td>
-                <td><div style="height:8px; border-radius:4px; background:#3a7d44; width:${Math.max(0, v.mean) / top * 100}%;"></div></td></tr>`).join("");
+                <td data-bar><div class="bar" style="width:${Math.max(0, v.mean) / top * 100}%;"></div></td></tr>`).join("");
 
             const d = m.data;
             $("sources-body").innerHTML = m.data.sources.map(s => `
@@ -580,7 +792,7 @@
             $("rows-body").innerHTML = Object.entries(meta.train_rows_per_crop).sort((a, b) => a[1] - b[1])
                 .map(([c, n]) => `<tr><td>${esc(c)}</td><td class="num">${n}</td></tr>`).join("");
 
-            const rng = (r, k, dg) => `${f(r.median[k], dg)} (${f(r.range[k][0], dg)} to ${f(r.range[k][1], dg)})`;
+            const rng = (r, k, dg) => `<span>${f(r.median[k], dg)}</span> <span class="range">(${f(r.range[k][0], dg)} to ${f(r.range[k][1], dg)})</span>`;
             $("prov-body").innerHTML = Object.entries(meta.reference).map(([p, r]) => `
                 <tr><td>${esc(p)}</td><td class="num">${rng(r, "precipitation_sum", 0)}</td><td class="num">${rng(r, "temperature_2m_mean", 1)}</td>
                 <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td>
@@ -588,6 +800,12 @@
 
             $("notes-list").innerHTML = m.notes.map(n => `<li>${esc(n)}</li>`).join("") +
                 `<li>${esc(m.target)}.</li>`;
+
+            // Label every value with its column header, for the one-card-per-row layout on phones
+            document.querySelectorAll(".data-table").forEach(table => {
+                const heads = [...table.querySelectorAll("thead th")].map(th => th.textContent.replace(/\s+/g, " ").trim());
+                table.querySelectorAll("tbody tr").forEach(tr => [...tr.cells].forEach((td, i) => td.setAttribute("data-label", heads[i] || "")));
+            });
         }
 
         async function loadMetrics() {
