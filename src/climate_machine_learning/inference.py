@@ -41,7 +41,8 @@ class Prediction:
 
 def single_thread(pipeline) -> None:
     """One thread at inference: avoids joblib overhead for small predictions."""
-    reg = pipeline.named_steps.get("regressor")
+    inner = getattr(pipeline, "inner_", pipeline)  # OffsetYieldModel keeps its fitted pipeline in inner_
+    reg = inner.named_steps.get("regressor")
     reg = getattr(reg, "regressor_", reg)
     if reg is not None and hasattr(reg, "n_jobs"):
         reg.n_jobs = 1

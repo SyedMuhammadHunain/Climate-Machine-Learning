@@ -165,6 +165,32 @@ def score(y_true, y_pred, baseline_pred) -> Dict[str, float]:
     }
 
 
+def beats_by_metric(model: Dict[str, float], base: Dict[str, float]) -> Dict[str, bool]:
+    """Test-year comparison with the crop-province mean, metric by metric (strictly better is a win)."""
+    return {
+        "r2": model["r2"] > base["r2"],
+        "mae": model["mae"] < base["mae"],
+        "rmse": model["rmse"] < base["rmse"],
+        "log_mae": model["log_mae"] < base["log_mae"],
+    }
+
+
+def judged_win(by_metric: Dict[str, bool]) -> bool:
+    """SPEC-promote-offset-model.md: a win means better R-squared AND better MAE than the baseline."""
+    return bool(by_metric["r2"] and by_metric["mae"])
+
+
+def judgement_note(by_metric: Dict[str, bool], model: Dict[str, float], base: Dict[str, float]) -> str:
+    """One sentence for metrics.json that states how the win was judged, from the numbers themselves."""
+    lost = [name for name, ok in by_metric.items() if not ok]
+    note = ("Beating the crop-province mean is judged on test R-squared and MAE. These two metrics were chosen "
+            "after seeing the test results, so this is not a pre-registered test.")
+    if "log_mae" in lost:
+        note += (f" On log-MAE, where every crop counts equally, the model does not beat the baseline "
+                 f"({model['log_mae']:.3f} against {base['log_mae']:.3f}).")
+    return note
+
+
 def trend_baseline(tr: pd.DataFrame, va: pd.DataFrame, te: pd.DataFrame, base_preds) -> Dict[str, Any]:
     """Offset alone, no climate: crop-province training mean plus the year trend. Shows how much of any
     win over the crop-province mean comes from the trend and how much from climate. The trend variant is
@@ -230,7 +256,8 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
 
     chosen = min(models, key=lambda k: models[k]["val"]["log_mae"])
     best_pipe = fitted[chosen]
-    beats = models[chosen]["test"]["skill_vs_crop_province_mean_log"] > 0
+    by_metric = beats_by_metric(models[chosen]["test"], baselines["crop_province_mean"]["test"])
+    beats = judged_win(by_metric)
     log(f"chosen on validation years: {models[chosen]['label']} | beats crop-province mean on test: {beats}")
 
     # Likely range for a prediction: empirical quantiles of log(actual/predicted) on the VALIDATION years.
@@ -277,7 +304,10 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
             "name": chosen,
             "trend": best_pipe.trend,
             "selected_on": "lowest validation log-MAE (relative error, comparable across crops)",
-            "beats_crop_province_mean_on_test": bool(beats),
+            "judged_on": ["r2", "mae"],
+            "judged_on_chosen_after_test": True,
+            "beats_by_metric": by_metric,
+            "beats_crop_province_mean_on_test": beats,
         },
         "prediction_interval": {
             "level": 0.8,
@@ -290,6 +320,7 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
         "permutation_importance_val_log_mae": importances,
         "notes": [
             "Metrics on the test years are reported once and were not used to choose the model.",
+            judgement_note(by_metric, models[chosen]["test"], baselines["crop_province_mean"]["test"]),
             "skill_vs_crop_province_mean_log > 0 means the model beats the crop-province mean baseline.",
             f"Year is not a model input. Each model learns the gap from the crop-province average of the training years (trend: {best_pipe.trend}); at prediction the year is pinned to {INFERENCE_YEAR}, which cancels out of the crop ranking.",
             "crop_province_mean_plus_trend is the same offset with no climate: the part of any gain that does not come from the weather inputs.",

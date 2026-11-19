@@ -656,6 +656,66 @@ def offset_model_predicts_exp_of_offset_plus_inner_gap_on_real_data():
     assert clone(m).get_params()["trend"] == "per_crop"
 
 
+# --------------------------------------------------------------------------- promote (SPEC-promote-offset-model.md)
+@test
+def beats_by_metric_needs_strictly_better_r2_and_mae_for_the_flag():
+    from climate_machine_learning import training
+
+    base = {"r2": 0.832, "mae": 34.7, "rmse": 70.1, "log_mae": 0.312}
+    win = {"r2": 0.885, "mae": 29.7, "rmse": 55.0, "log_mae": 0.341}
+    out = training.beats_by_metric(win, base)
+    assert out == {"r2": True, "mae": True, "rmse": True, "log_mae": False}, out
+    assert training.judged_win(out) is True
+    only_r2 = training.beats_by_metric({**win, "mae": 40.0}, base)
+    assert only_r2["r2"] and not only_r2["mae"] and training.judged_win(only_r2) is False
+    tie = training.beats_by_metric(dict(base), base)
+    assert not any(tie.values()) and training.judged_win(tie) is False, "a tie is not a win"
+
+
+def _small_forest_pipeline(offset: bool):
+    from sklearn.compose import ColumnTransformer
+    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    rf = RandomForestRegressor(n_estimators=40, random_state=0, n_jobs=-1)
+    # step names as in training.make_pipeline: single_thread finds the forest under "regressor"
+    inner = Pipeline([("preprocessor", ColumnTransformer([("n", StandardScaler(), ["a"])])), ("regressor", rf)])
+    df = pd.DataFrame({"Crop": ["w"] * 12, "Province": ["P"] * 12, "Year": list(range(2000, 2012)),
+                       "a": np.linspace(0, 1, 12), "Yield": np.linspace(10, 30, 12)})
+    if offset:
+        return F.OffsetYieldModel(inner, trend="per_crop", inference_year=2011).fit(df, df["Yield"]), df, rf
+    from sklearn.compose import TransformedTargetRegressor
+    reg = TransformedTargetRegressor(regressor=rf, func=np.log, inverse_func=np.exp)
+    return Pipeline([("regressor", reg)]).fit(df[["a"]], df["Yield"]), df, rf
+
+
+@test
+def single_thread_reaches_the_regressor_inside_an_offset_model_and_an_old_pipeline():
+    from climate_machine_learning import inference as I
+
+    for offset in (True, False):
+        pipe, _, _ = _small_forest_pipeline(offset)
+        I.single_thread(pipe)
+        if offset:
+            rf = pipe.inner_.named_steps["regressor"]
+        else:
+            rf = pipe.named_steps["regressor"].regressor_
+        assert rf.n_jobs == 1, f"offset={offset}: n_jobs={rf.n_jobs}"
+
+
+@test
+def single_thread_predictions_are_bit_identical_between_calls():
+    from climate_machine_learning import inference as I
+
+    pipe, df, _ = _small_forest_pipeline(True)
+    I.single_thread(pipe)
+    X = df[["Crop", "Province", "a"]].iloc[:6]          # no Year column: pinned year path, as the apps call it
+    first = pipe.predict(X)
+    for _ in range(5):
+        assert np.array_equal(first, pipe.predict(X))
+
+
 # --------------------------------------------------------------------------- offset training (T2)
 _CANDIDATE = {}
 
@@ -700,8 +760,14 @@ def candidate_metrics_report_trend_baseline_and_selection_on_validation():
     chosen = min(m["models"], key=lambda k: m["models"][k]["val"]["log_mae"])
     assert m["chosen"]["name"] == chosen
     assert m["chosen"]["trend"] in F.TRENDS and m["models"][chosen]["best_params"]["trend"] == m["chosen"]["trend"]
-    assert m["chosen"]["beats_crop_province_mean_on_test"] == (
-        m["models"][chosen]["test"]["skill_vs_crop_province_mean_log"] > 0)
+    ch, base_test = m["chosen"], m["baselines"]["crop_province_mean"]["test"]
+    mt = m["models"][chosen]["test"]
+    assert ch["judged_on"] == ["r2", "mae"] and ch["judged_on_chosen_after_test"] is True
+    assert ch["beats_by_metric"] == {"r2": mt["r2"] > base_test["r2"], "mae": mt["mae"] < base_test["mae"],
+                                      "rmse": mt["rmse"] < base_test["rmse"],
+                                      "log_mae": mt["log_mae"] < base_test["log_mae"]}
+    assert ch["beats_crop_province_mean_on_test"] == (ch["beats_by_metric"]["r2"] and ch["beats_by_metric"]["mae"])
+    assert any("after seeing the test" in n for n in m["notes"]), "notes must say the metric choice came after the test results"
     assert m["inference_year"] == 2022
     d = m["data"]
     assert (d["n_train"], d["n_val"], d["n_test"]) == (565, 106, 102), "row counts changed: no added or dropped data"
