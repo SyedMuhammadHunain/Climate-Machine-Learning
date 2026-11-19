@@ -20,7 +20,7 @@
     `beats_crop_province_mean_on_test` true and `beats_by_metric.log_mae` false; rows 565 / 106 / 102; sha256 unchanged.
   - Verify: full `verify_model.py` (with retrain determinism), `verify_backend.py`.
   - Files: `models/*`.
-- [ ] **Checkpoint A** You see the `chosen` block and the table. If anything differs: stop.
+- [x] **Checkpoint A** You see the `chosen` block and the table. If anything differs: stop.
 
 ## Phase 2: wording (any order, each with its checker)
 
@@ -65,7 +65,7 @@
   - Verify: `verify_vercel_bundle.py`, `verify_hf_bundle.py` (own venv), and
     `node scripts/dryrun_demo.js http://127.0.0.1:8000` with `uvicorn app.main:app --port 8000`.
   - Files: `scripts/build_hf_bundle.py`, `scripts/verify_hf_bundle.py`.
-- [ ] **Checkpoint B** Every check green. You review the diff. Local commits on `Hunain`. No push.
+- [x] **Checkpoint B** Every check green. You review the diff. Local commits on `Hunain`. No push.
 
 ## Phase 3: ship (ask before each)
 
@@ -74,5 +74,5 @@
 - [x] **T8b** Streamlit: diff `hunain-deploy` against local `Hunain`, bring over the needed paths, push `hunain-deploy`.
   Logged-out check: "About" caveat, same demo numbers.
 - [x] **Checkpoint C** Both live sites match local.
-- [ ] **T9** `SPEC-promote-offset-model.md` set to `Status: implemented`; outcome folded into `SPEC.md`; cross-link
+- [x] **T9** `SPEC-promote-offset-model.md` set to `Status: implemented`; outcome folded into `SPEC.md`; cross-link
   from `SPEC-beat-baseline.md` Results.

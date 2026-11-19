@@ -140,7 +140,7 @@ Code is kept on local branch `offset-model-experiment` (commit `20e3142`); `Huna
 - The candidate beats the baseline on test R², MAE and RMSE, which weight high-yield crops. It loses on log-MAE, which weights every crop equally.
 - The gain over the current model comes from the year trend, not from climate: mean + trend with no climate scores val 0.167, the best model 0.168.
 - 80% likely range test coverage 0.578.
-- Not used to redefine the gate: the criterion was fixed before the run.
+- Not used to redefine the gate: the criterion was fixed before the run. The user later chose to promote the candidate anyway, judged on R² and MAE; that is `SPEC-promote-offset-model.md` (implemented).
 
 Open Questions resolved: pinned year not needed (spec closed before promotion).
 

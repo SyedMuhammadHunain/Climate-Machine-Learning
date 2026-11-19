@@ -31,3 +31,14 @@ Add tests: recommend never returns crops outside `ALL_CROPS`; ranking monotone w
 - Always: use only real dataset crops in UI output.
 - Ask first: retrain model, change resilient-crop list.
 - Never: show invented numbers as model output.
+
+## Later changes (delta specs)
+
+This file is the original audit. What happened afterwards lives in the deltas; the current model is described by the last two.
+
+- `SPEC-model-only-output.md`: no fallback, demo or hand-made numbers; ranking by share of a typical year.
+- `SPEC-second-source-nasa-power.md`: NASA POWER soil wetness as the second source.
+- `SPEC-streamlit-and-huggingface.md`, `SPEC-vercel-deploy.md`: the other front ends and deploy bundles.
+- `SPEC-beat-baseline.md` (closed, gate not met): an offset model that did not beat the crop-province mean on log-MAE.
+- `SPEC-promote-offset-model.md` (implemented 2026-11-19): that model promoted, judged on test R² and MAE after seeing the test results. It beats the crop-province mean on those two and loses on log-MAE; most of the gain is the year trend. Live on Vercel and Streamlit; the Hugging Face model repo still holds the earlier model.
+

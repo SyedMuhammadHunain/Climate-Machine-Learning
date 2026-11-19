@@ -1,6 +1,6 @@
 # Spec Delta: Promote the offset model, judged on R² and MAE
 
-Status: approved (2026-11-19). Plan: `tasks/plan-promote-offset-model.md`.
+Status: implemented (2026-11-19). Plan: `tasks/plan-promote-offset-model.md`. Outcome in the Results section at the end.
 
 Parent: `SPEC.md`. Follows `SPEC-beat-baseline.md` (closed, gate not met). Code from local branch
 `offset-model-experiment` (commit `20e3142`).
@@ -47,17 +47,17 @@ crop-province mean (R² 0.832, MAE 34.7, log-MAE 0.312). Docs and apps say so.
 
 ## Success Criteria
 
-- [ ] `models/metrics.json`: chosen = gradient_boosting, test R² > 0.832, test MAE < 34.7,
+- [x] `models/metrics.json`: chosen = gradient_boosting, test R² > 0.832, test MAE < 34.7,
       `beats_crop_province_mean_on_test == true`, `beats_by_metric.log_mae == false`,
       `judged_on_chosen_after_test == true`.
-- [ ] Row counts 565 / 106 / 102 and data sha256 values unchanged. No synthetic data.
-- [ ] App inputs unchanged. Ranking is still a ratio of model predictions, identical across pinned years (test).
-- [ ] No doc or app claims a win without, in the same place, the log-MAE loss and the after-the-fact metric choice.
+- [x] Row counts 565 / 106 / 102 and data sha256 values unchanged. No synthetic data.
+- [x] App inputs unchanged. Ranking is still a ratio of model predictions, identical across pinned years (test).
+- [x] No doc or app claims a win without, in the same place, the log-MAE loss and the after-the-fact metric choice.
       Checked by `verify_readme.py`, `verify_guide.py`, `verify_frontend.py`, `verify_streamlit.py`.
-- [ ] All checks pass: `verify_model.py` (with retrain determinism), `verify_backend.py`, `verify_frontend.py`,
+- [x] All checks pass: `verify_model.py` (with retrain determinism), `verify_backend.py`, `verify_frontend.py`,
       `verify_readme.py`, `verify_guide.py`, `verify_vercel_bundle.py`, `verify_streamlit.py`,
       `verify_hf_bundle.py`, plus `node scripts/dryrun_demo.js` against a local server.
-- [ ] After the deploys: logged-out visitors to Vercel and Streamlit see the new numbers and the caveat.
+- [x] After the deploys: logged-out visitors to Vercel and Streamlit see the new numbers and the caveat. (Vercel: pages, API, caveat in `/recommend` and `dryrun_demo.js` checked. Streamlit: default view checked in a real browser, rice 21.10 and 58% coverage; the About text and the Sindh driest-year click were not re-checked live there.)
 
 ## Boundaries (deltas only)
 
@@ -76,3 +76,13 @@ crop-province mean (R² 0.832, MAE 34.7, log-MAE 0.312). Docs and apps say so.
 ## Open Questions
 
 - None. The pinned year is set to 2022, as defaulted earlier. Say so if you want 2016.
+
+## Results (2026-11-19)
+
+Implemented in 9 local commits (`72ef7c3` to `46ad7d5`, then `a0d9f18`, `06e4185`, `1ea700f`, `b3fe100`).
+
+- `models/` holds the Gradient Boosting offset model, trend `per_crop_province`, pinned year 2022. Test R² 0.885 and MAE 29.7 beat the crop-province mean (0.832, 34.7); log-MAE 0.341 does not (0.312). Row counts and data hashes unchanged.
+- One shared sentence, `inference.model_caveat`, built from `metrics.json`, states the win with the log-MAE loss and the after-the-fact metric choice in the API, the metrics page, Streamlit, Gradio, the README and the HF model card.
+- Vercel redeployed with the CLI (`dpl_A6MBeZRggSgAE5y5JExybSf3MzaE`); `vercel-deploy` branch at `e63da8d`. Streamlit redeployed through `hunain-deploy` (`1ea700f`), which needed a requirements-file touch to restart the cached process.
+- Not done: the Hugging Face model repo still holds the earlier model (the card for the new one is in `hf_bundle/model/`); the Space is still not deployed.
+- Known weakness, stated in the docs: the demo ranking is mostly tied (eleven crops at 97.7% in Sindh's driest year, all 13 at 100.0% in a typical year), because the model moves almost every crop by the same amount.
