@@ -34,7 +34,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
 
 ## Phase 2: report
 
-- [ ] **T4: report builder, results section, checker** (M)
+- [x] **T4: report builder, results section, checker** (M) (done 2026-11-19: `scripts/build_report.py` writes `docs/report/report.html` and prints `report.pdf` with headless Chrome; prose lives in the script next to the code that fills its numbers, no separate template file; `verify_report.py` 8/8; a changed table value and a changed caveat number in the HTML each make it fail)
   - Acceptance: `scripts/build_report.py` renders `docs/report/report.html` and `docs/report/report.pdf` (Chrome `--headless --print-to-pdf --no-pdf-header-footer`). Results section has the comparison table (baselines and three models, validation and test) built from `metrics.json`, the comparison plot, and the caveat text from `inference.model_caveat`. `scripts/verify_report.py` (`TESTS` list) checks PDF exists, every metric in the PDF text equals `metrics.json`, caveat sentences present, "dataset yield units" present.
   - Verify: `.venv/bin/python scripts/build_report.py && .venv/bin/python scripts/verify_report.py` pass; edit one metric in the HTML and re-print, verify fails.
   - Files: `scripts/build_report.py`, `scripts/verify_report.py`, `docs/report/report_template.html`, `docs/report/report.pdf`

@@ -101,12 +101,74 @@ def deployment_screenshots_show_current_model_values():
         assert c["found_on_page"] == [exp["yield"], exp["pct"]], f"{key}: page text did not show {exp}"
 
 
+REPORT_DIR = ROOT / "docs" / "report"
+PDF = REPORT_DIR / "report.pdf"
+HTML = REPORT_DIR / "report.html"
+TABLE_LABELS = {  # short row labels used in the report's comparison table
+    "global_mean": "Baseline: overall mean",
+    "crop_province_mean": "Baseline: crop-province mean",
+    "crop_province_mean_plus_trend": "Baseline: mean + year trend",
+    "ridge": "Ridge regression",
+    "random_forest": "Random Forest",
+    "gradient_boosting": "Gradient Boosting",
+}
+
+
+def _pdf_text(layout: bool = False) -> str:
+    args = ["pdftotext"] + (["-layout"] if layout else []) + [str(PDF), "-"]
+    return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+
+
+def _flat(text: str) -> str:
+    """Whitespace and hyphens removed, so a sentence wrapped at a space or at a hyphen (pdftotext drops a
+    hyphen at a line end, "2020-" + "2022" becomes "20202022") compares equal to its one-line form."""
+    return "".join(ch for ch in text if not ch.isspace() and ch not in "-\u00ad\u2010\u2011")
+
+
+def report_pdf_exists():
+    assert PDF.exists() and PDF.read_bytes()[:5] == b"%PDF-", f"missing {PDF}"
+    assert HTML.exists(), f"missing {HTML}"
+
+
+def report_results_table_equals_metrics_json():
+    rows = {}
+    for key, v in METRICS["baselines"].items():
+        rows[key] = v
+    for key, v in METRICS["models"].items():
+        rows[key] = v
+    assert set(rows) == set(TABLE_LABELS), sorted(rows)
+    lines = _pdf_text(layout=True).splitlines()
+    for key, label in TABLE_LABELS.items():
+        hits = [ln.strip() for ln in lines if ln.strip().startswith(label)]
+        assert len(hits) == 1, f"table row {label!r} found {len(hits)} times"
+        v = rows[key]
+        want = [f"{v['val']['r2']:.3f}", f"{v['val']['mae']:.1f}", f"{v['test']['r2']:.3f}",
+                f"{v['test']['mae']:.1f}", f"{v['test']['rmse']:.1f}", f"{v['test']['log_mae']:.3f}"]
+        got = hits[0][len(label):].replace("(chosen)", "").split()
+        assert got == want, f"{label}: PDF shows {got}, metrics.json gives {want}"
+
+
+def report_states_the_caveats():
+    sys.path.insert(0, str(ROOT / "src"))
+    from climate_machine_learning import inference as I
+
+    text = _flat(_pdf_text())
+    for sentence in (I.model_caveat(METRICS), I.absolute_yield_caveat(METRICS)):
+        assert _flat(sentence) in text, f"caveat missing from the PDF: {sentence[:90]}..."
+    pi = METRICS["prediction_interval"]
+    assert _flat(f"covered {pi['test_coverage']:.0%} of the test rows") in text, "likely-range coverage missing"
+    assert _flat("dataset yield units") in text
+
+
 TESTS = [
     figures_exist_with_at_least_five_eda_plots,
     comparison_figure_values_equal_metrics_json,
     predicted_vs_actual_reproduces_saved_test_score,
     figure_build_is_deterministic,
     deployment_screenshots_show_current_model_values,
+    report_pdf_exists,
+    report_results_table_equals_metrics_json,
+    report_states_the_caveats,
 ]
 
 

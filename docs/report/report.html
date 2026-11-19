@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Low-Water Crop Selection Under Drought: Report</title>
+<style>
+@page { size: A4; margin: 13mm 14mm 13mm 14mm; }
+* { box-sizing: border-box; }
+body { font-family: 'Liberation Serif', serif; font-size: 9.6pt; line-height: 1.32; color: #111; margin: 0; }
+h1, h2, h3, th, figcaption, .meta, .note { font-family: 'Liberation Sans', sans-serif; }
+h1 { font-size: 15pt; margin: 0 0 2pt; }
+h2 { font-size: 10.5pt; margin: 8pt 0 3pt; border-bottom: 0.6pt solid #999; padding-bottom: 1pt; }
+p { margin: 0 0 4pt; text-align: justify; hyphens: auto; }
+.meta { font-size: 8.5pt; color: #444; margin-bottom: 6pt; }
+.note { font-size: 7.8pt; color: #444; }
+table { border-collapse: collapse; width: 100%; font-size: 8.2pt; margin: 3pt 0 4pt; }
+th, td { padding: 1.6pt 4pt; border-bottom: 0.4pt solid #ccc; text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 7.8pt; border-bottom: 0.8pt solid #555; }
+tr.chosen td { font-weight: bold; }
+figure { margin: 3pt 0 5pt; break-inside: avoid; }
+figure img { width: 100%; display: block; }
+figure.half { display: inline-block; width: 49%; vertical-align: top; }
+figure.full { width: 100%; }
+figcaption { font-size: 7.4pt; color: #444; margin-top: 1pt; }
+</style></head>
+<body>
+
+<h2>6. Results</h2>
+<table class="results">
+<thead><tr><th>Model</th><th>Val R²</th><th>Val MAE</th><th>Test R²</th><th>Test MAE</th><th>Test RMSE</th><th>Test log-MAE</th></tr></thead>
+<tbody><tr><td>Baseline: overall mean</td><td>-0.002</td><td>91.7</td><td>-0.030</td><td>100.4</td><td>173.6</td><td>0.937</td></tr><tr><td>Baseline: crop-province mean</td><td>0.877</td><td>20.9</td><td>0.832</td><td>34.7</td><td>70.1</td><td>0.312</td></tr><tr><td>Baseline: mean + year trend</td><td>0.919</td><td>14.8</td><td>0.875</td><td>30.3</td><td>60.5</td><td>0.345</td></tr><tr><td>Ridge regression</td><td>0.924</td><td>15.2</td><td>0.878</td><td>29.5</td><td>59.7</td><td>0.340</td></tr><tr><td>Random Forest</td><td>0.917</td><td>15.2</td><td>0.873</td><td>30.6</td><td>60.9</td><td>0.360</td></tr><tr class="chosen"><td>Gradient Boosting (chosen)</td><td>0.924</td><td>14.9</td><td>0.885</td><td>29.7</td><td>58.0</td><td>0.341</td></tr></tbody>
+</table>
+<p class="note">Validation 2017-2019 (106 rows), test 2020-2022 (102 rows),
+MAE and RMSE in dataset yield units. The model was selected on validation log-MAE; the test set was scored once.
+Chosen: Gradient Boosting (learning_rate 0.03, max_depth 2, n_estimators 100, trend per_crop_province).</p>
+<figure class="full"><img src="figures/results_model_comparison.png" alt="Test R² and MAE of the three baselines and three models (from metrics.json)."><figcaption>Test R² and MAE of the three baselines and three models (from metrics.json).</figcaption></figure>
+<p>On the 2020-2022 test years, compared with using each crop&#x27;s average yield per province, the model was better on R² 0.885 against 0.832, MAE 29.7 against 34.7 and RMSE 58.0 against 70.1; it was not better on log-MAE 0.341 against 0.312. The pass test (R² and MAE) was chosen after seeing the test results. A year trend alone, with no climate inputs, scores R² 0.875. Small differences between crops are weak evidence.</p>
+<p>Absolute yields are rough: the model is pinned to 2022, and its typical-year prediction, set against the mean actual yield of 2020-2022, was 0.80 to 1.15 times the actual for the middle half of the 34 crop-province pairs, but 0.21 times for mango in Balochistan and 2.19 times for cotton in Sindh. Trust the ends of the ranking more than a single predicted number.</p>
+<p>The likely range the apps show is the nominal 80% spread of validation-year errors. It covered
+58% of the test rows, so it is optimistic.</p>
+<figure class="half"><img src="figures/results_predicted_vs_actual.png" alt="Predicted against actual yield on the test years, log scale."><figcaption>Predicted against actual yield on the test years, log scale.</figcaption></figure>
+
+</body></html>

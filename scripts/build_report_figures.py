@@ -209,8 +209,7 @@ def predicted_vs_actual(test: pd.DataFrame) -> dict:
     ax.set_ylim(lo, hi)
     ax.set_xlabel("actual yield (dataset yield units)")
     ax.set_ylabel("predicted yield")
-    ax.set_title(f"Test years {T.TEST_YEARS[0]}-{T.TEST_YEARS[1]}: R² {r2:.3f}, MAE {mae:.1f} (n = {len(y)})",
-                 loc="left")
+    ax.set_title(f"Test {T.TEST_YEARS[0]}-{T.TEST_YEARS[1]}: R² {r2:.3f}, MAE {mae:.1f}, n = {len(y)}", loc="left")
     ax.legend(frameon=False, loc="upper left", handletextpad=0.2)
     save(fig, "results_predicted_vs_actual.png")
     return {"n": int(len(y)), "r2": r2, "mae": mae}
@@ -233,7 +232,7 @@ def main() -> None:
         "predicted_vs_actual": predicted_vs_actual(splits["test"]),
     }
     (OUT / "figure_values.json").write_text(json.dumps(values, indent=2, sort_keys=True) + "\n")
-    print(f"wrote {len(list(OUT.glob('*.png')))} figures to {OUT.relative_to(ROOT)}")
+    print(f"wrote 8 figures and figure_values.json to {OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
