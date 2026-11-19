@@ -9,8 +9,8 @@ Source of requirements: `CT-378 ML Project Guidelines.pdf` (two pages) and `CT-3
 | Proposal said | What the project has | What to do |
 |---|---|---|
 | Members: Muhammad Afzal (CT-24263), Syed Muhammad Hunain (CT-24281), Ayesha (CT-24309) | Names known; each member's role is not | Task 1 asks only for roles |
-| Success: beat a mean-yield baseline clearly and reach test R² above 0.7 | Test R² 0.794 (Random Forest), 0.813 (Gradient Boosting). The global mean-yield baseline scores R² -0.03 and MAE 100.4 against the forest's 40.9. **Criterion met.** | State it plainly in the report |
-| (not in proposal) | A stricter baseline, each crop's mean per province, scores R² 0.832 and MAE 34.7, so the chosen model does not beat it | Keep reporting this too; it is the honest limit |
+| Success: beat a mean-yield baseline clearly and reach test R² above 0.7 | Test R² 0.885 (Gradient Boosting, chosen), MAE 29.7. The global mean-yield baseline scores R² -0.03 and MAE 100.4. **Criterion met.** (Earlier model: R² 0.794.) | State it plainly in the report |
+| (not in proposal) | A stricter baseline, each crop's mean per province, scores R² 0.832 and MAE 34.7. The chosen model beats it on R² and MAE but not on log-MAE (0.341 against 0.312); the metrics were chosen after seeing the test results | Keep reporting both, with the trend-only baseline row; say the choice was post hoc |
 | Target: yield "in kg/ha" | The dataset does not confirm the unit; rice values around 20 to 40 cannot be kg/ha, so the apps say "dataset yield units" | Explain this deviation in the report |
 | Split: 70/15/15, year-ordered | Years 2001-2016 / 2017-2019 / 2020-2022 (565 training rows of 773) | Report the real shares |
 | Sources: Open Data Pakistan rainfall and temperature (1901-2016), city weather 2000-2024, PMD drought centre, FAO/ERA5, Punjab irrigated area and district yields, plus the crop dataset | Two sources used: the crop and climate dataset, and NASA POWER soil wetness | State which proposed sources were not used and why (national series stop in 2016 and are not provincial; district yields and irrigated area cover Punjab only; the drought centre has no downloadable series). Do not claim they were used |
@@ -79,7 +79,7 @@ Acceptance:
 - Every required section heading is present.
 - Every number in the results section equals `metrics.json`.
 - The proposal alignment section (Task 2b) is included and the page limit still holds.
-- The limits are stated as in the README: the best model does not beat the crop-province-mean baseline, and the likely range covers 60% of test rows against a nominal 80%.
+- The limits are stated as in the README: the model beats the crop-province-mean baseline on R² and MAE but not on log-MAE (a post-hoc metric choice), and the likely range covers 58% of test rows against a nominal 80%.
 - The yield unit is called "dataset yield units".
 - References include both data sources and the FAO table.
 Verify: `scripts/verify_report.py` passes; break one number on purpose and see it fail; read the PDF pages as images.
@@ -96,7 +96,7 @@ Decide the route first; each needs the user's approval before anything is publis
 2. Try a Streamlit-SDK Space on the free plan. The guidelines allow "Gradio or Streamlit", and the earlier refusal was for a Gradio Space. Unknown whether it is also refused; one create call answers it.
 3. A static Space that is a copy of the HTML pages calling the Vercel API (CORS already allows any origin). It is free and live, but it is neither Gradio nor Streamlit, so the instructor must accept it.
 4. Hugging Face PRO for one month, then the already built Gradio Space (`scripts/build_hf_bundle.py`).
-Acceptance for any route: the Space URL opens for a logged-out visitor, and Sindh, driest real year, rice shows 19.71 and 58.5%. Verify: open it in a real browser; run the matching verify script.
+Acceptance for any route: the Space URL opens for a logged-out visitor, and Sindh, driest real year, rice shows 40.85 and 89.3%. Verify: open it in a real browser; run the matching verify script.
 Needs: a Hugging Face token with write access, created by the user and revoked afterwards.
 
 ### Task 5: documents and checkers for the Space
@@ -125,4 +125,4 @@ Report accepted, three URLs live, README complete, fresh clone passes, rehearsal
 - The instructor may require a Gradio or Streamlit Space; routes 3 and 4 differ in cost and risk.
 - Vercel cold starts and Streamlit sleeping are real during a demo; open both first.
 - A Hugging Face token pasted in chat has to be revoked afterwards. Two earlier ones should be revoked now.
-- The model does not beat the simple baseline. That is honest and documented, and the viva answer should say it plainly.
+- The model beats the simple baseline on R² and MAE only, not on log-MAE, and the metric choice was post hoc. That is honest and documented, and the viva answer should say it plainly.

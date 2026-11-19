@@ -48,7 +48,7 @@
     - `python scripts/verify_readme.py --write`.
   - Verify: `verify_readme.py`.
   - Files: `README.md`, `scripts/verify_readme.py`.
-- [ ] **T6** Guide and project notes.
+- [x] **T6** Guide and project notes.
   - Do:
     - `docs/demo_and_viva_guide.md`:
       - Demo numbers and ranking order (lines 14, 15, 36, 40), read from the local app.

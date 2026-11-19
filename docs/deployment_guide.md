@@ -26,7 +26,7 @@ Before you start, push the branch that contains these files to GitHub. The repos
 
 ## 1. Streamlit Community Cloud
 
-**Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model. The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
+**Status 2026-11-19: deployed and checked (on the earlier model; the promoted model is not deployed yet, see `tasks/todo-promote-offset-model.md` T8b).** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model of that day (the earlier one; the promoted model shows 40.85 and 89.3% for the same click). The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
 
 From Streamlit's deploy docs:
 
@@ -43,8 +43,8 @@ If the install fails, read the log. Do **not** change the `scikit-learn==1.9.1` 
 Check the live app (each of these should work):
 
 - It loads with Punjab, "Typical (median) year", crop rice, no error.
-- Province **Sindh**, **Driest real year**, crop rice: predicted yield 19.71, share of a typical year 58.5%, and the same ranking as the demo guide.
-- The chart and the table of 13 crops show. The note under the prediction says the likely range covered 60% of the test rows.
+- Province **Sindh**, **Driest real year**, crop rice: predicted yield 40.85, share of a typical year 89.3%, and the same ranking as the demo guide. (An app still showing 19.71 and 58.5% is running the earlier model: redeploy it.)
+- The chart and the table of 13 crops show. The note under the prediction says the likely range covered 58% of the test rows.
 
 Then put the URL in the README deployment table.
 
@@ -81,7 +81,7 @@ hf upload <your-username>/crop-yield-drought hf_bundle/space . --repo-type space
 The Space builds for a few minutes. Open its **Logs** tab if it fails. Then check it:
 
 - It loads, the form fills itself, and **Predict** shows a prediction, a likely range, a chart and a table.
-- Province Sindh, "Driest real year", crop rice gives the same 19.71 and 58.5% as above.
+- Province Sindh, "Driest real year", crop rice gives the same 40.85 and 89.3% as above.
 - Typing rain 5 for Sindh shows the "outside the range the model was trained on" message.
 
 The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version: 6.32.0` and `python_version: "3.13"`. If the build rejects the Python version, change it in `space_readme()` in `scripts/build_hf_bundle.py` (3.12 also resolves), rebuild and upload again.
@@ -109,7 +109,7 @@ rm ~/vercel_bundle/.built-by-build_vercel_bundle
 cd ~/vercel_bundle && vercel deploy --prod --yes --name climate-machine-learning --scope hunains-projects-ff0a52fc
 ```
 
-What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gives rice 19.71 and 58.5% of a typical year, rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
+What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gave rice 19.71 and 58.5% of a typical year (earlier model; the promoted model gives 40.85 and 89.3%), rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
 
 Things to know:
 - The project has Vercel Authentication switched on, but the production address above is open to everyone. The per-deployment addresses (with a random suffix) probably ask for a Vercel login.

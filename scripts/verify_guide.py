@@ -40,6 +40,9 @@ def main() -> int:
         need(f"{dry['inputs']['precipitation_sum']:.1f} mm", "driest-year rain")
         for item in rec[:3] + rec[-1:]:
             need(f"{item['crop']} {item['pct_of_normal']:.1f}%", f"driest ranking row rank {item['rank']}")
+        shares = [round(i["pct_of_normal"], 1) for i in rec]
+        if len(set(shares)) < len(shares):
+            need("tied", "the demo ranking has crops with equal shares, so the guide must say so")
 
         # --- demo step: typical year (median preset: rain and mean temperature only)
         med = client.post("/api/v1/recommend", json={
@@ -79,6 +82,16 @@ def main() -> int:
     need(f"{chosen['test']['r2']:.3f}", "chosen model test R2")
     base = metrics["baselines"]["crop_province_mean"]["test"]
     need(f"{base['r2']:.3f}", "baseline test R2 (viva needs the straight answer)")
+    # SPEC-promote-offset-model.md: the win comes with the loss, the trend-only row and the after-the-fact choice
+    need(f"{chosen['test']['mae']:.1f}", "chosen model test MAE")
+    need(f"{base['mae']:.1f}", "baseline test MAE")
+    need(f"{metrics['baselines']['crop_province_mean_plus_trend']['test']['r2']:.3f}", "trend-only baseline test R2")
+    need(f"{chosen['test']['log_mae']:.3f}", "chosen model test log-MAE")
+    need("log-MAE", "the log-MAE loss")
+    need("after seeing the test results", "the metric choice came after the test results")
+    for stale in ("0.794", "no yearly trend", "random forest, scores"):
+        if stale in text.lower():
+            failures.append(f"stale claim about the earlier model: {stale!r}")
 
     # --- structure
     for heading in ("## Before you present", "## Part 1", "## Part 2", "## Part 3", "## Viva preparation",

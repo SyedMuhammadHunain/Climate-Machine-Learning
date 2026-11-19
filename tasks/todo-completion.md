@@ -11,7 +11,7 @@
 ## Phase 2: the third deployment
 - [ ] **Task 4** Choose the Space route (instructor answer, Streamlit-SDK Space, static Space, or PRO). Publish only after the user approves; needs a fresh write token.
 - [ ] **Task 5** README table, deployment guide, demo checklist, `CLAUDE.md`, `verify_readme.py`, `verify_guide.py` updated together.
-- [ ] **Checkpoint 2** All three deployment links open for a logged-out visitor and show 19.71 and 58.5% (Sindh, driest real year, rice).
+- [ ] **Checkpoint 2** All three deployment links open for a logged-out visitor and show 40.85 and 89.3% (Sindh, driest real year, rice; after the redeploys in `tasks/todo-promote-offset-model.md` T8).
 
 ## Phase 3: submission
 - [ ] **Task 6** "Who answers what" table in `docs/demo_and_viva_guide.md`.
