@@ -71,6 +71,53 @@ def main() -> int:
     if "onclick=\"applyPreset" in predict:
         failures.append("predict.html: preset buttons still use innerHTML with an inline onclick")
 
+    # Rename (user request): the site is called "Low-Water Crops"; the old name must be gone from pages and assets
+    site_name = "Low-Water Crops"
+    old_brand = re.compile(r"infinite[\s_-]*field", re.IGNORECASE)
+    for name in PAGES + ["package.json"]:
+        if old_brand.search((FRONTEND / name).read_text(encoding="utf-8")):
+            failures.append(f"{name}: still contains the old site name")
+    for stale in sorted((FRONTEND / "assets").glob("*")):
+        if old_brand.search(stale.name):
+            failures.append(f"assets/{stale.name}: file name still carries the old site name")
+    index_page = (FRONTEND / "index.html").read_text(encoding="utf-8")
+    for logo in ("dark-logo", "white-logo"):
+        if not re.search(r'class="logo %s">\s*%s\s*<' % (logo, re.escape(site_name)), index_page):
+            failures.append(f"index.html: header text for .{logo} must read {site_name!r}")
+    for name in PAGES:
+        title = re.search(r"<title>(.*?)</title>", (FRONTEND / name).read_text(encoding="utf-8"))
+        if not title or site_name not in title.group(1):
+            failures.append(f"{name}: <title> must contain {site_name!r}")
+    if 'property="og:url" content="https://climate-machine-learning.vercel.app/"' not in index_page:
+        failures.append("index.html: og:url must be the live site, not the old domain")
+    for name in PAGES:
+        for ref in re.findall(r'(?:href|content|src)="(assets/[^"]+)"', (FRONTEND / name).read_text(encoding="utf-8")):
+            if not (FRONTEND / ref).exists():
+                failures.append(f"{name}: references {ref}, which does not exist")
+    if "<title>%s</title>" % site_name not in predict:
+        failures.append("predict.html: the logo SVG must carry <title>%s</title>" % site_name)
+    readme = (FRONTEND / "README.md").read_text(encoding="utf-8")
+    if "Cloned from" not in readme or old_brand.match(readme):
+        failures.append("frontend README must keep the honest 'Cloned from' line and not be headed by the old name")
+
+    # the big zoom-in text is a flat mesh of the name: check the GLB is well formed and the size the page expects
+    import struct
+    glb = (FRONTEND / "assets" / "logo-3d.glb").read_bytes()
+    if glb[:4] != b"glTF":
+        failures.append("logo-3d.glb: not a binary glTF file")
+    else:
+        jlen = struct.unpack("<I", glb[12:16])[0]
+        gltf = json.loads(glb[20:20 + jlen])
+        acc = gltf["accessors"]
+        pos, idx = acc[gltf["meshes"][0]["primitives"][0]["attributes"]["POSITION"]], acc[gltf["meshes"][0]["primitives"][0]["indices"]]
+        width, height = pos["max"][0] - pos["min"][0], pos["max"][2] - pos["min"][2]
+        if len(gltf["meshes"]) != 1 or pos["count"] < 200 or idx["count"] % 3:
+            failures.append("logo-3d.glb: expected one mesh with a triangle list")
+        if pos["min"][1] != 0 or pos["max"][1] != 0:
+            failures.append("logo-3d.glb: the text must lie flat in the XZ plane (y = 0)")
+        if not (0.44 <= width <= 0.50 and 0.03 <= height <= 0.12 and abs(pos["max"][0] + pos["min"][0]) < 0.02):
+            failures.append(f"logo-3d.glb: size {width:.3f} x {height:.3f} is not the size the page was built for (about 0.475 wide, centred)")
+
     # T7: no demo/simulation wording or old hand-made concepts in any page
     for name in PAGES:
         text = (FRONTEND / name).read_text(encoding="utf-8").lower()

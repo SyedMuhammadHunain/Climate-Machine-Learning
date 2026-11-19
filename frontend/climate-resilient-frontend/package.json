@@ -1,7 +1,7 @@
 {
   "name": "climate-resilient-frontend",
   "version": "1.0.0",
-  "description": "Infinite Field cloned landing page with Three.js WebGL shaders and GSAP animations",
+  "description": "Low-Water Crops landing page with Three.js WebGL shaders and GSAP animations",
   "scripts": {
     "dev": "python3 -m http.server 3000 --bind 127.0.0.1",
     "serve": "npx -y serve -l 3000 ."
