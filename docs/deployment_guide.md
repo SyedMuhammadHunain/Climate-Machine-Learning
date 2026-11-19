@@ -43,7 +43,7 @@ If the install fails, read the log. Do **not** change the `scikit-learn==1.9.1` 
 Check the live app (each of these should work):
 
 - It loads with Punjab, "Typical (median) year", crop rice, no error.
-- Province **Sindh**, **Driest real year**, crop rice: predicted yield 40.85, share of a typical year 89.3%, and the same ranking as the demo guide. (An app still showing 19.71 and 58.5% is running the earlier model: redeploy it.)
+- Province **Sindh**, **Driest real year**, crop rice: predicted yield 40.85, share of a typical year 89.3%, and the same ranking as the demo guide. (An app still showing 19.71 and 58.5% is running the earlier model: redeploy it. Vercel was redeployed on 2026-11-19 and shows the new numbers; Streamlit is the one still to update.)
 - The chart and the table of 13 crops show. The note under the prediction says the likely range covered 58% of the test rows.
 
 Then put the URL in the README deployment table.
@@ -109,7 +109,7 @@ rm ~/vercel_bundle/.built-by-build_vercel_bundle
 cd ~/vercel_bundle && vercel deploy --prod --yes --name climate-machine-learning --scope hunains-projects-ff0a52fc
 ```
 
-What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gave rice 19.71 and 58.5% of a typical year (earlier model; the promoted model gives 40.85 and 89.3%), rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
+What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the promoted model; the first deployment earlier the same day gave 19.71 and 58.5% with the earlier model, and was redeployed with the same CLI command on 2026-11-19, deployment `dpl_A6MBeZRggSgAE5y5JExybSf3MzaE`), rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
 
 Things to know:
 - The project has Vercel Authentication switched on, but the production address above is open to everyone. The per-deployment addresses (with a random suffix) probably ask for a Vercel login.

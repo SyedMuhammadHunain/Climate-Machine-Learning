@@ -69,7 +69,7 @@
 
 ## Phase 3: ship (ask before each)
 
-- [ ] **T8a** Vercel: deploy the rebuilt `vercel_bundle/` with the Vercel CLI and update the `vercel-deploy` branch.
+- [x] **T8a** Vercel: deploy the rebuilt `vercel_bundle/` with the Vercel CLI and update the `vercel-deploy` branch.
   Logged-out check: metrics page caveat, Sindh driest-year rice numbers.
 - [ ] **T8b** Streamlit: diff `hunain-deploy` against local `Hunain`, bring over the needed paths, push `hunain-deploy`.
   Logged-out check: "About" caveat, same demo numbers.
