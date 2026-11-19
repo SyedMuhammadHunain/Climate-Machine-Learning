@@ -92,7 +92,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     inputs could never be opened; submit button hover (white on `#FF7344`) was 2.7:1, now `--colorAccentText`.
     Only the landing page (T5) still fails. Result rows are rebuilt in T7; for now `.job-title` is a full-width 44 px link.
 
-- [ ] **T5: Landing page** (module `landing`, M)
+- [x] **T5: Landing page** (module `landing`, M)
   - Description: Replace the two `careers-button` links with one `<a href="predict.html"
     class="careers-button">Start</a>` (same style, animation, >= 44 px). Canvas and overlay use
     `100dvh` and `visualViewport` size; resize debounced; phone path (under 800 px or touch):
@@ -108,6 +108,12 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only landing`; `scripts/verify_frontend.py`; `scripts/verify_backend.py` (serves `/`).
   - Files: `frontend/climate-resilient-frontend/index.html`, `scripts/verify_responsive.py`, `scripts/run_app.sh` (only if its printed URLs mention the buttons).
   - Depends on: T1.
+  - Done 2026-11-19. `verify_responsive.py` 21/21 at 9 sizes. New landing tests: text phase fits (scrolled intro and
+    reduced motion; header, paragraph, button, footer in order, footer line clear of text), phone scene (1.5x pixel ratio,
+    12000 px scroll space; desktop unchanged), canvas survives address bar (+/-110 px: drawing size unchanged, fills screen,
+    `object-fit: cover`), reduced motion (page does not scroll). Also fixed: footer words broke mid-word on phones
+    (`SplitText` `words,chars`), footer line overlapped text in landscape, and a T4 miss: a later `display: inline-block`
+    overrode the 44 px full-width `.job-title` (the T4 commit was made with that one tap-target test still failing).
 
 ### Checkpoint A (after T1-T5)
 - [ ] `verify_responsive.py` layout and landing tests PASS at 9 sizes

@@ -72,8 +72,16 @@
 
         @media all and (max-width: 800px) {
             #scroll-space {
-                height: 20000px;
+                height: 12000px; /* phones: a shorter swipe through the same intro */
             }
+        }
+
+        #mesh-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* the address bar changes the height: the picture is cropped, never stretched */
+            object-position: center;
         }
 
         .container {
@@ -82,6 +90,7 @@
             left: 0;
             width: 100%;
             height: 100%; /* full height from first paint: otherwise it is as tall as the unsized canvas and the centred text jumps when the script sizes it */
+            height: 100dvh; /* the visible height: follows the Android address bar */
             overflow: hidden;
         }
         .text-overlay {
@@ -199,7 +208,7 @@
             border-top: 2px solid #232323;
             padding: 0 0 0 100px;
             margin-right: auto;
-            margin-left: -28px;
+            margin-left: calc(7px - var(--header-pagging)); /* -28px on desktop; keeps a 7px gap to the text when the padding shrinks */
         }
 
         .footer .white-footer-horizontal-line {
@@ -253,8 +262,12 @@
             position: relative;
             opacity: 0;
             transform: translateY(20px);
-            margin-top: 50px;
-            padding: 7px 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px; /* WCAG 2.5.5 target size */
+            margin-top: clamp(24px, 5vh, 50px);
+            padding: 0 20px;
             color: #ffffff;
             text-decoration: none;
             border-radius: 150px;
@@ -275,8 +288,65 @@
 
         @media (max-width: 700px) {
             .careers-button {
-                font-size: 10px;
+                font-size: 12px;
                 letter-spacing: 5px;
+            }
+        }
+
+        /* Phones, narrow: smaller header so logo and scroll hint fit on 320 px */
+        @media (max-width: 420px) {
+            .header .dark-logo,
+            .header .white-logo,
+            .header .white-logo > div {
+                font-size: 20px;
+            }
+
+            .header .scroll-message {
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+
+        /* Short screens (a phone on its side): tighter header, footer and text so nothing overlaps */
+        @media (max-height: 480px) {
+            :root {
+                --header-pagging: 14px;
+            }
+
+            .header .dark-logo,
+            .header .white-logo,
+            .header .white-logo > div {
+                font-size: 22px;
+            }
+
+            .header,
+            .footer {
+                font-size: 14px;
+            }
+
+            .paragraph-container {
+                font-size: 16px;
+            }
+        }
+
+        /* Reduced motion: no scene, no scrolling intro; the text and the button are shown at once */
+        @media (prefers-reduced-motion: reduce) {
+            #scroll-space {
+                display: none;
+            }
+
+            .container {
+                background: #232323;
+            }
+
+            .paragraph-container,
+            .careers-button {
+                opacity: 1;
+                transform: none;
+            }
+
+            .header .scroll-message {
+                display: none;
             }
         }
 
@@ -323,8 +393,7 @@
             At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years across Punjab, Sindh and Balochistan.
         </div>
         <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; pointer-events:auto;">
-            <a href="predict.html" class="careers-button">Crop Advisory & Predictor</a>
-            <a href="metrics.html" class="careers-button">Model & Benchmarks</a>
+            <a href="predict.html" class="careers-button">Start</a>
         </div>
     </div>
 </main>
@@ -372,6 +441,14 @@
     }));
 
 
+    // Phones (narrow screens or touch) get a lighter scene; reduced motion gets no scene at all
+    const touchDevice = 'ontouchstart' in window;
+    const isPhone = touchDevice || window.innerWidth < 800;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const PHONE_PIXEL_RATIO = 1.5, DESKTOP_PIXEL_RATIO = 2;
+    const PHONE_WAVE_DETAIL = 3, DESKTOP_WAVE_DETAIL = 5;
+    const ADDRESS_BAR_PX = 150;   // the Android address bar showing or hiding changes the height by about this much
+
     const animParams = {
         viewportOpening: 0,
         noiseTimeIncr: .7
@@ -384,8 +461,8 @@
 
 
     const footerChars = [
-        new SplitText(footerWhiteTypingStrings[0], {type: "chars"}),
-        new SplitText(footerWhiteTypingStrings[1], {type: "chars"}),
+        new SplitText(footerWhiteTypingStrings[0], {type: "words,chars"}),   // words: a line wraps between words, never inside one
+        new SplitText(footerWhiteTypingStrings[1], {type: "words,chars"}),
     ]
     const scrollMessageSplit = new SplitText(scrollMessageEl, {type: "chars"});
     const getRandomNumberReplacements = () => ["0", "1", "0", "1", "2", "5", "8"].sort(() => Math.random() - .5);
@@ -487,12 +564,28 @@
         }, 1.3)
 
 
-    initScene();
+    if (reduceMotion) {
+        // no scene and no scrolling intro: show the end state of the opening animation straight away
+        introAnimation.progress(1).kill();
+        scrollTipAnimation.kill();
+        gsap.set(scrollMessageEl, {opacity: 0});
+    } else {
+        initScene();
 
-
-    window.addEventListener("resize", () => {
-        updateSceneSize();
-    });
+        // Debounced. On a phone, a height change of an address bar's size with the same width is not a resize:
+        // redrawing then would reallocate the scene and make it jump.
+        let sizedWidth = window.innerWidth, sizedHeight = window.innerHeight, resizeTimer;
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const w = window.innerWidth, h = window.innerHeight;
+                if (touchDevice && w === sizedWidth && Math.abs(h - sizedHeight) <= ADDRESS_BAR_PX) return;
+                sizedWidth = w;
+                sizedHeight = h;
+                updateSceneSize();
+            }, 150);
+        });
+    }
 
 
     function initScene() {
@@ -502,7 +595,7 @@
             alpha: true
         });
         renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isPhone ? PHONE_PIXEL_RATIO : DESKTOP_PIXEL_RATIO));
 
         renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
             minFilter: THREE.LinearFilter,
@@ -640,7 +733,7 @@
     }
 
     function createWaves() {
-        const w = 70, h = 40, res = 5;
+        const w = 70, h = 40, res = isPhone ? PHONE_WAVE_DETAIL : DESKTOP_WAVE_DETAIL;
         const geometry = new THREE.PlaneGeometry(w, h, w * res, h * res);
 
         wavesMaterial = new THREE.RawShaderMaterial({
@@ -1094,7 +1187,7 @@
         camera.aspect = renderTargetCamera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderTargetCamera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(window.innerWidth, window.innerHeight, false);  // false: CSS sizes the canvas (object-fit: cover)
         renderTarget.setSize(window.innerWidth, window.innerHeight);
 
         const scale = Math.min(1, .75 * camera.aspect);

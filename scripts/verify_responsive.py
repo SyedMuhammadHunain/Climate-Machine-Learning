@@ -44,6 +44,10 @@ PAGES = {
 }
 # The predictor in the states a visitor sees: after ranking all crops, after one crop, with the optional inputs open.
 # A name is "<page>-<state>"; the page is loaded, then SETUP[name] drives it (Sindh, driest real year, like the demo).
+# The landing page is driven by scrolling: "index-text" scrolls to where the paragraph and the button are shown,
+# "index-reduced" loads it with prefers-reduced-motion (everything shown at once, no scene, no scrolling).
+PAGES["index-text"] = "document.fonts.status === 'loaded' && !!window.ScrollTrigger && ScrollTrigger.getAll().length > 0"
+PAGES["index-reduced"] = "document.fonts.status === 'loaded' && !!document.querySelector('a.careers-button')"
 PAGES["predict-result"] = PAGES["predict-single"] = PAGES["predict-advanced"] = PAGES["predict"]
 PREDICT_VARIANTS = ("predict", "predict-result", "predict-single", "predict-advanced")
 # The landing page draws text over a WebGL scene, so colour contrast is not measurable from CSS there.
@@ -164,7 +168,18 @@ MEASURE_JS = r"""
   const results = { container: visible("results-container"), rankedItems: document.querySelectorAll("#team-items-1 .job-post-item").length,
                     singleItems: document.querySelectorAll("#single-crop-items .job-post-item").length,
                     rankedShown: visible("team-section-1"), singleShown: visible("single-crop-section") };
-  return { vw, vh, actions, gridLefts, results, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
+  const canvas = document.getElementById("mesh-canvas");
+  const landing = document.querySelector(".paragraph-container") ? {
+    header: rect(document.querySelector(".header")), footer: rect(document.querySelector(".footer")),
+    paragraph: rect(document.querySelector(".paragraph-container")), paragraphOpacity: opacity(document.querySelector(".paragraph-container")),
+    button: rect(document.querySelector("a.careers-button")), buttonOpacity: document.querySelector("a.careers-button") ? opacity(document.querySelector("a.careers-button")) : 0,
+    canvas: canvas ? { w: canvas.width, h: canvas.height, rect: rect(canvas), fit: getComputedStyle(canvas).objectFit } : null,
+    scrollSpace: rect(document.getElementById("scroll-space")), scrollHeight: document.documentElement.scrollHeight,
+    footer1: (el => { if (!el) return null; const r = document.createRange(); r.selectNodeContents(el); return rect(r); })(document.querySelector(".white-footer-typer")),
+    footer2: (el => { if (!el) return null; const r = document.createRange(); r.selectNodeContents(el); return rect(r); })(document.querySelectorAll(".white-footer-typer")[1]),
+    footerLine: (el => el && getComputedStyle(el).display !== "none" ? rect(el) : null)(document.querySelector(".white-footer-horizontal-line")),
+  } : null;
+  return { vw, vh, actions, gridLefts, results, landing, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
 })()
 """
 
@@ -234,7 +249,20 @@ def _open_advanced(chrome: Chrome) -> None:
     chrome.wait_for("document.getElementById('advanced-panel').classList.contains('open')", 10, "optional inputs")
 
 
+def _scroll_to_text(chrome: Chrome) -> None:
+    """Scroll through the intro until the paragraph and the button are both visible (opacity above 0.9)."""
+    opacity = ("(el => { let v = 1; for (let e = el; e; e = e.parentElement) v *= parseFloat(getComputedStyle(e).opacity); return v; })")
+    for i in range(45):
+        chrome.eval(f"window.scrollTo(0, {0.40 + i * 0.013} * (document.documentElement.scrollHeight - innerHeight))")
+        time.sleep(0.15)
+        if chrome.eval(f"(() => {{ const o = {opacity}; return o(document.querySelector('.paragraph-container')) > 0.9"
+                       f" && o(document.querySelector('a.careers-button')) > 0.9; }})()"):
+            return
+    raise AssertionError("the landing paragraph and button never became visible while scrolling the intro")
+
+
 SETUP = {
+    "index-text": _scroll_to_text,
     "predict-result": lambda c: _predict(c, "ALL", "document.querySelectorAll('#team-items-1 .job-post-item').length > 0"),
     "predict-single": lambda c: _predict(c, "rice", "document.querySelectorAll('#single-crop-items .job-post-item').length > 0"),
     "predict-advanced": _open_advanced,
@@ -270,12 +298,13 @@ class _Run:
         if key not in self.cache:
             name, w, h, dpr, phone = size
             chrome = self.browser()
-            chrome.emulate(w, h, dpr=dpr, mobile=phone, touch=phone)
+            chrome.emulate(w, h, dpr=dpr, mobile=phone, touch=phone, reduced_motion=page == "index-reduced")
             chrome.goto(f"{self.base()}/{page.split('-')[0]}.html")
             chrome.wait_for(PAGES[page], 60, f"{page}.html to finish loading at {name}")
             if page in SETUP:
                 SETUP[page](chrome)
-            chrome.eval("window.scrollTo(0, 0)")
+            if page != "index-text":
+                chrome.eval("window.scrollTo(0, 0)")
             time.sleep(0.5)  # let late layout (fonts swapped in, API text) settle
             self.cache[key] = chrome.eval(MEASURE_JS.replace("DEVICE_WIDTH", str(w)))
             if page == "metrics":
@@ -569,6 +598,88 @@ def prediction_results_are_drawn_at_every_size():
     _fail(problems, "prediction results")
 
 
+def landing_text_phase_fits():
+    """When the paragraph and the Start button are shown (scrolled intro, or reduced motion), header, paragraph, button
+    and footer sit in that order without overlapping, all inside the screen (R4.8)."""
+    problems = []
+    for page, size, m in RUN.each(("index-text", "index-reduced")):
+        where, L = f"{page} {size[0]}", m["landing"]
+        if L["paragraphOpacity"] < 0.9 or L["buttonOpacity"] < 0.9:
+            problems.append(f"{where}: paragraph opacity {L['paragraphOpacity']:.2f}, button opacity {L['buttonOpacity']:.2f}")
+            continue
+        pr, btn, head, foot = L["paragraph"], L["button"], L["header"], L["footer"]
+        if pr["top"] < head["bottom"] - 1:
+            problems.append(f"{where}: paragraph starts at {pr['top']:.0f} px, header ends at {head['bottom']:.0f} px")
+        if btn["top"] < pr["bottom"] - 1:
+            problems.append(f"{where}: button starts at {btn['top']:.0f} px, paragraph ends at {pr['bottom']:.0f} px")
+        if btn["bottom"] > foot["top"] + 1:
+            problems.append(f"{where}: button ends at {btn['bottom']:.0f} px, footer starts at {foot['top']:.0f} px")
+        for name, r in (("paragraph", pr), ("button", btn)):
+            if r["left"] < -1 or r["right"] > m["vw"] + 1:
+                problems.append(f"{where}: {name} spans {r['left']:.0f} to {r['right']:.0f} px")
+        f1, f2, line = L["footer1"], L["footer2"], L["footerLine"]
+        if line and (f1["right"] > line["left"] + 0.5 or line["right"] > f2["left"] + 0.5):
+            problems.append(f"{where}: footer line {line['left']:.0f} to {line['right']:.0f} px touches text ending at {f1['right']:.0f} / starting at {f2['left']:.0f} px")
+        if not line and f1["right"] > f2["left"] + 0.5 and f1["top"] < f2["bottom"] and f2["top"] < f1["bottom"]:
+            problems.append(f"{where}: footer texts overlap")
+    _fail(problems, "landing text phase")
+
+
+def landing_scene_is_lighter_on_phones():
+    """On phones the scene is drawn at no more than 1.5x pixel ratio and the scroll space is shorter; desktop keeps both
+    as they were (Decision 1)."""
+    problems = []
+    for page, size, m in RUN.each(("index-text",)):
+        L = m["landing"]
+        ratio = L["canvas"]["w"] / m["vw"]
+        if size[4] and ratio > 1.5 + 0.01:
+            problems.append(f"{page} {size[0]}: canvas drawn at {ratio:.2f}x pixel ratio, expected 1.5 at most")
+        if size[4] and L["scrollSpace"]["h"] > 12000:
+            problems.append(f"{page} {size[0]}: scroll space is {L['scrollSpace']['h']:.0f} px, expected 12000 at most on phones")
+        if not size[4] and size[1] > 800 and L["scrollSpace"]["h"] != 30000:
+            problems.append(f"{page} {size[0]}: scroll space is {L['scrollSpace']['h']:.0f} px, desktop keeps 30000")
+    _fail(problems, "phone scene")
+
+
+def landing_canvas_survives_address_bar():
+    """Hiding or showing the Android address bar changes the height by about 100 px: the canvas keeps its drawing size
+    and still fills the screen without distortion (object-fit: cover) (R4.8)."""
+    problems = []
+    chrome = RUN.browser()
+    for name, w, h, dpr, phone in SIZES:
+        if not phone or w > 500:
+            continue
+        chrome.emulate(w, h, dpr=dpr, mobile=True, touch=True)
+        chrome.goto(f"{RUN.base()}/index.html")
+        chrome.wait_for(PAGES["index-text"], 60, f"the landing scene at {name}")
+        time.sleep(0.5)
+        read = ("(() => { const c = document.getElementById('mesh-canvas'), r = c.getBoundingClientRect();"
+                " return {w: c.width, h: c.height, rw: r.width, rh: r.height, ih: innerHeight, fit: getComputedStyle(c).objectFit}; })()")
+        before = chrome.eval(read)
+        for delta in (-110, 110):   # address bar shown, then hidden
+            chrome.emulate(w, h + delta, dpr=dpr, mobile=True, touch=True)
+            time.sleep(0.6)
+            after = chrome.eval(read)
+            if (after["w"], after["h"]) != (before["w"], before["h"]):
+                problems.append(f"{name} {delta:+d} px: drawing size changed {before['w']}x{before['h']} to {after['w']}x{after['h']}")
+            if abs(after["rh"] - after["ih"]) > 1 or abs(after["rw"] - w) > 1:
+                problems.append(f"{name} {delta:+d} px: canvas is {after['rw']:.0f}x{after['rh']:.0f}, screen is {w}x{after['ih']}")
+            if after["fit"] != "cover":
+                problems.append(f"{name} {delta:+d} px: canvas object-fit is {after['fit']!r}, expected 'cover'")
+        chrome.emulate(w, h, dpr=dpr, mobile=True, touch=True)
+    _fail(problems, "address bar resize")
+
+
+def landing_reduced_motion_shows_content_at_once():
+    """With prefers-reduced-motion the page does not scroll, and the paragraph and button are shown without animation (R4.9)."""
+    problems = []
+    for page, size, m in RUN.each(("index-reduced",)):
+        L = m["landing"]
+        if L["scrollHeight"] > m["vh"] + 1:
+            problems.append(f"{page} {size[0]}: page scrolls ({L['scrollHeight']} px in a {m['vh']} px screen)")
+    _fail(problems, "reduced motion")
+
+
 def landing_has_one_start_button():
     """index.html shows exactly one button, "Start", linking to predict.html relatively (R1)."""
     problems = []
@@ -610,6 +721,10 @@ TESTS = [
     jargon_headers_are_explained,
     predictor_form_layout,
     prediction_results_are_drawn_at_every_size,
+    landing_text_phase_fits,
+    landing_scene_is_lighter_on_phones,
+    landing_canvas_survives_address_bar,
+    landing_reduced_motion_shows_content_at_once,
     landing_has_one_start_button,
 ]
 
