@@ -2,38 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Meta Title -->
-    <title>Infinite Field — Guarding harvests against drought with climate intelligence</title>
+    <title>Low-Water Crops — Guarding harvests against drought with climate intelligence</title>
     
     <!-- Meta Description -->
-    <meta name="description" content="At Infinite Field, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
+    <meta name="description" content="At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
     
     <!-- Meta Keywords -->
-    <meta name="keywords" content="Infinite Field, machine learning, climate resilience, crop yield prediction, drought advisory, low-water agriculture, sustainable farming, agricultural AI">
+    <meta name="keywords" content="Low-Water Crops, machine learning, climate resilience, crop yield prediction, drought advisory, low-water agriculture, sustainable farming, agricultural AI">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/site_favicon.png">
     
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Infinite Field — Climate-Resilient Crop Yield Prediction">
-    <meta property="og:description" content="At Infinite Field, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
+    <meta property="og:title" content="Low-Water Crops — Climate-Resilient Crop Yield Prediction">
+    <meta property="og:description" content="At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://infinitefield.xyz">
-    <meta property="og:image" content="assets/infinite_field_opengraph.png">
+    <meta property="og:url" content="https://climate-machine-learning.vercel.app/">
+    <meta property="og:image" content="https://climate-machine-learning.vercel.app/assets/site_opengraph.png">
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Infinite Field — Climate-Resilient Crop Yield Prediction">
-    <meta name="twitter:description" content="At Infinite Field, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
-    <meta name="twitter:image" content="assets/infinite_field_opengraph.png">
+    <meta name="twitter:title" content="Low-Water Crops — Climate-Resilient Crop Yield Prediction">
+    <meta name="twitter:description" content="At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
+    <meta name="twitter:image" content="https://climate-machine-learning.vercel.app/assets/site_opengraph.png">
     
     <!-- Web Clip (Apple Touch Icon) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/infinite_field_webclip.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/site_webclip.png">
     
     <!-- Additional Meta Tags -->
-    <meta name="author" content="Infinite Field">
+    <meta name="author" content="Low-Water Crops">
     <meta name="robots" content="index, follow">
     
 
@@ -53,11 +53,13 @@
         @font-face {
             font-family: DenimINK-regular;
             src: url(./assets/DenimINK-Regular.ttf);
+            font-display: swap;
         }
 
         @font-face {
             font-family: LD_TechD-Regular;
             src: url(./assets/LD_TechD-Regular.ttf);
+            font-display: swap;
         }
 
         * {
@@ -79,6 +81,7 @@
             top: 0;
             left: 0;
             width: 100%;
+            height: 100%; /* full height from first paint: otherwise it is as tall as the unsized canvas and the centred text jumps when the script sizes it */
             overflow: hidden;
         }
         .text-overlay {
@@ -282,14 +285,14 @@
 <body>
 <div id="scroll-space">
 </div>
-<div class="container">
+<main class="container">
     <canvas id="mesh-canvas"></canvas>
     <div class="header">
         <div class="logo dark-logo">
-            Infinite Field
+            Low-Water Crops
         </div>
         <div class="logo white-logo">
-            Infinite Field
+            Low-Water Crops
         </div>
         <div class="scroll-message">
             Scroll To Start
@@ -317,14 +320,14 @@
     </div>
     <div class="text-overlay">
         <div class="paragraph-container">
-            At Infinite Field, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years across Punjab, Sindh and Balochistan.
+            At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years across Punjab, Sindh and Balochistan.
         </div>
         <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; pointer-events:auto;">
             <a href="predict.html" class="careers-button">Crop Advisory & Predictor</a>
             <a href="metrics.html" class="careers-button">Model & Benchmarks</a>
         </div>
     </div>
-</div>
+</main>
 
 
 <script async src="./vendor/es-module-shims.js"></script>
@@ -523,8 +526,13 @@
         createWaves();
 
 
+        // SplitText measures line breaks: wait for the fonts (at most 3 s) so the lines are final, not re-wrapped later
+        const fontsReady = () => Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 3000))]);
+
         new GLTFLoader()
-            .load('./assets/logo-3d.glb', (gltf) => {
+            .load('./assets/logo-3d.glb', async (gltf) => {
+                await fontsReady();
+                try {   // keep the body's indentation: an error here is logged, not an unhandled rejection
                 logoMeshWrapper = new THREE.Group();
                 logoMesh = gltf.scene.children[0];
                 updateSceneSize();
@@ -623,6 +631,9 @@
                 });
                 if (!isTouchscreen) {
                     gsap.ticker.lagSmoothing(0);
+                }
+                } catch (err) {
+                    console.error("scene setup failed", err);
                 }
             });
 
@@ -1087,10 +1098,12 @@
         renderTarget.setSize(window.innerWidth, window.innerHeight);
 
         const scale = Math.min(1, .75 * camera.aspect);
-        gsap.set(logoMeshWrapper.scale, {
-            x: scale,
-            y: scale
-        })
+        if (logoMeshWrapper) {
+            gsap.set(logoMeshWrapper.scale, {
+                x: scale,
+                y: scale
+            })
+        }
     }
 
     function buildMainSequence() {

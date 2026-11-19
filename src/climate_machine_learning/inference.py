@@ -48,6 +48,24 @@ def single_thread(pipeline) -> None:
         reg.n_jobs = 1
 
 
+TIE_DIGITS = 1  # shares are shown, compared and sorted at one decimal: the order, the tie marker and the page text agree
+
+
+def rank_key(item: CropResult):
+    """Highest displayed share first; crops showing the same share are ordered by name."""
+    return (-round(item.pct_of_normal, TIE_DIGITS), item.crop)
+
+
+def tied_with(items: Sequence[CropResult], digits: int = TIE_DIGITS) -> Dict[str, int]:
+    """For each crop, how many OTHER crops show the same share of a typical year at the displayed precision.
+
+    Crops with equal shares are ordered by name only, so their order carries no information; every
+    front end marks them with this count (0 = a unique share).
+    """
+    shown = [round(i.pct_of_normal, digits) for i in items]
+    return {i.crop: shown.count(s) - 1 for i, s in zip(items, shown)}
+
+
 _METRIC_NAMES = {"r2": "R²", "mae": "MAE", "rmse": "RMSE", "log_mae": "log-MAE"}
 _METRIC_FORMATS = {"r2": ".3f", "mae": ".1f", "rmse": ".1f", "log_mae": ".3f"}
 
@@ -83,6 +101,24 @@ def model_caveat(metrics: Dict[str, Any]) -> str:
     if worse:
         text += " Small differences between crops are weak evidence."
     return text
+
+
+def absolute_yield_caveat(metrics: Dict[str, Any]) -> str:
+    """Why a single predicted yield is rough: the model is pinned to one year past the training data.
+
+    Built only from metrics.json (`pinned_year_check`, written by training), so every front end shows the
+    same measured spread and none types a number.
+    """
+    check = metrics["pinned_year_check"]
+    first, last = check["compared_with_years"]
+    low, high = check["ratio_min"], check["ratio_max"]
+    return (
+        f"Absolute yields are rough: the model is pinned to {check['year']}, and its typical-year prediction, set against "
+        f"the mean actual yield of {first}-{last}, was {check['ratio_p25']:.2f} to {check['ratio_p75']:.2f} times the actual "
+        f"for the middle half of the {check['n_pairs']} crop-province pairs, but {low['value']:.2f} times for "
+        f"{low['crop']} in {low['province']} and {high['value']:.2f} times for {high['crop']} in {high['province']}. "
+        "Trust the ends of the ranking more than a single predicted number."
+    )
 
 
 def check_training_range(reference: Dict[str, Any], province: str, inputs: Dict[str, float]) -> None:
@@ -132,7 +168,7 @@ def predict_crops(
         if log_quantiles is not None:
             low, high = (float(x) for x in F.prediction_interval(sp, log_quantiles))
         items.append(CropResult(crop, float(sp), float(npred), float(sp) / float(npred) * 100.0, low, high))
-    items.sort(key=lambda r: (-r.pct_of_normal, r.crop))
+    items.sort(key=rank_key)
 
     used = {k: float(scenario_rows[0].iloc[0][k]) for k in F.BASE_INPUTS}
     return Prediction(items=items, inputs=used, sources=sources)

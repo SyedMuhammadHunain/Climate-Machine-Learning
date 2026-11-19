@@ -23,6 +23,7 @@ class CropRecommendationItem(BaseModel):
     predicted_yield: float
     normal_yield: float
     pct_of_normal: float
+    tied_with: int  # other crops with the same share at one decimal (0 = unique); tied crops are ordered by name only
     training_rows_for_crop: int
     training_rows_possible: int
     fao_water_need: Optional[FaoWaterNeed] = None  # None = crop is not in the FAO table
@@ -38,3 +39,4 @@ class RecommendationResponse(BaseModel):
     ranked_crops: List[CropRecommendationItem]
     recommendation_summary: str
     model_name: str
+    absolute_yield_note: str  # why one predicted number is rough (generated from metrics.json)
