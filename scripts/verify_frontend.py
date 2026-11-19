@@ -78,6 +78,14 @@ def main() -> int:
         if value != "ALL" and label.strip().lower() != value:
             failures.append(f"predict.html crop option label {label!r} is not the plain crop name {value!r}")
 
+    # second source (NASA POWER): the form must send the soil fields, the Metrics page must name both sources
+    for token in ("field-soil-mean", "field-soil-max", "soil_wetness_mean", "soil_wetness_max"):
+        if token not in predict:
+            failures.append(f"predict.html: second-source field missing: {token!r}")
+    for token in ("data.sources", "licence"):
+        if token not in metrics_page:
+            failures.append(f"metrics.html: data sources section missing: {token!r}")
+
     if failures:
         print("FAILED:")
         for f in failures:

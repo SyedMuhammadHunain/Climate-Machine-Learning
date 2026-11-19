@@ -428,7 +428,18 @@
         </section>
 
         <section class="section-block">
-            <h2 class="section-title">3. Data and split</h2>
+            <h2 class="section-title">3. Data sources</h2>
+            <p class="section-desc">Two public sources are merged by province and year.</p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Role</th><th>Source</th><th>Licence</th><th>Accessed</th><th>SHA-256</th></tr></thead>
+                    <tbody id="sources-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">4. Data and split</h2>
             <p class="section-desc" id="data-desc"></p>
             <div class="data-table-wrapper">
                 <table class="data-table">
@@ -439,7 +450,7 @@
         </section>
 
         <section class="section-block">
-            <h2 class="section-title">4. Climate ranges the model was trained on</h2>
+            <h2 class="section-title">5. Climate and soil ranges the model was trained on</h2>
             <p class="section-desc">
                 Annual values from the training years, shown as median (minimum to maximum). Inputs outside these ranges are rejected by the API because the model cannot extrapolate.
             </p>
@@ -453,6 +464,8 @@
                             <th class="num">ET₀ (mm/day)</th>
                             <th class="num">Radiation (MJ/m²)</th>
                             <th class="num">Rain hours</th>
+                            <th class="num">Soil wetness, mean</th>
+                            <th class="num">Soil wetness, max</th>
                         </tr>
                     </thead>
                     <tbody id="prov-body"></tbody>
@@ -461,7 +474,7 @@
         </section>
 
         <section class="section-block">
-            <h2 class="section-title">5. Limits</h2>
+            <h2 class="section-title">6. Limits</h2>
             <ul class="section-desc" id="notes-list"></ul>
         </section>
 
@@ -526,6 +539,9 @@
                 <td><div style="height:8px; border-radius:4px; background:#3a7d44; width:${Math.max(0, v.mean) / top * 100}%;"></div></td></tr>`).join("");
 
             const d = m.data;
+            $("sources-body").innerHTML = m.data.sources.map(s => `
+                <tr><td>${esc(s.role)}</td><td>${esc(s.name)}</td><td>${esc(s.licence)}</td>
+                <td>${esc(s.accessed || "see README")}</td><td><code>${esc(s.sha256.slice(0, 16))}...</code></td></tr>`).join("");
             const dropped = Object.entries(d.dropped_zero_yield_rows).map(([c, n]) => `${esc(c)} ${n}`).join(", ");
             $("data-desc").innerHTML =
                 `The source file has ${d.raw_monthly_rows.toLocaleString()} monthly rows. Yield is one yearly number repeated on 12 rows, so the model trains on one row per crop, province and year: ` +
@@ -539,7 +555,8 @@
             const rng = (r, k, dg) => `${f(r.median[k], dg)} (${f(r.range[k][0], dg)} to ${f(r.range[k][1], dg)})`;
             $("prov-body").innerHTML = Object.entries(meta.reference).map(([p, r]) => `
                 <tr><td>${esc(p)}</td><td class="num">${rng(r, "precipitation_sum", 0)}</td><td class="num">${rng(r, "temperature_2m_mean", 1)}</td>
-                <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td></tr>`).join("");
+                <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td>
+                <td class="num">${rng(r, "soil_wetness_mean", 3)}</td><td class="num">${rng(r, "soil_wetness_max", 3)}</td></tr>`).join("");
 
             $("notes-list").innerHTML = m.notes.map(n => `<li>${esc(n)}</li>`).join("") +
                 `<li>${esc(m.target)}.</li>`;

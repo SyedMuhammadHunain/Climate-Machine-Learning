@@ -538,7 +538,7 @@
 
             <!-- Advanced Collapsible Toggle Button -->
             <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" onclick="toggleAdvancedPanel()">
-                <span>Optional Climate Inputs (empty = province median)</span>
+                <span>Optional Climate and Soil Inputs (empty = province median)</span>
                 <svg class="advanced-chevron" id="advanced-chevron" viewBox="0 0 12 12" fill="none">
                     <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -584,6 +584,22 @@
                     <label class="input-label" for="field-precip-hours">Hours with Rain, yearly total (hours)</label>
                     <div class="input-wrapper">
                         <input type="number" id="field-precip-hours" class="text-input" min="0.0" max="500.0" step="0.5" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 6. Soil wetness, mean (NASA POWER, second data source) -->
+                <div class="input-group">
+                    <label class="input-label" for="field-soil-mean">Root-Zone Soil Wetness, yearly mean (0-1, NASA POWER)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-soil-mean" class="text-input" min="0" max="1" step="0.01" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 7. Soil wetness, wettest month -->
+                <div class="input-group">
+                    <label class="input-label" for="field-soil-max">Root-Zone Soil Wetness, wettest month (0-1, NASA POWER)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-soil-max" class="text-input" min="0" max="1" step="0.01" placeholder="">
                     </div>
                 </div>
 
@@ -674,6 +690,8 @@
             { id: "field-et0", key: "fao_evapotranspiration", digits: 2 },
             { id: "field-radiation", key: "shortwave_radiation", digits: 1 },
             { id: "field-precip-hours", key: "precipitation_hours", digits: 0 },
+            { id: "field-soil-mean", key: "soil_wetness_mean", digits: 3 },
+            { id: "field-soil-max", key: "soil_wetness_max", digits: 3 },
         ];
 
         async function loadReference() {
@@ -946,7 +964,7 @@
 
                 const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
                 boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
-                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
                 const pct = x => Number(x).toFixed(1);
                 const yl = x => Number(x).toFixed(2);
                 const sourceLabel = {
@@ -959,6 +977,7 @@
                     temperature_2m_max: "Max temp (°C)", temperature_2m_min: "Min temp (°C)",
                     fao_evapotranspiration: "ET0 (mm/day)", shortwave_radiation: "Radiation (MJ/m²)",
                     precipitation_hours: "Rain hours",
+                    soil_wetness_mean: "Soil wetness, mean (0-1)", soil_wetness_max: "Soil wetness, max (0-1)",
                 };
                 const inputsHtml = Object.entries(data.inputs).map(([k, v]) =>
                     `${names[k] || k}: ${fmt(v.value)} <em>(${sourceLabel[v.source] || v.source})</em>`

@@ -115,6 +115,19 @@ def main() -> int:
     if "MIT" not in text or "zenodo.org/records/15486470" not in text:
         failures.append("dataset licence/source missing")
 
+    # second data source (NASA POWER) must be documented honestly
+    power = json.loads((ROOT / "data" / "reference" / "nasa_power_source.json").read_text())
+    for needle in ("NASA POWER", "soil_wetness_mean", "soil_wetness_max", "scripts/fetch_nasa_power.py",
+                   "power.larc.nasa.gov/docs/referencing", power["csv_sha256"][:16],
+                   power["source"]["api_version"], power["source"]["accessed"]):
+        if needle not in text:
+            failures.append(f"second source not documented: {needle}")
+    if "licence not specified" not in low and "license not specified" not in low:
+        failures.append("README must say the NASA POWER licence is not specified")
+    for stale in ("single dataset", "one dataset", "were **not merged**"):
+        if stale in low:
+            failures.append(f"stale claim about data sources: {stale!r}")
+
     # relative links must point to real files
     for target in re.findall(r"\]\((?!https?://|#)([^)\s]+)\)", text):
         if not (ROOT / target.split("#")[0]).exists():
