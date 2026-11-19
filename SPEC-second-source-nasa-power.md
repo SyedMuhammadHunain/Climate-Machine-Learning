@@ -30,7 +30,7 @@ Add root-zone soil wetness (a drought signal) from NASA POWER as new model input
   - Sindh: Sukkur 27.7 N 68.9 E, Hyderabad 25.4 N 68.4 E, Mirpurkhas 25.5 N 69.0 E
   - Balochistan: Quetta 30.2 N 67.0 E, Jaffarabad 28.5 N 68.0 E, Turbat 26.0 N 63.0 E
 - **Data stored in the repo** (no network at train time): raw API JSON per point in `data/raw/nasa_power/`, tidy `data/raw/nasa_power_monthly.csv`, and `data/reference/nasa_power_source.json` (points, versions, access date, citation, sha256).
-- **New model inputs** (annual, per province-year): `soil_wetness_mean` (mean of the 12 monthly GWETROOT values, averaged over the points) and `soil_wetness_min` (the driest month). Optional API inputs, filled from the province median when empty, labelled by source like the others.
+- **New model inputs** (annual, per province-year): `soil_wetness_mean` (mean of the 12 monthly GWETROOT values, averaged over the points) and `soil_wetness_max` (the wettest month, the monsoon response). Amended 2026-11-19 after S1: the driest-month value (`soil_wetness_min`) is about 0.33 in almost every year and province (a model floor), so it carries no signal and was not used. This was decided from the source's own variation, not from model scores. Optional API inputs, filled from the province median when empty, labelled by source like the others.
 - **POWER rain** (`PRECTOTCORR`, converted to mm per year) is used only as a cross-check against the dataset's own rain (agreement plot and correlation in the notebook). It is not a model input, so users still enter one rain number.
 - Merge key: Province + Year. All 858 groups must match; the merge fails loudly otherwise.
 - Everything else unchanged: year split, GroupKFold by year, models, selection on validation, test scored once.

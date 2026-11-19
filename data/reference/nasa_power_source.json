@@ -1,0 +1,99 @@
+{
+  "source": {
+    "name": "NASA POWER (Prediction Of Worldwide Energy Resources), monthly point API",
+    "url": "https://power.larc.nasa.gov/api/temporal/monthly/point",
+    "api_version": "v2.10.1",
+    "data_source": [
+      "MERRA2"
+    ],
+    "community": "AG",
+    "parameters": {
+      "GWETROOT": "Root Zone Soil Wetness (unit 1, 0-1)",
+      "PRECTOTCORR": "Precipitation Corrected (mm/day)"
+    },
+    "years": [
+      2001,
+      2022
+    ],
+    "accessed": "2026-11-19",
+    "licence": "License not specified in the POWER catalog entry. Free to use; POWER asks users to cite its Reference and Data Reference.",
+    "reference_url": "https://power.larc.nasa.gov/docs/referencing/",
+    "point_choice": "3 farming-area points per province, equal weight; a judgment, not a measurement of the whole province"
+  },
+  "points": [
+    {
+      "province": "Punjab",
+      "name": "Lahore",
+      "lat": 31.5,
+      "lon": 74.3,
+      "file": "data/raw/nasa_power/Punjab_Lahore.json",
+      "sha256": "1436cd0c65bc065cb5eb56b2ba82676823533cc9a76e84c2b6547a1b82e1d207"
+    },
+    {
+      "province": "Punjab",
+      "name": "Faisalabad",
+      "lat": 31.4,
+      "lon": 73.1,
+      "file": "data/raw/nasa_power/Punjab_Faisalabad.json",
+      "sha256": "74ba3389bb2ca3ec351f8605985aed5f15aac0157e90d1cfddd719efbd7a2824"
+    },
+    {
+      "province": "Punjab",
+      "name": "Multan",
+      "lat": 30.2,
+      "lon": 71.5,
+      "file": "data/raw/nasa_power/Punjab_Multan.json",
+      "sha256": "3d21916ed6cd8cffb1bdc689973742c546810d49408bc3a756b4e05170bcc52a"
+    },
+    {
+      "province": "Sindh",
+      "name": "Sukkur",
+      "lat": 27.7,
+      "lon": 68.9,
+      "file": "data/raw/nasa_power/Sindh_Sukkur.json",
+      "sha256": "6b420d50796e020ee598f606d3d24c27640e92b80259cdb2d6e7a301cecac5a6"
+    },
+    {
+      "province": "Sindh",
+      "name": "Hyderabad",
+      "lat": 25.4,
+      "lon": 68.4,
+      "file": "data/raw/nasa_power/Sindh_Hyderabad.json",
+      "sha256": "b292290016b00810da5ef7cf8ff79dac6a1e0153b85071aed60c043b506e912e"
+    },
+    {
+      "province": "Sindh",
+      "name": "Mirpurkhas",
+      "lat": 25.5,
+      "lon": 69.0,
+      "file": "data/raw/nasa_power/Sindh_Mirpurkhas.json",
+      "sha256": "3ec0a2e34bfb4922a0f242b5153e320a31b35bd8c15fdfdb84d230ff3673b2c9"
+    },
+    {
+      "province": "Balochistan",
+      "name": "Quetta",
+      "lat": 30.2,
+      "lon": 67.0,
+      "file": "data/raw/nasa_power/Balochistan_Quetta.json",
+      "sha256": "aed7f24d4990e1f76a3a3f7c38d526ae482f443bfd4050fe247067d903ec1829"
+    },
+    {
+      "province": "Balochistan",
+      "name": "Jaffarabad",
+      "lat": 28.5,
+      "lon": 68.0,
+      "file": "data/raw/nasa_power/Balochistan_Jaffarabad.json",
+      "sha256": "05e6f2a4a981adbe0f939a7f7a48845639451e0b1b0c61e03378bde444b2920b"
+    },
+    {
+      "province": "Balochistan",
+      "name": "Turbat",
+      "lat": 26.0,
+      "lon": 63.0,
+      "file": "data/raw/nasa_power/Balochistan_Turbat.json",
+      "sha256": "7edc40368d01cb3faf5327c7a6dea5fa8f485368a7bf2b3de87794cf2aff29c0"
+    }
+  ],
+  "csv_file": "data/raw/nasa_power_monthly.csv",
+  "csv_sha256": "30646a48ac2e35e2116c097bf73b4412109256e92dc792510c4b2224ad8bd6bd"
+}

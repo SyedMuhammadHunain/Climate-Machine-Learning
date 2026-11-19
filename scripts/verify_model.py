@@ -224,6 +224,40 @@ def reference_has_real_driest_and_wettest_training_years():
                 assert lo <= got["inputs"][k] <= hi, (prov, kind, k)
 
 
+# ----------------------------------------------------------------------- second source (NASA POWER)
+POWER_CSV = ROOT / "data" / "raw" / "nasa_power_monthly.csv"
+POWER_DOC = ROOT / "data" / "reference" / "nasa_power_source.json"
+
+
+@test
+def nasa_power_monthly_data_is_complete_and_sane():
+    df = pd.read_csv(POWER_CSV)
+    assert set(df["Province"]) == {"Punjab", "Sindh", "Balochistan"}
+    assert df.groupby(["Province", "Point"]).ngroups == 9
+    for (prov, point), grp in df.groupby(["Province", "Point"]):
+        assert len(grp) == 22 * 12, (prov, point, len(grp))
+        assert sorted(grp["Year"].unique()) == list(range(2001, 2023)), (prov, point)
+    assert not (df[["GWETROOT", "PRECTOTCORR"]] == -999).any().any(), "fill values left in data"
+    assert df["GWETROOT"].between(0, 1).all() and (df["PRECTOTCORR"] >= 0).all()
+    punjab = df[df.Province == "Punjab"].groupby("Month")["PRECTOTCORR"].mean()
+    assert punjab[7] + punjab[8] > 5 * (punjab[1] + punjab[11]), "Punjab monsoon should be much wetter than winter"
+
+
+@test
+def nasa_power_source_doc_matches_files():
+    doc = json.loads(POWER_DOC.read_text())
+    assert doc["source"]["api_version"] and doc["source"]["accessed"] == "2026-11-19"
+    assert "not specified" in doc["source"]["licence"].lower()
+    assert doc["source"]["reference_url"].startswith("https://power.larc.nasa.gov/")
+    assert len(doc["points"]) == 9
+    for pt in doc["points"]:
+        raw = ROOT / pt["file"]
+        assert raw.exists(), pt["file"]
+        assert hashlib.sha256(raw.read_bytes()).hexdigest() == pt["sha256"], pt["file"]
+    assert hashlib.sha256(POWER_CSV.read_bytes()).hexdigest() == doc["csv_sha256"]
+    assert {pt["province"] for pt in doc["points"]} == {"Punjab", "Sindh", "Balochistan"}
+
+
 @test
 def weather_changes_predictions_sensitivity():
     """Rain from province min to max (other inputs at median) must move at least one crop."""
