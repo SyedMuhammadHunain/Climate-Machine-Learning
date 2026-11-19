@@ -253,3 +253,18 @@ Spec: `SPEC-second-source-nasa-power.md`. Chosen by the user on 2026-11-19.
 **Notes (done 2026-11-19).** S2, S3 and the API fields were committed together because the saved model, the feature list and the scenario inputs must change at the same time. New inputs `soil_wetness_mean/max` are optional, labelled by source, range-checked per province, and filled by the real-year quick-fill. Checkpoint D result (shown to the user in the final message): Random Forest still chosen on validation, test R² 0.794 (was 0.795), Gradient Boosting test R² 0.813 (not chosen, validation is the rule); test skill vs crop-average baseline improved from -0.95 to -0.76 but is still below zero; permutation importance: soil wetness mean 0.0098 (mid-pack among weather columns), wettest-month soil wetness about 0. POWER rain agrees only moderately with the dataset rain (yearly correlation 0.39 Punjab, 0.60 Balochistan, 0.75 Sindh). The metrics page now has a Data sources section (both sources, licences, hashes). README, guide and checks updated; guide numbers re-verified by `verify_guide.py`; click path re-verified by `dryrun_demo.js`. Not done: second source for more crops, fresh-clone re-test after this change, real-browser walk-through.
 
 **Fresh-clone re-test (2026-11-19, after the NASA POWER merge).** New clone of the committed repo, new Python 3.13 venv, `uv pip install -r requirements.txt`: all five checks passed on the committed files; `python scripts/fetch_nasa_power.py` reproduced the same CSV (same SHA-256; raw JSON differs only in the server's response-time field); `python scripts/train.py` reproduced the committed test scores and the same chosen model; `verify_readme.py --write` then all checks passed; server served all pages and the API; `dryrun_demo.js` passed. It also found one bug: the out-of-range message rounded ranges to 1 decimal, so a soil wetness range showed as "0.3 to 0.4". Fixed with 4 significant digits (now "0.3481 to 0.3864"), test added in `verify_backend.py` TEST 24.
+
+---
+
+# Addendum: Streamlit and Hugging Face (user asked 2026-11-19)
+
+Spec: `SPEC-streamlit-and-huggingface.md`. Publishing needs the group's own accounts, so these are **built and tested locally, not deployed**.
+
+- [x] **D1** Prediction interval from validation residuals, saved in `metrics.json` (`prediction_interval`), `features.prediction_interval`. Test coverage measured: 60% against nominal 80%, shown in the apps and docs.
+- [x] **D1b** Shared `inference.py` (`predict_crops`, `OutOfRangeError`); `ModelService` now uses it (23 backend checks unchanged).
+- [x] **D2** `streamlit_app/app.py` + `streamlit_app/requirements.txt`; `scripts/verify_streamlit.py` (8 checks with Streamlit's AppTest, numbers equal the model; passed on Python 3.12 and 3.13 with only the app's requirements).
+- [x] **D3** `hf_space/app.py` (Gradio), `scripts/build_hf_bundle.py` (model card generated from `metrics.json`, Space config, bundle); `scripts/verify_hf_bundle.py` (8 checks including a real Gradio server and client run).
+- [x] **D4** `docs/deployment_guide.md`, README deployment table and structure, guide checklist and viva question, `verify_readme.py` and `verify_guide.py` extended.
+- [ ] **Group to do:** deploy to Streamlit Community Cloud, create the HF model repo and Space, choose a licence, then update the README table and the `verify_readme.py` rule that currently requires "not deployed yet".
+
+Findings: the nominal 80% range covers only 60% of the 2020-2022 test rows (test years differ from validation, no yearly trend). Docker is not installed, so the Space is Gradio. The model file is 20 MB (use `hf upload`, not plain git). `/tmp` is a 3.6 GB tmpfs and hit its quota once from throwaway virtualenvs; they are cleaned up.

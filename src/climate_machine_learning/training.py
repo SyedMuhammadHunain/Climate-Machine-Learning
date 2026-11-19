@@ -207,6 +207,15 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
     beats = models[chosen]["test"]["skill_vs_crop_province_mean_log"] > 0
     log(f"chosen on validation years: {models[chosen]['label']} | beats crop-province mean on test: {beats}")
 
+    # Likely range for a prediction: empirical quantiles of log(actual/predicted) on the VALIDATION years.
+    # Coverage on the test years is reported afterwards and never used to adjust the range.
+    val_resid = np.log(va["Yield"].to_numpy()) - np.log(best_pipe.predict(va[F.FEATURE_COLS]))
+    lo_q, hi_q = (float(q) for q in np.quantile(val_resid, [0.10, 0.90]))
+    test_pred = best_pipe.predict(te[F.FEATURE_COLS])
+    t_lo, t_hi = F.prediction_interval(test_pred, (lo_q, hi_q))
+    test_cov = float(((te["Yield"].to_numpy() >= t_lo) & (te["Yield"].to_numpy() <= t_hi)).mean())
+    log(f"prediction interval (80%): x{np.exp(lo_q):.2f} to x{np.exp(hi_q):.2f}; test coverage {test_cov:.2f}")
+
     imp = permutation_importance(
         best_pipe, va[F.FEATURE_COLS], va["Yield"], scoring=LOG_MAE_SCORER,
         n_repeats=30, random_state=SEED,
@@ -240,6 +249,14 @@ def train(out_dir: Path, verbose: bool = True) -> Dict[str, Any]:
             "name": chosen,
             "selected_on": "lowest validation log-MAE (relative error, comparable across crops)",
             "beats_crop_province_mean_on_test": bool(beats),
+        },
+        "prediction_interval": {
+            "level": 0.8,
+            "method": "empirical 10% and 90% quantiles of log(actual / predicted) on the validation years",
+            "fitted_on": "validation years",
+            "log_residual_quantiles": [lo_q, hi_q],
+            "val_n": int(len(va)),
+            "test_coverage": test_cov,
         },
         "permutation_importance_val_log_mae": importances,
         "notes": [

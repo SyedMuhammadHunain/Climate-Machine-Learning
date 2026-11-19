@@ -210,6 +210,88 @@ def metrics_record_both_sources_with_hashes():
 
 
 @test
+def prediction_interval_is_calibrated_on_validation_and_checked_on_test():
+    pipe, m, ref = _load_artifacts()
+    from climate_machine_learning import training
+
+    pi = m["prediction_interval"]
+    assert pi["level"] == 0.8 and pi["fitted_on"] == "validation years"
+    lo_q, hi_q = pi["log_residual_quantiles"]
+    assert lo_q < 0 < hi_q
+    _, _, _, splits = training.load_tables()
+    va, te = splits["val"], splits["test"]
+    resid = np.log(va["Yield"].to_numpy()) - np.log(pipe.predict(va[F.FEATURE_COLS]))
+    assert np.allclose(np.quantile(resid, [0.10, 0.90]), [lo_q, hi_q], atol=1e-9)
+    assert pi["val_n"] == len(va)
+    # coverage on the test years is reported, not tuned
+    pred = pipe.predict(te[F.FEATURE_COLS])
+    lo, hi = F.prediction_interval(pred, pi["log_residual_quantiles"])
+    assert (lo < pred).all() and (pred < hi).all()
+    cover = float(((te["Yield"].to_numpy() >= lo) & (te["Yield"].to_numpy() <= hi)).mean())
+    assert np.isclose(cover, pi["test_coverage"]), (cover, pi["test_coverage"])
+
+
+@test
+def inference_ranking_equals_direct_model_output():
+    from climate_machine_learning import inference as I
+
+    pipe, m, ref = _load_artifacts()
+    q = m["prediction_interval"]["log_residual_quantiles"]
+    supplied = {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
+    res = I.predict_crops(pipe, ref, "Sindh", supplied, log_quantiles=q)
+    assert len(res.items) == 13 and sorted(i.crop for i in res.items) == sorted(ref["crops"])
+    pcts = [i.pct_of_normal for i in res.items]
+    assert pcts == sorted(pcts, reverse=True)
+    for it in res.items:
+        row, _ = F.build_inference_row("Sindh", it.crop, supplied, ref)
+        nrow, _ = F.build_inference_row("Sindh", it.crop, dict(ref["provinces"]["Sindh"]["median"]), ref)
+        direct, normal = float(pipe.predict(row)[0]), float(pipe.predict(nrow)[0])
+        assert np.isclose(it.predicted_yield, direct) and np.isclose(it.normal_yield, normal)
+        assert np.isclose(it.pct_of_normal, direct / normal * 100.0)
+        assert np.isclose(it.low, direct * np.exp(q[0])) and np.isclose(it.high, direct * np.exp(q[1]))
+    assert res.sources["precipitation_sum"] == "user" and res.sources["soil_wetness_mean"] == "province_median_training_years"
+    assert np.isclose(res.inputs["precipitation_sum"], 150.0)
+
+
+@test
+def inference_ties_are_ordered_by_crop_name():
+    from climate_machine_learning import inference as I
+
+    pipe, _, ref = _load_artifacts()
+    res = I.predict_crops(pipe, ref, "Punjab", dict(ref["provinces"]["Punjab"]["median"]))
+    assert all(abs(i.pct_of_normal - 100.0) < 1e-9 for i in res.items)
+    assert [i.crop for i in res.items] == sorted(i.crop for i in res.items)
+    assert res.items[0].low is None and res.items[0].high is None  # no interval without quantiles
+
+
+@test
+def inference_single_crop_matches_its_ranking_entry():
+    from climate_machine_learning import inference as I
+
+    pipe, m, ref = _load_artifacts()
+    q = m["prediction_interval"]["log_residual_quantiles"]
+    supplied = {"precipitation_sum": 200.0, "temperature_2m_mean": 27.8}
+    full = {i.crop: i for i in I.predict_crops(pipe, ref, "Sindh", supplied, log_quantiles=q).items}
+    one = I.predict_crops(pipe, ref, "Sindh", supplied, crops=["rice"], log_quantiles=q).items
+    assert len(one) == 1 and one[0].crop == "rice"
+    assert np.isclose(one[0].predicted_yield, full["rice"].predicted_yield)
+    assert np.isclose(one[0].pct_of_normal, full["rice"].pct_of_normal)
+
+
+@test
+def inference_refuses_inputs_outside_the_trained_range():
+    from climate_machine_learning import inference as I
+
+    pipe, _, ref = _load_artifacts()
+    try:
+        I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": 5.0, "temperature_2m_mean": 27.8})
+    except I.OutOfRangeError as err:
+        assert err.parameter == "precipitation_sum" and "14.7" in str(err) and "cannot extrapolate" in str(err)
+        return
+    raise AssertionError("out-of-range input was accepted")
+
+
+@test
 def reference_json_matches_training_data():
     _, _, ref = _load_artifacts()
     table, _ = F.build_yearly_table(RAW)

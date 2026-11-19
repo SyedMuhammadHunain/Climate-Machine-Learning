@@ -241,3 +241,17 @@ def build_inference_row(
     values.update(_engineer(values, prov["mean_annual_rain"]))
     values["Crop"], values["Province"] = crop, province
     return pd.DataFrame([values])[FEATURE_COLS], sources
+
+
+# --------------------------------------------------------------------------- prediction interval
+def prediction_interval(pred, log_quantiles):
+    """Likely range for a prediction: pred x exp(low), pred x exp(high).
+
+    The two numbers are quantiles of log(actual / predicted) on the validation years,
+    saved in metrics.json. It is an empirical range, not a model-based probability.
+    """
+    import numpy as np
+
+    lo_q, hi_q = log_quantiles
+    pred = np.asarray(pred, dtype=float)
+    return pred * np.exp(lo_q), pred * np.exp(hi_q)

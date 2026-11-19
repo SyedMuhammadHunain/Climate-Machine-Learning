@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import joblib
-import pandas as pd
 
 from climate_machine_learning import features as F
+from climate_machine_learning import inference as I
 from app.core.config import FAO_WATER_PATH, METRICS_PATH, MODEL_PATH, REFERENCE_PATH
 from app.core.exceptions import AgronomicValidationError
 from app.schemas.predict import InputValue, SinglePredictionRequest, SinglePredictionResponse
@@ -20,8 +20,8 @@ from app.schemas.recommend import (
 class ModelService:
     """Serves the trained scikit-learn pipeline. Every yield returned is raw model output.
 
-    No multipliers, no hand-made scores. Ranking uses only two model outputs per crop:
-    the yield for the user's scenario and the yield for a typical (median) year.
+    No multipliers, no hand-made scores. The prediction and ranking logic lives in
+    climate_machine_learning.inference (shared with the Streamlit app).
     """
 
     YIELD_UNIT = "dataset yield units (unit not confirmed)"
@@ -38,14 +38,6 @@ class ModelService:
         self.fao: Dict[str, Any] = {}
         self.load_model()
 
-    @staticmethod
-    def _single_thread(pipeline) -> None:
-        """One thread at inference: avoids joblib overhead for small predictions."""
-        reg = pipeline.named_steps.get("regressor")
-        reg = getattr(reg, "regressor_", reg)
-        if reg is not None and hasattr(reg, "n_jobs"):
-            reg.n_jobs = 1
-
     def load_model(self) -> None:
         for path in (self.model_path, REFERENCE_PATH, METRICS_PATH, FAO_WATER_PATH):
             if not Path(path).exists():
@@ -53,7 +45,7 @@ class ModelService:
                     f"Required artifact not found: {path}. Run scripts/train.py to create the model files."
                 )
         self.pipeline = joblib.load(self.model_path)
-        self._single_thread(self.pipeline)
+        I.single_thread(self.pipeline)
         self.reference = json.loads(Path(REFERENCE_PATH).read_text())
         self.metrics = json.loads(Path(METRICS_PATH).read_text())
         self.fao = json.loads(Path(FAO_WATER_PATH).read_text())
@@ -69,22 +61,18 @@ class ModelService:
     def model_name(self) -> str:
         return self.metrics["models"][self.metrics["chosen"]["name"]]["label"]
 
-    def _check_training_range(self, province: str, inputs: Dict[str, float]) -> None:
-        """Refuse inputs the model never saw: a tree model cannot extrapolate."""
-        ranges = self.reference["provinces"][province]["range"]
-        for name, value in inputs.items():
-            lo, hi = ranges[name]
-            if value < lo or value > hi:
-                raise AgronomicValidationError(
-                    f"{name} = {value:g} is outside the range the model was trained on for {province} "
-                    f"({lo:.4g} to {hi:.4g}, annual values {self.reference['train_years'][0]}-"
-                    f"{self.reference['train_years'][1]}). The model cannot extrapolate, so no prediction is made.",
-                    parameter=name,
-                )
-
     @staticmethod
     def _supplied(request) -> Dict[str, float]:
-        return {k: getattr(request, k) for k in F.BASE_INPUTS if getattr(request, k) is not None}
+        return {k: getattr(request, k) for k in F.BASE_INPUTS if getattr(request, k, None) is not None}
+
+    def _predict(self, province: str, supplied: Dict[str, float], crops=None) -> I.Prediction:
+        try:
+            return I.predict_crops(self.pipeline, self.reference, province, supplied, crops=crops)
+        except I.OutOfRangeError as err:
+            raise AgronomicValidationError(str(err), parameter=err.parameter)
+
+    def _inputs(self, result: I.Prediction) -> Dict[str, InputValue]:
+        return {k: InputValue(value=result.inputs[k], source=result.sources[k]) for k in F.BASE_INPUTS}
 
     def _fao_item(self, crop: str):
         entry = self.fao["crops"].get(crop)
@@ -102,75 +90,40 @@ class ModelService:
     # ------------------------------------------------------------------ /predict
     def predict_single(self, request: SinglePredictionRequest) -> SinglePredictionResponse:
         province, crop = request.province.value, request.crop.value
-        supplied = self._supplied(request)
-        self._check_training_range(province, supplied)
-
-        row, sources = F.build_inference_row(province, crop, supplied, self.reference)
-        predicted = float(self.pipeline.predict(row)[0])
-
-        median = self.reference["provinces"][province]["median"]
-        normal_row, _ = F.build_inference_row(province, crop, dict(median), self.reference)
-        normal = float(self.pipeline.predict(normal_row)[0])
-
+        result = self._predict(province, self._supplied(request), crops=[crop])
+        item = result.items[0]
         return SinglePredictionResponse(
             crop=crop,
             province=province,
-            predicted_yield=predicted,
+            predicted_yield=item.predicted_yield,
             yield_unit=self.YIELD_UNIT,
-            normal_yield=normal,
-            pct_of_normal=predicted / normal * 100.0,
+            normal_yield=item.normal_yield,
+            pct_of_normal=item.pct_of_normal,
             training_rows_for_crop=int(self.reference["train_rows_per_crop"][crop]),
             training_rows_possible=self.training_rows_possible,
-            inputs={k: InputValue(value=float(row.iloc[0][k]), source=sources[k]) for k in F.BASE_INPUTS},
+            inputs=self._inputs(result),
             model_name=self.model_name,
         )
 
     # ------------------------------------------------------------------ /recommend
     def recommend_crops(self, request: DroughtScenarioRequest) -> RecommendationResponse:
         province = request.province.value
-        supplied = self._supplied(request)
-        self._check_training_range(province, supplied)
-
-        crops: List[str] = list(self.reference["crops"])
-        median = dict(self.reference["provinces"][province]["median"])
-
-        scenario_rows, normal_rows, sources = [], [], {}
-        for crop in crops:
-            row, sources = F.build_inference_row(province, crop, supplied, self.reference)
-            scenario_rows.append(row)
-            normal_row, _ = F.build_inference_row(province, crop, median, self.reference)
-            normal_rows.append(normal_row)
-
-        batch = pd.concat(scenario_rows + normal_rows, ignore_index=True)
-        preds = self.pipeline.predict(batch)
-        scenario_preds, normal_preds = preds[: len(crops)], preds[len(crops):]
-
-        records = [
-            {
-                "crop": crop,
-                "predicted_yield": float(sp),
-                "normal_yield": float(npred),
-                "pct_of_normal": float(sp) / float(npred) * 100.0,
-            }
-            for crop, sp, npred in zip(crops, scenario_preds, normal_preds)
-        ]
-        # Highest % of normal first; exact ties are ordered by crop name (deterministic)
-        records.sort(key=lambda r: (-r["pct_of_normal"], r["crop"]))
-
+        result = self._predict(province, self._supplied(request))
         items = [
             CropRecommendationItem(
                 rank=i + 1,
-                training_rows_for_crop=int(self.reference["train_rows_per_crop"][r["crop"]]),
+                crop=r.crop,
+                predicted_yield=r.predicted_yield,
+                normal_yield=r.normal_yield,
+                pct_of_normal=r.pct_of_normal,
+                training_rows_for_crop=int(self.reference["train_rows_per_crop"][r.crop]),
                 training_rows_possible=self.training_rows_possible,
-                fao_water_need=self._fao_item(r["crop"]),
-                **r,
+                fao_water_need=self._fao_item(r.crop),
             )
-            for i, r in enumerate(records)
+            for i, r in enumerate(result.items)
         ]
         top, bottom = items[0], items[-1]
-
-        rain = float(batch.iloc[0]["precipitation_sum"])
-        temp = float(batch.iloc[0]["temperature_2m_mean"])
+        rain, temp = result.inputs["precipitation_sum"], result.inputs["temperature_2m_mean"]
         summary = (
             f"For {province} with {rain:.1f} mm of rain a year and a mean temperature of {temp:.1f} °C, "
             f"the model keeps the largest share of a typical year's yield for {top.crop.upper()} "
@@ -183,13 +136,12 @@ class ModelService:
                 " Caution: on the 2020-2022 test years this model did not beat simply using each "
                 "crop's average yield, so small differences between crops are weak evidence."
             )
-
         return RecommendationResponse(
             scenario_name=request.scenario_name or "Custom scenario",
             province=province,
             yield_unit=self.YIELD_UNIT,
             ranking_basis=self.RANKING_BASIS,
-            inputs={k: InputValue(value=float(batch.iloc[0][k]), source=sources[k]) for k in F.BASE_INPUTS},
+            inputs=self._inputs(result),
             top_crop=top,
             ranked_crops=items,
             recommendation_summary=summary,
