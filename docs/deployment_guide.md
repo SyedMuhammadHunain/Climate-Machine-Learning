@@ -38,6 +38,8 @@ Then put the URL in the README deployment table.
 
 ## 2. Hugging Face (model repo + Space)
 
+**Status 2026-11-19:** the model repo is **live** at <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (uploaded and checked with a token-less download). Creating the Space was **refused**: the Hub says hosting Gradio and Docker Spaces on free cpu-basic requires a PRO subscription (the account is on the free plan; static Spaces are free). The Space bundle is ready, so the steps below for the Space work as soon as that is settled.
+
 You need a Hugging Face account and an access token with **write** permission (Settings, Access Tokens). Keep the token secret: do not paste it into chat, commit it, or put it in a file in the repo.
 
 ```bash

@@ -141,7 +141,7 @@ The group has not chosen a licence for this model yet. Data licences: the crop d
 - NASA Langley Research Center POWER Project, <https://power.larc.nasa.gov/>.
 - Pedregosa et al. (2011). Scikit-learn: Machine Learning in Python. JMLR 12, 2825-2830.
 
-Group: Muhammad Afzal (CT-24263), Syed Muhammad Hunain (CT-24281), Ayesha (CT-24309).
+Course project of a group of three students.
 """
 
 

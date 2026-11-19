@@ -82,6 +82,15 @@ def model_card_metadata_and_honest_content():
 
 
 @test
+def public_pages_contain_no_roll_numbers_or_secrets():
+    """The Hub pages are public: no student roll numbers, no access tokens."""
+    for path in list(MODEL_DIR.rglob("*.md")) + list(SPACE_DIR.rglob("*.md")) + [SPACE_DIR / "app.py", MODEL_DIR / "inference_example.py"]:
+        text = path.read_text(encoding="utf-8")
+        assert not re.search(r"CT-24\d{3}", text), f"roll number in {path.name}"
+        assert not re.search(r"hf_[A-Za-z0-9]{20,}", text), f"token-like string in {path.name}"
+
+
+@test
 def space_config_is_a_native_gradio_space():
     meta = front_matter(SPACE_DIR / "README.md")
     assert meta["sdk"] == "gradio" and meta["app_file"] == "app.py"

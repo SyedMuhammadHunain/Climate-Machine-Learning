@@ -243,7 +243,7 @@ The course guidelines ask for three deployments. Status:
 |---|---|
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
 | Streamlit Community Cloud | App built and tested locally (`streamlit_app/app.py`, own `streamlit_app/requirements.txt`): input form, prediction with a likely range, one chart. **Not deployed yet.** |
-| Hugging Face (model card + Space) | Bundle built and tested locally (`python scripts/build_hf_bundle.py` writes the model repo with its card and a native Gradio Space from `hf_space/app.py`). **Not deployed yet.** |
+| Hugging Face (model card + Space) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code; a token-less download runs the bundled example). **Space: not deployed yet.** The bundle (`python scripts/build_hf_bundle.py`, Space app in `hf_space/app.py`) is built and tested, but the Hub refuses Gradio Spaces on a free account (free CPU hosting of Gradio and Docker Spaces needs a PRO subscription; only static Spaces are free). |
 
 Publishing needs your own accounts, so the two cloud deployments are still to do. Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
 

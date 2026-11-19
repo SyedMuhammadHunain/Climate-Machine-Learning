@@ -12,7 +12,7 @@ Every number in this guide was recomputed from the running app by `python script
 - [ ] `uvicorn app.main:app --port 8000` running, `http://127.0.0.1:8000/predict.html` and `/metrics.html` open in the browser. The model loads at startup, so the first request is not slow.
 - [ ] Notebook `notebooks/01_low_water_crop_selection.ipynb` open with outputs visible (5 or more EDA plots, evaluation plots).
 - [ ] Streamlit Community Cloud deployment: **not deployed yet.** The app is built and tested locally (`streamlit_app/app.py`); deploy with the steps in the [deployment guide](deployment_guide.md). The rules say a deployment that fails live scores zero for that platform, so this is worth up to a mark.
-- [ ] Hugging Face deployment (model card on the Hub plus a live Space): **not deployed yet.** The bundle is built and tested locally (`python scripts/build_hf_bundle.py`); upload with the steps in the [deployment guide](deployment_guide.md). Same rule.
+- [ ] Hugging Face: the **model repo is live** (<https://huggingface.co/SMHunain/crop-yield-drought-pakistan>). The live **Space is not deployed yet**: the Hub needs a PRO subscription for a free-CPU Gradio Space (see the [deployment guide](deployment_guide.md)). A deployment that fails live scores zero for that platform, so decide how to cover this before the demo.
 - [ ] Report PDF (3-4 pages, with the contribution table): check it exists and its numbers match the Results table in the README.
 - [ ] Dry-run the click path with the server up: `node scripts/dryrun_demo.js http://127.0.0.1:8000` (runs the real page code against the server and checks the numbers on screen equal the API's). Then rehearse once with a timer.
 
