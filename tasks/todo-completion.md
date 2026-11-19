@@ -10,7 +10,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Files: `tasks/todo.md`, `tasks/plan.md`
   - Depends on: none
 
-- [ ] **T1: roles in README and viva guide** (S)
+- [x] **T1: roles in README and viva guide** (S) (done 2026-11-19: roles live in `scripts/group_roles.py`; both checkers read it; failed before the docs change, pass after; a placeholder put back by hand fails `verify_readme.py`)
   - Acceptance: README group table has a Role column (Hunain: model creation and documentation; Afzal: frontend and deployments; Ayesha: backend). "Who answers what" table in `docs/demo_and_viva_guide.md` filled from those roles, no `(group to fill)` left. Checkers fail if `(group to fill)` returns or a role is missing.
   - Verify: `.venv/bin/python scripts/verify_readme.py` and `scripts/verify_guide.py` pass; put `(group to fill)` back by hand, checker fails.
   - Files: `README.md`, `docs/demo_and_viva_guide.md`, `scripts/verify_readme.py`, `scripts/verify_guide.py`

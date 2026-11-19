@@ -109,6 +109,13 @@ def main() -> int:
     for name in ("Muhammad Afzal", "Syed Muhammad Hunain", "Ayesha"):
         need(name, "group member")
 
+    # --- "Who answers what": every topic row names its owner from scripts/group_roles.py
+    from group_roles import TOPIC_OWNERS, PLACEHOLDER
+    if PLACEHOLDER in text:
+        failures.append(f"'Who answers what' still has {PLACEHOLDER!r}")
+    for topic, owner in TOPIC_OWNERS.items():
+        need(f"| {topic} | {owner} | {owner} |", "who-answers-what row (scripts/group_roles.py)")
+
     low = text.lower()
     for platform in ("streamlit", "vercel", "hugging face"):
         if platform not in low:

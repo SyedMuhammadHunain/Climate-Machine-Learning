@@ -6,11 +6,11 @@ Every number the app shows is model output, a value from the dataset, or a saved
 
 ## Group
 
-| Name | Roll number |
-|---|---|
-| Muhammad Afzal | CT-24263 |
-| Syed Muhammad Hunain | CT-24281 |
-| Ayesha | CT-24309 |
+| Name | Roll number | Role |
+|---|---|---|
+| Syed Muhammad Hunain | CT-24281 | Model creation and documentation |
+| Muhammad Afzal | CT-24263 | Frontend and deployments |
+| Ayesha | CT-24309 | Backend |
 
 ## Quick start
 

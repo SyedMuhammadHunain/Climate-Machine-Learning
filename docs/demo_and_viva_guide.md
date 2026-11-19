@@ -103,12 +103,14 @@ Each member may be asked about any part. Short answers below; know the reasoning
 
 ### Who answers what
 
-Fill this in before the viva. Rows are topics, not people, because the viva marks are individual and each member must explain their own code.
+Roles: Syed Muhammad Hunain, model creation and documentation; Muhammad Afzal, frontend and deployments; Ayesha, backend. Each topic below belongs to the member whose role covers it. The viva marks are individual and every member must explain their own part, and be ready for questions on any other part.
 
-| Topic | Who wrote it | Who explains it first |
+| Topic | Owner (by role) | Who explains it first |
 |---|---|---|
-| Data, EDA, aggregation (`features.py`, notebook) | (group to fill) | (group to fill) |
-| Pipeline, tuning, evaluation (`training.py`, `scripts/train.py`) | (group to fill) | (group to fill) |
-| API and validation (`app/`) | (group to fill) | (group to fill) |
-| Frontend pages (`frontend/`) | (group to fill) | (group to fill) |
-| README, checks, report | (group to fill) | (group to fill) |
+| Data, EDA, aggregation (`features.py`, notebook) | Syed Muhammad Hunain | Syed Muhammad Hunain |
+| Pipeline, tuning, evaluation (`training.py`, `scripts/train.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
+| Ranking and inference (`inference.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
+| API and validation (`app/`) | Ayesha | Ayesha |
+| Frontend pages (`frontend/`) | Muhammad Afzal | Muhammad Afzal |
+| Deployments (Streamlit, Vercel, Hugging Face model repo; `streamlit_app/`, `hf_space/`, bundle scripts) | Muhammad Afzal | Muhammad Afzal |
+| README, checks, report (`docs/`, `scripts/verify_*.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |

@@ -100,9 +100,10 @@ def main() -> int:
     if "R² and MAE" not in text[text.index("## Results"): text.index("## How the ranking works")]:
         failures.append("Results must say the win is judged on R² and MAE")
 
-    for needle in ("Muhammad Afzal", "CT-24263", "Syed Muhammad Hunain", "CT-24281", "Ayesha", "CT-24309"):
-        if needle not in text:
-            failures.append(f"group member info missing: {needle}")
+    from group_roles import MEMBERS
+    for name, roll, role in MEMBERS:
+        if f"| {name} | {roll} | {role} |" not in text:
+            failures.append(f"README group table row missing or wrong (scripts/group_roles.py): | {name} | {roll} | {role} |")
 
     for heading in ("## Quick start", "## Data", "## Results", "## API", "## Deployment status", "## Limitations"):
         if heading not in text:
