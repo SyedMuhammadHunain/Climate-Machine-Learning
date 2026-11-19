@@ -140,9 +140,9 @@ Crop water needs shown next to the ranking come from FAO Irrigation Water Manage
 
 1. **Aggregate** monthly rows to yearly rows and merge the soil wetness by province and year (773 usable rows). The merge stops with an error if any province-year is missing.
 2. **Features**: annual rain, mean/max/min temperature, evapotranspiration, solar radiation, rain hours, soil wetness (mean and wettest month, from NASA POWER), plus three engineered features (rain deficit against the province's training-year mean, water balance, aridity index), and the crop and province.
-3. **Pipeline** (scikit-learn): median imputation, standard scaling, one-hot encoding, then a regressor fitted on the log of the yield (crops differ by about 100 times). Everything is fitted on training data only.
+3. **Pipeline** (scikit-learn): median imputation, standard scaling, one-hot encoding, then a regressor. The regressor does not predict the yield directly (crops differ by about 100 times). It learns the gap, on the log scale, between a year's yield and the crop-province average of the training years, plus a straight-line year trend picked on the validation years (none, one slope per crop, or one per crop and province). Year is never a model input: at prediction it is pinned to the latest dataset year, which cancels out of the crop ranking and only sets the level of the absolute yields. Everything is fitted on training data only.
 4. **Split by year**: train 2001-2016, validation 2017-2019, test 2020-2022.
-5. **Models**: two baselines (overall mean yield, crop-province mean yield), Ridge, Random Forest, Gradient Boosting.
+5. **Models**: three baselines (overall mean yield, crop-province mean yield, and crop-province mean plus the year trend with no climate), Ridge, Random Forest, Gradient Boosting.
 6. **Tuning**: `GridSearchCV` with 5-fold `GroupKFold` grouped by year, so a year never appears in two folds.
 7. **Selection** on the validation years. The test years were scored once and not used to choose anything.
 8. **Save** with `joblib`; versions pinned in `requirements.txt`.
@@ -158,16 +158,19 @@ Train 2001-2016 (565 rows), validation 2017-2019 (106 rows), test 2020-2022 (102
 |---|---:|---:|---:|---:|---:|---:|
 | Baseline: overall mean yield | -0.002 | 91.7 | -0.030 | 100.4 | 173.6 | -6.96 |
 | Baseline: crop-province mean yield | 0.877 | 20.9 | 0.832 | 34.7 | 70.1 | +0.00 |
-| Ridge (regularised linear regression) | 0.610 | 55.5 | 0.503 | 70.6 | 120.6 | -1.98 |
-| **Random Forest (chosen)** | 0.849 | 24.5 | 0.794 | 40.9 | 77.7 | -0.76 |
-| Gradient Boosting | 0.867 | 23.8 | 0.813 | 41.0 | 73.9 | -0.68 |
+| Baseline: crop-province mean + year trend (no climate) | 0.919 | 14.8 | 0.875 | 30.3 | 60.5 | -0.43 |
+| Ridge (regularised linear regression) | 0.924 | 15.2 | 0.878 | 29.5 | 59.7 | -0.39 |
+| Random Forest | 0.917 | 15.2 | 0.873 | 30.6 | 60.9 | -0.54 |
+| **Gradient Boosting (chosen)** | 0.924 | 14.9 | 0.885 | 29.7 | 58.0 | -0.38 |
 
-Likely range shown in the Streamlit and Hugging Face apps: nominal 80% (x0.75 to x1.40 of the prediction), from the validation-year errors. It covered 60% of the 2020-2022 test rows, so it is optimistic.
+On the 2020-2022 test years, compared with using each crop's average yield per province, the model was better on R² 0.885 against 0.832, MAE 29.7 against 34.7 and RMSE 58.0 against 70.1; it was not better on log-MAE 0.341 against 0.312. The pass test (R² and MAE) was chosen after seeing the test results. A year trend alone, with no climate inputs, scores R² 0.875. Small differences between crops are weak evidence.
 
-Chosen on the validation years: **Random Forest**. Trained 2026-11-19T02:13:35+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
+Likely range shown in the Streamlit and Hugging Face apps: nominal 80% (x0.82 to x1.34 of the prediction), from the validation-year errors. It covered 58% of the 2020-2022 test rows, so it is optimistic.
+
+Chosen on the validation years: **Gradient Boosting**. Trained 2026-11-19T07:36:24+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
 <!-- METRICS:END -->
 
-"Skill" compares the model to the crop-province mean baseline on a log scale. Above 0 means better than that baseline. The proposal's success target was R² above 0.7 on the test set and a clear margin over a mean-yield baseline.
+"Skill" compares the model to the crop-province mean baseline on a log scale. Above 0 means better than that baseline. The model is judged against that baseline on test R² and MAE, the metrics the proposal names. That choice was made after the test results had been seen; on log-MAE, where every crop counts equally, the model is not better, and most of the gain over the plain crop-province mean comes from the year trend (see the trend-only baseline row). The proposal's success target was R² above 0.7 on the test set and a clear margin over a mean-yield baseline.
 
 ## How the ranking works
 
@@ -256,10 +259,10 @@ The Streamlit and Gradio apps use the same trained model and the same shared cod
 
 - **Few rows.** After aggregating to yearly rows there are 773 usable rows (565 for training), from 22 years and 3 provinces.
 - **The second source adds little.** Soil wetness (NASA POWER) is merged as the guidelines ask. In the model's permutation importance the soil wetness mean ranks about level with the other weather columns and the wettest-month value adds nothing (see the Metrics page). It is a public source with unspecified licence, from 3 hand-picked points per province, and its rain agrees only moderately with the dataset's rain.
-- **Crop identity dominates.** Most of the model's skill comes from knowing which crop it is. Read the Results table, including the crop-province mean baseline row and the skill column, before treating small differences between crops as meaningful. Weather changes the predictions only a little for most crops.
+- **Crop identity dominates.** Most of the model's skill comes from knowing which crop it is. Read the Results table, including the baseline rows and the skill column, before treating small differences between crops as meaningful. Weather changes the predictions only a little for most crops.
 - **Narrow ranges.** Annual mean temperature varies by only about 1.5 deg C within a province across the 16 training years, and rain by a few hundred mm. Inputs outside the training range are rejected. The Metrics page lists the ranges.
 - **Incomplete crops.** Some crops are missing years in the data (grapes, pomegranate, apple). The API reports how many training rows each crop has against the possible 48.
-- **No yearly trend.** Year is not an input, so growth in yields over time is not modelled. This affects the test years.
+- **The win is narrower than it looks.** The model beats the crop-province mean on test R² and MAE, but not on log-MAE, and R² and MAE were chosen as the test after seeing the test results. A year trend alone, with no climate inputs, scores almost the same R² (see the trend-only baseline row), so the weather inputs add little beyond it. The year trend is a straight line fitted on 2001-2016 and pinned to the latest dataset year at prediction.
 - **Province-level weather and soil.** Weather in the file, and the soil wetness we merged, are the same for every crop in a province. There is no district or farm level data.
 - **Yield unit not confirmed.** The source does not state it.
 - **FAO table** covers 8 of the 13 crops and is context only. It does not change the ranking.

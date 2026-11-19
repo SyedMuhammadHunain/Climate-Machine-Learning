@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / "README.md"
 START, END = "<!-- METRICS:START -->", "<!-- METRICS:END -->"
+sys.path.insert(0, str(ROOT / "src"))
 
 
 def metrics_block(m: dict) -> str:
@@ -27,7 +28,8 @@ def metrics_block(m: dict) -> str:
         "| Model | Val R² | Val MAE | Test R² | Test MAE | Test RMSE | Test skill vs crop-province mean |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ]
-    names = {"global_mean": "Baseline: overall mean yield", "crop_province_mean": "Baseline: crop-province mean yield"}
+    names = {"global_mean": "Baseline: overall mean yield", "crop_province_mean": "Baseline: crop-province mean yield",
+             "crop_province_mean_plus_trend": "Baseline: crop-province mean + year trend (no climate)"}
     rows = [(names.get(k, k), v["val"], v["test"], False) for k, v in m["baselines"].items()]
     rows += [(v["label"], v["val"], v["test"], k == m["chosen"]["name"]) for k, v in m["models"].items()]
     for name, val, test, chosen in rows:
@@ -36,13 +38,18 @@ def metrics_block(m: dict) -> str:
             f"| {label} | {val['r2']:.3f} | {val['mae']:.1f} | {test['r2']:.3f} | {test['mae']:.1f} | "
             f"{test['rmse']:.1f} | {test['skill_vs_crop_province_mean_log']:+.2f} |"
         )
+    from climate_machine_learning import inference as I
+
     pi = m["prediction_interval"]
+    verdict = "optimistic" if pi["test_coverage"] < pi["level"] else "about right"
     lines += [
+        "",
+        I.model_caveat(m),
         "",
         f"Likely range shown in the Streamlit and Hugging Face apps: nominal {pi['level']:.0%} "
         f"(x{math.exp(pi['log_residual_quantiles'][0]):.2f} to x{math.exp(pi['log_residual_quantiles'][1]):.2f} "
         f"of the prediction), from the validation-year errors. It covered {pi['test_coverage']:.0%} of the "
-        f"{m['split']['test_years'][0]}-{m['split']['test_years'][1]} test rows, so it is optimistic.",
+        f"{m['split']['test_years'][0]}-{m['split']['test_years'][1]} test rows, so it is {verdict}.",
         "",
         f"Chosen on the validation years: **{m['models'][m['chosen']['name']]['label']}**. "
         f"Trained {m['trained_at']} with scikit-learn {m['versions']['scikit_learn']}, "
@@ -74,6 +81,19 @@ def main() -> int:
         current = text[text.index(START): text.index(END) + len(END)]
         if current != metrics_block(metrics):
             failures.append("metrics block differs from models/metrics.json (run with --write)")
+
+    limits = text[text.index("## Limitations"): text.index("## References")] if "## Limitations" in text and "## References" in text else ""
+    for needle in ("log-MAE", "after seeing the test results", "year trend"):
+        if needle not in limits:
+            failures.append(f"Limitations must mention {needle!r} (SPEC-promote-offset-model.md)")
+    for stale in ("no yearly trend", "year is not an input, so growth"):
+        if stale in text.lower():
+            failures.append(f"stale limitation about the year trend: {stale!r}")
+    method = text[text.index("## Method"): text.index("## Results")] if "## Method" in text and "## Results" in text else ""
+    if "gap" not in method or "crop-province average" not in method:
+        failures.append("Method must say the models learn the gap from the crop-province average")
+    if "R² and MAE" not in text[text.index("## Results"): text.index("## How the ranking works")]:
+        failures.append("Results must say the win is judged on R² and MAE")
 
     for needle in ("Muhammad Afzal", "CT-24263", "Syed Muhammad Hunain", "CT-24281", "Ayesha", "CT-24309"):
         if needle not in text:

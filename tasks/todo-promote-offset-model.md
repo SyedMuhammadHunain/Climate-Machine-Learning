@@ -40,7 +40,7 @@
   - Verify: `verify_streamlit.py` (own venv), extended first.
   - Files: `src/climate_machine_learning/presentation.py`, `streamlit_app/app.py`, `hf_space/app.py`,
     `scripts/verify_streamlit.py`.
-- [ ] **T5** README.
+- [x] **T5** README.
   - Do:
     - `verify_readme.py` generator gets a label for the new baseline and a results sentence with the caveat.
     - Replace the "No yearly trend" limit.
