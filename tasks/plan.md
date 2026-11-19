@@ -99,3 +99,18 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 
 ## Open Questions
 - Confirm the yield unit from the source repo (T8). Not blocking.
+
+---
+
+# Addendum: Second data source (NASA POWER)
+
+Source spec: SPEC-second-source-nasa-power.md. Phases 0-3 above are complete.
+
+| Task | What | Depends on |
+|---|---|---|
+| S1 | Fetch NASA POWER for 9 points, store raw JSON + tidy CSV + source doc | none |
+| S2 | Merge in `features.py` (soil wetness mean/min), reference ranges, tests | S1 |
+| S3 | Retrain, metrics.json lists both sources, notebook shows source agreement | S2 |
+| Checkpoint D | Show the new scores and whether soil wetness helps | S3 |
+| S4 | API inputs, quick-fill, Metrics page sources section, guards | S3 |
+| S5 | README, guide, final checks | S4 |

@@ -236,3 +236,16 @@ Viva Q&A: why aggregate to yearly rows, leakage and the GroupKFold choice, why R
 ### ✅ Checkpoint C: Submission ready
 - [ ] Repo: data/, notebooks/, app/, models/, requirements.txt, README.md, docs/
 - [ ] Full flow verified on localhost:8000
+
+---
+
+# Addendum: Second data source (NASA POWER)
+
+Spec: `SPEC-second-source-nasa-power.md`. Chosen by the user on 2026-11-19.
+
+- [ ] **S1** `scripts/fetch_nasa_power.py`; `data/raw/nasa_power/*.json`, `data/raw/nasa_power_monthly.csv`, `data/reference/nasa_power_source.json`. Verify: 9 points x 264 months, no fill values, wet monsoon months wetter than dry ones.
+- [ ] **S2** `features.py` merges soil wetness by Province+Year, adds `soil_wetness_mean/min` to inputs, ranges and reference. Verify: 858 of 858 groups matched; training and inference rows equal; leakage test still passes.
+- [ ] **S3** Retrain; `metrics.json` lists both sources with hashes; notebook has the source-agreement and soil-wetness plots. Verify: verify_model passes.
+- [ ] **Checkpoint D** Show scores and importance; user reviews before S4.
+- [ ] **S4** API fields, form fields, metadata, metrics page "data sources" section. Verify: backend, frontend, dry-run checks.
+- [ ] **S5** README (two sources, licence, citation, limits), guide numbers, all checks.
