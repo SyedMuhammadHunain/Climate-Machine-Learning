@@ -232,7 +232,9 @@ def space_runs_for_real_through_a_gradio_server_and_client():
 
 @test
 def model_repo_example_runs_with_plain_python():
-    out = subprocess.run([sys.executable, "inference_example.py"], cwd=MODEL_DIR, capture_output=True, text=True, timeout=120)
+    # the model repo's requirements.txt has no web server: run the example with uvicorn blocked, as a stranger's env would be
+    runner = "import sys, runpy; sys.modules['uvicorn'] = None; runpy.run_path('inference_example.py', run_name='__main__')"
+    out = subprocess.run([sys.executable, "-c", runner], cwd=MODEL_DIR, capture_output=True, text=True, timeout=120)
     assert out.returncode == 0, out.stderr[-500:]
     q = MET["prediction_interval"]["log_residual_quantiles"]
     import joblib

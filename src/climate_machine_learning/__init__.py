@@ -1,7 +1,6 @@
 import sys
 import argparse
 from pathlib import Path
-import uvicorn
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -32,6 +31,8 @@ def main() -> None:
         reload = getattr(args, "reload", False)
         print(f"Starting Climate-Machine-Learning FastAPI server on http://{host}:{port}...")
         print(f"Interactive Swagger documentation available at: http://{host}:{port}/docs")
+        import uvicorn  # only the web server command needs it; the package must import without it
+
         uvicorn.run("app.main:app", host=host, port=port, reload=reload)
     elif args.command == "verify":
         from scripts.verify_backend import run_verification

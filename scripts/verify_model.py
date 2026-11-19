@@ -351,6 +351,19 @@ def inference_refuses_inputs_outside_the_trained_range():
 
 
 @test
+def package_imports_without_the_web_server_installed():
+    """The shared package is used by the API, both UIs, the model repo and a lean serverless build.
+    Only the API needs uvicorn, so importing the package must not (it once did, at the top of __init__)."""
+    import subprocess
+
+    code = ("import sys; sys.modules['uvicorn'] = None; sys.path.insert(0, 'src');"
+            "import climate_machine_learning.features, climate_machine_learning.inference,"
+            "climate_machine_learning.presentation; print('ok')")
+    out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True, timeout=120)
+    assert out.returncode == 0 and "ok" in out.stdout, out.stderr[-300:]
+
+
+@test
 def presentation_ranking_table_is_built_from_the_model_output():
     from climate_machine_learning import inference as I
     from climate_machine_learning import presentation as P
