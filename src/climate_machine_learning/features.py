@@ -177,16 +177,6 @@ def build_reference(train: pd.DataFrame) -> Dict[str, Any]:
 
 
 # --------------------------------------------------------------------------- engineered
-def _engineer(values: Dict[str, float], mean_annual_rain: float) -> Dict[str, float]:
-    rain = values["precipitation_sum"]
-    et_year = values["fao_evapotranspiration"] * 365.0
-    return {
-        "rain_deficit_pct": (mean_annual_rain - rain) / mean_annual_rain * 100.0,
-        "water_balance_mm": rain - et_year,
-        "aridity_index": rain / et_year,
-    }
-
-
 def add_engineered(table: pd.DataFrame, reference: Dict[str, Any]) -> pd.DataFrame:
     """Add engineered columns to a yearly table (training path)."""
     out = table.copy()
@@ -238,9 +228,9 @@ def build_inference_row(
         else:
             values[name], sources[name] = prov["median"][name], SRC_MEDIAN
 
-    values.update(_engineer(values, prov["mean_annual_rain"]))
     values["Crop"], values["Province"] = crop, province
-    return pd.DataFrame([values])[FEATURE_COLS], sources
+    row = add_engineered(pd.DataFrame([values]), reference)  # the same formulas the training table uses
+    return row[FEATURE_COLS], sources
 
 
 # --------------------------------------------------------------------------- prediction interval
