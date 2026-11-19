@@ -1,6 +1,6 @@
 # Spec Delta: Beat the crop-province-mean baseline
 
-Status: approved (2026-11-19). Pinned year still open (see Open Questions).
+Status: closed, gate not met (2026-11-19). One honest run; `models/` and both live sites unchanged. See Results.
 
 Parent: `SPEC.md`, with `SPEC-model-only-output.md` and `SPEC-second-source-nasa-power.md` still in force.
 Intent confirmed in the interview on 2026-11-19: beat the baseline and reduce error, real data only, same inputs.
@@ -121,3 +121,27 @@ No new data file, no new rows.
 1. **Pinned inference year:** 2022 (latest dataset year, linear trend extrapolated 6 years past training) or 2016
    (last training year, no extrapolation)? Default: 2022, because it reflects current yield levels, and the ranking
    is the same either way.
+
+## Results (2026-11-19): gate not met
+
+Built `OffsetYieldModel` (crop-province offset plus optional year trend) and trained 3 models x 3 trends once into a
+scratch folder. Selection on validation years only. Test years scored once. No re-run, no tuning after seeing the test score.
+Code is kept on local branch `offset-model-experiment` (commit `20e3142`); `Hunain` has it reverted. `models/` was never touched.
+
+| | val log-MAE | test log-MAE | test R² | test MAE |
+|---|---|---|---|---|
+| Baseline: crop-province mean | 0.194 | **0.312** | 0.832 | 34.7 |
+| Mean + trend, no climate (`per_crop_province`) | 0.167 | 0.345 | 0.875 | 30.3 |
+| Ridge | 0.170 | 0.340 | 0.878 | 29.5 |
+| Random Forest | 0.175 | 0.360 | 0.873 | 30.6 |
+| Gradient Boosting (chosen on validation) | 0.168 | 0.341 | 0.885 | 29.7 |
+
+- Success criterion "test log-MAE < 0.312" failed: 0.341. `beats_crop_province_mean_on_test` would be false.
+- The candidate beats the baseline on test R², MAE and RMSE, which weight high-yield crops. It loses on log-MAE, which weights every crop equally.
+- The gain over the current model comes from the year trend, not from climate: mean + trend with no climate scores val 0.167, the best model 0.168.
+- 80% likely range test coverage 0.578.
+- Not used to redefine the gate: the criterion was fixed before the run.
+
+Open Questions resolved: pinned year not needed (spec closed before promotion).
+
+Deferred, if revisited: a trend-only offset is the useful part; a different gate (R² or MAE) would need the user to choose it before any re-run.
