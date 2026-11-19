@@ -24,7 +24,7 @@
 
 ## Phase 2: wording (any order, each with its checker)
 
-- [ ] **T3** API and HTML pages.
+- [x] **T3** API and HTML pages.
   - Do:
     - `model_service.py` caution text, driven by `beats_by_metric` (win on R² and MAE, loss on log-MAE, after-the-fact note).
     - `metrics.html`: the "Vs crop-average baseline" cell, a label for `crop_province_mean_plus_trend`, and the note.

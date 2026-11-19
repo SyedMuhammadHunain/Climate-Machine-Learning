@@ -366,6 +366,18 @@ def run_verification():
         assert "no-cache" not in client.get("/api/v1/metrics").headers.get("cache-control", ""), "API responses need no such header"
         print("  -> PASSED: pages revalidate on every load.")
 
+        # 27. Whenever the API says how the model compares with the baseline, the caveat comes with it
+        print("\n[TEST 27] /recommend summary carries the generated caveat (win, log-MAE loss, metric choice)")
+        from climate_machine_learning import inference as I
+        metrics_saved = json.loads((ROOT_DIR / "models" / "metrics.json").read_text())
+        summary = client.post("/api/v1/recommend", json={"province": "Punjab", "precipitation_sum": 350.0,
+                                                         "temperature_2m_mean": 25.0}).json()["recommendation_summary"]
+        assert I.model_caveat(metrics_saved) in summary, summary
+        ch, mt = metrics_saved["chosen"], metrics_saved["models"][metrics_saved["chosen"]["name"]]["test"]
+        assert ch["beats_crop_province_mean_on_test"] is True and ch["beats_by_metric"]["log_mae"] is False
+        assert f"log-MAE {mt['log_mae']:.3f}" in summary and "after seeing the test results" in summary
+        print("  -> PASSED: caveat is built from metrics.json and shown with the ranking.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

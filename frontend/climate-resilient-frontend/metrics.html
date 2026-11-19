@@ -496,15 +496,25 @@
         function renderMetrics(m, meta) {
             const chosen = m.models[m.chosen.name];
             const base = m.baselines.crop_province_mean.test;
-            const beats = m.chosen.beats_crop_province_mean_on_test;
             const t = chosen.test;
+            // Win per metric against the crop-province mean (from /metrics: chosen.beats_by_metric). Nothing is typed here.
+            const by = m.chosen.beats_by_metric;
+            const mname = { r2: "R²", mae: "MAE", rmse: "RMSE", log_mae: "log-MAE" };
+            const mdigits = { r2: 3, mae: 1, rmse: 1, log_mae: 3 };
+            const better = Object.keys(mname).filter(k => by[k]).map(k => mname[k]);
+            const worse = Object.keys(mname).filter(k => !by[k]).map(k => mname[k]);
+            const pair = k => `${mname[k]} ${f(t[k], mdigits[k])} vs ${f(base[k], mdigits[k])}${by[k] ? " (better)" : " (not better)"}`;
+            const judged = m.chosen.judged_on_chosen_after_test
+                ? ` The pass test (${m.chosen.judged_on.map(k => mname[k]).join(" and ")}) was chosen after seeing the test results.` : "";
+            const vsBase = (better.length ? `Better on ${better.join(", ")}` : "Not better on any metric") +
+                (worse.length && better.length ? `; not on ${worse.join(", ")}` : "");
 
             $("summary-cells").innerHTML = [
                 ["Test R²", f(t.r2), `${esc(chosen.label)}, test years ${m.split.test_years[0]}-${m.split.test_years[1]}.`],
                 ["Test MAE", f(t.mae, 1), "Average absolute error in dataset yield units."],
                 ["Test RMSE", f(t.rmse, 1), "Like MAE but punishes large misses."],
-                ["Vs crop-average baseline", sf(t.skill_vs_crop_province_mean_log),
-                    `${beats ? "Better than" : "Not better than"} using each crop's average yield per province (baseline test R² ${f(base.r2)}). Above 0 means better.`],
+                ["Vs crop-average baseline", vsBase,
+                    `Model against using each crop's average yield per province, test years: ${Object.keys(mname).map(pair).join("; ")}.${judged}`],
             ].map(([label, val, detail]) =>
                 `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
             ).join("");
@@ -516,10 +526,11 @@
             $("cmp-desc").textContent =
                 `Train ${m.split.train_years.join("-")}, validation ${m.split.val_years.join("-")}, test ${m.split.test_years.join("-")}. ` +
                 `Models were tuned with 5-fold cross-validation grouped by year and chosen on validation. The test years were scored once. ` +
-                `Skill above 0 means better than the crop-province mean baseline.`;
+                `Skill is on a log scale: above 0 means better than the crop-province mean baseline. The model is judged on R² and MAE; see the per-metric comparison above and the notes below.`;
 
             const rows = [];
-            const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield" };
+            const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield",
+                crop_province_mean_plus_trend: `Baseline: crop-province mean + year trend (${m.baselines.crop_province_mean_plus_trend.trend.replace(/_/g, " ")}), no climate` };
             Object.entries(m.baselines).forEach(([k, v]) => rows.push([baseLabels[k] || k, v.val, v.test, null, false]));
             Object.entries(m.models).forEach(([k, v]) => rows.push([v.label, v.val, v.test, v.cv_log_mae, k === m.chosen.name]));
             $("cmp-body").innerHTML = rows.map(([name, val, test, cv, isChosen]) => `

@@ -737,6 +737,35 @@ def saved_model_is_the_promoted_offset_model():
         hashlib.sha256((ROOT / "data" / "raw" / "nasa_power_monthly.csv").read_bytes()).hexdigest()]
 
 
+@test
+def model_caveat_states_wins_losses_and_the_after_the_fact_choice():
+    from climate_machine_learning import inference as I
+
+    def metrics(by, after=True, with_trend=True):
+        base = {"r2": 0.832, "mae": 34.7, "rmse": 70.1, "log_mae": 0.312}
+        model = {"r2": 0.885, "mae": 29.7, "rmse": 55.0, "log_mae": 0.341}
+        m = {"split": {"test_years": [2020, 2022]},
+             "chosen": {"name": "gb", "beats_by_metric": by, "judged_on": ["r2", "mae"],
+                        "judged_on_chosen_after_test": after},
+             "models": {"gb": {"test": model}}, "baselines": {"crop_province_mean": {"test": base}}}
+        if with_trend:
+            m["baselines"]["crop_province_mean_plus_trend"] = {"test": {**base, "r2": 0.875}}
+        return m
+
+    text = I.model_caveat(metrics({"r2": True, "mae": True, "rmse": True, "log_mae": False}))
+    assert "2020-2022" in text
+    assert "R² 0.885 against 0.832" in text and "MAE 29.7 against 34.7" in text
+    assert "log-MAE 0.341 against 0.312" in text and text.index("was not better on") < text.index("log-MAE 0.341")
+    assert "after seeing the test results" in text and "R² and MAE" in text
+    assert "R² 0.875" in text and "no climate" in text
+    assert "weak evidence" in text
+    clean = I.model_caveat(metrics({"r2": True, "mae": True, "rmse": True, "log_mae": True}, after=False, with_trend=False))
+    assert "was not better" not in clean and "weak evidence" not in clean
+    assert "after seeing" not in clean and "no climate" not in clean
+    loss = I.model_caveat(metrics({"r2": False, "mae": False, "rmse": False, "log_mae": False}))
+    assert "was better on" not in loss and "was not better on" in loss
+
+
 # --------------------------------------------------------------------------- offset training (T2)
 _CANDIDATE = {}
 

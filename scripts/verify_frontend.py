@@ -53,6 +53,12 @@ def main() -> int:
     for token in ("api/v1/metrics", "api/v1/metadata", "btn-retry"):
         if token not in metrics_page:
             failures.append(f"metrics.html: expected element missing: {token!r}")
+    # SPEC-promote-offset-model.md: the win is shown per metric with the loss and the after-the-fact choice
+    for token in ("beats_by_metric", "judged_on_chosen_after_test", "crop_province_mean_plus_trend"):
+        if token not in metrics_page:
+            failures.append(f"metrics.html: must read {token!r} from /metrics")
+    if "Better than" in metrics_page and "beats_by_metric" not in metrics_page:
+        failures.append("metrics.html: states 'Better than' without the per-metric comparison")
     if re.search(r'class="metric-val"[^>]*>[^<]*\d', metrics_page):
         failures.append("metrics.html: a metric value is typed into the HTML")
 

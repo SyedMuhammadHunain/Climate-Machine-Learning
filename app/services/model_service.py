@@ -131,11 +131,7 @@ class ModelService:
             f"({bottom.pct_of_normal:.1f}% of typical). "
             "These are model outputs, not adjusted by hand."
         )
-        if not self.metrics["chosen"]["beats_crop_province_mean_on_test"]:
-            summary += (
-                " Caution: on the 2020-2022 test years this model did not beat simply using each "
-                "crop's average yield, so small differences between crops are weak evidence."
-            )
+        summary += " " + I.model_caveat(self.metrics)
         return RecommendationResponse(
             scenario_name=request.scenario_name or "Custom scenario",
             province=province,
