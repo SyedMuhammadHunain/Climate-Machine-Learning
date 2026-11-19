@@ -1,6 +1,6 @@
-# Deployment guide: Streamlit Community Cloud and Hugging Face
+# Deployment guide: Streamlit Community Cloud, Vercel and Hugging Face
 
-The course guidelines ask for three deployments. The local FastAPI app is done and **Streamlit is deployed** (status in section 1). The Hugging Face **model repo is live**, but the **Space is not deployed**: the Hub needs a PRO plan for a free-CPU Gradio Space (status in section 2). This guide lists exactly what to click and type.
+The course guidelines ask for three deployments. The local FastAPI app is done, **Streamlit is deployed** (status in section 1) and the same FastAPI app and pages are **deployed on Vercel** (section 4). The Hugging Face **model repo is live**, but the **Space is not deployed**: the Hub needs a PRO plan for a free-CPU Gradio Space (status in section 2). This guide lists exactly what to click and type.
 
 ## What was tested here, and what was not
 
@@ -81,9 +81,31 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 ## 3. When the Hugging Face Space goes live (Streamlit is already done)
 
 - Edit the Hugging Face row of the README deployment table with the Space URL and the date.
-- `scripts/verify_readme.py` requires the Streamlit row to show the live URL and not say "not deployed", and the Hugging Face row to link the model repo and say the Space is "not deployed yet". Change that second rule at the same time, or it will fail. `scripts/verify_guide.py` likewise keeps the Hugging Face checklist item open until you tick it.
+- `scripts/verify_readme.py` requires the Vercel row to show the live URL and not say "not deployed", the Streamlit row to show the live URL and not say "not deployed", and the Hugging Face row to link the model repo and say the Space is "not deployed yet". Change that second rule at the same time, or it will fail. `scripts/verify_guide.py` likewise keeps the Hugging Face checklist item open until you tick it.
 - Tick the Hugging Face item in the "Before you present" list of `docs/demo_and_viva_guide.md`.
 - Rehearse the live demo with the three URLs open.
+
+## 4. Vercel (FastAPI app and HTML pages)
+
+**Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning.vercel.app/>. It is the same app as the local one: the pages are served by FastAPI and call the API on the same address.
+
+What is deployed: the folder that `python scripts/build_vercel_bundle.py` writes (git-ignored, default `vercel_bundle/`). It holds `app/`, three modules of `src/climate_machine_learning/` (not `training.py` and not `presentation.py`), the three files in `models/`, the FAO table, the pages, a `requirements.txt` with 21 exactly pinned packages (taken from the tested root `requirements.txt`, no Jupyter, plotting, `pyarrow` or `uvicorn`) and `.python-version` (3.12). `python scripts/verify_vercel_bundle.py` checks all of this and starts the bundled app on its own.
+
+To deploy again (after a retrain or a code change), with the Vercel CLI logged in (`vercel login`):
+
+```bash
+python scripts/build_vercel_bundle.py --out ~/vercel_bundle
+rm ~/vercel_bundle/.built-by-build_vercel_bundle
+cd ~/vercel_bundle && vercel deploy --prod --yes --name climate-machine-learning --scope hunains-projects-ff0a52fc
+```
+
+What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gives rice 19.71 and 58.5% of a typical year, rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
+
+Things to know:
+- The project has Vercel Authentication switched on, but the production address above is open to everyone. The per-deployment addresses (with a random suffix) probably ask for a Vercel login.
+- The first request after the app has been idle can take a few seconds while the model loads (about 4 seconds on the build machine). Open the site before a demo.
+- The installed packages are about 264 MB. That was accepted by the Hobby plan on 2026-11-19; if scikit-learn or pandas are upgraded the size may change, so re-check the deploy.
+- Branch `vercel-deploy` on GitHub holds the same bundle (an orphan branch), but the deployment above was made with the CLI, not from GitHub. It is only needed if you later connect the repository to Vercel for automatic deploys. A first attempt through the Vercel connection failed because of a GitHub rate limit, not because of the app.
 
 ## Re-checking the local builds
 

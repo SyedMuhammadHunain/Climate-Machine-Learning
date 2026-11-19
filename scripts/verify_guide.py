@@ -92,11 +92,13 @@ def main() -> int:
         need(name, "group member")
 
     low = text.lower()
-    for platform in ("streamlit", "hugging face"):
+    for platform in ("streamlit", "vercel", "hugging face"):
         if platform not in low:
             failures.append(f"deployment checklist missing {platform}")
     if not re.search(r"- \[x\][^\n]*streamlit[^\n]*streamlit\.app", low):
         failures.append("Streamlit checklist item must be ticked and show the live streamlit.app URL")
+    if not re.search(r"- \[x\][^\n]*vercel[^\n]*vercel\.app", low):
+        failures.append("Vercel checklist item must be ticked and show the live vercel.app URL")
     if not re.search(r"- \[ \][^\n]*hugging face", low):
         failures.append("Hugging Face checklist item must stay open (the Space is not deployed)")
     for word in ("bajra", "jowar"):

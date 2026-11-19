@@ -61,6 +61,7 @@ python scripts/verify_frontend.py   # no fake data or demo wording in the pages
 python scripts/verify_readme.py     # README matches metrics.json and the real endpoints
 python scripts/verify_guide.py      # demo/viva guide numbers match the live app
 python scripts/verify_streamlit.py  # Streamlit app: numbers on screen equal the model (needs streamlit_app/requirements.txt, own venv)
+python scripts/verify_vercel_bundle.py  # Vercel bundle: what is in it, lean pinned requirements, runs on its own
 python scripts/verify_hf_bundle.py  # Hugging Face bundle and Gradio Space (needs hf_space/requirements.txt and pyyaml, own venv)
 node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
@@ -86,7 +87,7 @@ data/raw/nasa_power/  raw NASA POWER API responses (9 points), plus nasa_power_m
 data/reference/       NASA POWER source facts, FAO crop water needs (cited context)
 models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
-scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, the verify_*.py checks and dryrun_demo.js
+scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, build_vercel_bundle.py, the verify_*.py checks and dryrun_demo.js
 docs/                 demo script and viva preparation, deployment guide
 SPEC-*.md, tasks/     specs, plan and task list (model-only output; second data source)
 ```
@@ -244,9 +245,10 @@ The course guidelines ask for three deployments. Status:
 |---|---|
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
 | Streamlit Community Cloud | **Live:** <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> (deployed from branch `hunain-deploy`; app code in `streamlit_app/app.py`, own `streamlit_app/requirements.txt`). Input form, prediction with a likely range, one chart. Tested in a real browser on 2026-11-19: it loads for a logged-out visitor in about 20 to 30 seconds, its numbers equal the local model, and the chart draws all 13 crops. Free apps may sleep when idle, so open it before a demo. |
+| Vercel (the same FastAPI app and HTML pages, hosted) | **Live:** <https://climate-machine-learning.vercel.app/> (deployed on 2026-11-19 with the Vercel CLI from the generated bundle, `python scripts/build_vercel_bundle.py`). Checked on the live site: the pages load for a logged-out visitor, `/api/v1/recommend` for Sindh in its driest real year gives rice 19.71 and 58.5% of a typical year (the same as the local app), a rain value outside the trained range is refused with a 422 that states the range, and `scripts/dryrun_demo.js` passes against it. The first request after an idle period can take a few seconds while the model loads. |
 | Hugging Face (model card + Space) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code; a token-less download runs the bundled example). **Space: not deployed yet.** The bundle (`python scripts/build_hf_bundle.py`, Space app in `hf_space/app.py`) is built and tested, but the Hub refuses Gradio Spaces on a free account (free CPU hosting of Gradio and Docker Spaces needs a PRO subscription; only static Spaces are free). |
 
-Streamlit is deployed. Only the Hugging Face Space is still to do (blocked by the free plan, see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
+Streamlit and Vercel are deployed. Only the Hugging Face Space is still to do (blocked by the free plan, see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
 
 The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 

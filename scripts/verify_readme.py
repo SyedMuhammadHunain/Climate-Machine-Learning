@@ -108,12 +108,14 @@ def main() -> int:
     for platform in ("streamlit", "hugging face"):
         if platform not in low:
             failures.append(f"deployment status for {platform} missing")
-    rows = {name: next((l for l in text.splitlines() if l.startswith(f"| {name}")), "") for name in ("Streamlit", "Hugging Face")}
+    rows = {name: next((l for l in text.splitlines() if l.startswith(f"| {name}")), "") for name in ("Streamlit", "Vercel", "Hugging Face")}
     for name, row in rows.items():
         if not row:
             failures.append(f"README deployment table has no row starting with '| {name}'")
     if "https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/" not in rows["Streamlit"] or "not deployed" in rows["Streamlit"].lower():
         failures.append("README Streamlit row must show the live URL and must not say 'not deployed'")
+    if "https://climate-machine-learning.vercel.app/" not in rows["Vercel"] or "not deployed" in rows["Vercel"].lower():
+        failures.append("README Vercel row must show the live URL and must not say 'not deployed'")
     if "SMHunain/crop-yield-drought-pakistan" not in rows["Hugging Face"] or "not deployed yet" not in rows["Hugging Face"].lower():
         failures.append("README Hugging Face row must link the live model repo and say the Space is 'not deployed yet' (free plan)")
 
@@ -143,7 +145,7 @@ def main() -> int:
 
     # the other two front ends and the deployment guide must be documented
     for needle in ("streamlit_app/app.py", "streamlit_app/requirements.txt", "hf_space/app.py",
-                   "scripts/build_hf_bundle.py", "scripts/verify_streamlit.py", "scripts/verify_hf_bundle.py",
+                   "scripts/build_hf_bundle.py", "scripts/build_vercel_bundle.py", "scripts/verify_vercel_bundle.py", "scripts/verify_streamlit.py", "scripts/verify_hf_bundle.py",
                    "docs/deployment_guide.md", "src/climate_machine_learning/inference.py"):
         if needle not in text:
             failures.append(f"not documented: {needle}")
