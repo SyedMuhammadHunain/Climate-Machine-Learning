@@ -559,6 +559,51 @@
             overflow-wrap: anywhere;
         }
 
+        .advisory-headline {
+            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--colorPrimary900);
+        }
+
+        .advisory-facts {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px 20px;
+            margin-bottom: 18px;
+        }
+
+        .advisory-facts dt {
+            font-size: 13px;
+            color: var(--colorNeutral600);
+        }
+
+        .advisory-facts dd {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--colorPrimary900);
+        }
+
+        @media (min-width: 480px) {
+            .advisory-facts {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .advisory-subhead {
+            margin: 16px 0 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+        }
+
+        .advisory-summary p:not(.advisory-headline) {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
         .advisory-summary strong {
             color: var(--colorPrimary900);
             font-weight: 600;
@@ -873,9 +918,12 @@
             const ref = REFERENCE[province];
             buildPills();
             if (key === "median") {
-                document.getElementById("field-precipitation").value = Number(ref.median.precipitation_sum.toFixed(1));
-                document.getElementById("field-temperature").value = Number(ref.median.temperature_2m_mean.toFixed(1));
-                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = ""; });
+                // the typical year is every input at its exact province median: rounding rain or temperature, or leaving the
+                // optional inputs empty (the server then derives max and min temperature from the mean), moves the scenario
+                // off the typical year (Balochistan showed 99.6% of itself)
+                document.getElementById("field-precipitation").value = ref.median.precipitation_sum;
+                document.getElementById("field-temperature").value = ref.median.temperature_2m_mean;
+                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = ref.median[f.key]; });
             } else {
                 // A real observed year: fill every input with that year's values (full precision, so they stay in range)
                 const sc = scenarioFor(province, key);
@@ -1103,7 +1151,15 @@
                     return `<div class="rank-group">${head}${group.crops.map(row).join("")}</div>`;
                 }).join("");
 
-                advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small><br><small>${esc(data.absolute_yield_note)}</small>`;
+                // Headline, facts, ranking rule, caveats: each block is the API's own text (recommendation_summary stays in the API for other clients)
+                advisorySummary.innerHTML = `
+                    <p class="advisory-headline">${esc(data.headline)}</p>
+                    <dl class="advisory-facts">${data.scenario_facts.map(f => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join("")}</dl>
+                    <h3 class="advisory-subhead">How crops are ranked</h3>
+                    <p class="advisory-basis">${esc(data.ranking_basis)}</p>
+                    <h3 class="advisory-subhead">About these numbers</h3>
+                    <p class="advisory-caveat">${esc(data.model_caveat)}</p>
+                    <p class="advisory-absolute">${esc(data.absolute_yield_note)}</p>`;
             } else {
                 singleSection.style.display = "block";
                 resilientSection.style.display = "none";

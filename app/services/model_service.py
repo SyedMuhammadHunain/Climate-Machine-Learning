@@ -41,7 +41,7 @@ class ModelService:
     YIELD_UNIT = "dataset yield units (unit not confirmed)"
     RANKING_BASIS = (
         "Model-predicted yield for your scenario divided by the model-predicted yield for a "
-        "typical (median) year in the same province, as a percentage. Ties are ordered by crop name."
+        "typical (median) year in the same province, as a percentage. Crops with the same share at one decimal share one rank."
     )
 
     def __init__(self, model_path: Path = MODEL_PATH):
@@ -163,6 +163,7 @@ class ModelService:
             headline=I.ranking_headline(result.items),
             scenario_facts=[ScenarioFact(**f) for f in I.scenario_facts(province, result.inputs, result.sources, self.model_name)],
             recommendation_summary=summary,
+            model_caveat=I.model_caveat(self.metrics),
             model_name=self.model_name,
             absolute_yield_note=I.absolute_yield_caveat(self.metrics),
         )

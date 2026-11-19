@@ -15,9 +15,11 @@ import numpy as np
 from fastapi.testclient import TestClient
 from app.main import app
 from climate_machine_learning import features as F
+from climate_machine_learning import inference as INFERENCE
 
 REFERENCE = json.loads((ROOT_DIR / "models" / "reference.json").read_text())
 PIPELINE = joblib.load(ROOT_DIR / "models" / "crop_yield_pipeline.joblib")
+METRICS = json.loads((ROOT_DIR / "models" / "metrics.json").read_text())
 
 def run_verification():
     print("=" * 70)
@@ -150,6 +152,10 @@ def run_verification():
             assert labels == ["Province", "Annual rain", "Mean temperature", "Optional inputs entered", "Model"], labels
             assert body["scenario_facts"][0]["value"] == province
             assert body["recommendation_summary"], "the existing summary stays"
+            assert body["model_caveat"] == INFERENCE.model_caveat(METRICS), "the caveat is its own field, generated from metrics.json"
+            assert body["absolute_yield_note"] == INFERENCE.absolute_yield_caveat(METRICS)
+            assert body["model_caveat"] in body["recommendation_summary"], "the summary still ends with the caveat"
+            assert "same share" in body["ranking_basis"] and "ordered by crop name" not in body["ranking_basis"], body["ranking_basis"]
             if province == "Sindh":
                 assert grown["apple"] is True, "apple has typical yield 0.01 in Sindh"
         print("  -> PASSED: groups, headline, facts and barely-grown flags are consistent with the ranking.")

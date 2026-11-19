@@ -171,6 +171,11 @@ MEASURE_JS = r"""
                     rankHeads: [...document.querySelectorAll("#team-items-1 .rank-group-head")].map(el => el.innerText.replace(/\s+/g, " ").trim()),
                     rankRows: [...document.querySelectorAll("#team-items-1 .rank-row")].map(el => { const r = el.getBoundingClientRect();
                         return { text: el.innerText.replace(/\s+/g, " ").trim(), h: r.height, left: r.left, right: r.right }; }),
+                    advisory: (() => { const q = s => document.querySelector("#advisory-summary " + s); const tx = el => el ? el.innerText.replace(/\s+/g, " ").trim() : null;
+                        return { headline: tx(q(".advisory-headline")), basis: tx(q(".advisory-basis")), caveat: tx(q(".advisory-caveat")), absolute: tx(q(".advisory-absolute")),
+                                 subheads: [...document.querySelectorAll("#advisory-summary .advisory-subhead")].map(tx),
+                                 facts: [...document.querySelectorAll("#advisory-summary .advisory-facts > div")].map(d => ({ label: tx(d.querySelector("dt")), value: tx(d.querySelector("dd")) })),
+                                 factLefts: [...document.querySelectorAll("#advisory-summary .advisory-facts > div")].map(d => Math.round(d.getBoundingClientRect().left)) }; })(),
                     unitCount: ((document.getElementById("results-container") || { innerText: "" }).innerText.match(/dataset yield units/g) || []).length };
   const canvas = document.getElementById("mesh-canvas");
   const landing = document.querySelector(".paragraph-container") ? {
@@ -660,6 +665,29 @@ def result_rows_show_only_crop_rank_share_and_yield():
     _fail(problems, "result rows")
 
 
+def advisory_card_is_structured():
+    """The advisory is a headline, a facts grid, how crops are ranked, and the caveats, each its own block with the API's
+    text unchanged; the facts grid is one column under 480 px and two from 480 px (R10)."""
+    api = _expected_sindh_driest_ranking()
+    problems = []
+    for page, size, m in RUN.each(("predict-result",)):
+        where, a = f"{page} {size[0]}", m["results"]["advisory"]
+        if a["headline"] != api["headline"]:
+            problems.append(f"{where}: headline {a['headline']!r}, API {api['headline']!r}")
+        if a["subheads"] != ["How crops are ranked", "About these numbers"]:
+            problems.append(f"{where}: sub-headings {a['subheads']}")
+        if a["facts"] != [{"label": f["label"], "value": f["value"]} for f in api["scenario_facts"]]:
+            problems.append(f"{where}: facts {a['facts']} differ from the API's {api['scenario_facts']}")
+        for key, field in (("basis", "ranking_basis"), ("caveat", "model_caveat"), ("absolute", "absolute_yield_note")):
+            if a[key] != " ".join(api[field].split()):
+                problems.append(f"{where}: {key} text differs from the API's {field}")
+        columns = len(set(a["factLefts"]))
+        want = 1 if size[1] < 480 else 2
+        if columns != want:
+            problems.append(f"{where}: facts grid has {columns} column(s), expected {want}")
+    _fail(problems, "advisory card")
+
+
 def landing_text_phase_fits():
     """When the paragraph and the Start button are shown (scrolled intro, or reduced motion), header, paragraph, button
     and footer sit in that order without overlapping, all inside the screen (R4.8)."""
@@ -784,6 +812,7 @@ TESTS = [
     predictor_form_layout,
     prediction_results_are_drawn_at_every_size,
     result_rows_show_only_crop_rank_share_and_yield,
+    advisory_card_is_structured,
     landing_text_phase_fits,
     landing_scene_is_lighter_on_phones,
     landing_canvas_survives_address_bar,

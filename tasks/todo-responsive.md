@@ -167,7 +167,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     The single-crop card is unchanged until T10/T12. `verify_frontend.py` no longer expects `fao_water_need` and `tied_with`
     on `predict.html`; T11 must expect them on `crop.html`.
 
-- [ ] **T8: Structured advisory and exact median preset** (module `ranking`, S)
+- [x] **T8: Structured advisory and exact median preset** (module `ranking`, S)
   - Description: Advisory card shows `headline` (larger), `scenario_facts` grid (1 column under
     480 px, 2 above), "How crops are ranked" (`ranking_basis`), "About these numbers" with
     `model_caveat` and `absolute_yield_note` as separate paragraphs, always visible. Median preset
@@ -179,6 +179,14 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only advisory`; `node scripts/dryrun_demo.js http://127.0.0.1:8000`; `scripts/verify_frontend.py`.
   - Files: `frontend/climate-resilient-frontend/predict.html`, `scripts/dryrun_demo.js`, `scripts/verify_responsive.py`.
   - Depends on: T6, T7.
+  - Done 2026-11-19. Advisory card = headline, facts grid (1 column under 480 px, 2 from 480 px), "How crops are ranked",
+    "About these numbers" (`model_caveat` and `absolute_yield_note`, each its own paragraph, API text unchanged). API gains
+    `model_caveat`; `ranking_basis` now says "Crops with the same share at one decimal share one rank".
+    Typical-year preset now fills all nine inputs with exact province medians: rounding was not the only cause of
+    Balochistan's 99.6%; with rain and temperature exact but the optional fields empty the server derives max and min
+    temperature from the mean plus an offset, which is not the median, so the scenario was still not the typical year.
+    Now all 3 provinces show 100.0% for every crop. 23/23 responsive, 8/8 checks. Tests written first: `advisory_card_is_structured`,
+    dryrun median and advisory checks, backend `model_caveat` asserts. Streamlit still shows its own text (T9).
 
 - [ ] **T9: Streamlit ranking view** (module `ranking`, S)
   - Description: `presentation.py` ranking table grouped by `inference.tie_groups` with

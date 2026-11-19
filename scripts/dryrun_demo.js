@@ -23,7 +23,7 @@ const ctx = { document, fetch: (u, o) => fetch(BASE + String(u).replace(/^https?
 ctx.window = ctx; ctx.window.API_BASE = ""; ctx.location = { origin: "http://x" };
 vm.createContext(ctx); vm.runInContext(js, ctx);
 
-const strip = h => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+const strip = h => h.replace(/<[^>]+>/g, " ").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const post = async (p, body) => (await fetch(BASE + p, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
 let failures = 0;
@@ -54,16 +54,36 @@ const run = async () => { await ctx.submitPredictionForm(); await sleep(700); };
     check(!/Rank #/.test(text) && !text.includes("tied with") && !text.includes("FAO") && !text.includes("training rows"), "rows carry no per-crop rank inside a tie, no FAO, no training rows");
     check(!text.includes("dataset yield units") && strip(el("team-title-1").textContent || "").includes(api.yield_unit), "the yield unit is stated once, in the results heading");
     check(api.groups.some(g => g.crops.length > 1), "the demo ranking has ties, so the page must group them");
+    const adv = strip(el("advisory-summary").innerHTML);
+    check(adv.includes(api.headline) && adv.includes(api.ranking_basis) && adv.includes(api.model_caveat) && adv.includes(api.absolute_yield_note), "advisory shows the headline, the ranking rule and both caveats from the API, unchanged");
+    check(api.scenario_facts.every(f => adv.includes(f.label) && adv.includes(f.value)), "advisory shows every scenario fact");
     check(api.ranked_crops.some(i => i.barely_grown) && text.includes("barely grown here"), "barely grown crops are tagged");
 
     console.log("2. Typical (median) year, all crops");
     ctx.applyPreset("median");
     await run();
     const med = meta.reference.Sindh.median;
-    api = await post("/api/v1/recommend", { province: "Sindh", precipitation_sum: Number(med.precipitation_sum.toFixed(1)), temperature_2m_mean: Number(med.temperature_2m_mean.toFixed(1)) });
+    api = await post("/api/v1/recommend", { province: "Sindh", ...med });
     text = strip(el("team-items-1").innerHTML);
     api.groups.forEach(g => check(text.includes(`${g.pct_of_normal.toFixed(1)}% of a typical year`), `typical year: group rank ${g.rank} at ${g.pct_of_normal.toFixed(1)}%`));
     check(api.groups.length === 1 && text.includes(`${api.ranked_crops.length} crops tied`), "typical year: every crop ties and the page says so");
+
+    console.log("2b. Typical (median) year sends the exact province median: every crop keeps 100.0%, in every province");
+    for (const province of ["Punjab", "Sindh", "Balochistan"]) {
+        el("field-province").value = province;
+        el("field-crop").value = "ALL";
+        ctx.applyPreset("median");
+        const exact = meta.reference[province].median;
+        const optionalIds = { "field-temp-max": "temperature_2m_max", "field-temp-min": "temperature_2m_min", "field-et0": "fao_evapotranspiration", "field-radiation": "shortwave_radiation",
+            "field-precip-hours": "precipitation_hours", "field-soil-mean": "soil_wetness_mean", "field-soil-max": "soil_wetness_max" };
+        check(Number(el("field-precipitation").value) === exact.precipitation_sum && Number(el("field-temperature").value) === exact.temperature_2m_mean
+              && Object.entries(optionalIds).every(([id, key]) => Number(el(id).value) === exact[key]), `${province}: all nine fields hold the exact median`);
+        await run();
+        const typical = await post("/api/v1/recommend", { province, ...exact });
+        const shown = strip(el("team-items-1").innerHTML);
+        check(typical.groups.length === 1 && typical.groups[0].pct_of_normal === 100.0 && shown.includes(`100.0% of a typical year`) && shown.includes(`${typical.ranked_crops.length} crops tied`), `${province}: all ${typical.ranked_crops.length} crops at 100.0% on the page`);
+    }
+    el("field-province").value = "Sindh";
 
     console.log("3. Rice, Driest real year");
     el("field-crop").value = "rice";

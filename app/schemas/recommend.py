@@ -54,5 +54,6 @@ class RecommendationResponse(BaseModel):
     headline: str  # one sentence: largest and smallest share; a tie is named as a group, never as one best crop
     scenario_facts: List[ScenarioFact]
     recommendation_summary: str
+    model_caveat: str  # inference.model_caveat(metrics.json): the win, the loss and the after-the-fact choice, as its own field
     model_name: str
     absolute_yield_note: str  # why one predicted number is rough (generated from metrics.json)
