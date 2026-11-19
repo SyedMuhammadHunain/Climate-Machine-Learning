@@ -41,12 +41,16 @@
             --colorPrimary900: #232323;
             --colorNeutral800: #373e4d;
             --colorNeutral700: #545b6d;
-            --colorNeutral600: #7d8699;
+            --colorNeutral600: #596173; /* 6.2:1 on white (was #7d8699, 3.7:1) */
             --colorNeutral400: #c2c7d1;
             --colorNeutral300: #d7dae0;
             --colorNeutral200: #e5e6e8;
             --colorNeutral100: #f7f8fa;
-            --widthMaxJobBoard: 720px;
+            --colorAccentText: #b93a0a; /* orange for text: 5.7:1 on white (--colorPrimary600 is 2.6:1, borders and fills only) */
+            --gutter: clamp(16px, 4vw, 32px);
+            --widthMaxJobBoard: clamp(720px, 50vw, 960px); /* 720 px up to 1440 px screens, 960 px from 1920 px */
+            --fontNav: clamp(14px, 0.35vw + 11px, 16px);
+            --minTarget: 44px; /* WCAG 2.5.5 */
         }
 
         * {
@@ -66,28 +70,33 @@
 
         .header-logo-container {
             text-align: center;
-            padding-top: 52px;
-            padding-bottom: 48px;
+            padding: clamp(24px, 5vw, 52px) var(--gutter) clamp(24px, 4vw, 48px);
         }
 
         .header-logo-container svg {
-            height: 38px;
-            width: auto;
+            width: min(100%, clamp(240px, 24vw, 420px)); /* 330 px wide on 1440 px screens, never wider than the screen */
+            height: auto;
             display: inline-block;
         }
 
         .site-nav {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 32px;
+            margin: 0 auto 32px;
+            padding: 0 var(--gutter);
+            max-width: var(--widthMaxJobBoard);
         }
 
         .nav-pill {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: var(--minTarget);
             padding: 8px 16px;
-            font-size: 13px;
+            font-size: var(--fontNav);
             font-weight: 500;
             color: var(--colorNeutral700);
             text-decoration: none;
@@ -95,6 +104,12 @@
             border: 1px solid var(--colorNeutral300);
             background: #ffffff;
             transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        @media (max-width: 479px) {
+            .nav-pill {
+                flex: 1 1 100%; /* stacked, one tab per row, label never cut */
+            }
         }
 
         .nav-pill:hover {
@@ -112,7 +127,7 @@
         .job-board-container {
             max-width: var(--widthMaxJobBoard);
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 var(--gutter);
         }
 
         .board-heading {
@@ -156,14 +171,14 @@
         }
 
         .preset-pill:hover {
-            border-color: var(--colorPrimary600);
-            color: var(--colorPrimary600);
+            border-color: var(--colorAccentText);
+            color: var(--colorAccentText);
         }
 
         .preset-pill.active {
             border-color: var(--colorPrimary600);
             background-color: #fff7f4;
-            color: var(--colorPrimary600);
+            color: var(--colorAccentText);
             font-weight: 600;
         }
 
@@ -350,7 +365,7 @@
         }
 
         .advanced-toggle-btn:hover {
-            color: var(--colorPrimary600);
+            color: var(--colorAccentText);
         }
 
         .advanced-chevron {
@@ -402,7 +417,7 @@
         .job-title {
             font-size: 16px;
             font-weight: 500;
-            color: var(--colorPrimary600);
+            color: var(--colorAccentText);
             line-height: 1.4;
             margin-bottom: 4px;
             text-decoration: none;
@@ -489,7 +504,7 @@
                             <option value="Balochistan">Balochistan</option>
                         </select>
                         <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
-                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#596173" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                 </div>
@@ -515,7 +530,7 @@
                             <option value="wheat">Wheat</option>
                         </select>
                         <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
-                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#596173" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                 </div>

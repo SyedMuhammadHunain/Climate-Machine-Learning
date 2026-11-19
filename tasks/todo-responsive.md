@@ -31,7 +31,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
 
 ## Phase 2: Layout
 
-- [ ] **T2: Tokens, contrast and tabs** (module `layout`, S)
+- [x] **T2: Tokens, contrast and tabs** (module `layout`, S)
   - Description: In `predict.html` and `metrics.html` add `:root` fluid tokens (clamp type
     scale, gutters, breakpoints 480/600/1024 px), darken grey tokens to >= 4.5:1, widen columns
     (predict 960 px, metrics 1100 px at >= 1920 px, fluid between). Tabs (`.site-nav`,
@@ -48,6 +48,10 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     `node scripts/dryrun_demo.js http://127.0.0.1:8000`.
   - Files: `frontend/climate-resilient-frontend/predict.html`, `frontend/climate-resilient-frontend/metrics.html`.
   - Depends on: T1.
+  - Done 2026-11-19. Result tests pass at 9 sizes on both pages (6/6). Remaining baseline failures belong to
+    T4 (tap targets, form text on predict) and T5 (landing). Grey `#596173` (6.2:1), orange text
+    `--colorAccentText #b93a0a` (5.7:1, `#FF7344` kept for borders and fills only). Tabs stack one per row under 480 px.
+    Columns: predict 720 to 960 px, metrics 780 to 1100 px, fluid between. `metrics.html` Infinite Field wordmark replaced.
 
 - [ ] **T3: Metrics tables** (module `layout`, S)
   - Description: Render JS sets `data-label` from each column's `<th>`; under 600 px tables 1, 3, 5
