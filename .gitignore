@@ -24,6 +24,6 @@ hf_bundle/
 *.p12
 id_rsa*
 .huggingface/
-.claude/settings.local.json
+.claude/
 
 vercel_bundle/

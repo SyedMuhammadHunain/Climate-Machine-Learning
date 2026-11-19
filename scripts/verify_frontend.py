@@ -90,10 +90,16 @@ def main() -> int:
             failures.append(f"{name}: <title> must contain {site_name!r}")
     if 'property="og:url" content="https://climate-machine-learning.vercel.app/"' not in index_page:
         failures.append("index.html: og:url must be the live site, not the old domain")
+    live = "https://climate-machine-learning.vercel.app/"
     for name in PAGES:
-        for ref in re.findall(r'(?:href|content|src)="(assets/[^"]+)"', (FRONTEND / name).read_text(encoding="utf-8")):
+        refs = re.findall(r'(?:href|content|src)="(assets/[^"]+)"', (FRONTEND / name).read_text(encoding="utf-8"))
+        refs += re.findall(r'(?:href|content|src)="' + re.escape(live) + r'(assets/[^"]+)"', (FRONTEND / name).read_text(encoding="utf-8"))
+        for ref in refs:
             if not (FRONTEND / ref).exists():
                 failures.append(f"{name}: references {ref}, which does not exist")
+    for tag in ('property="og:image"', 'name="twitter:image"'):
+        if f'{tag} content="{live}assets/site_opengraph.png"' not in index_page:
+            failures.append(f"index.html: {tag} must be an absolute URL (crawlers do not resolve relative paths)")
     if "<title>%s</title>" % site_name not in predict:
         failures.append("predict.html: the logo SVG must carry <title>%s</title>" % site_name)
     readme = (FRONTEND / "README.md").read_text(encoding="utf-8")
@@ -141,6 +147,15 @@ def main() -> int:
     container_css = re.search(r"\n\s*\.container\s*\{([^}]*)\}", index_page)
     if not container_css or not re.search(r"(^|[;\s])height\s*:", container_css.group(1)):
         failures.append("index.html: .container needs an explicit height, or the centred text jumps when the canvas is sized (CLS 0.14)")
+    # /ship review: every server-supplied value that reaches innerHTML goes through esc(), numbers included
+    for raw in ("${item.rank}", "${item.tied_with}", "${item.training_rows_for_crop}", "${item.training_rows_possible}",
+                "${item.fao_water_need.mm_min}", "${item.fao_water_need.mm_max}", "${data.training_rows_for_crop}",
+                "${data.training_rows_possible}", "${names[k] || k}", "${sourceLabel[v.source] || v.source}"):
+        if raw in predict:
+            failures.append(f"predict.html: {raw} reaches innerHTML without esc()")
+    # an error while building the scene must be logged, not become an unhandled rejection of the async callback
+    if not re.search(r"await fontsReady\(\);\s*try \{", index_page) or not re.search(r'catch \(err\) \{\s*console\.error\("scene setup failed"', index_page):
+        failures.append("index.html: the scene setup after the fonts gate must be wrapped in try/catch that logs 'scene setup failed'")
     if "document.fonts.ready" not in index_page:
         failures.append("index.html: the text split must wait for document.fonts.ready (layout shift)")
 

@@ -90,8 +90,8 @@ def run_verification():
         assert [i["rank"] for i in items] == list(range(1, 14))
         assert sorted(i["crop"] for i in items) == sorted(REFERENCE["crops"]) and len(items) == 13
         assert data["top_crop"] == items[0]
-        pcts = [i["pct_of_normal"] for i in items]
-        assert pcts == sorted(pcts, reverse=True), "not sorted by pct_of_normal"
+        shown = [round(i["pct_of_normal"], 1) for i in items]   # the share on screen; equal shares are then in name order (TEST 34)
+        assert shown == sorted(shown, reverse=True), "not sorted by the displayed pct_of_normal"
         for banned in ("water_intensive_warnings", "ranked_drought_resilient", "top_resilient_crop", "all_crops_ranked"):
             assert banned not in data, banned
         print(f"  -> PASSED: 13 crops ranked, top={items[0]['crop']} ({items[0]['pct_of_normal']:.1f}% of typical)")
@@ -440,6 +440,9 @@ def run_verification():
             assert "max-age=86400" in cache and "stale-while-revalidate" in cache and "public" in cache, (path, cache)
         woff = client.get("/assets/fonts/WhitneySSm-Book_Web.woff2", headers={"Accept-Encoding": "gzip"})
         assert "content-encoding" not in woff.headers, "woff2 is already compressed; gzip would only cost CPU"
+        for missing in ("/assets/does-not-exist.png", "/vendor/missing.js", "/assets/fonts/nope.woff2"):
+            gone = client.get(missing)
+            assert gone.status_code == 404 and "max-age" not in gone.headers.get("cache-control", ""), (missing, gone.headers)
         assert "no-cache" in client.get("/index.html").headers["cache-control"]
         api = client.get("/api/v1/metrics")
         assert "max-age" not in api.headers.get("cache-control", ""), "API responses must not get the static cache header"
@@ -464,6 +467,20 @@ def run_verification():
         assert bottom_only.count("share is tied") == 1 and "smallest" in bottom_only and "RICE shares it with 3 other crops" in bottom_only
         assert all(s.endswith("tied crops are ordered by name only.") for s in (both, one, bottom_only))
         print("  -> PASSED: all four combinations produce the expected sentences.")
+
+        # 34. Ties are in name order through the API too, and the repo ignores .claude/ (/ship review B1 and hygiene)
+        print("\n[TEST 34] ranking order inside displayed ties is by name; .gitignore hygiene")
+        for province, kinds in REFERENCE["historical_years"].items():
+            for kind, info in kinds.items():
+                ranked = client.post("/api/v1/recommend", json={"province": province, **info["inputs"]}).json()["ranked_crops"]
+                shares = [round(i["pct_of_normal"], 1) for i in ranked]
+                assert shares == sorted(shares, reverse=True), (province, kind)
+                for share in set(shares):
+                    crops = [i["crop"] for i in ranked if round(i["pct_of_normal"], 1) == share]
+                    assert crops == sorted(crops), (province, kind, share, crops)
+        gitignore = (ROOT_DIR / ".gitignore").read_text().splitlines()
+        assert ".claude/" in gitignore, ".claude/ must be ignored as a whole (it can hold history and tokens)"
+        print("  -> PASSED: name order inside every tie, for every province and both real years.")
 
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")

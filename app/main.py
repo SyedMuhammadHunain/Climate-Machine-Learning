@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 
 from app.core.config import MODEL_PATH
-from app.core.middleware import STATIC_CACHE_CONTROL, STATIC_PREFIXES, SelectiveGZipMiddleware
+from app.core.middleware import CACHEABLE_STATUS, STATIC_CACHE_CONTROL, STATIC_PREFIXES, SelectiveGZipMiddleware
 from app.core.exceptions import (
     AgronomicValidationError,
     agronomic_exception_handler,
@@ -58,7 +58,7 @@ async def revalidate_pages(request, call_next):
     path = request.url.path
     if path == "/" or path.endswith(".html"):
         response.headers["Cache-Control"] = "no-cache"
-    elif path.startswith(STATIC_PREFIXES):
+    elif path.startswith(STATIC_PREFIXES) and response.status_code in CACHEABLE_STATUS:
         response.headers["Cache-Control"] = STATIC_CACHE_CONTROL
     return response
 

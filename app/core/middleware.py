@@ -8,6 +8,7 @@ from starlette.middleware.gzip import GZipMiddleware
 STATIC_PREFIXES = ("/vendor/", "/assets/")
 # Filenames are not versioned, so no "immutable": a changed file is picked up within a day.
 STATIC_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
+CACHEABLE_STATUS = (200, 206, 304)   # never cache a 404 or a 5xx for a day
 ALREADY_COMPRESSED = (".woff2", ".png", ".jpg", ".jpeg", ".webp", ".gz")
 
 

@@ -297,8 +297,8 @@ def inference_ranking_equals_direct_model_output():
     supplied = {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
     res = I.predict_crops(pipe, ref, "Sindh", supplied, log_quantiles=q)
     assert len(res.items) == 13 and sorted(i.crop for i in res.items) == sorted(ref["crops"])
-    pcts = [i.pct_of_normal for i in res.items]
-    assert pcts == sorted(pcts, reverse=True)
+    shown = [round(i.pct_of_normal, I.TIE_DIGITS) for i in res.items]   # equal shares are then in name order
+    assert shown == sorted(shown, reverse=True)
     for it in res.items:
         row, _ = F.build_inference_row("Sindh", it.crop, supplied, ref)
         nrow, _ = F.build_inference_row("Sindh", it.crop, dict(ref["provinces"]["Sindh"]["median"]), ref)
@@ -687,6 +687,37 @@ def tied_with_on_the_real_model_marks_the_sindh_driest_year_ties():
     typical = I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": round(ref["provinces"]["Sindh"]["median"]["precipitation_sum"], 1),
                                                    "temperature_2m_mean": round(ref["provinces"]["Sindh"]["median"]["temperature_2m_mean"], 1)})
     assert all(v == len(typical.items) - 1 for v in I.tied_with(typical.items).values()), "typical year: all tied"
+
+
+@test
+def order_inside_a_displayed_tie_is_by_crop_name_on_real_years():
+    """/ship review B1: the pages say tied crops are ordered by name only, so the sort must use the displayed share."""
+    from climate_machine_learning import inference as I
+
+    pipe, m, ref = _load_artifacts()
+    checked = 0
+    for province in ref["provinces"]:
+        for kind in ("driest", "wettest"):
+            res = I.predict_crops(pipe, ref, province, ref["historical_years"][province][kind]["inputs"])
+            shown = [round(i.pct_of_normal, I.TIE_DIGITS) for i in res.items]
+            assert shown == sorted(shown, reverse=True), (province, kind, "shares must be in descending displayed order")
+            for share in set(shown):
+                crops = [i.crop for i in res.items if round(i.pct_of_normal, I.TIE_DIGITS) == share]
+                assert crops == sorted(crops), (province, kind, share, crops)
+                checked += len(crops) > 1
+    assert checked >= 3, "the real years must contain tie groups, or this test proves nothing"
+
+
+@test
+def sort_uses_the_displayed_share_for_near_ties():
+    from climate_machine_learning import inference as I
+
+    # the ranking sort key and the tie marker must agree: 97.66 and 97.74 both show 97.7, so name decides
+    items = [I.CropResult("tomato", 1.0, 1.0, 97.74), I.CropResult("banana", 1.0, 1.0, 97.66), I.CropResult("rice", 1.0, 1.0, 89.3)]
+    assert I.rank_key(items[0])[0] == I.rank_key(items[1])[0], "97.66 and 97.74 both show 97.7: same sort share"
+    ordered = sorted(items, key=I.rank_key)
+    assert [i.crop for i in ordered] == ["banana", "tomato", "rice"], [i.crop for i in ordered]
+    assert I.tied_with(ordered) == {"banana": 1, "tomato": 1, "rice": 0}
 
 
 # --------------------------------------------------------------------------- promote (SPEC-promote-offset-model.md)

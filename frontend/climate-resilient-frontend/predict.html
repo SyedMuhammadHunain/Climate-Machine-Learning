@@ -956,13 +956,13 @@
 
                 document.getElementById("team-items-1").innerHTML = data.ranked_crops.map(item => {
                     const fao = item.fao_water_need
-                        ? `FAO water need ${item.fao_water_need.mm_min}-${item.fao_water_need.mm_max} mm per growing period, drought sensitivity ${esc(item.fao_water_need.drought_sensitivity)}`
+                        ? `FAO water need ${esc(item.fao_water_need.mm_min)}-${esc(item.fao_water_need.mm_max)} mm per growing period, drought sensitivity ${esc(item.fao_water_need.drought_sensitivity)}`
                         : "not listed in the FAO table";
                     return `
                         <div class="job-post-item">
                             <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
-                            <div class="job-metadata">Rank #${item.rank} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}${item.tied_with ? ` • <strong>tied with ${item.tied_with} other crop${item.tied_with > 1 ? "s" : ""}</strong> (same share, ordered by name only)` : ""}</div>
-                            <div class="job-metadata">${fao} • ${item.training_rows_for_crop} of ${item.training_rows_possible} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
+                            <div class="job-metadata">Rank #${esc(item.rank)} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}${item.tied_with ? ` • <strong>tied with ${esc(item.tied_with)} other crop${item.tied_with > 1 ? "s" : ""}</strong> (same share, ordered by name only)` : ""}</div>
+                            <div class="job-metadata">${fao} • ${esc(item.training_rows_for_crop)} of ${esc(item.training_rows_possible)} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
                         </div>`;
                 }).join("");
 
@@ -989,7 +989,7 @@
                     soil_wetness_mean: "Soil wetness, mean (0-1)", soil_wetness_max: "Soil wetness, max (0-1)",
                 };
                 const inputsHtml = Object.entries(data.inputs).map(([k, v]) =>
-                    `${names[k] || k}: ${fmt(v.value)} <em>(${sourceLabel[v.source] || v.source})</em>`
+                    `${esc(names[k] || k)}: ${fmt(v.value)} <em>(${esc(sourceLabel[v.source] || v.source)})</em>`
                 ).join(" • ");
 
                 document.getElementById("single-crop-items").innerHTML = `
@@ -998,7 +998,7 @@
                         <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${esc(data.yield_unit)})</div>
                         <div class="job-metadata">Typical year in ${esc(data.province)}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
                         <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
-                        <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
+                        <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${esc(data.training_rows_for_crop)} of ${esc(data.training_rows_possible)} possible yearly rows of this crop</div>
                         <div class="job-metadata" style="margin-top: 4px;">${esc(data.absolute_yield_note)}</div>
                     </div>
                 `;

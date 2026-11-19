@@ -21,13 +21,13 @@
     <meta property="og:description" content="At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://climate-machine-learning.vercel.app/">
-    <meta property="og:image" content="assets/site_opengraph.png">
+    <meta property="og:image" content="https://climate-machine-learning.vercel.app/assets/site_opengraph.png">
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Low-Water Crops — Climate-Resilient Crop Yield Prediction">
     <meta name="twitter:description" content="At Low-Water Crops, we use machine learning and climate data to protect agriculture against drought. Our model predicts crop yields from annual climate data and ranks crops by how well they hold up in dry years.">
-    <meta name="twitter:image" content="assets/site_opengraph.png">
+    <meta name="twitter:image" content="https://climate-machine-learning.vercel.app/assets/site_opengraph.png">
     
     <!-- Web Clip (Apple Touch Icon) -->
     <link rel="apple-touch-icon" sizes="180x180" href="assets/site_webclip.png">
@@ -532,6 +532,7 @@
         new GLTFLoader()
             .load('./assets/logo-3d.glb', async (gltf) => {
                 await fontsReady();
+                try {   // keep the body's indentation: an error here is logged, not an unhandled rejection
                 logoMeshWrapper = new THREE.Group();
                 logoMesh = gltf.scene.children[0];
                 updateSceneSize();
@@ -630,6 +631,9 @@
                 });
                 if (!isTouchscreen) {
                     gsap.ticker.lagSmoothing(0);
+                }
+                } catch (err) {
+                    console.error("scene setup failed", err);
                 }
             });
 

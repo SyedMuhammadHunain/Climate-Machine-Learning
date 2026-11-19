@@ -19,7 +19,7 @@ from app.schemas.recommend import (
 
 def tie_notes(top, bottom) -> str:
     """One sentence for each end of the ranking that is tied (one in total when both ends are the same tie)."""
-    same_tie = round(top.pct_of_normal, 1) == round(bottom.pct_of_normal, 1)
+    same_tie = round(top.pct_of_normal, I.TIE_DIGITS) == round(bottom.pct_of_normal, I.TIE_DIGITS)
     ends = [("largest", top)] if same_tie else [("largest", top), ("smallest", bottom)]
     return "".join(
         f" The {label} share is tied: {end.crop.upper()} shares it with {end.tied_with} other "

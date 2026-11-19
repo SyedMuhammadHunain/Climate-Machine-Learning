@@ -48,7 +48,15 @@ def single_thread(pipeline) -> None:
         reg.n_jobs = 1
 
 
-def tied_with(items: Sequence[CropResult], digits: int = 1) -> Dict[str, int]:
+TIE_DIGITS = 1  # shares are shown, compared and sorted at one decimal: the order, the tie marker and the page text agree
+
+
+def rank_key(item: CropResult):
+    """Highest displayed share first; crops showing the same share are ordered by name."""
+    return (-round(item.pct_of_normal, TIE_DIGITS), item.crop)
+
+
+def tied_with(items: Sequence[CropResult], digits: int = TIE_DIGITS) -> Dict[str, int]:
     """For each crop, how many OTHER crops show the same share of a typical year at the displayed precision.
 
     Crops with equal shares are ordered by name only, so their order carries no information; every
@@ -160,7 +168,7 @@ def predict_crops(
         if log_quantiles is not None:
             low, high = (float(x) for x in F.prediction_interval(sp, log_quantiles))
         items.append(CropResult(crop, float(sp), float(npred), float(sp) / float(npred) * 100.0, low, high))
-    items.sort(key=lambda r: (-r.pct_of_normal, r.crop))
+    items.sort(key=rank_key)
 
     used = {k: float(scenario_rows[0].iloc[0][k]) for k in F.BASE_INPUTS}
     return Prediction(items=items, inputs=used, sources=sources)
