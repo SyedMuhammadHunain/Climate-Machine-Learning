@@ -56,6 +56,6 @@ EOF
 
 ## Repo state worth knowing
 
-- Remote `Hunain` and `main` force-rewritten on GitHub; local `Hunain` diverged. Deploys use separate branches: `hunain-deploy` (Streamlit Cloud, main file `streamlit_app/app.py`) and `vercel-deploy` (orphan branch holding only generated Vercel bundle). Do not delete them.
+- Remote `main`, remote `Hunain` and `afzal` contain a malicious loader (commits `2eafc19`, `43ab724`: `frontend/climate-resilient-frontend/init`, `src/climate_machine_learning/utils/session.py`, `import utils.session`). Never merge, check out or run them (no `npm run dev`, no `node init`). Deploys use clean branches: `hunain-deploy` (Streamlit Cloud, main file `streamlit_app/app.py`, requirements `streamlit_app/requirements.txt`) and `vercel-deploy` (orphan branch holding only the generated Vercel bundle; the live Vercel site was deployed with the Vercel CLI from the same bundle). Do not delete them.
 - Specs and history: `SPEC.md` and `SPEC-*.md` (deltas), plan in `tasks/`, deployment steps in `docs/deployment_guide.md`, demo and viva script in `docs/demo_and_viva_guide.md`.
 - `pyarrow` needed only to read training parquet; deployed API does not need it.

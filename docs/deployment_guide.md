@@ -14,9 +14,19 @@ Tested on this machine:
 
 Before you start, push the branch that contains these files to GitHub. The repository is <https://github.com/SyedMuhammadHunain/Climate-Machine-Learning>.
 
+## Branches: which one deploys what, and which ones must not be used
+
+| Branch | What it is | Use |
+|---|---|---|
+| `hunain-deploy` | The project code. Streamlit Community Cloud builds from it: repository `SyedMuhammadHunain/Climate-Machine-Learning`, main file `streamlit_app/app.py`, dependencies from `streamlit_app/requirements.txt` (read first, in the main file's folder). | Clean. Work and deploy from here. |
+| `vercel-deploy` | An orphan branch holding only the generated Vercel bundle (`python scripts/build_vercel_bundle.py`). The live Vercel site was deployed with the Vercel CLI from the same bundle, not from this branch. | Clean. Needed only for GitHub-driven Vercel deploys. |
+| `Hunain` on GitHub, `main`, `afzal` | **Contain a malicious loader** added on 2026-11-15: `frontend/climate-resilient-frontend/init` (hidden obfuscated JavaScript), `src/climate_machine_learning/utils/session.py` (downloads code from an Ethereum transaction and runs it with `node`), an `import utils.session` line in the package `__init__.py`, and a frontend `dev` script that runs `node init`. | **Do not merge, check out or run these.** Do not run `npm run dev` or `node init` from them. `main` has deliberately not been merged yet; the group decides how to clean it. |
+
+`hunain-deploy`, `vercel-deploy` and the local `Hunain` branch were checked and contain none of those files. The Streamlit and Vercel deployments were built from clean code.
+
 ## 1. Streamlit Community Cloud
 
-**Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the plain `Hunain` branch could not be pushed because the remote `Hunain` and `main` had been force-rewritten). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model. The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
+**Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model. The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
 
 From Streamlit's deploy docs:
 
