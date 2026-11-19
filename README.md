@@ -30,6 +30,16 @@ Run the app (the trained model files in `models/` are already in the repo):
 uvicorn app.main:app --port 8000
 ```
 
+Or use the scripts in the repository root. They create the virtual environment and install the requirements on first run (they use `uv` if it is installed, otherwise `python3.13`):
+
+```bash
+./run_app.sh          # API + HTML pages on http://127.0.0.1:8000 (PORT=8080 ./run_app.sh for another port, --reload for development)
+./run_streamlit.sh    # the Streamlit app on http://127.0.0.1:8501, in its own .venv-streamlit
+./run_checks.sh       # every check that uses .venv, plus the page dry run; --all adds the Streamlit and Hugging Face checks
+```
+
+There is no separate frontend server: the pages call the API on their own address, so the backend serves them (`run_frontend.sh` and `run_backend.sh` start the same server).
+
 Open <http://127.0.0.1:8000>. The pages are served by the same server as the API:
 
 | Page | URL |

@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
-set -e
-
-SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-if [ -d "$SCRIPT_DIR/../frontend/climate-resilient-frontend" ]; then
-    PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-else
-    PROJECT_ROOT="$SCRIPT_DIR"
-fi
-FRONTEND_DIR="$PROJECT_ROOT/frontend/climate-resilient-frontend"
-
-cd "$FRONTEND_DIR"
-
-echo "Starting Frontend standalone server at http://localhost:3000..."
-exec python3 -m http.server 3000 --bind 127.0.0.1
+# The HTML pages call the API on their own address (same origin), so they are served by the backend,
+# not by a separate static server. This script starts that one server; see run_app.sh.
+echo "The frontend pages are served by the backend at http://127.0.0.1:${PORT:-8000} (no separate frontend server)."
+exec "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/run_app.sh" "$@"

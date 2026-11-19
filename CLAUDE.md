@@ -7,7 +7,9 @@ CT-378 ML course project: predict crop yield for 13 crops in Punjab, Sindh, Balo
 ## Commands
 
 ```bash
-uvicorn app.main:app --port 8000          # API + HTML pages together (scripts/run_backend.sh does the same)
+uvicorn app.main:app --port 8000          # API + HTML pages together (./run_app.sh does the same and sets up .venv; run_backend.sh = --reload)
+./run_checks.sh [--all]                   # every check with a summary; --all adds Streamlit and HF checks in .venv-streamlit / .venv-hf
+./run_streamlit.sh                        # Streamlit app locally on :8501 (own .venv-streamlit)
 python scripts/train.py                   # retrain (~1 min): rewrites models/crop_yield_pipeline.joblib, metrics.json, reference.json
 python scripts/verify_readme.py --write   # after any retrain: regenerate the README results block from metrics.json
 python scripts/fetch_nasa_power.py        # re-download the second data source (needs internet; files are already committed)

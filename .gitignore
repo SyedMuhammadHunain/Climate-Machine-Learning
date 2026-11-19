@@ -27,3 +27,6 @@ id_rsa*
 .claude/
 
 vercel_bundle/
+
+# per-app virtualenvs made by run_streamlit.sh / run_checks.sh --all
+.venv-*/
