@@ -526,6 +526,136 @@ def weather_changes_predictions_sensitivity():
     assert moved, "model ignores rain for every crop in every province"
 
 
+# --------------------------------------------------------------------------- OffsetYieldModel
+# SPEC-beat-baseline.md: each model predicts the gap between log yield and a per-row offset
+# (crop-province mean log yield, optional year trend) learned from the training rows only.
+def _offset_frame(rows):
+    """Tiny hand-made frame: rows are (crop, province, year, yield)."""
+    return pd.DataFrame(rows, columns=["Crop", "Province", "Year", "Yield"])
+
+
+def _offset_model(trend, inference_year=None):
+    from sklearn.dummy import DummyRegressor
+    from sklearn.pipeline import make_pipeline
+    from sklearn.compose import ColumnTransformer
+    from sklearn.preprocessing import StandardScaler
+
+    inner = make_pipeline(ColumnTransformer([("n", StandardScaler(), ["a"])]), DummyRegressor())
+    return F.OffsetYieldModel(inner, trend=trend, inference_year=inference_year)
+
+
+def _hand_frame():
+    e = np.e
+    rows = [("wheat", "Punjab", 2000 + i, e ** (i + 1)) for i in range(3)]          # log yield 1, 2, 3
+    rows += [("wheat", "Sindh", 2000 + i, e ** (2 * i + 4)) for i in range(3)]       # log yield 4, 6, 8
+    rows += [("rice", "Sindh", 2000 + i, e ** 5) for i in range(3)]                  # log yield 5, 5, 5
+    df = _offset_frame(rows)
+    df["a"] = 0.0
+    return df
+
+
+@test
+def offset_is_hand_computed_for_each_trend_variant():
+    df = _hand_frame()
+    probe = _offset_frame([("wheat", "Punjab", 2003, 1.0), ("wheat", "Sindh", 2003, 1.0)])
+    probe["a"] = 0.0
+    # no trend: crop-province mean log yield (Punjab 2, Sindh 6)
+    m = _offset_model("none").fit(df, df["Yield"])
+    assert np.allclose(m.log_offset(probe), [2.0, 6.0]), m.log_offset(probe)
+    # per_crop: wheat slope = pooled within-group slope = (1*1 + 1*2)/(1 + 1 + 1 + 1) over both
+    # provinces (dx = -1,0,1 in each, dy = -1,0,1 for Punjab and -2,0,2 for Sindh) -> 6/4 = 1.5
+    m = _offset_model("per_crop").fit(df, df["Yield"])
+    assert np.allclose(m.log_offset(probe), [2.0 + 1.5 * 2, 6.0 + 1.5 * 2]), m.log_offset(probe)
+    # per_crop_province: Punjab slope 1, Sindh slope 2
+    m = _offset_model("per_crop_province").fit(df, df["Yield"])
+    assert np.allclose(m.log_offset(probe), [2.0 + 1.0 * 2, 6.0 + 2.0 * 2]), m.log_offset(probe)
+
+
+@test
+def offset_falls_back_from_crop_province_to_crop_to_global():
+    df = _hand_frame()
+    m = _offset_model("none").fit(df, df["Yield"])
+    # unseen province for a seen crop -> that crop's mean log yield: wheat (1+2+3+4+6+8)/6 = 4
+    # unseen crop -> global mean log yield: (24 + 15) / 9 = 13/3
+    probe = _offset_frame([("wheat", "Balochistan", 2001, 1.0), ("maize", "Punjab", 2001, 1.0)])
+    probe["a"] = 0.0
+    assert np.allclose(m.log_offset(probe), [4.0, 13.0 / 3.0]), m.log_offset(probe)
+    # a group with too few rows for its own slope uses the crop slope
+    one = _offset_frame([("wheat", "Punjab", 2000, np.e), ("wheat", "Punjab", 2001, np.e ** 2),
+                         ("wheat", "Sindh", 2000, np.e ** 4)])
+    one["a"] = 0.0
+    m = _offset_model("per_crop_province").fit(one, one["Yield"])
+    assert np.all(np.isfinite(m.log_offset(one)))
+
+
+@test
+def offset_model_year_comes_from_the_year_column_or_the_pinned_year():
+    df = _hand_frame()
+    m = _offset_model("per_crop_province", inference_year=2005).fit(df, df["Yield"])
+    row = df[(df.Crop == "wheat") & (df.Province == "Punjab")].iloc[[0]]
+    with_year = row.assign(Year=2003)
+    no_year = row.drop(columns="Year")
+    assert np.allclose(m.log_offset(with_year), 2.0 + 1.0 * 2)           # Year column wins
+    assert np.allclose(m.log_offset(no_year), 2.0 + 1.0 * 4)             # pinned year 2005
+    unpinned = _offset_model("per_crop_province").fit(df, df["Yield"])
+    try:
+        unpinned.predict(no_year)
+    except ValueError as exc:
+        assert "inference_year" in str(exc)
+    else:
+        raise AssertionError("predict without Year and without inference_year must fail loudly")
+    try:
+        _offset_model("sideways").fit(df, df["Yield"])
+    except ValueError as exc:
+        assert "trend" in str(exc)
+    else:
+        raise AssertionError("unknown trend must be rejected")
+    try:
+        _offset_model("none").fit(df, df["Yield"] * 0.0)
+    except ValueError as exc:
+        assert "positive" in str(exc)
+    else:
+        raise AssertionError("non-positive yields must be rejected")
+
+
+@test
+def offset_model_predicts_exp_of_offset_plus_inner_gap_on_real_data():
+    """Fitted on the real training years; the ratio of two scenarios must not depend on the pinned year."""
+    import joblib
+    from sklearn.compose import ColumnTransformer
+    from sklearn.linear_model import Ridge
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    table, _ = F.build_yearly_table(RAW)
+    tr = table[table.Year <= 2016].reset_index(drop=True)
+    cols = ["precipitation_sum", "temperature_2m_mean"]
+    inner = make_pipeline(ColumnTransformer([("n", StandardScaler(), cols)]), Ridge(alpha=1.0))
+    m = F.OffsetYieldModel(inner, trend="per_crop", inference_year=2022)
+    m.fit(tr[["Crop", "Province", "Year"] + cols], tr["Yield"])
+
+    X = tr[["Crop", "Province", "Year"] + cols].iloc[:25]
+    direct = np.exp(m.log_offset(X) + m.inner_.predict(X[cols]))
+    assert np.allclose(m.predict(X), direct)
+
+    pair = pd.DataFrame({"Crop": ["rice", "rice"], "Province": ["Sindh", "Sindh"],
+                         "precipitation_sum": [50.0, 400.0], "temperature_2m_mean": [27.0, 27.0]})
+    ratios = []
+    for year in (2005, 2016, 2022, 2030):
+        m.set_params(inference_year=year)
+        p = m.predict(pair)
+        ratios.append(p[0] / p[1])
+    assert np.allclose(ratios, ratios[0]), ratios
+
+    m.set_params(inference_year=2022)
+    with tempfile.TemporaryDirectory() as tmp:
+        joblib.dump(m, Path(tmp) / "m.joblib")
+        again = joblib.load(Path(tmp) / "m.joblib")
+    assert np.array_equal(again.predict(pair), m.predict(pair))
+    from sklearn.base import clone
+    assert clone(m).get_params()["trend"] == "per_crop"
+
+
 @test
 def retraining_is_deterministic():
     from climate_machine_learning import training
