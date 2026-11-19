@@ -374,8 +374,10 @@ def presentation_ranking_table_is_built_from_the_model_output():
     res = I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5},
                           log_quantiles=m["prediction_interval"]["log_residual_quantiles"])
     table = P.ranking_table(res, ref, fao)
-    assert list(table.columns) == ["Rank", "Crop", "% of typical year", "Predicted yield", "Likely range",
+    assert list(table.columns) == ["Rank", "Crop", "% of typical year", "Tied with", "Predicted yield", "Likely range",
                                    "Training rows", "FAO water need"]
+    ties = I.tied_with(res.items)
+    assert list(table["Tied with"]) == [ties[i.crop] for i in res.items]
     assert list(table["Rank"]) == list(range(1, 14))
     assert list(table["Crop"]) == [i.crop for i in res.items]
     assert list(table["% of typical year"]) == [round(i.pct_of_normal, 1) for i in res.items]
@@ -655,6 +657,37 @@ def offset_model_predicts_exp_of_offset_plus_inner_gap_on_real_data():
     assert np.array_equal(again.predict(pair), m.predict(pair))
     from sklearn.base import clone
     assert clone(m).get_params()["trend"] == "per_crop"
+
+
+# --------------------------------------------------------------------------- ties are marked (Prove-It: the guide claimed pages label them)
+@test
+def tied_with_counts_other_crops_with_the_same_share_at_one_decimal():
+    from climate_machine_learning import inference as I
+
+    def item(crop, pct):
+        return I.CropResult(crop, 1.0, 1.0, pct)
+
+    items = [item("a", 99.24), item("b", 97.74), item("c", 97.66), item("d", 97.7), item("e", 89.3)]
+    assert I.tied_with(items) == {"a": 0, "b": 2, "c": 2, "d": 2, "e": 0}
+    assert I.tied_with([item("x", 100.04), item("y", 99.96)]) == {"x": 1, "y": 1}, "equal once rounded to 100.0"
+    assert I.tied_with([]) == {}
+
+
+@test
+def tied_with_on_the_real_model_marks_the_sindh_driest_year_ties():
+    from climate_machine_learning import inference as I
+
+    pipe, m, ref = _load_artifacts()
+    inputs = ref["historical_years"]["Sindh"]["driest"]["inputs"]
+    res = I.predict_crops(pipe, ref, "Sindh", inputs)
+    ties = I.tied_with(res.items)
+    shown = [round(i.pct_of_normal, 1) for i in res.items]
+    for i in res.items:
+        assert ties[i.crop] == shown.count(round(i.pct_of_normal, 1)) - 1, i.crop
+    assert max(ties.values()) >= 2, "the demo ranking has crops with equal shares; they must be marked"
+    typical = I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": round(ref["provinces"]["Sindh"]["median"]["precipitation_sum"], 1),
+                                                   "temperature_2m_mean": round(ref["provinces"]["Sindh"]["median"]["temperature_2m_mean"], 1)})
+    assert all(v == len(typical.items) - 1 for v in I.tied_with(typical.items).values()), "typical year: all tied"
 
 
 # --------------------------------------------------------------------------- promote (SPEC-promote-offset-model.md)

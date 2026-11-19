@@ -40,7 +40,7 @@ def main() -> int:
                   "water_intensive_warnings", "ranked_drought_resilient", "kg/ha", "alert('"):
         if token in predict:
             failures.append(f"predict.html: old/invented logic still present: {token!r}")
-    for token in ("api/v1/metadata", "pct_of_normal", "predicted_yield", "yield_unit", "inputs", "ranked_crops", "fao_water_need"):
+    for token in ("api/v1/metadata", "pct_of_normal", "predicted_yield", "yield_unit", "inputs", "ranked_crops", "fao_water_need", "tied_with"):
         if token not in predict:
             failures.append(f"predict.html: expected T4 element missing: {token!r}")
 

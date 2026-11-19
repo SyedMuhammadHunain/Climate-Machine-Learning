@@ -89,6 +89,9 @@ def main() -> int:
     for stale in ("no yearly trend", "year is not an input, so growth"):
         if stale in text.lower():
             failures.append(f"stale limitation about the year trend: {stale!r}")
+    ranking = text[text.index("## How the ranking works"): text.index("## API")] if "## How the ranking works" in text and "## API" in text else ""
+    if "tied_with" not in ranking or "tied with" not in ranking:
+        failures.append("How the ranking works must say tied crops are marked (`tied_with` in the API, 'tied with N other crops' on the pages)")
     method = text[text.index("## Method"): text.index("## Results")] if "## Method" in text and "## Results" in text else ""
     if "gap" not in method or "crop-province average" not in method:
         failures.append("Method must say the models learn the gap from the crop-province average")

@@ -174,7 +174,7 @@ Chosen on the validation years: **Gradient Boosting**. Trained 2026-11-19T07:36:
 
 ## How the ranking works
 
-For each crop the API makes two predictions with the trained pipeline: one for your scenario and one for a typical (median) year in the same province. The crop's score is the first divided by the second, as a percentage. Crops are sorted by that score, and exact ties are ordered by crop name. Nothing is added or multiplied by hand. Inputs you leave empty are filled from the province's training-year medians, and the response labels the source of every input.
+For each crop the API makes two predictions with the trained pipeline: one for your scenario and one for a typical (median) year in the same province. The crop's score is the first divided by the second, as a percentage. Crops are sorted by that score, and exact ties are ordered by crop name. Crops that show the same share at one decimal are marked as tied: `tied_with` in the `/api/v1/recommend` items gives the number of other crops with that share, the HTML page shows "tied with N other crops", the Streamlit and Gradio tables have a "Tied with" column, and the response summary says so. Tied crops are in name order only, so that order means nothing. Nothing is added or multiplied by hand. Inputs you leave empty are filled from the province's training-year medians, and the response labels the source of every input.
 
 The API refuses inputs outside the range seen in training (it returns 422 with the allowed range), because the model cannot extrapolate.
 

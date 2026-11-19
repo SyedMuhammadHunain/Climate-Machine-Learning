@@ -42,6 +42,8 @@ const run = async () => { await ctx.submitPredictionForm(); await sleep(700); };
     let api = await post("/api/v1/recommend", { province: "Sindh", ...dry.inputs });
     let text = strip(el("team-items-1").innerHTML);
     api.ranked_crops.forEach(i => check(text.includes(`${i.crop} Rank #${i.rank} • ${i.pct_of_normal.toFixed(1)}% of a typical year`), `rank ${i.rank} ${i.crop} ${i.pct_of_normal.toFixed(1)}%`));
+    api.ranked_crops.filter(i => i.tied_with > 0).forEach(i => check(text.includes(`${i.crop} Rank #${i.rank}`) && text.includes(`tied with ${i.tied_with} other crop${i.tied_with > 1 ? "s" : ""}`), `rank ${i.rank} ${i.crop} is marked tied with ${i.tied_with}`));
+    check(api.ranked_crops.some(i => i.tied_with > 0), "the demo ranking has ties, so the page must mark them");
 
     console.log("2. Typical (median) year, all crops");
     ctx.applyPreset("median");

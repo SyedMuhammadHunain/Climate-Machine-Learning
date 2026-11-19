@@ -48,6 +48,16 @@ def single_thread(pipeline) -> None:
         reg.n_jobs = 1
 
 
+def tied_with(items: Sequence[CropResult], digits: int = 1) -> Dict[str, int]:
+    """For each crop, how many OTHER crops show the same share of a typical year at the displayed precision.
+
+    Crops with equal shares are ordered by name only, so their order carries no information; every
+    front end marks them with this count (0 = a unique share).
+    """
+    shown = [round(i.pct_of_normal, digits) for i in items]
+    return {i.crop: shown.count(s) - 1 for i, s in zip(items, shown)}
+
+
 _METRIC_NAMES = {"r2": "R²", "mae": "MAE", "rmse": "RMSE", "log_mae": "log-MAE"}
 _METRIC_FORMATS = {"r2": ".3f", "mae": ".1f", "rmse": ".1f", "log_mae": ".3f"}
 

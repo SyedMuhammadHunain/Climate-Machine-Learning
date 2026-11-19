@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Tuple
 import pandas as pd
 
 from . import features as F
+from . import inference as I
 
 YIELD_UNIT = "dataset yield units (the source does not state the unit)"
 TYPICAL, DRIEST, WETTEST = "Typical (median) year", "Driest real year", "Wettest real year"
@@ -50,11 +51,13 @@ def ranking_table(result, reference: Dict[str, Any], fao: Dict[str, Any]) -> pd.
     first, last = reference["train_years"]
     possible = len(reference["provinces"]) * (last - first + 1)
     items = result.items
+    ties = I.tied_with(items)
     return pd.DataFrame(
         {
             "Rank": range(1, len(items) + 1),
             "Crop": [i.crop for i in items],
             "% of typical year": [round(i.pct_of_normal, 1) for i in items],
+            "Tied with": [ties[i.crop] for i in items],
             "Predicted yield": [round(i.predicted_yield, 2) for i in items],
             "Likely range": [f"{i.low:.2f} to {i.high:.2f}" for i in items],
             "Training rows": [f"{reference['train_rows_per_crop'][i.crop]} of {possible}" for i in items],

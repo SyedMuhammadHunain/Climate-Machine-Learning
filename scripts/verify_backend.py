@@ -378,6 +378,22 @@ def run_verification():
         assert f"log-MAE {mt['log_mae']:.3f}" in summary and "after seeing the test results" in summary
         print("  -> PASSED: caveat is built from metrics.json and shown with the ranking.")
 
+        # 28. Equal shares are marked, in the items and in the summary (the guide says pages label ties)
+        print("\n[TEST 28] /recommend marks crops with equal shares (tied_with) and says so in the summary")
+        dry = REFERENCE["historical_years"]["Sindh"]["driest"]["inputs"]
+        res = client.post("/api/v1/recommend", json={"province": "Sindh", **dry}).json()
+        shown = [round(i["pct_of_normal"], 1) for i in res["ranked_crops"]]
+        for it in res["ranked_crops"]:
+            assert it["tied_with"] == shown.count(round(it["pct_of_normal"], 1)) - 1, it
+        assert max(i["tied_with"] for i in res["ranked_crops"]) >= 2
+        assert res["top_crop"]["tied_with"] == res["ranked_crops"][0]["tied_with"]
+        med = REFERENCE["provinces"]["Sindh"]["median"]
+        typ = client.post("/api/v1/recommend", json={"province": "Sindh", "precipitation_sum": round(med["precipitation_sum"], 1),
+                                                     "temperature_2m_mean": round(med["temperature_2m_mean"], 1)}).json()
+        assert all(i["tied_with"] == 12 for i in typ["ranked_crops"]), "typical year: all 13 crops tied"
+        assert "tied" in typ["recommendation_summary"].lower() and "ordered by name" in typ["recommendation_summary"]
+        print("  -> PASSED: tied_with is set from the displayed shares and the summary says so.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

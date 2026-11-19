@@ -201,6 +201,8 @@ def space_functions_equal_the_model():
     assert f"{item.predicted_yield:.2f}" in summary and f"{item.pct_of_normal:.1f}%" in summary
     assert list(table["Crop"]) == [i.crop for i in res.items]
     assert list(table["% of typical year"]) == [round(i.pct_of_normal, 1) for i in res.items]
+    ties = I.tied_with(res.items)
+    assert list(table["Tied with"]) == [ties[i.crop] for i in res.items]
     import matplotlib.figure
     assert isinstance(fig, matplotlib.figure.Figure)
     assert f"{MET['prediction_interval']['test_coverage']:.0%}" in summary

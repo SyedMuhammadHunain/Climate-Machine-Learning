@@ -950,7 +950,7 @@
                     return `
                         <div class="job-post-item">
                             <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
-                            <div class="job-metadata">Rank #${item.rank} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}</div>
+                            <div class="job-metadata">Rank #${item.rank} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}${item.tied_with ? ` • <strong>tied with ${item.tied_with} other crop${item.tied_with > 1 ? "s" : ""}</strong> (same share, ordered by name only)` : ""}</div>
                             <div class="job-metadata">${fao} • ${item.training_rows_for_crop} of ${item.training_rows_possible} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
                         </div>`;
                 }).join("");

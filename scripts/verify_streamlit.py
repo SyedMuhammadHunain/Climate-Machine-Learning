@@ -92,6 +92,9 @@ def real_driest_year_fills_every_input_and_ranking_matches():
     assert len(df) == 13
     assert list(df["Crop"]) == [i.crop for i in res.items], list(df["Crop"])
     assert list(df["% of typical year"]) == [round(i.pct_of_normal, 1) for i in res.items]
+    ties = I.tied_with(res.items)
+    assert list(df["Tied with"]) == [ties[i.crop] for i in res.items]
+    assert max(ties.values()) >= 2, "this demo ranking has ties; the table must mark them"
     crop = at.selectbox(key="crop").value.lower()
     item = next(i for i in res.items if i.crop == crop)
     assert metric_values(at)["Predicted yield"] == f"{item.predicted_yield:.2f}"

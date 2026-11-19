@@ -87,6 +87,7 @@ def main() -> int:
     need(f"{base['mae']:.1f}", "baseline test MAE")
     need(f"{metrics['baselines']['crop_province_mean_plus_trend']['test']['r2']:.3f}", "trend-only baseline test R2")
     need(f"{chosen['test']['log_mae']:.3f}", "chosen model test log-MAE")
+    need("tied with", "the pages mark tied crops (the guide may only claim what the pages do)")
     need("log-MAE", "the log-MAE loss")
     need("after seeing the test results", "the metric choice came after the test results")
     for stale in ("0.794", "no yearly trend", "random forest, scores"):
