@@ -61,6 +61,19 @@ def main() -> int:
             "province": "Sindh", "crop": "rice", "precipitation_sum": 5, "temperature_2m_mean": 27.8}).json()
         need(bad["message"], "422 message")
 
+    # --- deployment guide: the numbers it tells you to expect on the live apps
+    dep = ROOT / "docs" / "deployment_guide.md"
+    dep_text = dep.read_text(encoding="utf-8") if dep.exists() else ""
+    if not dep_text:
+        failures.append("docs/deployment_guide.md does not exist")
+    for snippet, why in ((f"{one['predicted_yield']:.2f}", "rice yield in deployment guide"),
+                         (f"{one['pct_of_normal']:.1f}%", "rice share in deployment guide"),
+                         (f"{metrics['prediction_interval']['test_coverage']:.0%}", "interval coverage in deployment guide")):
+        if snippet not in dep_text:
+            failures.append(f"{why}: expected {snippet!r}")
+    need(f"{metrics['prediction_interval']['test_coverage']:.0%}", "interval coverage (viva: how confident is a prediction)")
+    need("(deployment_guide.md)", "link to the deployment guide")
+
     # --- results part
     chosen = metrics["models"][metrics["chosen"]["name"]]
     need(f"{chosen['test']['r2']:.3f}", "chosen model test R2")

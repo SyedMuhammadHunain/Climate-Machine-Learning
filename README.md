@@ -60,6 +60,8 @@ python scripts/verify_backend.py    # API contract, model equality, no hardcoded
 python scripts/verify_frontend.py   # no fake data or demo wording in the pages
 python scripts/verify_readme.py     # README matches metrics.json and the real endpoints
 python scripts/verify_guide.py      # demo/viva guide numbers match the live app
+python scripts/verify_streamlit.py  # Streamlit app: numbers on screen equal the model (needs streamlit_app/requirements.txt, own venv)
+python scripts/verify_hf_bundle.py  # Hugging Face bundle and Gradio Space (needs hf_space/requirements.txt and pyyaml, own venv)
 node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
 
@@ -75,13 +77,16 @@ frontend/climate-resilient-frontend/   HTML pages served by FastAPI
 src/climate_machine_learning/
     features.py       yearly aggregation, merge of both sources, engineered features, inference rows (shared by training and API)
     training.py       split, tuning, evaluation, saving
+    inference.py      prediction and ranking from the trained pipeline (shared by the API, Streamlit and Gradio apps)
+streamlit_app/        Streamlit app (app.py) and its own minimal requirements.txt
+hf_space/             Gradio app (app.py) and requirements for the Hugging Face Space
 data/raw/             crop yield and climate dataset (parquet + csv)
 data/raw/nasa_power/  raw NASA POWER API responses (9 points), plus nasa_power_monthly.csv (tidy table)
 data/reference/       NASA POWER source facts, FAO crop water needs (cited context)
 models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
-scripts/              fetch_nasa_power.py, train.py, the verify_*.py checks and dryrun_demo.js
-docs/                 demo script and viva preparation
+scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, the verify_*.py checks and dryrun_demo.js
+docs/                 demo script and viva preparation, deployment guide
 SPEC-*.md, tasks/     specs, plan and task list (model-only output; second data source)
 ```
 
@@ -155,7 +160,9 @@ Train 2001-2016 (565 rows), validation 2017-2019 (106 rows), test 2020-2022 (102
 | **Random Forest (chosen)** | 0.849 | 24.5 | 0.794 | 40.9 | 77.7 | -0.76 |
 | Gradient Boosting | 0.867 | 23.8 | 0.813 | 41.0 | 73.9 | -0.68 |
 
-Chosen on the validation years: **Random Forest**. Trained 2026-11-19T01:49:42+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
+Likely range shown in the Streamlit and Hugging Face apps: nominal 80% (x0.75 to x1.40 of the prediction), from the validation-year errors. It covered 60% of the 2020-2022 test rows, so it is optimistic.
+
+Chosen on the validation years: **Random Forest**. Trained 2026-11-19T02:13:35+00:00 with scikit-learn 1.9.1, data SHA-256 `998ac2e23c39581a...`.
 <!-- METRICS:END -->
 
 "Skill" compares the model to the crop-province mean baseline on a log scale. Above 0 means better than that baseline. The proposal's success target was R² above 0.7 on the test set and a clear margin over a mean-yield baseline.
@@ -235,8 +242,12 @@ The course guidelines ask for three deployments. Status:
 | Platform | Status |
 |---|---|
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
-| Streamlit Community Cloud | Not deployed yet |
-| Hugging Face (model card + Space) | Not deployed yet |
+| Streamlit Community Cloud | App built and tested locally (`streamlit_app/app.py`, own `streamlit_app/requirements.txt`): input form, prediction with a likely range, one chart. **Not deployed yet.** |
+| Hugging Face (model card + Space) | Bundle built and tested locally (`python scripts/build_hf_bundle.py` writes the model repo with its card and a native Gradio Space from `hf_space/app.py`). **Not deployed yet.** |
+
+Publishing needs your own accounts, so the two cloud deployments are still to do. Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
+
+The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 
 ## Limitations
 

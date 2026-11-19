@@ -4,6 +4,7 @@ Run:   .venv/bin/python scripts/verify_readme.py          # check
        .venv/bin/python scripts/verify_readme.py --write  # refresh the metrics block from models/metrics.json
 """
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -35,7 +36,13 @@ def metrics_block(m: dict) -> str:
             f"| {label} | {val['r2']:.3f} | {val['mae']:.1f} | {test['r2']:.3f} | {test['mae']:.1f} | "
             f"{test['rmse']:.1f} | {test['skill_vs_crop_province_mean_log']:+.2f} |"
         )
+    pi = m["prediction_interval"]
     lines += [
+        "",
+        f"Likely range shown in the Streamlit and Hugging Face apps: nominal {pi['level']:.0%} "
+        f"(x{math.exp(pi['log_residual_quantiles'][0]):.2f} to x{math.exp(pi['log_residual_quantiles'][1]):.2f} "
+        f"of the prediction), from the validation-year errors. It covered {pi['test_coverage']:.0%} of the "
+        f"{m['split']['test_years'][0]}-{m['split']['test_years'][1]} test rows, so it is optimistic.",
         "",
         f"Chosen on the validation years: **{m['models'][m['chosen']['name']]['label']}**. "
         f"Trained {m['trained_at']} with scikit-learn {m['versions']['scikit_learn']}, "
@@ -127,6 +134,15 @@ def main() -> int:
     for stale in ("single dataset", "one dataset", "were **not merged**"):
         if stale in low:
             failures.append(f"stale claim about data sources: {stale!r}")
+
+    # the other two front ends and the deployment guide must be documented
+    for needle in ("streamlit_app/app.py", "streamlit_app/requirements.txt", "hf_space/app.py",
+                   "scripts/build_hf_bundle.py", "scripts/verify_streamlit.py", "scripts/verify_hf_bundle.py",
+                   "docs/deployment_guide.md", "src/climate_machine_learning/inference.py"):
+        if needle not in text:
+            failures.append(f"not documented: {needle}")
+    if "(docs/deployment_guide.md)" not in text:
+        failures.append("README must link to docs/deployment_guide.md")
 
     # relative links must point to real files
     for target in re.findall(r"\]\((?!https?://|#)([^)\s]+)\)", text):
