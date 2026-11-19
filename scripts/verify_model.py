@@ -295,6 +295,56 @@ def inference_refuses_inputs_outside_the_trained_range():
 
 
 @test
+def presentation_ranking_table_is_built_from_the_model_output():
+    from climate_machine_learning import inference as I
+    from climate_machine_learning import presentation as P
+
+    pipe, m, ref = _load_artifacts()
+    fao = json.loads((ROOT / "data" / "reference" / "fao_crop_water_needs.json").read_text())
+    res = I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5},
+                          log_quantiles=m["prediction_interval"]["log_residual_quantiles"])
+    table = P.ranking_table(res, ref, fao)
+    assert list(table.columns) == ["Rank", "Crop", "% of typical year", "Predicted yield", "Likely range",
+                                   "Training rows", "FAO water need"]
+    assert list(table["Rank"]) == list(range(1, 14))
+    assert list(table["Crop"]) == [i.crop for i in res.items]
+    assert list(table["% of typical year"]) == [round(i.pct_of_normal, 1) for i in res.items]
+    rice, apple = table[table.Crop == "rice"].iloc[0], table[table.Crop == "apple"].iloc[0]
+    assert rice["FAO water need"] == "450-700 mm per growing period, drought sensitivity high"
+    assert apple["FAO water need"] == "not listed in the FAO table"
+    assert rice["Training rows"] == f"{ref['train_rows_per_crop']['rice']} of 48"
+    assert P.fao_text(fao, "rice") == rice["FAO water need"]
+
+
+@test
+def presentation_presets_fill_typical_or_real_years():
+    from climate_machine_learning import presentation as P
+
+    _, _, ref = _load_artifacts()
+    med = ref["provinces"]["Punjab"]["median"]
+    assert P.preset_inputs(ref, "Punjab", P.TYPICAL) == {
+        "precipitation_sum": round(med["precipitation_sum"], 1), "temperature_2m_mean": round(med["temperature_2m_mean"], 1)}
+    assert P.preset_inputs(ref, "Sindh", P.DRIEST) == ref["historical_years"]["Sindh"]["driest"]["inputs"]
+    assert P.preset_inputs(ref, "Sindh", P.WETTEST) == ref["historical_years"]["Sindh"]["wettest"]["inputs"]
+    assert P.preset_inputs(ref, "Sindh", P.DRIEST) is not ref["historical_years"]["Sindh"]["driest"]["inputs"], "must be a copy"
+    assert [f[0] for f in P.FIELDS] == F.BASE_INPUTS, "form fields must follow the model inputs, in order"
+
+
+@test
+def presentation_interval_note_states_the_measured_coverage():
+    from climate_machine_learning import presentation as P
+
+    _, m, _ = _load_artifacts()
+    note = P.interval_note(m)
+    pi = m["prediction_interval"]
+    assert f"{pi['test_coverage']:.0%}" in note and f"{pi['level']:.0%}" in note
+    assert "validation years 2017-2019" in note and "2020-2022 test rows" in note
+    assert note.endswith("optimistic." if pi["test_coverage"] < pi["level"] else "about right.")
+    better = json.loads(json.dumps(m)); better["prediction_interval"]["test_coverage"] = 0.95
+    assert P.interval_note(better).endswith("about right.")
+
+
+@test
 def reference_json_matches_training_data():
     _, _, ref = _load_artifacts()
     table, _ = F.build_yearly_table(RAW)

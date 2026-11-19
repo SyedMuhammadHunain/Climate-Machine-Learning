@@ -40,6 +40,7 @@ if BASE is None:
 
 from climate_machine_learning import features as F  # noqa: E402
 from climate_machine_learning import inference as I  # noqa: E402
+from climate_machine_learning import presentation as P  # noqa: E402
 
 
 @st.cache_resource
@@ -55,20 +56,13 @@ def load_artifacts():
 
 pipeline, ref, met, fao = load_artifacts()
 interval = met["prediction_interval"]
-yield_unit = "dataset yield units (the source does not state the unit)"
 
-TYPICAL, DRIEST, WETTEST = "Typical (median) year", "Driest real year", "Wettest real year"
-FIELDS = [  # key, label, format, optional
-    ("precipitation_sum", "Annual rain (mm)", "%.1f", False),
-    ("temperature_2m_mean", "Mean annual temperature (°C)", "%.2f", False),
-    ("temperature_2m_max", "Mean monthly maximum temperature (°C)", "%.2f", True),
-    ("temperature_2m_min", "Mean monthly minimum temperature (°C)", "%.2f", True),
-    ("fao_evapotranspiration", "Evapotranspiration, yearly mean (mm/day)", "%.2f", True),
-    ("shortwave_radiation", "Solar radiation, yearly mean (MJ/m²)", "%.1f", True),
-    ("precipitation_hours", "Hours with rain, yearly total", "%.0f", True),
-    ("soil_wetness_mean", "Root-zone soil wetness, yearly mean (0-1, NASA POWER)", "%.3f", True),
-    ("soil_wetness_max", "Root-zone soil wetness, wettest month (0-1, NASA POWER)", "%.3f", True),
-]
+FORMATS = {  # number_input display format per input
+    "precipitation_sum": "%.1f", "temperature_2m_mean": "%.2f", "temperature_2m_max": "%.2f", "temperature_2m_min": "%.2f",
+    "fao_evapotranspiration": "%.2f", "shortwave_radiation": "%.1f", "precipitation_hours": "%.0f",
+    "soil_wetness_mean": "%.3f", "soil_wetness_max": "%.3f",
+}
+FIELDS = [(key, label, FORMATS[key], optional) for key, label, optional in P.FIELDS]
 
 st.title("Climate-resilient crop selection under drought")
 st.write(
@@ -86,7 +80,7 @@ with left:
     crop = st.selectbox("Crop to look at", crops, index=crops.index("rice") if "rice" in crops else 0,
                         format_func=str.capitalize, key="crop")
 with right:
-    preset = st.radio("Fill the form from", [TYPICAL, DRIEST, WETTEST], key="preset")
+    preset = st.radio("Fill the form from", P.PRESETS, key="preset")
     hist = ref["historical_years"][province]
     st.caption(
         f"Real years in the training data for {province}: driest {hist['driest']['year']} "
@@ -96,10 +90,7 @@ with right:
     )
 
 info = ref["provinces"][province]
-if preset == TYPICAL:
-    defaults = {k: round(info["median"][k], 1) for k in ("precipitation_sum", "temperature_2m_mean")}
-else:
-    defaults = dict(hist["driest" if preset == DRIEST else "wettest"]["inputs"])
+defaults = P.preset_inputs(ref, province, preset)
 
 
 def make_input(key, label, fmt, container):
@@ -131,19 +122,12 @@ chosen = next(i for i in result.items if i.crop == crop)
 st.header("2. Prediction")
 st.subheader(f"{crop.capitalize()} in {province}")
 m1, m2, m3 = st.columns(3)
-m1.metric("Predicted yield", f"{chosen.predicted_yield:.2f}", help=f"In {yield_unit}.")
+m1.metric("Predicted yield", f"{chosen.predicted_yield:.2f}", help=f"In {P.YIELD_UNIT}.")
 m2.metric(f"Likely range (nominal {interval['level']:.0%})", f"{chosen.low:.2f} to {chosen.high:.2f}")
 m3.metric("Share of a typical year", f"{chosen.pct_of_normal:.1f}%",
           help=f"Typical {province} year: {chosen.normal_yield:.2f}. This is the model's yield in your scenario divided by its yield in a typical year.")
-st.caption(f"Yield unit: {yield_unit}.")
-test_years = met["split"]["test_years"]
-val_years = met["split"]["val_years"]
-coverage = interval["test_coverage"]
-st.caption(
-    f"The range is empirical: the 10% to 90% spread of the model's errors on the validation years "
-    f"{val_years[0]}-{val_years[1]}. On the {test_years[0]}-{test_years[1]} test rows it covered {coverage:.0%} of the actual "
-    f"yields (nominal {interval['level']:.0%}), so treat it as {'optimistic' if coverage < interval['level'] else 'about right'}."
-)
+st.caption(f"Yield unit: {P.YIELD_UNIT}.")
+st.caption(P.interval_note(met))
 
 # ---------------------------------------------------------------- explanatory chart + ranking
 st.header("3. How the crops compare in this scenario")
@@ -170,27 +154,7 @@ st.altair_chart(bars + line, width="stretch")
 st.caption("Bars longer than the dashed line (100%) mean the model expects more than a typical year, shorter means less. "
            "Crops with few training rows are noisier (see the table).")
 
-possible = len(ref["provinces"]) * (ref["train_years"][1] - ref["train_years"][0] + 1)
-
-
-def fao_text(name):
-    entry = fao["crops"].get(name)
-    if entry is None:
-        return "not listed in the FAO table"
-    return f"{entry['mm_min']}-{entry['mm_max']} mm per growing period, drought sensitivity {entry['drought_sensitivity']}"
-
-
-table = pd.DataFrame(
-    {
-        "Rank": range(1, len(result.items) + 1),
-        "Crop": [i.crop for i in result.items],
-        "% of typical year": [round(i.pct_of_normal, 1) for i in result.items],
-        "Predicted yield": [round(i.predicted_yield, 2) for i in result.items],
-        "Likely range": [f"{i.low:.2f} to {i.high:.2f}" for i in result.items],
-        "Training rows": [f"{ref['train_rows_per_crop'][i.crop]} of {possible}" for i in result.items],
-        "FAO water need": [fao_text(i.crop) for i in result.items],
-    }
-)
+table = P.ranking_table(result, ref, fao)
 st.dataframe(table, hide_index=True, width="stretch")
 st.caption("FAO water needs (Brouwer and Heibloem 1986, Table 14) are context only. They do not change the ranking.")
 
@@ -216,6 +180,7 @@ with st.expander("Inputs used (and where each came from)"):
 # ---------------------------------------------------------------- about
 with st.expander("About this model and its limits"):
     chosen_model = met["models"][met["chosen"]["name"]]
+    test_years = met["split"]["test_years"]
     base = met["baselines"]["crop_province_mean"]["test"]
     st.write(
         f"**{chosen_model['label']}**, chosen on the validation years. Test years {test_years[0]}-{test_years[1]}: "
