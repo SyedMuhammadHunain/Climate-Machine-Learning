@@ -51,7 +51,7 @@ EOF
 
 - App shows only model output, dataset values or saved results. No fallback or demo numbers, no hand-written yield formulas, no hardcoded metrics. Guards: `verify_backend.py` TEST 22, `verify_frontend.py`, `verify_streamlit.py`.
 - Yield unit not confirmed by data source; label it "dataset yield units". Best model does not beat crop-province-mean baseline, likely range covers only 60% of test rows; docs and apps say so. Do not claim otherwise.
-- README numbers are generated (`<!-- METRICS:START -->` block), `verify_readme.py` / `verify_guide.py` pin deployment status (Streamlit live, Hugging Face Space "not deployed yet"). When status changes, update docs and those checkers together.
+- README numbers are generated (`<!-- METRICS:START -->` block), `verify_readme.py` / `verify_guide.py` pin deployment status (Streamlit and Vercel live, Hugging Face Space "not deployed yet"). When status changes, update docs and those checkers together.
 - Bit-exact comparisons of predictions need `inference.single_thread(pipeline)`: saved forest sums trees in parallel, differs in last digit between runs.
 
 ## Repo state worth knowing
