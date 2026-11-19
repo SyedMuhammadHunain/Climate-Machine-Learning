@@ -135,6 +135,12 @@ def main() -> int:
                 if not safe and ("data." in bare or "item." in bare or "cropDisplay" in bare):
                     failures.append(f"predict.html: unescaped API text in {sink} innerHTML: ${{{bare}}}")
 
+    # dev servers started by this repo must listen on localhost only (python's http.server binds 0.0.0.0 by default)
+    for rel in ("scripts/run_frontend.sh", "frontend/climate-resilient-frontend/package.json"):
+        for lineno, line in enumerate((ROOT / rel).read_text(encoding="utf-8").splitlines(), 1):
+            if "http.server" in line and "--bind 127.0.0.1" not in line:
+                failures.append(f"{rel}:{lineno}: http.server must use --bind 127.0.0.1 (it listens on all interfaces otherwise)")
+
     if failures:
         print("FAILED:")
         for f in failures:

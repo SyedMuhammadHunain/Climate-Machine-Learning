@@ -12,4 +12,4 @@ FRONTEND_DIR="$PROJECT_ROOT/frontend/climate-resilient-frontend"
 cd "$FRONTEND_DIR"
 
 echo "Starting Frontend standalone server at http://localhost:3000..."
-exec python3 -m http.server 3000
+exec python3 -m http.server 3000 --bind 127.0.0.1
