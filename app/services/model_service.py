@@ -77,7 +77,7 @@ class ModelService:
             if value < lo or value > hi:
                 raise AgronomicValidationError(
                     f"{name} = {value:g} is outside the range the model was trained on for {province} "
-                    f"({lo:.1f} to {hi:.1f}, annual values {self.reference['train_years'][0]}-"
+                    f"({lo:.4g} to {hi:.4g}, annual values {self.reference['train_years'][0]}-"
                     f"{self.reference['train_years'][1]}). The model cannot extrapolate, so no prediction is made.",
                     parameter=name,
                 )

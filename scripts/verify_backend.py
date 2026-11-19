@@ -342,6 +342,9 @@ def run_verification():
         assert set(REFERENCE["provinces"]["Sindh"]["range"]) >= {"soil_wetness_mean", "soil_wetness_max"}
         out = client.post("/api/v1/predict", json={**base, "soil_wetness_mean": hi + 0.1})
         assert out.status_code == 422 and out.json()["parameter"] == "soil_wetness_mean", out.text
+        # the message must show the soil range with enough digits to be usable (0.348 to 0.386, not "0.3 to 0.4")
+        assert f"{lo:.4g}" in out.json()["message"] and f"{hi:.4g}" in out.json()["message"], out.json()["message"]
+        assert f"{lo:.4g}" != f"{hi:.4g}"
         for bad in ({"soil_wetness_mean": 1.5}, {"soil_wetness_mean": 0.45, "soil_wetness_max": 0.40}):
             assert client.post("/api/v1/predict", json={**base, **bad}).status_code == 422, bad
         r = client.post("/api/v1/recommend", json={k: v for k, v in base.items() if k != "crop"} | {"soil_wetness_mean": (lo + hi) / 2})
