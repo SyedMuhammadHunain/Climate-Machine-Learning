@@ -41,10 +41,48 @@ class Prediction:
 
 def single_thread(pipeline) -> None:
     """One thread at inference: avoids joblib overhead for small predictions."""
-    reg = pipeline.named_steps.get("regressor")
+    inner = getattr(pipeline, "inner_", pipeline)  # OffsetYieldModel keeps its fitted pipeline in inner_
+    reg = inner.named_steps.get("regressor")
     reg = getattr(reg, "regressor_", reg)
     if reg is not None and hasattr(reg, "n_jobs"):
         reg.n_jobs = 1
+
+
+_METRIC_NAMES = {"r2": "R²", "mae": "MAE", "rmse": "RMSE", "log_mae": "log-MAE"}
+_METRIC_FORMATS = {"r2": ".3f", "mae": ".1f", "rmse": ".1f", "log_mae": ".3f"}
+
+
+def model_caveat(metrics: Dict[str, Any]) -> str:
+    """How the chosen model compares with the crop-province mean on the test years, wins and losses together.
+
+    Built only from metrics.json, so every front end (API, Streamlit, Gradio) says the same thing and none
+    types a number. Always states the metrics where the model is not better, and that the pass test was
+    chosen after the test results were seen, when metrics.json says so.
+    """
+    chosen = metrics["chosen"]
+    first, last = metrics["split"]["test_years"]
+    model = metrics["models"][chosen["name"]]["test"]
+    base = metrics["baselines"]["crop_province_mean"]["test"]
+    by = chosen["beats_by_metric"]
+
+    def pairs(keys):
+        items = [f"{_METRIC_NAMES[k]} {model[k]:{_METRIC_FORMATS[k]}} against {base[k]:{_METRIC_FORMATS[k]}}" for k in keys]
+        return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+    better = [k for k in _METRIC_NAMES if by[k]]
+    worse = [k for k in _METRIC_NAMES if not by[k]]
+    parts = ([f"was better on {pairs(better)}"] if better else []) + ([f"was not better on {pairs(worse)}"] if worse else [])
+    text = (f"On the {first}-{last} test years, compared with using each crop's average yield per province, "
+            f"the model {'; it '.join(parts)}.")
+    if chosen.get("judged_on_chosen_after_test"):
+        judged = " and ".join(_METRIC_NAMES[k] for k in chosen["judged_on"])
+        text += f" The pass test ({judged}) was chosen after seeing the test results."
+    trend = metrics["baselines"].get("crop_province_mean_plus_trend")
+    if trend is not None:
+        text += f" A year trend alone, with no climate inputs, scores R² {trend['test']['r2']:.3f}."
+    if worse:
+        text += " Small differences between crops are weak evidence."
+    return text
 
 
 def check_training_range(reference: Dict[str, Any], province: str, inputs: Dict[str, float]) -> None:
