@@ -10,23 +10,15 @@ what it found go to docs/report/figures/screenshot_checks.json; scripts/verify_r
 Screenshots are never edited.
 """
 import argparse
-import base64
 import json
-import os
-import shutil
-import socket
-import subprocess
 import sys
-import tempfile
 import time
-import urllib.request
 from pathlib import Path
-
-import websocket  # websocket-client, already in requirements.txt
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from verify_report import FIG_DIR, _expected_sindh_driest_rice  # noqa: E402
+from chrome_cdp import Chrome as _Chrome, start_local_server as _start_server  # noqa: E402
 
 STREAMLIT_URL = "https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/~/+/"
 VERCEL_URL = "https://climate-machine-learning.vercel.app/predict.html"
@@ -35,107 +27,12 @@ LOCAL_URL = f"http://127.0.0.1:{LOCAL_PORT}/predict.html"
 WIDTH, HEIGHT = 1280, 1220
 
 
-def free_port() -> int:
-    with socket.socket() as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
+def Chrome() -> _Chrome:
+    """Report screenshots are taken at one desktop size."""
+    return _Chrome(WIDTH, HEIGHT)
 
 
-class Chrome:
-    """Minimal Chrome DevTools Protocol client: navigate, evaluate JS, click, screenshot."""
-
-    def __init__(self):
-        self.port = free_port()
-        self.profile = tempfile.mkdtemp(prefix="chrome-profile-", dir=os.environ.get("CLAUDE_JOB_DIR_TMP"))
-        exe = shutil.which("google-chrome") or shutil.which("chromium")
-        assert exe, "google-chrome not found"
-        self.proc = subprocess.Popen(
-            [exe, "--headless=new", f"--remote-debugging-port={self.port}", f"--user-data-dir={self.profile}",
-             f"--window-size={WIDTH},{HEIGHT}", "--hide-scrollbars", "--no-first-run", "--no-default-browser-check",
-             "about:blank"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
-        for _ in range(100):
-            try:
-                tabs = json.load(urllib.request.urlopen(f"http://127.0.0.1:{self.port}/json"))
-                page = next(t for t in tabs if t["type"] == "page")
-                break
-            except Exception:  # noqa: BLE001 - Chrome still starting
-                time.sleep(0.1)
-        else:
-            raise RuntimeError("Chrome did not start")
-        self.ws = websocket.create_connection(page["webSocketDebuggerUrl"], timeout=120)
-        self.next_id = 0
-        self.send("Emulation.setDeviceMetricsOverride",
-                  {"width": WIDTH, "height": HEIGHT, "deviceScaleFactor": 1, "mobile": False})
-
-    def send(self, method: str, params: dict | None = None) -> dict:
-        self.next_id += 1
-        msg_id = self.next_id
-        self.ws.send(json.dumps({"id": msg_id, "method": method, "params": params or {}}))
-        while True:
-            msg = json.loads(self.ws.recv())
-            if msg.get("id") == msg_id:
-                if "error" in msg:
-                    raise RuntimeError(f"{method}: {msg['error']}")
-                return msg.get("result", {})
-
-    def eval(self, js: str):
-        r = self.send("Runtime.evaluate", {"expression": js, "returnByValue": True, "awaitPromise": True})
-        if "exceptionDetails" in r:
-            d = r["exceptionDetails"]
-            raise RuntimeError(f"JS error: {d.get('exception', {}).get('description') or d.get('text')} in {js[:80]}")
-        return r["result"].get("value")
-
-    def goto(self, url: str) -> None:
-        self.send("Page.navigate", {"url": url})
-
-    def wait_for(self, js: str, timeout: float, what: str) -> None:
-        end = time.time() + timeout
-        while time.time() < end:
-            try:
-                if self.eval(js):
-                    return
-            except RuntimeError:
-                pass
-            time.sleep(0.5)
-        try:
-            seen = self.eval("location.href + ' | ' + (document.body ? document.body.innerText.slice(0, 200) : '')")
-        except RuntimeError as e:
-            seen = str(e)
-        raise TimeoutError(f"timed out after {timeout:.0f} s waiting for {what}; page shows: {seen!r}")
-
-    def click_at(self, rect_js: str) -> None:
-        """Real mouse click at the centre of the element whose bounding rect rect_js returns."""
-        r = self.eval(f"(() => {{ const r = ({rect_js}).getBoundingClientRect(); "
-                      "return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()")
-        for kind in ("mousePressed", "mouseReleased"):
-            self.send("Input.dispatchMouseEvent",
-                      {"type": kind, "x": r["x"], "y": r["y"], "button": "left", "clickCount": 1})
-
-    def screenshot(self, path: Path, clip_to_js: str | None = None) -> None:
-        """Viewport screenshot; with clip_to_js, only the horizontal band of that element (plus a margin),
-        so the side whitespace of a centred page is not captured. Nothing is drawn or changed."""
-        params = {"format": "png"}
-        if clip_to_js:
-            r = self.eval(f"(() => {{ const r = ({clip_to_js}).getBoundingClientRect(); "
-                          "return {x: r.x + window.scrollX, y: window.scrollY, w: r.width, h: window.innerHeight}; })()")
-            x = max(0, r["x"] - 32)
-            # clip is in page coordinates, so y is the current scroll offset
-            params["clip"] = {"x": x, "y": r["y"], "width": min(WIDTH - x, r["w"] + 64), "height": r["h"], "scale": 1}
-        data = self.send("Page.captureScreenshot", params)["data"]
-        path.write_bytes(base64.b64decode(data))
-
-    def close(self) -> None:
-        try:
-            self.ws.close()
-        finally:
-            self.proc.terminate()
-            self.proc.wait(timeout=10)
-            shutil.rmtree(self.profile, ignore_errors=True)
-
-
-def found_on_page(chrome: Chrome, exp: dict) -> list:
+def found_on_page(chrome: _Chrome, exp: dict) -> list:
     text = chrome.eval("document.body.innerText")
     return [v for v in (exp["yield"], exp["pct"]) if v in text]
 
@@ -145,7 +42,7 @@ def has_both(exp: dict) -> str:
 
 
 # --------------------------------------------------------------------------- one function per app
-def capture_html_app(chrome: Chrome, url: str, exp: dict, out: Path, crop: str) -> list:
+def capture_html_app(chrome: _Chrome, url: str, exp: dict, out: Path, crop: str) -> list:
     """The FastAPI pages (local and Vercel): Sindh, driest real year.
 
     crop="rice": the single-crop forecast (POST /api/v1/predict); the shot shows the form and the result.
@@ -174,7 +71,7 @@ def capture_html_app(chrome: Chrome, url: str, exp: dict, out: Path, crop: str) 
     return found
 
 
-def capture_streamlit(chrome: Chrome, exp: dict, out: Path) -> list:
+def capture_streamlit(chrome: _Chrome, exp: dict, out: Path) -> list:
     """Streamlit Community Cloud: pick Sindh in the province box, then the driest real year."""
     chrome.goto(STREAMLIT_URL)
     chrome.wait_for("document.body.innerText.includes('Fill the form from')", 240, "Streamlit app to wake and render")
@@ -196,19 +93,8 @@ def capture_streamlit(chrome: Chrome, exp: dict, out: Path) -> list:
     return found
 
 
-def start_local_server() -> subprocess.Popen:
-    proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "app.main:app", "--port", str(LOCAL_PORT)],
-        cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
-    for _ in range(120):
-        try:
-            urllib.request.urlopen(f"http://127.0.0.1:{LOCAL_PORT}/health", timeout=1)
-            return proc
-        except Exception:  # noqa: BLE001 - server still starting
-            time.sleep(0.5)
-    proc.terminate()
-    raise RuntimeError("local server did not start")
+def start_local_server():
+    return _start_server(LOCAL_PORT)
 
 
 def main() -> int:
