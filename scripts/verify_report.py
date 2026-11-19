@@ -160,6 +160,70 @@ def report_states_the_caveats():
     assert _flat("dataset yield units") in text
 
 
+REQUIRED_HEADINGS = [  # the guidelines' report sections, in their order, plus the proposal comparison
+    "Abstract", "1. Problem and motivation", "2. Data collection", "3. Exploratory data analysis",
+    "4. Methodology", "5. Results", "6. Deployment", "7. What we proposed and what we built",
+    "8. Limitations and future work", "9. References", "10. Individual contribution",
+]
+
+
+def report_has_every_section_in_order():
+    text = _pdf_text()
+    pos = []
+    for h in REQUIRED_HEADINGS:
+        hits = [ln for ln in text.splitlines() if ln.strip() == h]
+        assert len(hits) == 1, f"heading {h!r} found {len(hits)} times"
+        pos.append(text.index("\n" + h + "\n") if ("\n" + h + "\n") in text else text.index(h))
+    assert pos == sorted(pos), "sections out of order"
+
+
+def report_is_three_to_four_pages():
+    info = subprocess.run(["pdfinfo", str(PDF)], check=True, capture_output=True, text=True).stdout
+    pages = int(next(ln.split()[-1] for ln in info.splitlines() if ln.startswith("Pages:")))
+    assert 3 <= pages <= 4, f"report has {pages} pages; the guidelines ask for 3 to 4"
+
+
+def report_contribution_table_matches_group_roles():
+    from group_roles import MEMBERS
+
+    text = _flat(_pdf_text())
+    section = text[text.index(_flat("10. Individual contribution")):]
+    for name, roll, role in MEMBERS:
+        assert _flat(name + roll + role) in section, f"contribution row missing: {name} {roll} {role}"
+    assert _flat("(group to fill)") not in text
+
+
+def report_checks_the_proposal_success_criterion():
+    chosen = METRICS["models"][METRICS["chosen"]["name"]]["test"]
+    base = METRICS["baselines"]["global_mean"]["test"]
+    met = chosen["r2"] > 0.7 and chosen["r2"] > base["r2"] and chosen["mae"] < base["mae"]
+    text = _flat(_pdf_text())
+    assert _flat(f"test R² {chosen['r2']:.3f}") in text
+    assert _flat(f"R² {base['r2']:.3f} and MAE {base['mae']:.1f}") in text, "global mean baseline numbers missing"
+    verdict = "The proposal's success criterion is met" if met else "The proposal's success criterion is not met"
+    assert _flat(verdict) in text, f"expected the verdict {verdict!r}"
+
+
+def report_documents_data_deployments_and_references():
+    text = _flat(_pdf_text())
+    for needle in (
+        # data: source, collection method, licence, date for each dataset
+        "github.com/Abdullah-Masood-05/pakistan-crop-yield-vs-climate", "zenodo.org/records/15486470",
+        "MIT", "Collection method", "2026-11-14", "power.larc.nasa.gov", "not specified", "2026-11-19",
+        # deployments: the live links
+        "climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app", "climate-machine-learning.vercel.app",
+        "huggingface.co/SMHunain/crop-yield-drought-pakistan",
+        # references
+        "fao.org/4/s2022e/s2022e07.htm", "Scikit-learn: Machine Learning in Python",
+    ):
+        assert _flat(needle) in text, f"missing from the PDF: {needle}"
+    page = HTML.read_text(encoding="utf-8")
+    for shot in SCREENSHOTS:
+        assert f"figures/{shot}" in page, f"deployment screenshot not in the report: {shot}"
+    for name in EDA_FIGURES:
+        assert f"figures/{name}" in page, f"EDA figure not in the report: {name}"
+
+
 TESTS = [
     figures_exist_with_at_least_five_eda_plots,
     comparison_figure_values_equal_metrics_json,
@@ -169,6 +233,11 @@ TESTS = [
     report_pdf_exists,
     report_results_table_equals_metrics_json,
     report_states_the_caveats,
+    report_has_every_section_in_order,
+    report_is_three_to_four_pages,
+    report_contribution_table_matches_group_roles,
+    report_checks_the_proposal_success_criterion,
+    report_documents_data_deployments_and_references,
 ]
 
 

@@ -40,7 +40,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Files: `scripts/build_report.py`, `scripts/verify_report.py`, `docs/report/report_template.html`, `docs/report/report.pdf`
   - Depends on: T2
 
-- [ ] **T5: all report sections** (M)
+- [x] **T5: all report sections** (M) (done 2026-11-19: 4-page PDF with all 10 sections plus abstract; `verify_report.py` 13/13: headings in order, 3 to 4 pages, contribution rows equal `scripts/group_roles.py`, proposal criterion verdict computed from `metrics.json` (met: R² 0.885 against overall mean -0.030), data sources, live links, screenshots, EDA figures and references present)
   - Acceptance: sections Abstract, Problem and motivation, Data collection (source, method, licence, access date for crop dataset and NASA POWER), EDA (figures from T2), Methodology, Results, Deployment (screenshots from T3, links), Limitations and future work, References (crop dataset, NASA POWER, FAO water-need table, scikit-learn), Individual contribution table (from T1 roles). Short "What we proposed and what we built" part, with proposal success criterion (test R² above 0.7, beats global mean baseline) checked by code. PDF is 3 to 4 pages. `verify_report.py` checks every heading, page count via `pdfinfo`, roles match README.
   - Verify: `verify_report.py` passes; render pages with `pdftoppm` and read them.
   - Files: `scripts/build_report.py`, `scripts/verify_report.py`, `docs/report/report_template.html`, `docs/report/report.pdf`

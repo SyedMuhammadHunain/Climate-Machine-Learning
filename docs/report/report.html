@@ -1,41 +1,169 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Low-Water Crop Selection Under Drought: Report</title>
 <style>
-@page { size: A4; margin: 13mm 14mm 13mm 14mm; }
+@page { size: A4; margin: 11mm 13mm 11mm 13mm; }
 * { box-sizing: border-box; }
-body { font-family: 'Liberation Serif', serif; font-size: 9.6pt; line-height: 1.32; color: #111; margin: 0; }
-h1, h2, h3, th, figcaption, .meta, .note { font-family: 'Liberation Sans', sans-serif; }
-h1 { font-size: 15pt; margin: 0 0 2pt; }
-h2 { font-size: 10.5pt; margin: 8pt 0 3pt; border-bottom: 0.6pt solid #999; padding-bottom: 1pt; }
-p { margin: 0 0 4pt; text-align: justify; hyphens: auto; }
-.meta { font-size: 8.5pt; color: #444; margin-bottom: 6pt; }
-.note { font-size: 7.8pt; color: #444; }
-table { border-collapse: collapse; width: 100%; font-size: 8.2pt; margin: 3pt 0 4pt; }
-th, td { padding: 1.6pt 4pt; border-bottom: 0.4pt solid #ccc; text-align: right; }
+body { font-family: 'Liberation Serif', serif; font-size: 9.2pt; line-height: 1.28; color: #111; margin: 0; }
+h1, h2, th, figcaption, .meta, .note { font-family: 'Liberation Sans', sans-serif; }
+h1 { font-size: 14pt; margin: 0 0 1pt; }
+h2 { font-size: 10pt; margin: 6pt 0 2pt; border-bottom: 0.6pt solid #999; padding-bottom: 1pt; break-after: avoid; }
+p { margin: 0 0 3pt; text-align: justify; hyphens: auto; }
+a { color: #1c5cab; text-decoration: none; }
+code { font-size: 8.2pt; }
+.meta { font-size: 8pt; color: #444; margin-bottom: 3pt; }
+.note { font-size: 7.6pt; color: #444; text-align: left; }
+table { border-collapse: collapse; width: 100%; font-size: 7.9pt; margin: 2pt 0 3pt; break-inside: avoid; }
+th, td { padding: 1.3pt 4pt; border-bottom: 0.4pt solid #ccc; text-align: right; vertical-align: top; }
 th:first-child, td:first-child { text-align: left; }
-th { font-size: 7.8pt; border-bottom: 0.8pt solid #555; }
+th { font-size: 7.6pt; border-bottom: 0.8pt solid #555; }
+table.data td, table.prop td, table.contrib td, table.data th, table.prop th, table.contrib th { text-align: left; }
+table.data td:first-child { width: 17%; font-family: 'Liberation Sans', sans-serif; font-size: 7.6pt; }
+table.prop td:first-child { width: 36%; }
 tr.chosen td { font-weight: bold; }
-figure { margin: 3pt 0 5pt; break-inside: avoid; }
+.figrow { display: flex; gap: 2%; margin: 2pt 0 3pt; break-inside: avoid; align-items: flex-start; }
+.figrow > * { flex: 0 0 49%; }
+.figrow.wide > * { flex: 0 0 82%; margin-left: 9%; }
+.figrow.three > * { flex: 0 0 32%; }
+.side { padding-top: 14pt; }
+figure { margin: 0; }
 figure img { width: 100%; display: block; }
-figure.half { display: inline-block; width: 49%; vertical-align: top; }
-figure.full { width: 100%; }
-figcaption { font-size: 7.4pt; color: #444; margin-top: 1pt; }
+.figrow.three img { border: 0.4pt solid #bbb; height: 74mm; object-fit: cover; object-position: top; }
+.figrow.three figure.bottom img { object-position: bottom; }
+figcaption { font-size: 7.2pt; color: #444; margin-top: 1pt; }
+ol.refs { margin: 0 0 3pt; padding-left: 14pt; font-size: 8.4pt; }
+ol.refs li { margin-bottom: 1pt; }
 </style></head>
 <body>
 
-<h2>6. Results</h2>
+<h1>Low-Water Crop Selection Under Drought in Pakistan</h1>
+<p class="meta">CT-378 Machine Learning semester project. Syed Muhammad Hunain (CT-24281), Muhammad Afzal (CT-24263), Ayesha (CT-24309). Code: <a href="https://github.com/SyedMuhammadHunain/Climate-Machine-Learning">github.com/SyedMuhammadHunain/Climate-Machine-Learning</a></p>
+
+
+<h2>Abstract</h2>
+<p>We predict the yearly yield of 13 crops in Balochistan, Punjab, Sindh from annual climate and
+soil wetness, and rank the crops by the share of a typical year's yield each keeps in a user's scenario. Two public
+sources are merged: a crop yield and climate dataset (10,296 monthly rows, 2001-2022)
+and NASA POWER soil wetness. After aggregation to one row per crop, province and year there are 773 rows.
+A scikit-learn pipeline learns the log-scale gap from each crop-province average plus a year trend; models are
+tuned with 5-fold cross-validation grouped by year and selected on validation years. The chosen Gradient Boosting
+scores test R² 0.885 and MAE 29.7 (crop-province mean baseline:
+0.832 and 34.7), but not a better log-MAE, and most of the gain comes from the year trend.
+The model is served by a FastAPI app with HTML pages (local and on Vercel), a Streamlit app and a model repository
+on the Hugging Face Hub.</p>
+
+
+<h2>1. Problem and motivation</h2>
+<p>Water-intensive crops such as rice and sugarcane are hard to sustain in drought years in Punjab, Sindh and
+Balochistan. A farmer or agricultural extension officer needs to know which crops hold up when rain is scarce. The
+user enters a year's climate for a province, either typed in or taken from a real driest, typical or wettest year
+in the data, and receives every crop's predicted yield and its share of a typical year's yield, ranked. The task is
+regression on yield; the ranking divides two predictions of the same model, so no number is set by hand.</p>
+
+
+<h2>2. Data collection</h2>
+<table class="data">
+<thead><tr><th></th><th>Crop yield and climate</th><th>NASA POWER soil wetness</th></tr></thead>
+<tbody>
+<tr><td>Source</td><td><a href="https://github.com/Abdullah-Masood-05/pakistan-crop-yield-vs-climate">github.com/Abdullah-Masood-05/pakistan-crop-yield-vs-climate</a>; upstream
+<a href="https://zenodo.org/records/15486470">zenodo.org/records/15486470</a></td><td><a href="https://power.larc.nasa.gov/">power.larc.nasa.gov/</a>, monthly point API
+v2.10.1 (MERRA-2)</td></tr>
+<tr><td>Collection method</td><td>Downloaded file; the repository does not state how it was collected or the weather
+source</td><td>Fetched by <code>scripts/fetch_nasa_power.py</code> for 9 farming-area points, 3 per
+province, equal weight</td></tr>
+<tr><td>Licence</td><td>MIT (stated by the repository)</td><td>Licence not specified in the POWER catalog entry; free to use,
+citation requested</td></tr>
+<tr><td>Date</td><td>Added to the repository 2026-11-14</td><td>Accessed 2026-11-19</td></tr>
+<tr><td>Size</td><td>10,296 monthly rows, 19 columns; 13 crops, 3 provinces,
+2001-2022</td><td>2,376 monthly rows; root-zone soil wetness (0 to 1)</td></tr>
+</tbody></table>
+<p>The yield file has no month column and repeats each yearly yield on 12 monthly rows, with the same weather for
+every crop in a province. Training on monthly rows would show each yield 12 times, so we aggregate to one row per
+crop, province and year (rain and rain hours summed, the rest averaged) and merge soil wetness by province and year.
+85 crop-province-years with Area = 0 (the crop was not grown or not reported: apple 22, grapes 41, pomegranate 22) are dropped,
+leaving 773 rows with 14 input features. The raw data has no personal identifiers. In the
+file, Yield = 25 x Production / Area, but the source does not state the unit, so we report
+<i>dataset yield units</i>. The raw file meets the guideline minimum of 5,000 rows and 15 columns; the modelling
+table is smaller because the yield is one number per year.</p>
+
+
+<h2>3. Exploratory data analysis</h2>
+<p>Yields span 2.83 to 747.73 dataset yield units across crops, so the target is modelled on a log scale. There
+are no empty cells; missing data shows up as Area = 0 years for three crops, which also leaves grapes with no Punjab
+years and pomegranate with no Sindh years. Outliers are kept: they are real reported years, and the log scale limits
+their pull. No single climate column correlates strongly with log yield on the training years (largest absolute
+correlation 0.11, shortwave_radiation), and the rain deficit correlates only
+0.05 with a year's yield gap from its crop-province mean. Crop identity, not weather, carries most
+of the signal.</p>
+<div class="figrow "><figure><img src="figures/eda_yield_distribution.png" alt="Distribution of yearly yield (log10)."><figcaption>Distribution of yearly yield (log10).</figcaption></figure><figure><img src="figures/eda_missing_rows.png" alt="Missing data: crop-province-years kept and dropped."><figcaption>Missing data: crop-province-years kept and dropped.</figcaption></figure></div>
+<div class="figrow "><figure><img src="figures/eda_outliers_by_crop.png" alt="Yield by crop, log scale; points beyond 1.5 IQR."><figcaption>Yield by crop, log scale; points beyond 1.5 IQR.</figcaption></figure><figure><img src="figures/eda_correlation.png" alt="Correlation of inputs and log yield, training years."><figcaption>Correlation of inputs and log yield, training years.</figcaption></figure></div>
+<div class="figrow "><figure><img src="figures/eda_rows_per_crop_province.png" alt="Balance: years of data per crop and province."><figcaption>Balance: years of data per crop and province.</figcaption></figure><figure><img src="figures/eda_rain_vs_yield_gap.png" alt="Rain deficit against the yield gap from the crop-province mean."><figcaption>Rain deficit against the yield gap from the crop-province mean.</figcaption></figure></div>
+
+
+<h2>4. Methodology</h2>
+<p><b>Features.</b> Annual rain, mean, maximum and minimum temperature, evapotranspiration, solar radiation, rain
+hours, soil wetness (mean and wettest month), three engineered drought features (rain deficit against the province's
+training-year mean, water balance, aridity index), crop and province. <b>Pipeline.</b> Median imputation, standard
+scaling and one-hot encoding inside a scikit-learn <code>Pipeline</code>, fitted on training rows only. The regressor
+does not predict yield directly (crops differ about 100 times): it learns the log-scale gap between a year's yield and
+the crop-province training average, plus a straight-line year trend (none, per crop, or per crop and province). Year
+is never a model input; at prediction it is pinned to 2022. <b>Split by year.</b> Train
+2001-2016 (565 rows, 73%), validation 2017-2019
+(106, 14%), test 2020-2022 (102, 13%).
+<b>Models.</b> Three baselines (overall mean, crop-province mean, crop-province mean plus year trend) and three
+algorithms. <b>Tuning.</b> <code>GridSearchCV</code> with 5-fold <code>GroupKFold</code> grouped by year, so all
+crops of one year stay in one fold (they share the same weather), scored on log-MAE. Grids:
+Ridge: trend none, per_crop, per_crop_province; alpha 0.1, 1.0, 10.0, 100.0. Random Forest: trend none, per_crop, per_crop_province; n_estimators 200, 400; max_depth None, 8, 15; min_samples_leaf 1, 3, 5. Gradient Boosting: trend none, per_crop, per_crop_province; n_estimators 100, 300; learning_rate 0.03, 0.1; max_depth 2, 3. <b>Selection</b> on validation log-MAE; the test years were scored once.
+<b>Saved</b> with <code>joblib</code>; versions pinned in <code>requirements.txt</code>.</p>
+
+
+<h2>5. Results</h2>
 <table class="results">
 <thead><tr><th>Model</th><th>Val R²</th><th>Val MAE</th><th>Test R²</th><th>Test MAE</th><th>Test RMSE</th><th>Test log-MAE</th></tr></thead>
 <tbody><tr><td>Baseline: overall mean</td><td>-0.002</td><td>91.7</td><td>-0.030</td><td>100.4</td><td>173.6</td><td>0.937</td></tr><tr><td>Baseline: crop-province mean</td><td>0.877</td><td>20.9</td><td>0.832</td><td>34.7</td><td>70.1</td><td>0.312</td></tr><tr><td>Baseline: mean + year trend</td><td>0.919</td><td>14.8</td><td>0.875</td><td>30.3</td><td>60.5</td><td>0.345</td></tr><tr><td>Ridge regression</td><td>0.924</td><td>15.2</td><td>0.878</td><td>29.5</td><td>59.7</td><td>0.340</td></tr><tr><td>Random Forest</td><td>0.917</td><td>15.2</td><td>0.873</td><td>30.6</td><td>60.9</td><td>0.360</td></tr><tr class="chosen"><td>Gradient Boosting (chosen)</td><td>0.924</td><td>14.9</td><td>0.885</td><td>29.7</td><td>58.0</td><td>0.341</td></tr></tbody>
 </table>
-<p class="note">Validation 2017-2019 (106 rows), test 2020-2022 (102 rows),
-MAE and RMSE in dataset yield units. The model was selected on validation log-MAE; the test set was scored once.
-Chosen: Gradient Boosting (learning_rate 0.03, max_depth 2, n_estimators 100, trend per_crop_province).</p>
-<figure class="full"><img src="figures/results_model_comparison.png" alt="Test R² and MAE of the three baselines and three models (from metrics.json)."><figcaption>Test R² and MAE of the three baselines and three models (from metrics.json).</figcaption></figure>
-<p>On the 2020-2022 test years, compared with using each crop&#x27;s average yield per province, the model was better on R² 0.885 against 0.832, MAE 29.7 against 34.7 and RMSE 58.0 against 70.1; it was not better on log-MAE 0.341 against 0.312. The pass test (R² and MAE) was chosen after seeing the test results. A year trend alone, with no climate inputs, scores R² 0.875. Small differences between crops are weak evidence.</p>
-<p>Absolute yields are rough: the model is pinned to 2022, and its typical-year prediction, set against the mean actual yield of 2020-2022, was 0.80 to 1.15 times the actual for the middle half of the 34 crop-province pairs, but 0.21 times for mango in Balochistan and 2.19 times for cotton in Sindh. Trust the ends of the ranking more than a single predicted number.</p>
-<p>The likely range the apps show is the nominal 80% spread of validation-year errors. It covered
-58% of the test rows, so it is optimistic.</p>
-<figure class="half"><img src="figures/results_predicted_vs_actual.png" alt="Predicted against actual yield on the test years, log scale."><figcaption>Predicted against actual yield on the test years, log scale.</figcaption></figure>
+<p class="note">MAE and RMSE in dataset yield units. Chosen on validation log-MAE: Gradient Boosting
+(learning_rate 0.03, max_depth 2, n_estimators 100, trend per_crop_province).</p>
+<div class="figrow wide"><figure><img src="figures/results_model_comparison.png" alt="Test R² and MAE of the baselines and models."><figcaption>Test R² and MAE of the baselines and models.</figcaption></figure></div>
+<p>On the 2020-2022 test years, compared with using each crop&#x27;s average yield per province, the model was better on R² 0.885 against 0.832, MAE 29.7 against 34.7 and RMSE 58.0 against 70.1; it was not better on log-MAE 0.341 against 0.312. The pass test (R² and MAE) was chosen after seeing the test results. A year trend alone, with no climate inputs, scores R² 0.875. Small differences between crops are weak evidence. Validation R² is 0.039 higher than test R² for the chosen model: some
+over-fitting to the validation years, expected with three years per split. Test log-MAE by province:
+Balochistan 0.552, Sindh 0.214, Punjab 0.208. Permutation importance on the validation years: crop 1.148, province
+0.369, the strongest weather input (rain_deficit_pct) only 0.0101.</p>
+<p>Absolute yields are rough: the model is pinned to 2022, and its typical-year prediction, set against the mean actual yield of 2020-2022, was 0.80 to 1.15 times the actual for the middle half of the 34 crop-province pairs, but 0.21 times for mango in Balochistan and 2.19 times for cotton in Sindh. Trust the ends of the ranking more than a single predicted number. The likely range the apps show is the nominal 80% spread of
+validation-year errors. It covered 58% of the test rows, so it is optimistic.</p>
+<div class="figrow "><figure><img src="figures/results_predicted_vs_actual.png" alt="Predicted against actual yield, test years, log scale."><figcaption>Predicted against actual yield, test years, log scale.</figcaption></figure><div class="side"><p class="note">Most crop-province pairs lie near the diagonal. The points far below it, mostly Balochistan, are years whose actual yield was much higher than predicted: a model built on crop-province averages and a straight-line trend does not follow such jumps.</p></div></div>
+
+
+<h2>6. Deployment</h2>
+<p>All three front ends load the same saved pipeline through one shared package
+(<code>src/climate_machine_learning/</code>), so they show the same numbers: below, all three show rice in Sindh in
+its driest real year at the same predicted yield and share of a typical year. <b>Local web app:</b> FastAPI with
+<code>/api/v1/predict</code>, <code>/api/v1/recommend</code> and <code>/api/v1/metrics</code>, HTML pages, input
+validation (inputs outside the trained range are refused with a 422 that states the range) and error messages with no
+fallback numbers; the same app is hosted at <a href="https://climate-machine-learning.vercel.app/">climate-machine-learning.vercel.app/</a>. <b>Streamlit Community Cloud:</b> input form,
+prediction with a likely range, one chart: <a href="https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/">climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/</a>. <b>Hugging Face Hub:</b> model card and pipeline at
+<a href="https://huggingface.co/SMHunain/crop-yield-drought-pakistan">huggingface.co/SMHunain/crop-yield-drought-pakistan</a>; no Space was built (group decision).</p>
+<div class="figrow three"><figure><img src="figures/deploy_streamlit.png" alt="Streamlit Community Cloud."><figcaption>Streamlit Community Cloud.</figcaption></figure><figure class="bottom"><img src="figures/deploy_vercel.png" alt="FastAPI pages on Vercel, all crops (rice ranked last)."><figcaption>FastAPI pages on Vercel, all crops (rice ranked last).</figcaption></figure><figure><img src="figures/deploy_local.png" alt="Local FastAPI app, /predict for rice."><figcaption>Local FastAPI app, /predict for rice.</figcaption></figure></div>
+
+
+<h2>7. What we proposed and what we built</h2>
+<table class="prop"><thead><tr><th>Proposal</th><th>Built</th></tr></thead><tbody><tr><td>Target: yield in kg/ha</td><td>Dataset yield units: the source does not state the unit, and values such as rice around 20 to 40 cannot be kg/ha.</td></tr><tr><td>Split 70/15/15, ordered by year</td><td>Year split 73%/14%/13%, so whole years stay together.</td></tr><tr><td>Several sources (national rain and temperature, city weather, PMD drought centre, Punjab irrigated area and district yields)</td><td>Two sources used: the crop dataset and NASA POWER. The national series end in 2016 and are not provincial, the Punjab tables cover Punjab only, the city weather has no Balochistan, and the drought centre has no downloadable series.</td></tr><tr><td>Features: rain deficit, irrigated area share</td><td>Rain deficit built; irrigated area share not built (no source has it for all three provinces).</td></tr><tr><td>Baseline, linear regression, Random Forest, Gradient Boosting, 5-fold tuning</td><td>Same, with Ridge as the linear model and folds grouped by year to avoid leakage across crops of one year.</td></tr><tr><td>Ranked list of low-water crops</td><td>All 13 crops ranked by share of a typical year; FAO water need shown as context for the 8 crops it lists, so the user sees water use beside the ranking.</td></tr><tr><td>Optional best-crop classification</td><td>Not built (future work).</td></tr></tbody></table>
+<p>The proposal&#x27;s success criterion is met: test R² 0.885 (target above 0.7) against the overall mean-yield baseline&#x27;s R² -0.030 and MAE 100.4 (model MAE 29.7). It is checked against a stricter baseline too (section 5).</p>
+
+
+<h2>8. Limitations and future work</h2>
+<p><b>Limitations.</b> Few rows (one per crop, province and year) from 22 years; weather and soil wetness are
+province-level and identical for every crop in a province; within-province ranges are narrow, so inputs outside them
+are refused rather than extrapolated; three crops have missing years; the yield unit is not confirmed; the win over
+the crop-province mean holds on R² and MAE only, chosen after seeing the test results, and is mostly the year trend;
+the likely range is optimistic; tied shares are ordered by name only; the soil wetness source adds little.
+<b>Future work.</b> District or farm-level data and irrigation share, more years, a best-crop classifier, a model that
+explains weather effects per crop, and a Hugging Face Space for the Gradio app already built in
+<code>hf_space/</code>.</p>
+
+<h2>9. References</h2><ol class="refs"><li>Abdullah-Masood-05. Pakistan crop yield vs climate (MIT). github.com/Abdullah-Masood-05/pakistan-crop-yield-vs-climate; upstream: Climate &amp; Agriculture in Pakistan, Zenodo, zenodo.org/records/15486470.</li><li>NASA Langley Research Center POWER Project. Monthly and Annual API v2.10.1 (MERRA-2), accessed 2026-11-19. power.larc.nasa.gov; referencing: power.larc.nasa.gov/docs/referencing/.</li><li>Brouwer, C. and Heibloem, M. (1986). Irrigation Water Management: Irrigation Water Needs. FAO Training manual no. 3, Table 14. fao.org/4/s2022e/s2022e07.htm.</li><li>Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. JMLR 12, 2825-2830.</li></ol>
+
+<h2>10. Individual contribution</h2>
+<table class="contrib"><thead><tr><th>Name</th><th>Roll number</th><th>Role</th><th>Parts</th></tr></thead>
+<tbody><tr><td>Syed Muhammad Hunain</td><td>CT-24281</td><td>Model creation and documentation</td><td>Data, EDA, aggregation; Pipeline, tuning, evaluation; Ranking and inference; README, checks, report</td></tr><tr><td>Muhammad Afzal</td><td>CT-24263</td><td>Frontend and deployments</td><td>Frontend pages; Deployments</td></tr><tr><td>Ayesha</td><td>CT-24309</td><td>Backend</td><td>API and validation</td></tr></tbody></table>
 
 </body></html>
