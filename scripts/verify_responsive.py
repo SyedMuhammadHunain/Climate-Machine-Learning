@@ -16,7 +16,10 @@ import atexit
 import json
 import sys
 import time
+import urllib.error
 import urllib.request
+
+import websocket  # websocket-client, already in requirements.txt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -48,11 +51,13 @@ PAGES = {
 # "index-reduced" loads it with prefers-reduced-motion (everything shown at once, no scene, no scrolling).
 PAGES["index-text"] = "document.fonts.status === 'loaded' && !!window.ScrollTrigger && ScrollTrigger.getAll().length > 0"
 PAGES["index-reduced"] = "document.fonts.status === 'loaded' && !!document.querySelector('a.careers-button')"
+# The crop detail page needs a scenario in its address: rice in Sindh, driest real year (see _Run.url)
+PAGES["crop"] = "document.fonts.status === 'loaded' && document.body.dataset.ready === 'true'"
 PAGES["predict-result"] = PAGES["predict-single"] = PAGES["predict-advanced"] = PAGES["predict"]
 PREDICT_VARIANTS = ("predict", "predict-result", "predict-single", "predict-advanced")
 # The landing page draws text over a WebGL scene, so colour contrast is not measurable from CSS there.
-CONTRAST_PAGES = (*PREDICT_VARIANTS, "metrics")
-TAB_PAGES = (*PREDICT_VARIANTS, "metrics")
+CONTRAST_PAGES = (*PREDICT_VARIANTS, "metrics", "crop")
+TAB_PAGES = (*PREDICT_VARIANTS, "metrics", "crop")
 
 MIN_TARGET_PX = 44     # WCAG 2.5.5 target size, at phone sizes
 MIN_GUTTER_PX = 8      # tabs keep this much space from the screen edge, so none looks cut off
@@ -165,12 +170,14 @@ MEASURE_JS = r"""
   const actions = { submit: rect(document.getElementById("btn-submit-prediction")), reset: rect(document.querySelector(".btn-reset")), row: rect(document.querySelector(".form-actions-row")) };
   const gridLefts = [...document.querySelectorAll(".inputs-grid .input-group")].map(el => Math.round(el.getBoundingClientRect().left));
   const visible = id => { const el = document.getElementById(id); return !!el && shown(el); };
+  const cropWrapper = document.querySelector(".crop-table-wrapper");
+  const cropTable = cropWrapper ? { sw: cropWrapper.scrollWidth, cw: cropWrapper.clientWidth, wrap: [...document.querySelectorAll(".crop-table td:first-child")].filter(td => td.getClientRects().length).map(td => td.getClientRects().length > 0 && td.getBoundingClientRect().height > 2.2 * parseFloat(getComputedStyle(td).lineHeight || 20)).some(Boolean) } : null;
   const results = { container: visible("results-container"), rankedItems: document.querySelectorAll("#team-items-1 .rank-row").length,
                     singleItems: document.querySelectorAll("#single-crop-items .job-post-item").length,
                     rankedShown: visible("team-section-1"), singleShown: visible("single-crop-section"),
                     rankHeads: [...document.querySelectorAll("#team-items-1 .rank-group-head")].map(el => el.innerText.replace(/\s+/g, " ").trim()),
                     rankRows: [...document.querySelectorAll("#team-items-1 .rank-row")].map(el => { const r = el.getBoundingClientRect();
-                        return { text: el.innerText.replace(/\s+/g, " ").trim(), h: r.height, left: r.left, right: r.right }; }),
+                        return { text: el.innerText.replace(/\s+/g, " ").trim(), h: r.height, left: r.left, right: r.right, tag: el.tagName, href: el.getAttribute("href") }; }),
                     advisory: (() => { const q = s => document.querySelector("#advisory-summary " + s); const tx = el => el ? el.innerText.replace(/\s+/g, " ").trim() : null;
                         return { headline: tx(q(".advisory-headline")), basis: tx(q(".advisory-basis")), caveat: tx(q(".advisory-caveat")), absolute: tx(q(".advisory-absolute")),
                                  subheads: [...document.querySelectorAll("#advisory-summary .advisory-subhead")].map(tx),
@@ -188,7 +195,7 @@ MEASURE_JS = r"""
     footer2: (el => { if (!el) return null; const r = document.createRange(); r.selectNodeContents(el); return rect(r); })(document.querySelectorAll(".white-footer-typer")[1]),
     footerLine: (el => el && getComputedStyle(el).display !== "none" ? rect(el) : null)(document.querySelector(".white-footer-horizontal-line")),
   } : null;
-  return { vw, vh, actions, gridLefts, results, landing, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
+  return { vw, vh, actions, gridLefts, results, landing, cropTable, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
 })()
 """
 
@@ -235,6 +242,38 @@ TABLES_JS = r"""
   });
 })()
 """
+
+
+def _api_get(url: str) -> dict:
+    return json.load(urllib.request.urlopen(url, timeout=30))
+
+
+def _api_post(url: str, body: dict) -> tuple:
+    """(status, json) for a POST; a 4xx answer is returned, not raised."""
+    request = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+    try:
+        response = urllib.request.urlopen(request, timeout=30)
+        return response.status, json.load(response)
+    except urllib.error.HTTPError as err:
+        return err.code, json.load(err)
+
+
+_SCENARIO_CACHE = {}
+
+
+def _api_scenarios(base: str) -> dict:
+    """Sindh's real driest and wettest years and the typical year (all nine medians), from /metadata."""
+    if base not in _SCENARIO_CACHE:
+        meta = _api_get(f"{base}/api/v1/metadata")
+        pick = lambda kind: next(s for s in meta["scenarios"] if s["province"] == "Sindh" and s["kind"] == kind)
+        _SCENARIO_CACHE[base] = {"driest": pick("driest"), "wettest": pick("wettest"), "crops": meta["all_crops"],
+                                 "median": {"inputs": dict(meta["reference"]["Sindh"]["median"])}}
+    return _SCENARIO_CACHE[base]
+
+
+def crop_url(base: str, crop: str, province: str, inputs: dict) -> str:
+    from urllib.parse import urlencode
+    return f"{base}/crop.html?" + urlencode({"crop": crop, "province": province, **inputs})
 
 
 def _click(chrome: Chrome, selector: str) -> None:
@@ -297,18 +336,36 @@ class _Run:
             atexit.register(self.close)
         return f"http://127.0.0.1:{self.port}"
 
+    def url(self, page: str) -> str:
+        if page == "crop":
+            return crop_url(self.base(), "rice", "Sindh", _api_scenarios(self.base())["driest"]["inputs"])
+        return f"{self.base()}/{page.split('-')[0]}.html"
+
     def browser(self) -> Chrome:
         if self.chrome is None:
             self.chrome = Chrome(extra_args=CHROME_ARGS)
         return self.chrome
 
     def measure(self, page: str, size: tuple) -> dict:
+        """Measurements for one page and size. The WebGL landing page sometimes takes headless Chrome down in a long run:
+        start a fresh browser and measure that page again, once."""
+        try:
+            return self._measure(page, size)
+        except (websocket.WebSocketException, OSError):
+            try:
+                self.chrome.close()
+            except Exception:  # noqa: BLE001 - it is already gone
+                pass
+            self.chrome = None
+            return self._measure(page, size)
+
+    def _measure(self, page: str, size: tuple) -> dict:
         key = (page, size[0])
         if key not in self.cache:
             name, w, h, dpr, phone = size
             chrome = self.browser()
             chrome.emulate(w, h, dpr=dpr, mobile=phone, touch=phone, reduced_motion=page == "index-reduced")
-            chrome.goto(f"{self.base()}/{page.split('-')[0]}.html")
+            chrome.goto(self.url(page))
             chrome.wait_for(PAGES[page], 60, f"{page}.html to finish loading at {name}")
             if page in SETUP:
                 SETUP[page](chrome)
@@ -688,6 +745,178 @@ def advisory_card_is_structured():
     _fail(problems, "advisory card")
 
 
+def ranking_rows_link_to_the_crop_page():
+    """Each ranking row is a link to crop.html with the crop, the province and the nine inputs the model used; clicking one
+    opens that crop's page (R9)."""
+    from urllib.parse import parse_qs, urlparse
+    api = _expected_sindh_driest_ranking()
+    problems = []
+    for page, size, m in RUN.each(("predict-result",)):
+        where = f"{page} {size[0]}"
+        for row in m["results"]["rankRows"]:
+            crop = row["text"].split(" ")[0].lower()
+            if row["tag"] != "A" or not (row["href"] or "").startswith("crop.html?"):
+                problems.append(f"{where}: {crop} row is <{row['tag'].lower()}> href={row['href']!r}, expected a link to crop.html")
+                continue
+            q = {k: v[0] for k, v in parse_qs(urlparse(row["href"]).query).items()}
+            if q.get("crop") != crop or q.get("province") != "Sindh":
+                problems.append(f"{where}: {crop} link has crop={q.get('crop')} province={q.get('province')}")
+            for key, used in api["inputs"].items():
+                if key not in q or abs(float(q[key]) - used["value"]) > 1e-9 * max(1.0, abs(used["value"])):
+                    problems.append(f"{where}: {crop} link input {key}={q.get(key)}, the model used {used['value']}")
+    chrome = RUN.browser()
+    chrome.emulate(1440, 900, dpr=1, mobile=False, touch=False)
+    chrome.goto(f"{RUN.base()}/predict.html")
+    chrome.wait_for(PAGES["predict"], 60, "the predictor")
+    SETUP["predict-result"](chrome)
+    first = api["ranked_crops"][0]["crop"]
+    _click(chrome, "a.rank-row")
+    chrome.wait_for("document.body.dataset.ready === 'true' && location.pathname.endsWith('crop.html')", 30, "the crop page after a click")
+    title = chrome.eval("document.getElementById('crop-title').innerText.trim().toLowerCase()")
+    if title != first:
+        problems.append(f"clicking the first row opened {title!r}, expected {first!r}")
+    _fail(problems, "ranking links")
+
+
+CROP_JS = r"""
+(() => {
+  const norm = s => s.replace(/\s+/g, " ").trim();
+  const tx = el => el ? norm(el.innerText) : null;
+  const result = {};
+  document.querySelectorAll("#crop-result dt").forEach(dt => { result[tx(dt)] = tx(dt.nextElementSibling); });
+  const inputs = [...document.querySelectorAll("#crop-inputs > div")].map(d => ({ label: tx(d.querySelector("dt")), value: tx(d.querySelector("dd")) }));
+  const link = id => { const a = document.getElementById(id); return a ? { href: a.getAttribute("href"), text: tx(a) } : null; };
+  return {
+    title: tx(document.getElementById("crop-title")), province: tx(document.getElementById("crop-province")),
+    result, years: [...document.querySelectorAll("#crop-years tbody tr")].map(tr => [...tr.cells].map(tx)),
+    yearHeads: [...document.querySelectorAll("#crop-years thead th")].map(tx),
+    water: tx(document.getElementById("crop-water")), waterLink: (document.querySelector("#crop-water a") || {}).href || null,
+    data: tx(document.getElementById("crop-data")), inputs, caveat: tx(document.querySelector(".crop-caveat")), absolute: tx(document.querySelector(".crop-absolute")),
+    prev: link("crop-prev"), next: link("crop-next"), back: link("crop-back"),
+    unitCount: (document.body.innerText.match(/dataset yield units/g) || []).length,
+    cards: document.querySelectorAll(".crop-card").length, error: tx(document.querySelector(".crop-error")),
+    ready: document.body.dataset.ready, heading: document.querySelectorAll("h1").length,
+  };
+})()
+"""
+
+
+def crop_page_shows_the_apis_numbers():
+    """For each of the 13 crops the page's rank, yields, share, water need, training rows, inputs, caveats and the
+    driest / typical / wettest table equal the API's answers for the same inputs; prev and next walk the ranking (R9)."""
+    import re
+    base = RUN.base()
+    sc = _api_scenarios(base)
+    inputs = sc["driest"]["inputs"]
+    api = _api_post(f"{base}/api/v1/recommend", {"province": "Sindh", **inputs})[1]
+    years = {kind: _api_post(f"{base}/api/v1/recommend", {"province": "Sindh", **sc[kind]["inputs"]})[1] for kind in ("driest", "median", "wettest")}
+    labels = {"driest": f"Driest real year ({sc['driest']['year']})", "median": "Typical (median) year", "wettest": f"Wettest real year ({sc['wettest']['year']})"}
+    order = [c["crop"] for c in api["ranked_crops"]]
+    chrome = RUN.browser()
+    chrome.emulate(360, 800, dpr=2, mobile=True, touch=True)
+    problems = []
+
+    def group_text(response, crop):
+        group = next(g for g in response["groups"] if crop in g["crops"])
+        if len(group["crops"]) == 1:
+            return group["rank"], f"Rank {group['rank']}"
+        return group["rank"], f"Rank {group['rank']}, tied with {len(group['crops']) - 1} other crops at {group['pct_of_normal']:.1f}%"
+
+    for i, crop in enumerate(order):
+        chrome.goto(crop_url(base, crop, "Sindh", inputs))
+        chrome.wait_for("document.body.dataset.ready === 'true'", 60, f"the {crop} page")
+        page = chrome.eval(CROP_JS)
+        item = next(c for c in api["ranked_crops"] if c["crop"] == crop)
+        where = crop
+        if page["cards"] == 0 or page["error"]:
+            problems.append(f"{where}: no result cards (error: {page['error']!r})")
+            continue
+        if page["title"].lower() != crop or page["province"] != "Sindh" or page["heading"] != 1:
+            problems.append(f"{where}: title {page['title']!r}, province {page['province']!r}, {page['heading']} h1")
+        expected = {"Rank": group_text(api, crop)[1], "Predicted yield": f"{item['predicted_yield']:.2f}",
+                    "Typical year yield": f"{item['normal_yield']:.2f}", "Share of a typical year": f"{item['pct_of_normal']:.1f}%"}
+        for label, value in expected.items():
+            if page["result"].get(label) != value:
+                problems.append(f"{where}: {label} shows {page['result'].get(label)!r}, API {value!r}")
+        for row, kind in zip(page["years"], ("driest", "median", "wettest")):
+            it = next(c for c in years[kind]["ranked_crops"] if c["crop"] == crop)
+            want = [labels[kind], str(group_text(years[kind], crop)[0]), f"{it['pct_of_normal']:.1f}%", f"{it['predicted_yield']:.2f}"]
+            if row != want:
+                problems.append(f"{where}: {kind} row {row}, API {want}")
+        if len(page["years"]) != 3:
+            problems.append(f"{where}: {len(page['years'])} real-year rows, expected 3")
+        fao = item["fao_water_need"]
+        if fao:
+            want = f"{fao['mm_min']}-{fao['mm_max']} mm per growing period, drought sensitivity {fao['drought_sensitivity']}"
+            if want not in page["water"] or page["waterLink"] != fao["source_url"]:
+                problems.append(f"{where}: water need {page['water']!r} / {page['waterLink']!r}, API {want!r} / {fao['source_url']!r}")
+        elif "not listed in the FAO table" not in page["water"]:
+            problems.append(f"{where}: water need {page['water']!r}, expected 'not listed in the FAO table'")
+        rows = f"{item['training_rows_for_crop']} of {item['training_rows_possible']}"
+        if rows not in page["data"] or (item["training_rows_for_crop"] < item["training_rows_possible"]) != ("incomplete data" in page["data"]):
+            problems.append(f"{where}: data block {page['data']!r}, API {rows}")
+        if item["barely_grown"] != ("barely grown" in page["data"].lower()):
+            problems.append(f"{where}: barely grown flag {item['barely_grown']} not shown correctly in {page['data']!r}")
+        if [f["label"] for f in page["inputs"]] != [k for k in api["inputs"]] and len(page["inputs"]) != 9:
+            problems.append(f"{where}: {len(page['inputs'])} inputs listed, expected 9")
+        if page["caveat"] != " ".join(api["model_caveat"].split()) or page["absolute"] != " ".join(api["absolute_yield_note"].split()):
+            problems.append(f"{where}: caveat text differs from the API's")
+        if page["unitCount"] != 1:
+            problems.append(f"{where}: yield unit stated {page['unitCount']} times, expected once")
+        prev_crop, next_crop = order[(i - 1) % 13], order[(i + 1) % 13]
+        for key, neighbour in (("prev", prev_crop), ("next", next_crop)):
+            link = page[key]
+            if not link or f"crop={neighbour}&" not in link["href"] or neighbour.lower() not in link["text"].lower():
+                problems.append(f"{where}: {key} link {link} should go to {neighbour}")
+        if not page["back"] or page["back"]["href"] != "predict.html":
+            problems.append(f"{where}: back link {page['back']}")
+    _fail(problems, "crop pages")
+
+
+def crop_years_table_fits_its_box_at_every_size():
+    """The driest / typical / wettest table never scrolls inside its box and its scenario names do not wrap into a tall
+    column; on phones it is one card per row (R3, R6)."""
+    problems = []
+    for page, size, m in RUN.each(("crop",)):
+        t = m["cropTable"]
+        if t["sw"] > t["cw"] + 1:
+            problems.append(f"{page} {size[0]}: table needs {t['sw']} px, has {t['cw']} px")
+        if size[1] >= 600 and t["wrap"]:
+            problems.append(f"{page} {size[0]}: a scenario name wraps onto three or more lines")
+    _fail(problems, "crop years table")
+
+
+def crop_page_refuses_bad_addresses_without_showing_numbers():
+    """An unknown crop or province, a missing crop, or inputs outside the trained range show a plain message and a link back,
+    never numbers; the out-of-range message is the API's own (R9)."""
+    base = RUN.base()
+    sc = _api_scenarios(base)
+    inputs = sc["driest"]["inputs"]
+    chrome = RUN.browser()
+    chrome.emulate(360, 800, dpr=2, mobile=True, touch=True)
+    out_of_range = {**inputs, "precipitation_sum": 5}
+    api_message = _api_post(f"{base}/api/v1/recommend", {"province": "Sindh", **out_of_range})[1]["message"]
+    cases = [
+        ("unknown crop", crop_url(base, "quinoa", "Sindh", inputs), "quinoa"),
+        ("unknown province", crop_url(base, "rice", "Atlantis", inputs), "Atlantis"),
+        ("no crop", f"{base}/crop.html?province=Sindh", "crop"),
+        ("out of range", crop_url(base, "rice", "Sindh", out_of_range), api_message),
+        ("not a number", crop_url(base, "rice", "Sindh", {**inputs, "precipitation_sum": "lots"}), "precipitation_sum"),
+    ]
+    problems = []
+    for name, url, expect in cases:
+        chrome.goto(url)
+        chrome.wait_for("document.body.dataset.ready === 'true'", 60, f"the {name} page")
+        page = chrome.eval(CROP_JS)
+        if not page["error"] or expect not in page["error"]:
+            problems.append(f"{name}: error text {page['error']!r} should mention {expect!r}")
+        if page["cards"] != 0 or page["result"]:
+            problems.append(f"{name}: {page['cards']} result cards shown next to an error")
+        if not page["back"] or page["back"]["href"] != "predict.html":
+            problems.append(f"{name}: back link {page['back']}")
+    _fail(problems, "bad crop addresses")
+
+
 def landing_text_phase_fits():
     """When the paragraph and the Start button are shown (scrolled intro, or reduced motion), header, paragraph, button
     and footer sit in that order without overlapping, all inside the screen (R4.8)."""
@@ -857,6 +1086,10 @@ TESTS = [
     predictor_form_layout,
     prediction_results_are_drawn_at_every_size,
     result_rows_show_only_crop_rank_share_and_yield,
+    ranking_rows_link_to_the_crop_page,
+    crop_page_shows_the_apis_numbers,
+    crop_years_table_fits_its_box_at_every_size,
+    crop_page_refuses_bad_addresses_without_showing_numbers,
     advisory_card_is_structured,
     landing_text_phase_fits,
     landing_scene_is_lighter_on_phones,

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Crop details — Low-Water Crops</title>
+    <meta name="description" content="One crop in detail: its rank, predicted yield and share of a typical year in a province for the scenario you chose. Every number is model output.">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/site_favicon.png">
+
+    <style>
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Book_Web.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Medium_Web.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Semibold_Web.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --fontFamily: "Whitney SSm", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --colorPrimary600: #FF7344;
+            --colorPrimary900: #232323;
+            --colorNeutral800: #373e4d;
+            --colorNeutral700: #545b6d;
+            --colorNeutral600: #596173; /* 6.2:1 on white (was #7d8699, 3.7:1) */
+            --colorNeutral400: #c2c7d1;
+            --colorNeutral300: #d7dae0;
+            --colorNeutral200: #e5e6e8;
+            --colorNeutral100: #f7f8fa;
+            --colorAccentText: #b93a0a; /* orange for text: 5.7:1 on white (--colorPrimary600 is 2.6:1, borders and fills only) */
+            --gutter: clamp(16px, 4vw, 32px);
+            --widthMaxJobBoard: clamp(720px, 50vw, 960px); /* 720 px up to 1440 px screens, 960 px from 1920 px */
+            --fontNav: clamp(14px, 0.35vw + 11px, 16px);
+            --minTarget: 44px; /* WCAG 2.5.5 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--fontFamily);
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--colorPrimary900);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: 80px;
+        }
+
+        .header-logo-container {
+            text-align: center;
+            padding: clamp(24px, 5vw, 52px) var(--gutter) clamp(24px, 4vw, 48px);
+        }
+
+        .header-logo-container a {
+            display: inline-flex !important; /* the link is the tap target: at least 44 px tall */
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            max-width: 100%;
+        }
+
+        .header-logo-container svg {
+            width: min(100%, clamp(240px, 24vw, 420px)); /* 330 px wide on 1440 px screens, never wider than the screen */
+            height: auto;
+            display: inline-block;
+        }
+
+        .site-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto 32px;
+            padding: 0 var(--gutter);
+            max-width: var(--widthMaxJobBoard);
+        }
+
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: var(--minTarget);
+            padding: 8px 16px;
+            font-size: var(--fontNav);
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        @media (max-width: 479px) {
+            .nav-pill {
+                flex: 1 1 100%; /* stacked, one tab per row, label never cut */
+            }
+        }
+
+        .nav-pill:hover {
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral600);
+        }
+
+        .nav-pill.active {
+            background: var(--colorPrimary900);
+            color: #ffffff;
+            border-color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
+        .crop-main {
+            max-width: var(--widthMaxJobBoard);
+            margin: 0 auto;
+            padding: 0 var(--gutter);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--minTarget);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--colorAccentText);
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .crop-header {
+            margin: 4px 0 20px;
+        }
+
+        #crop-title {
+            font-size: clamp(24px, 2vw + 16px, 32px);
+            font-weight: 600;
+            line-height: 1.2;
+            text-transform: capitalize;
+        }
+
+        #crop-province {
+            margin-top: 4px;
+            font-size: 16px;
+            color: var(--colorNeutral700);
+        }
+
+        .crop-error {
+            padding: 14px 16px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #991b1b;
+            overflow-wrap: anywhere;
+        }
+
+        .crop-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 1024px) {
+            .crop-grid {
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+
+            .crop-card.wide {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .crop-card {
+            padding: 18px 20px;
+            background: #ffffff;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 8px;
+            min-width: 0;
+        }
+
+        .crop-card h2 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .crop-card p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--colorNeutral800);
+            overflow-wrap: anywhere;
+        }
+
+        .crop-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .crop-card a {
+            color: var(--colorAccentText);
+        }
+
+        .crop-facts div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 4px 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--colorNeutral200);
+        }
+
+        .crop-facts div:last-child {
+            border-bottom: none;
+        }
+
+        .crop-facts dt {
+            font-size: 14px;
+            color: var(--colorNeutral600);
+        }
+
+        .crop-facts dd {
+            font-size: 15px;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .crop-facts dd em {
+            font-size: 13px;
+            font-weight: 400;
+            font-style: normal;
+            color: var(--colorNeutral600);
+        }
+
+        .crop-facts.stacked div {
+            display: block;
+        }
+
+        .crop-facts.stacked dd {
+            margin-top: 2px;
+            text-align: left;
+        }
+
+        .crop-unit {
+            margin-top: 10px;
+            font-size: 13px !important;
+            color: var(--colorNeutral600) !important;
+        }
+
+        .crop-table-wrapper {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        .crop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .crop-table th {
+            padding: 10px 12px;
+            background: var(--colorNeutral100);
+            border-bottom: 1px solid var(--colorNeutral300);
+            font-size: 13px;
+            font-weight: 600;
+            vertical-align: bottom;
+        }
+
+        .crop-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--colorNeutral200);
+            overflow-wrap: anywhere;
+        }
+
+        .crop-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .crop-table .num {
+            text-align: right;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 599px) {
+            /* one labelled card per row, like the metrics tables */
+            .crop-table,
+            .crop-table tbody,
+            .crop-table tr,
+            .crop-table td {
+                display: block;
+            }
+
+            .crop-table thead {
+                display: none;
+            }
+
+            .crop-table tr {
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--colorNeutral300);
+            }
+
+            .crop-table tr:last-child {
+                border-bottom: none;
+            }
+
+            .crop-table td {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 4px 0;
+                border-bottom: none;
+                text-align: right;
+            }
+
+            .crop-table td::before {
+                content: attr(data-label);
+                flex: 0 1 50%;
+                font-size: 13px;
+                font-weight: 600;
+                text-align: left;
+                color: var(--colorNeutral600);
+            }
+
+            .crop-table td:first-child {
+                display: block;
+                padding-bottom: 6px;
+                font-weight: 600;
+                text-align: left;
+            }
+
+            .crop-table td:first-child::before {
+                display: none;
+            }
+        }
+
+        .crop-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 24px 0 8px;
+        }
+
+        .crop-nav a {
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--minTarget);
+            padding: 8px 16px;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--colorPrimary900);
+            text-decoration: none;
+            text-transform: capitalize;
+        }
+
+        .crop-nav a:hover {
+            border-color: var(--colorNeutral600);
+        }
+
+        @media (max-width: 479px) {
+            .crop-nav a {
+                flex: 1 1 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Centered Low-Water Crops Wordmark Logo -->
+    <div class="header-logo-container">
+        <a href="index.html" title="Back to 3D Overview" style="display:inline-block; line-height:0;">
+            <svg id="site-wordmark" xmlns="http://www.w3.org/2000/svg" viewBox="19.4 -294.0 3362.4 387.0" role="img" aria-label="Low-Water Crops">
+                <title>Low-Water Crops</title>
+                <path d="M27.4 0.0V-281.8H86.4V-45.6H237.6V0.0ZM484.4 -108.4Q484.4 -55.8 455.2 -25.9Q426.0 4.0 374.4 4.0Q323.8 4.0 295.0 -26.0Q266.2 -56.0 266.2 -108.4Q266.2 -160.6 295.0 -190.5Q323.8 -220.4 375.6 -220.4Q428.6 -220.4 456.5 -191.5Q484.4 -162.6 484.4 -108.4ZM425.6 -108.4Q425.6 -147.0 413.0 -164.4Q400.4 -181.8 376.4 -181.8Q325.2 -181.8 325.2 -108.4Q325.2 -72.2 337.7 -53.3Q350.2 -34.4 373.8 -34.4Q425.6 -34.4 425.6 -108.4ZM763.0 0.0H703.6L669.2 -132.0Q666.8 -141.0 659.8 -176.4L649.4 -131.6L614.6 0.0H555.2L499.2 -216.4H552.0L587.6 -51.0L590.4 -65.8L595.4 -89.2L629.4 -216.4H689.6L722.8 -89.2Q725.6 -78.8 731.0 -51.0L736.6 -77.4L767.8 -216.4H819.8ZM835.0 -81.8V-130.6H939.0V-81.8ZM1268.8 0.0H1198.8L1160.6 -163.0Q1153.6 -191.8 1148.8 -223.2Q1144.0 -197.0 1141.0 -183.3Q1138.0 -169.6 1098.4 0.0H1028.4L955.8 -281.8H1015.6L1056.4 -99.8L1065.6 -55.8Q1071.2 -83.6 1076.5 -108.9Q1081.8 -134.2 1116.4 -281.8H1182.4L1218.0 -131.8Q1222.2 -115.0 1232.2 -55.8L1237.2 -79.0L1247.8 -125.0L1281.8 -281.8H1341.6ZM1420.6 4.0Q1389.2 4.0 1371.6 -13.1Q1354.0 -30.2 1354.0 -61.2Q1354.0 -94.8 1375.9 -112.4Q1397.8 -130.0 1439.4 -130.4L1486.0 -131.2V-142.2Q1486.0 -163.4 1478.6 -173.7Q1471.2 -184.0 1454.4 -184.0Q1438.8 -184.0 1431.5 -176.9Q1424.2 -169.8 1422.4 -153.4L1363.8 -156.2Q1369.2 -187.8 1392.7 -204.1Q1416.2 -220.4 1456.8 -220.4Q1497.8 -220.4 1520.0 -200.2Q1542.2 -180.0 1542.2 -142.8V-64.0Q1542.2 -45.8 1546.3 -38.9Q1550.4 -32.0 1560.0 -32.0Q1566.4 -32.0 1572.4 -33.2V-2.8Q1567.4 -1.6 1563.4 -0.6Q1559.4 0.4 1555.4 1.0Q1551.4 1.6 1546.9 2.0Q1542.4 2.4 1536.4 2.4Q1515.2 2.4 1505.1 -8.0Q1495.0 -18.4 1493.0 -38.6H1491.8Q1468.2 4.0 1420.6 4.0ZM1486.0 -100.2 1457.2 -99.8Q1437.6 -99.0 1429.4 -95.5Q1421.2 -92.0 1416.9 -84.8Q1412.6 -77.6 1412.6 -65.6Q1412.6 -50.2 1419.7 -42.7Q1426.8 -35.2 1438.6 -35.2Q1451.8 -35.2 1462.7 -42.4Q1473.6 -49.6 1479.8 -62.3Q1486.0 -75.0 1486.0 -89.2ZM1653.8 3.6Q1629.0 3.6 1615.6 -9.9Q1602.2 -23.4 1602.2 -50.8V-178.4H1574.8V-216.4H1605.0L1622.6 -267.2H1657.8V-216.4H1698.8V-178.4H1657.8V-66.0Q1657.8 -50.2 1663.8 -42.7Q1669.8 -35.2 1682.4 -35.2Q1689.0 -35.2 1701.2 -38.0V-3.2Q1680.4 3.6 1653.8 3.6ZM1823.4 4.0Q1774.6 4.0 1748.4 -24.9Q1722.2 -53.8 1722.2 -109.2Q1722.2 -162.8 1748.8 -191.6Q1775.4 -220.4 1824.2 -220.4Q1870.8 -220.4 1895.4 -189.5Q1920.0 -158.6 1920.0 -99.0V-97.4H1781.2Q1781.2 -65.8 1792.9 -49.7Q1804.6 -33.6 1826.2 -33.6Q1856.0 -33.6 1863.8 -59.4L1916.8 -54.8Q1893.8 4.0 1823.4 4.0ZM1823.4 -185.0Q1803.6 -185.0 1792.9 -171.2Q1782.2 -157.4 1781.6 -132.6H1865.6Q1864.0 -158.8 1853.0 -171.9Q1842.0 -185.0 1823.4 -185.0ZM1962.6 0.0V-165.6Q1962.6 -183.4 1962.1 -195.3Q1961.6 -207.2 1961.0 -216.4H2014.6Q2015.2 -212.8 2016.2 -194.5Q2017.2 -176.2 2017.2 -170.2H2018.0Q2026.2 -193.0 2032.6 -202.3Q2039.0 -211.6 2047.8 -216.1Q2056.6 -220.6 2069.8 -220.6Q2080.6 -220.6 2087.2 -217.6V-170.6Q2073.6 -173.6 2063.2 -173.6Q2042.2 -173.6 2030.5 -156.6Q2018.8 -139.6 2018.8 -106.2V0.0ZM2366.2 -42.4Q2419.6 -42.4 2440.4 -96.0L2491.8 -76.6Q2475.2 -35.8 2443.1 -15.9Q2411.0 4.0 2366.2 4.0Q2298.2 4.0 2261.1 -34.5Q2224.0 -73.0 2224.0 -142.2Q2224.0 -211.6 2259.8 -248.8Q2295.6 -286.0 2363.6 -286.0Q2413.2 -286.0 2444.4 -266.1Q2475.6 -246.2 2488.2 -207.6L2436.2 -193.4Q2429.6 -214.6 2410.3 -227.1Q2391.0 -239.6 2364.8 -239.6Q2324.8 -239.6 2304.1 -214.8Q2283.4 -190.0 2283.4 -142.2Q2283.4 -93.6 2304.7 -68.0Q2326.0 -42.4 2366.2 -42.4ZM2531.6 0.0V-165.6Q2531.6 -183.4 2531.1 -195.3Q2530.6 -207.2 2530.0 -216.4H2583.6Q2584.2 -212.8 2585.2 -194.5Q2586.2 -176.2 2586.2 -170.2H2587.0Q2595.2 -193.0 2601.6 -202.3Q2608.0 -211.6 2616.8 -216.1Q2625.6 -220.6 2638.8 -220.6Q2649.6 -220.6 2656.2 -217.6V-170.6Q2642.6 -173.6 2632.2 -173.6Q2611.2 -173.6 2599.5 -156.6Q2587.8 -139.6 2587.8 -106.2V0.0ZM2896.6 -108.4Q2896.6 -55.8 2867.4 -25.9Q2838.2 4.0 2786.6 4.0Q2736.0 4.0 2707.2 -26.0Q2678.4 -56.0 2678.4 -108.4Q2678.4 -160.6 2707.2 -190.5Q2736.0 -220.4 2787.8 -220.4Q2840.8 -220.4 2868.7 -191.5Q2896.6 -162.6 2896.6 -108.4ZM2837.8 -108.4Q2837.8 -147.0 2825.2 -164.4Q2812.6 -181.8 2788.6 -181.8Q2737.4 -181.8 2737.4 -108.4Q2737.4 -72.2 2749.9 -53.3Q2762.4 -34.4 2786.0 -34.4Q2837.8 -34.4 2837.8 -108.4ZM3146.0 -109.2Q3146.0 -55.0 3124.3 -25.5Q3102.6 4.0 3063.0 4.0Q3040.2 4.0 3023.3 -5.9Q3006.4 -15.8 2997.4 -34.4H2996.2Q2997.4 -28.4 2997.4 2.0V85.0H2941.2V-166.6Q2941.2 -197.2 2939.6 -216.4H2994.2Q2995.2 -212.8 2995.9 -202.2Q2996.6 -191.6 2996.6 -181.2H2997.4Q3016.4 -221.0 3066.6 -221.0Q3104.4 -221.0 3125.2 -191.9Q3146.0 -162.8 3146.0 -109.2ZM3087.4 -109.2Q3087.4 -182.0 3042.8 -182.0Q3020.4 -182.0 3008.5 -162.4Q2996.6 -142.8 2996.6 -107.6Q2996.6 -72.6 3008.5 -53.5Q3020.4 -34.4 3042.4 -34.4Q3087.4 -34.4 3087.4 -109.2ZM3373.8 -63.2Q3373.8 -31.8 3348.1 -13.9Q3322.4 4.0 3277.0 4.0Q3232.4 4.0 3208.7 -10.1Q3185.0 -24.2 3177.2 -54.0L3226.6 -61.4Q3230.8 -46.0 3241.1 -39.6Q3251.4 -33.2 3277.0 -33.2Q3300.6 -33.2 3311.4 -39.2Q3322.2 -45.2 3322.2 -58.0Q3322.2 -68.4 3313.5 -74.5Q3304.8 -80.6 3284.0 -84.8Q3236.4 -94.2 3219.8 -102.3Q3203.2 -110.4 3194.5 -123.3Q3185.8 -136.2 3185.8 -155.0Q3185.8 -186.0 3209.7 -203.3Q3233.6 -220.6 3277.4 -220.6Q3316.0 -220.6 3339.5 -205.6Q3363.0 -190.6 3368.8 -162.2L3319.0 -157.0Q3316.6 -170.2 3307.2 -176.7Q3297.8 -183.2 3277.4 -183.2Q3257.4 -183.2 3247.4 -178.1Q3237.4 -173.0 3237.4 -161.0Q3237.4 -151.6 3245.1 -146.1Q3252.8 -140.6 3271.0 -137.0Q3296.4 -131.8 3316.1 -126.3Q3335.8 -120.8 3347.7 -113.2Q3359.6 -105.6 3366.7 -93.7Q3373.8 -81.8 3373.8 -63.2Z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Navigation Pills -->
+    <nav class="site-nav">
+        <a href="index.html" class="nav-pill">Overview</a>
+        <a href="predict.html" class="nav-pill active" aria-current="page">Crop Predictor & Advisory</a>
+        <a href="metrics.html" class="nav-pill">Model & Benchmarks</a>
+    </nav>
+
+    <main class="crop-main">
+        <a class="back-link" id="crop-back" href="predict.html">All crops</a>
+
+        <header class="crop-header">
+            <h1 id="crop-title">Crop details</h1>
+            <p id="crop-province"></p>
+        </header>
+
+        <div id="crop-error" class="crop-error" role="alert" hidden></div>
+
+        <div id="crop-content" hidden>
+            <div class="crop-grid" id="crop-grid"></div>
+            <nav class="crop-nav" aria-label="Other crops">
+                <a id="crop-prev" href="predict.html"></a>
+                <a id="crop-next" href="predict.html"></a>
+            </nav>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
+        // API text goes into innerHTML, so escape it
+        const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const $ = id => document.getElementById(id);
+        const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+        const pct = x => Number(x).toFixed(1);
+        const yl = x => Number(x).toFixed(2);
+        const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
+
+        const INPUT_KEYS = ["precipitation_sum", "temperature_2m_mean", "temperature_2m_max", "temperature_2m_min", "fao_evapotranspiration",
+            "shortwave_radiation", "precipitation_hours", "soil_wetness_mean", "soil_wetness_max"];
+        const NAMES = {
+            precipitation_sum: "Annual rain (mm)", temperature_2m_mean: "Mean temperature (°C)",
+            temperature_2m_max: "Max temperature (°C)", temperature_2m_min: "Min temperature (°C)",
+            fao_evapotranspiration: "ET0 (mm/day)", shortwave_radiation: "Radiation (MJ/m²)",
+            precipitation_hours: "Rain hours", soil_wetness_mean: "Soil wetness, mean (0-1)", soil_wetness_max: "Soil wetness, max (0-1)",
+        };
+        const SOURCE_LABEL = {
+            user: "entered", province_median_training_years: "province median",
+            user_mean_plus_province_median_offset: "your mean + province median offset",
+        };
+
+        class PageError extends Error {}
+
+        async function getJson(path, body) {
+            const options = { signal: AbortSignal.timeout(30000) };
+            if (body) Object.assign(options, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            const res = await fetch(`${API_BASE}${path}`, options);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new PageError(data.message || `The model server answered ${res.status}.`);
+            return data;
+        }
+
+        function showError(message) {
+            $("crop-content").hidden = true;
+            $("crop-error").hidden = false;
+            $("crop-error").innerHTML = `${esc(message)}`;
+            document.title = "Crop details — Low-Water Crops";
+        }
+
+        // crop.html?crop=rice&province=Sindh&precipitation_sum=...: the scenario travels in the address
+        function cropHref(crop, province, inputs) {
+            const q = new URLSearchParams({ crop, province });
+            Object.entries(inputs).forEach(([k, v]) => q.set(k, v));
+            return "crop.html?" + q.toString();
+        }
+
+        function groupOf(response, crop) {
+            return response.groups.find(g => g.crops.includes(crop));
+        }
+
+        function rankText(response, crop) {
+            const g = groupOf(response, crop);
+            const others = g.crops.length - 1;
+            return others === 0 ? `Rank ${g.rank}` : `Rank ${g.rank}, tied with ${others} other crop${others > 1 ? "s" : ""} at ${pct(g.pct_of_normal)}%`;
+        }
+
+        function render(crop, province, inputs, response, years) {
+            const item = response.ranked_crops.find(c => c.crop === crop);
+            const fao = item.fao_water_need;
+            $("crop-title").textContent = crop;
+            $("crop-province").textContent = province;
+            document.title = `${cap(crop)} in ${province} — Low-Water Crops`;
+
+            const card = (id, title, inner, wide = false) => `<section class="crop-card${wide ? " wide" : ""}" id="${id}-card"><h2>${esc(title)}</h2>${inner}</section>`;
+            const facts = rows => rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("");
+
+            const yearRow = (label, resp) => {
+                const it = resp.ranked_crops.find(c => c.crop === crop);
+                return `<tr><td data-label="Scenario">${esc(label)}</td><td class="num" data-label="Rank">${esc(groupOf(resp, crop).rank)}</td>`
+                    + `<td class="num" data-label="Share of a typical year">${pct(it.pct_of_normal)}%</td><td class="num" data-label="Predicted yield">${yl(it.predicted_yield)}</td></tr>`;
+            };
+
+            const water = fao
+                ? `<p>${esc(fao.mm_min)}-${esc(fao.mm_max)} mm per growing period, drought sensitivity ${esc(fao.drought_sensitivity)}.</p>`
+                  + `<p>Context only, not a model input. <a href="${esc(fao.source_url)}" target="_blank" rel="noopener">${esc(fao.fao_name)}, FAO Training Manual 3, Table 14</a></p>`
+                : `<p>not listed in the FAO table</p>`;
+            const incomplete = item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : "";
+            const barely = item.barely_grown
+                ? `<p>Barely grown here: the model's typical yield for this crop in ${esc(province)} is a tiny fraction of the largest crop's, so its share of a typical year says little.</p>` : "";
+
+            $("crop-grid").innerHTML = [
+                card("crop-result", "Result", `<dl id="crop-result" class="crop-facts">${facts([
+                    ["Rank", esc(rankText(response, crop))],
+                    ["Predicted yield", yl(item.predicted_yield)],
+                    ["Typical year yield", yl(item.normal_yield)],
+                    ["Share of a typical year", `${pct(item.pct_of_normal)}%`],
+                ])}</dl><p class="crop-unit">Yield unit: ${esc(response.yield_unit)}.</p>`),
+                card("crop-water", "Water need", `<div id="crop-water">${water}</div>`),
+                card("crop-years", "Across real years",
+                    `<div class="crop-table-wrapper"><table class="crop-table" id="crop-years"><thead><tr><th>Scenario</th><th class="num">Rank</th><th class="num">Share of a typical year</th><th class="num">Predicted yield</th></tr></thead><tbody>`
+                    + yearRow(years.driest.label, years.driest.response) + yearRow(years.median.label, years.median.response) + yearRow(years.wettest.label, years.wettest.response)
+                    + `</tbody></table></div>`, true),
+                card("crop-data", "Data behind it", `<div id="crop-data"><p>Training rows: ${esc(item.training_rows_for_crop)} of ${esc(item.training_rows_possible)}${incomplete}.</p>${barely}</div>`),
+                card("crop-inputs", "Inputs used", `<dl id="crop-inputs" class="crop-facts stacked">${INPUT_KEYS.map(k =>
+                    `<div><dt>${esc(NAMES[k])}</dt><dd>${fmt(response.inputs[k].value)} <em>(${esc(SOURCE_LABEL[response.inputs[k].source] || response.inputs[k].source)})</em></dd></div>`).join("")}</dl>`),
+                card("crop-about", "About these numbers", `<p class="crop-caveat">${esc(response.model_caveat)}</p><p class="crop-absolute">${esc(response.absolute_yield_note)}</p>`, true),
+            ].join("");
+
+            const order = response.ranked_crops.map(c => c.crop);
+            const at = order.indexOf(crop);
+            const prev = order[(at - 1 + order.length) % order.length], next = order[(at + 1) % order.length];
+            const used = Object.fromEntries(INPUT_KEYS.map(k => [k, response.inputs[k].value]));
+            $("crop-prev").href = cropHref(prev, province, used);
+            $("crop-prev").textContent = `Previous: ${prev}`;
+            $("crop-next").href = cropHref(next, province, used);
+            $("crop-next").textContent = `Next: ${next}`;
+            $("crop-error").hidden = true;
+            $("crop-content").hidden = false;
+        }
+
+        async function main() {
+            try {
+                const q = new URLSearchParams(window.location.search);
+                const crop = (q.get("crop") || "").toLowerCase(), province = q.get("province") || "";
+                if (!crop) throw new PageError("No crop in the address. Open a crop from the ranking on the predictor page.");
+                const meta = await getJson("/api/v1/metadata");
+                if (!meta.all_crops.includes(crop)) throw new PageError(`Unknown crop "${crop}". The model covers: ${meta.all_crops.join(", ")}.`);
+                if (!meta.reference[province]) throw new PageError(`Unknown province "${province}". The model covers: ${Object.keys(meta.reference).join(", ")}.`);
+                const inputs = {};
+                for (const key of INPUT_KEYS) {
+                    if (!q.has(key)) continue;
+                    const value = Number(q.get(key));
+                    if (q.get(key).trim() === "" || !Number.isFinite(value)) throw new PageError(`Input ${key} is not a number: "${q.get(key)}".`);
+                    inputs[key] = value;
+                }
+                const run = scenario => getJson("/api/v1/recommend", { province, scenario_name: `${cap(crop)} in ${province}`, ...scenario });
+                const real = kind => meta.scenarios.find(s => s.province === province && s.kind === kind);
+                const [response, driest, median, wettest] = await Promise.all([
+                    run(inputs), run(real("driest").inputs), run(meta.reference[province].median), run(real("wettest").inputs),
+                ]);
+                render(crop, province, inputs, response, {
+                    driest: { label: `Driest real year (${real("driest").year})`, response: driest },
+                    median: { label: "Typical (median) year", response: median },
+                    wettest: { label: `Wettest real year (${real("wettest").year})`, response: wettest },
+                });
+            } catch (err) {
+                console.error("Crop page", err);
+                showError(err instanceof PageError ? err.message : "Cannot reach the model server, so no numbers are shown.");
+            } finally {
+                document.body.dataset.ready = "true";
+            }
+        }
+        main();
+    </script>
+</body>
+</html>

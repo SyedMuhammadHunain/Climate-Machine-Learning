@@ -215,7 +215,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
 
 ## Phase 4: Crop page
 
-- [ ] **T10: `crop.html`** (module `crop-page`, M)
+- [x] **T10: `crop.html`** (module `crop-page`, M)
   - Description: New page, same tokens and tabs as `predict.html`. Reads `crop`, `province` and
     inputs from the query string; validates crop and province against `/api/v1/metadata`; calls
     `/api/v1/recommend` for the scenario and for driest, median, wettest real years. Sections:
@@ -232,6 +232,15 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only crop_page`; open `http://127.0.0.1:8000/crop.html?crop=rice&province=Sindh&...` by hand.
   - Files: `frontend/climate-resilient-frontend/crop.html`, `scripts/verify_responsive.py`.
   - Depends on: T2, T6, T7.
+  - Done 2026-11-19. `crop.html` (result, water need, real-years table, data behind it, inputs used, about these numbers,
+    prev/next, back link, error state); scenario in the address; numbers only from `/metadata` and four `/recommend` calls.
+    Ranking rows on `predict.html` are now links (`crop.html?crop=..&province=..&nine inputs`), and the single-crop card has a
+    "Details for <crop>" link. Tests first: `ranking_rows_link_to_the_crop_page` (links equal the API's inputs, a click opens the
+    right crop), `crop_page_shows_the_apis_numbers` (all 13 crops at 360 px against the API; mutation check confirmed it fails when
+    a number is wrong), `crop_page_refuses_bad_addresses_without_showing_numbers` (5 cases), `crop_years_table_fits_its_box_at_every_size`
+    (failed first: the table was cramped in a half-width card, now full width). 27/27 responsive, 8/8 checks. `verify_responsive.py`
+    now restarts Chrome once when the WebGL landing page crashes it. T11 adds `crop.html` to `verify_frontend.py`, `verify_backend.py`,
+    `dryrun_demo.js` and `verify_vercel_bundle.py` (it expects `fao_water_need`, `tied_with` style fields there).
 
 - [ ] **T11: Crop page in every check and bundle** (module `crop-page`, S)
   - Description: `verify_frontend.py` PAGES gains `crop.html` (no hardcoded floats, no fallback,

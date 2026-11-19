@@ -19,7 +19,7 @@ el("field-province").value = "Punjab";   // the page's default
 el("field-crop").value = "ALL";
 const document = { createElement: () => mk(), getElementById: el, querySelector: () => el("heading"), querySelectorAll: () => [], addEventListener() {} };
 const ctx = { document, fetch: (u, o) => fetch(BASE + String(u).replace(/^https?:\/\/[^/]+/, ""), o),
-    console: { error() {}, log() {} }, performance, AbortSignal, AbortController, setTimeout, clearTimeout };
+    console: { error() {}, log() {} }, performance, AbortSignal, AbortController, URLSearchParams, setTimeout, clearTimeout };
 ctx.window = ctx; ctx.window.API_BASE = ""; ctx.location = { origin: "http://x" };
 vm.createContext(ctx); vm.runInContext(js, ctx);
 
