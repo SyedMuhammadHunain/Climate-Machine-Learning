@@ -16,7 +16,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Files: `README.md`, `docs/demo_and_viva_guide.md`, `scripts/verify_readme.py`, `scripts/verify_guide.py`
   - Depends on: none
 
-- [ ] **T2: report figures script** (M)
+- [x] **T2: report figures script** (M) (done 2026-11-19: 6 EDA + 2 results figures; `scripts/verify_report.py` 4/4: figures exist, comparison values equal `metrics.json`, saved model reproduces test R² 0.885 and MAE 29.7 on 102 rows, rebuild byte-identical; a tampered value fails)
   - Acceptance: `scripts/build_report_figures.py` writes to `docs/report/figures/`: at least 5 EDA plots (yield distribution, missing values, outliers by crop, correlation heatmap, rows per crop/province balance, rain vs yield) and results plots (model comparison R²/MAE from `metrics.json`, predicted vs actual on test). Uses `features.build_yearly_table`. Deterministic file names.
   - Verify: run it twice, same files; open each PNG; numbers on the comparison plot equal `metrics.json`.
   - Files: `scripts/build_report_figures.py`, `docs/report/figures/*.png`

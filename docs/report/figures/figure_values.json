@@ -1,0 +1,39 @@
+{
+  "model_comparison": {
+    "crop_province_mean": {
+      "label": "Crop-province mean",
+      "mae": 34.709264705882354,
+      "r2": 0.832105682845823
+    },
+    "crop_province_mean_plus_trend": {
+      "label": "Crop-province mean + trend",
+      "mae": 30.34308049058598,
+      "r2": 0.8748760866885975
+    },
+    "global_mean": {
+      "label": "Overall mean",
+      "mae": 100.35463682110014,
+      "r2": -0.03012416334992074
+    },
+    "gradient_boosting": {
+      "label": "Gradient Boosting",
+      "mae": 29.65523696606386,
+      "r2": 0.884959807204516
+    },
+    "random_forest": {
+      "label": "Random Forest",
+      "mae": 30.560898091121626,
+      "r2": 0.8733991647606092
+    },
+    "ridge": {
+      "label": "Ridge (regularised linear regression)",
+      "mae": 29.500080586175716,
+      "r2": 0.8783047700002913
+    }
+  },
+  "predicted_vs_actual": {
+    "mae": 29.65523696606386,
+    "n": 102,
+    "r2": 0.884959807204516
+  }
+}
