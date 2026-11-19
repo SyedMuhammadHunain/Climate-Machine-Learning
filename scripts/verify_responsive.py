@@ -13,6 +13,7 @@ Run one test without the CLI (same as the other verify_* scripts):
 """
 import argparse
 import atexit
+import json
 import sys
 import time
 import urllib.request
@@ -41,9 +42,13 @@ PAGES = {
     "predict": "document.fonts.status === 'loaded' && document.querySelectorAll('.preset-pill').length === 3",
     "metrics": "document.fonts.status === 'loaded' && document.querySelectorAll('#cmp-body tr').length > 0",
 }
+# The predictor in the states a visitor sees: after ranking all crops, after one crop, with the optional inputs open.
+# A name is "<page>-<state>"; the page is loaded, then SETUP[name] drives it (Sindh, driest real year, like the demo).
+PAGES["predict-result"] = PAGES["predict-single"] = PAGES["predict-advanced"] = PAGES["predict"]
+PREDICT_VARIANTS = ("predict", "predict-result", "predict-single", "predict-advanced")
 # The landing page draws text over a WebGL scene, so colour contrast is not measurable from CSS there.
-CONTRAST_PAGES = ("predict", "metrics")
-TAB_PAGES = ("predict", "metrics")
+CONTRAST_PAGES = (*PREDICT_VARIANTS, "metrics")
+TAB_PAGES = (*PREDICT_VARIANTS, "metrics")
 
 MIN_TARGET_PX = 44     # WCAG 2.5.5 target size, at phone sizes
 MIN_GUTTER_PX = 8      # tabs keep this much space from the screen edge, so none looks cut off
@@ -152,7 +157,14 @@ MEASURE_JS = r"""
     return { text: el.innerText.trim(), href: el.getAttribute("href"), left: r.left, right: r.right, w: r.width, h: r.height };
   });
 
-  return { vw, vh, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
+  const rect = el => { if (!el) return null; const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, w: r.width, h: r.height }; };
+  const actions = { submit: rect(document.getElementById("btn-submit-prediction")), reset: rect(document.querySelector(".btn-reset")), row: rect(document.querySelector(".form-actions-row")) };
+  const gridLefts = [...document.querySelectorAll(".inputs-grid .input-group")].map(el => Math.round(el.getBoundingClientRect().left));
+  const visible = id => { const el = document.getElementById(id); return !!el && shown(el); };
+  const results = { container: visible("results-container"), rankedItems: document.querySelectorAll("#team-items-1 .job-post-item").length,
+                    singleItems: document.querySelectorAll("#single-crop-items .job-post-item").length,
+                    rankedShown: visible("team-section-1"), singleShown: visible("single-crop-section") };
+  return { vw, vh, actions, gridLefts, results, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
 })()
 """
 
@@ -201,6 +213,34 @@ TABLES_JS = r"""
 """
 
 
+def _click(chrome: Chrome, selector: str) -> None:
+    chrome.eval(f"document.querySelector({json.dumps(selector)}).scrollIntoView({{block: 'center'}})")
+    chrome.click_at(f"document.querySelector({json.dumps(selector)})")
+
+
+def _predict(chrome: Chrome, crop: str, done_js: str) -> None:
+    """Sindh, driest real year, one crop or all (as the demo does), then wait for the result to be drawn."""
+    chrome.eval("(() => { const s = document.getElementById('field-province'); s.value = 'Sindh';"
+                " s.dispatchEvent(new Event('change', {bubbles: true})); })()")
+    time.sleep(0.5)
+    _click(chrome, ".preset-pill[data-key=driest]")
+    chrome.eval(f"document.getElementById('field-crop').value = {json.dumps(crop)}")
+    _click(chrome, "#btn-submit-prediction")
+    chrome.wait_for(done_js, 90, f"the {crop} result")
+
+
+def _open_advanced(chrome: Chrome) -> None:
+    _click(chrome, "#toggle-advanced-btn")
+    chrome.wait_for("document.getElementById('advanced-panel').classList.contains('open')", 10, "optional inputs")
+
+
+SETUP = {
+    "predict-result": lambda c: _predict(c, "ALL", "document.querySelectorAll('#team-items-1 .job-post-item').length > 0"),
+    "predict-single": lambda c: _predict(c, "rice", "document.querySelectorAll('#single-crop-items .job-post-item').length > 0"),
+    "predict-advanced": _open_advanced,
+}
+
+
 class _Run:
     """Lazily started server + browser, and the measurements per (page, size). Shared by all tests."""
 
@@ -231,8 +271,11 @@ class _Run:
             name, w, h, dpr, phone = size
             chrome = self.browser()
             chrome.emulate(w, h, dpr=dpr, mobile=phone, touch=phone)
-            chrome.goto(f"{self.base()}/{page}.html")
+            chrome.goto(f"{self.base()}/{page.split('-')[0]}.html")
             chrome.wait_for(PAGES[page], 60, f"{page}.html to finish loading at {name}")
+            if page in SETUP:
+                SETUP[page](chrome)
+            chrome.eval("window.scrollTo(0, 0)")
             time.sleep(0.5)  # let late layout (fonts swapped in, API text) settle
             self.cache[key] = chrome.eval(MEASURE_JS.replace("DEVICE_WIDTH", str(w)))
             if page == "metrics":
@@ -489,6 +532,43 @@ def jargon_headers_are_explained():
 
 
 # --------------------------------------------------------------------------- landing page (R1)
+def predictor_form_layout():
+    """Inputs one column under 600 px and two from 600 px; Predict and Reset stack full width under 400 px and sit
+    side by side from 400 px (R4.6)."""
+    problems = []
+    for page, size, m in RUN.each(("predict",)):
+        where = f"predict {size[0]}"
+        columns = len(set(m["gridLefts"]))
+        want = 1 if size[1] < 600 else 2
+        if columns != want:
+            problems.append(f"{where}: inputs in {columns} column(s), expected {want}")
+        a = m["actions"]
+        if size[1] < 400:
+            for name in ("submit", "reset"):
+                if a[name]["w"] < a["row"]["w"] - 2:
+                    problems.append(f"{where}: {name} button is {a[name]['w']:.0f} px wide in a {a['row']['w']:.0f} px row, expected full width")
+            if a["reset"]["top"] < a["submit"]["bottom"] - 1:
+                problems.append(f"{where}: buttons are not stacked")
+        elif abs(a["submit"]["top"] - a["reset"]["top"]) > 2:
+            problems.append(f"{where}: buttons are not side by side")
+    _fail(problems, "predictor form")
+
+
+def prediction_results_are_drawn_at_every_size():
+    """After a prediction the ranked list shows all 13 crops, and a single-crop prediction shows its forecast (R4.6)."""
+    problems = []
+    for page, size, m in RUN.each(("predict-result", "predict-single")):
+        r = m["results"]
+        where = f"{page} {size[0]}"
+        if not r["container"]:
+            problems.append(f"{where}: results container is not shown")
+        if page == "predict-result" and (r["rankedItems"] != 13 or not r["rankedShown"]):
+            problems.append(f"{where}: {r['rankedItems']} crops listed (shown: {r['rankedShown']}), expected 13")
+        if page == "predict-single" and (r["singleItems"] != 1 or not r["singleShown"]):
+            problems.append(f"{where}: {r['singleItems']} forecast items (shown: {r['singleShown']}), expected 1")
+    _fail(problems, "prediction results")
+
+
 def landing_has_one_start_button():
     """index.html shows exactly one button, "Start", linking to predict.html relatively (R1)."""
     problems = []
@@ -528,6 +608,8 @@ TESTS = [
     table_values_identical_at_every_size,
     chosen_model_row_is_highlighted,
     jargon_headers_are_explained,
+    predictor_form_layout,
+    prediction_results_are_drawn_at_every_size,
     landing_has_one_start_button,
 ]
 

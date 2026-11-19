@@ -166,8 +166,11 @@
         }
 
         .preset-pill {
-            padding: 6px 14px;
-            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--minTarget);
+            padding: 6px 16px;
+            font-size: 14px;
             font-weight: 500;
             border-radius: 20px;
             border: 1px solid var(--colorNeutral300);
@@ -206,7 +209,7 @@
             margin-bottom: 24px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 599px) {
             .inputs-grid {
                 grid-template-columns: 1fr;
             }
@@ -231,12 +234,12 @@
         .text-input,
         .select-input {
             width: 100%;
-            height: 40px;
+            height: var(--minTarget);
             padding: 0 14px;
             background-color: #ffffff;
             border: 1px solid var(--colorNeutral300);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px; /* under 16 px, phones zoom the page in when a field gets focus */
             color: var(--colorNeutral800);
             outline: none;
             transition: border-color 0.15s ease;
@@ -273,6 +276,7 @@
         /* Submit Action Row */
         .form-actions-row {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 12px;
             margin-top: 8px;
@@ -280,7 +284,7 @@
         }
 
         .btn-submit {
-            height: 42px;
+            height: var(--minTarget);
             padding: 0 28px;
             background-color: var(--colorPrimary900);
             color: #ffffff;
@@ -297,17 +301,17 @@
         }
 
         .btn-submit:hover {
-            background-color: var(--colorPrimary600);
+            background-color: var(--colorAccentText); /* white on #FF7344 is 2.7:1; on this orange 5.7:1 */
             box-shadow: 0 4px 12px rgba(255, 115, 68, 0.25);
         }
 
         .btn-reset {
-            height: 42px;
+            height: var(--minTarget);
             padding: 0 20px;
             background: transparent;
             border: 1px solid var(--colorNeutral300);
             border-radius: 25px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             color: var(--colorNeutral600);
             cursor: pointer;
@@ -320,6 +324,19 @@
             border-color: var(--colorNeutral400);
         }
 
+        @media (max-width: 399px) {
+            .form-actions-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-submit,
+            .btn-reset {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .validation-alert {
             display: none;
             padding: 10px 16px;
@@ -330,7 +347,13 @@
             color: #b91c1c;
             margin-bottom: 16px;
             align-items: center;
+            flex-wrap: wrap;
             gap: 8px;
+        }
+
+        #btn-retry {
+            min-height: var(--minTarget);
+            min-width: var(--minTarget);
         }
 
         .loading-indicator {
@@ -368,6 +391,8 @@
             gap: 6px;
             margin-bottom: 16px;
             padding: 0;
+            min-height: var(--minTarget);
+            text-align: left;
             outline: none;
             transition: color 0.15s ease;
         }
@@ -401,9 +426,10 @@
             display: grid;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 599px) {
             .advanced-panel {
                 grid-template-columns: 1fr;
+                padding: 16px;
             }
         }
 
@@ -423,6 +449,10 @@
         }
 
         .job-title {
+            display: flex;
+            align-items: center;
+            min-height: var(--minTarget);
+            overflow-wrap: anywhere;
             font-size: 16px;
             font-weight: 500;
             color: var(--colorAccentText);
@@ -436,11 +466,12 @@
             text-decoration: underline;
         }
 
-        .input-hint { font-size: 11px; color: var(--colorNeutral600); margin-top: 4px; }
+        .input-hint { font-size: 12px; color: var(--colorNeutral600); margin-top: 4px; }
         .job-metadata {
             font-size: 14px;
             color: var(--colorNeutral600);
             line-height: 1.4;
+            overflow-wrap: anywhere;
         }
 
         .bottom-divider {
@@ -458,6 +489,7 @@
             color: var(--colorNeutral800);
             line-height: 1.5;
             margin-top: 36px;
+            overflow-wrap: anywhere;
         }
 
         .advisory-summary strong {
@@ -564,7 +596,7 @@
             </div>
 
             <!-- Advanced Collapsible Toggle Button -->
-            <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" onclick="toggleAdvancedPanel()">
+            <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" aria-expanded="false" aria-controls="advanced-panel" onclick="toggleAdvancedPanel()">
                 <span>Optional Climate and Soil Inputs (empty = province median)</span>
                 <svg class="advanced-chevron" id="advanced-chevron" viewBox="0 0 12 12" fill="none">
                     <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -664,7 +696,7 @@
         <div id="results-container" style="display: none; margin-top: 24px;">
 
             <!-- Real-Time Inference Status & Verification Badge Row -->
-            <div class="inference-status-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--colorNeutral200);">
+            <div class="inference-status-row" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--colorNeutral200);">
                 <div class="status-pill" id="inference-status-pill" style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--colorNeutral800); background-color: #f7f8fa; border: 1px solid var(--colorNeutral200); padding: 4px 12px; border-radius: 14px;">
                     <span class="status-dot" id="status-dot" style="width: 7px; height: 7px; border-radius: 50%; background-color: #10b981;"></span>
                     <span id="status-badge-text">Inference completed • Updated just now</span>
@@ -803,6 +835,14 @@
         function clearValidationError() {
             const alertBox = document.getElementById("validation-alert");
             alertBox.style.display = "none";
+        }
+
+        function toggleAdvancedPanel() {
+            const panel = document.getElementById("advanced-panel");
+            const chevron = document.getElementById("advanced-chevron");
+            const isOpen = panel.classList.toggle("open");
+            chevron.classList.toggle("open", isOpen);
+            document.getElementById("toggle-advanced-btn").setAttribute("aria-expanded", String(isOpen));
         }
 
         function resetFormToDefaults() {

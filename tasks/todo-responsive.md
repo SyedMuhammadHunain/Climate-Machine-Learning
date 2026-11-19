@@ -74,7 +74,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     prose lines at most 75ch, logo link 44 px tall on both pages. Remaining responsive failures: predictor form (T4),
     landing (T5). Legends duplicate part of `cmp-desc`; T12 trims the description.
 
-- [ ] **T4: Predictor form and widths** (module `layout`, S)
+- [x] **T4: Predictor form and widths** (module `layout`, S)
   - Description: Inputs one column under 600 px, two above; selects and inputs 16 px text and
     >= 44 px tall on phones; preset pills >= 44 px tap area, wrap; Predict / Reset stack
     full-width under 400 px; validation alert, loading indicator and result cards wrap with no
@@ -86,6 +86,11 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only predict`; `node scripts/dryrun_demo.js http://127.0.0.1:8000`.
   - Files: `frontend/climate-resilient-frontend/predict.html`, `scripts/verify_responsive.py`.
   - Depends on: T2.
+  - Done 2026-11-19. `verify_responsive.py` now measures the predictor in 4 states (`predict`, `predict-result`,
+    `predict-single`, `predict-advanced`) and has 2 new tests (form layout, results drawn); every test passes at 9 sizes
+    on predict and metrics. Found and fixed: `toggleAdvancedPanel()` was deleted by commit a566d8d, so the optional
+    inputs could never be opened; submit button hover (white on `#FF7344`) was 2.7:1, now `--colorAccentText`.
+    Only the landing page (T5) still fails. Result rows are rebuilt in T7; for now `.job-title` is a full-width 44 px link.
 
 - [ ] **T5: Landing page** (module `landing`, M)
   - Description: Replace the two `careers-button` links with one `<a href="predict.html"
