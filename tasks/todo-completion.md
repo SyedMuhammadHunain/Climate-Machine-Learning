@@ -51,7 +51,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
 
 ## Phase 3: Hugging Face and docs
 
-- [ ] **T6: republish Hugging Face model repo** (S, ask first)
+- [x] **T6: republish Hugging Face model repo** (S, ask first) (done 2026-11-19, user approved using the saved `hf` CLI login: commit `056ccbd` on the Hub; token-less download is byte-identical to `hf_bundle/model/`, no `presentation.py`, and gives rice in Sindh, driest real year 2002: 40.85 and 89.3%; `verify_hf_bundle.py` 12/12 in its own venv)
   - Acceptance: `python scripts/build_hf_bundle.py` then upload `hf_bundle/model/` to `SMHunain/crop-yield-drought-pakistan` with `HF_TOKEN` from env only. Token-less download predicts 40.85 and 89.3% for Sindh, driest real year, rice. `presentation.py` not uploaded.
   - Verify: fresh download into `$CLAUDE_JOB_DIR/tmp`, run bundled example; `verify_hf_bundle.py` passes.
   - Files: none in repo (generated `hf_bundle/` is git-ignored)
