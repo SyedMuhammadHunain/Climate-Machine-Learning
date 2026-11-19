@@ -9,7 +9,6 @@ from pathlib import Path
 
 import gradio as gr
 import joblib
-import pandas as pd
 from matplotlib.figure import Figure
 
 HERE = Path(__file__).resolve().parent
@@ -20,8 +19,8 @@ for _cand in (BASE / "src", BASE):
             sys.path.insert(0, str(_cand))
         break
 
-from climate_machine_learning import features as F  # noqa: E402
 from climate_machine_learning import inference as I  # noqa: E402
+from climate_machine_learning import presentation as P  # noqa: E402
 
 pipeline = joblib.load(BASE / "models" / "crop_yield_pipeline.joblib")
 I.single_thread(pipeline)
@@ -30,32 +29,14 @@ met = json.loads((BASE / "models" / "metrics.json").read_text())
 _fao_path = BASE / "data" / "reference" / "fao_crop_water_needs.json"
 fao = json.loads(_fao_path.read_text()) if _fao_path.exists() else {"crops": {}}
 interval = met["prediction_interval"]
-yield_unit = "dataset yield units (the source does not state the unit)"
-
-TYPICAL, DRIEST, WETTEST = "Typical (median) year", "Driest real year", "Wettest real year"
-FIELDS = [  # key, label, optional
-    ("precipitation_sum", "Annual rain (mm)", False),
-    ("temperature_2m_mean", "Mean annual temperature (°C)", False),
-    ("temperature_2m_max", "Mean monthly maximum temperature (°C)", True),
-    ("temperature_2m_min", "Mean monthly minimum temperature (°C)", True),
-    ("fao_evapotranspiration", "Evapotranspiration, yearly mean (mm/day)", True),
-    ("shortwave_radiation", "Solar radiation, yearly mean (MJ/m²)", True),
-    ("precipitation_hours", "Hours with rain, yearly total", True),
-    ("soil_wetness_mean", "Root-zone soil wetness, yearly mean (0-1, NASA POWER)", True),
-    ("soil_wetness_max", "Root-zone soil wetness, wettest month (0-1, NASA POWER)", True),
-]
+FIELDS = P.FIELDS
 KEYS = [k for k, _, _ in FIELDS]
-possible = len(ref["provinces"]) * (ref["train_years"][1] - ref["train_years"][0] + 1)
 
 
 def fill(province, preset):
     """Values for the 9 input boxes: a typical year (optional boxes empty) or a real year from the training data."""
-    if preset == TYPICAL:
-        med = ref["provinces"][province]["median"]
-        return [round(med["precipitation_sum"], 1), round(med["temperature_2m_mean"], 1)] + [None] * 7
-    kind = "driest" if preset == DRIEST else "wettest"
-    inputs = ref["historical_years"][province][kind]["inputs"]
-    return [inputs[k] for k in KEYS]
+    inputs = P.preset_inputs(ref, province, preset)
+    return [inputs.get(key) for key in KEYS]
 
 
 def ranges_text(province):
@@ -72,13 +53,6 @@ def ranges_text(province):
     )
 
 
-def fao_text(name):
-    entry = fao["crops"].get(name)
-    if entry is None:
-        return "not listed in the FAO table"
-    return f"{entry['mm_min']}-{entry['mm_max']} mm per growing period, drought sensitivity {entry['drought_sensitivity']}"
-
-
 def predict(province, crop, *values):
     supplied = {key: value for key, value in zip(KEYS, values) if value is not None}
     try:
@@ -86,29 +60,14 @@ def predict(province, crop, *values):
     except I.OutOfRangeError as err:
         raise gr.Error(str(err))
     chosen = next(i for i in result.items if i.crop == crop)
-    test_years, val_years = met["split"]["test_years"], met["split"]["val_years"]
-    coverage = interval["test_coverage"]
     summary = (
         f"### {crop.capitalize()} in {province}\n\n"
-        f"- **Predicted yield:** {chosen.predicted_yield:.2f} ({yield_unit})\n"
+        f"- **Predicted yield:** {chosen.predicted_yield:.2f} ({P.YIELD_UNIT})\n"
         f"- **Likely range (nominal {interval['level']:.0%}):** {chosen.low:.2f} to {chosen.high:.2f}\n"
         f"- **Share of a typical year:** {chosen.pct_of_normal:.1f}% (typical {province} year: {chosen.normal_yield:.2f})\n\n"
-        f"The range is empirical: the 10% to 90% spread of the model's errors on the validation years "
-        f"{val_years[0]}-{val_years[1]}. On the {test_years[0]}-{test_years[1]} test rows it covered {coverage:.0%} of the "
-        f"actual yields (nominal {interval['level']:.0%}), so treat it as "
-        f"{'optimistic' if coverage < interval['level'] else 'about right'}."
+        + P.interval_note(met)
     )
-    table = pd.DataFrame(
-        {
-            "Rank": range(1, len(result.items) + 1),
-            "Crop": [i.crop for i in result.items],
-            "% of typical year": [round(i.pct_of_normal, 1) for i in result.items],
-            "Predicted yield": [round(i.predicted_yield, 2) for i in result.items],
-            "Likely range": [f"{i.low:.2f} to {i.high:.2f}" for i in result.items],
-            "Training rows": [f"{ref['train_rows_per_crop'][i.crop]} of {possible}" for i in result.items],
-            "FAO water need": [fao_text(i.crop) for i in result.items],
-        }
-    )
+    table = P.ranking_table(result, ref, fao)
     fig = Figure(figsize=(7, 4.5))
     ax = fig.subplots()
     ordered = list(reversed(result.items))
@@ -133,7 +92,7 @@ def build_demo():
         with gr.Row():
             province = gr.Dropdown(provinces, value="Punjab" if "Punjab" in provinces else provinces[0], label="Province")
             crop = gr.Dropdown(crops, value="rice" if "rice" in crops else crops[0], label="Crop to look at")
-            preset = gr.Radio([TYPICAL, DRIEST, WETTEST], value=TYPICAL, label="Fill the form from")
+            preset = gr.Radio(P.PRESETS, value=P.TYPICAL, label="Fill the form from")
         ranges = gr.Markdown(ranges_text(provinces[0]))
         boxes = []
         with gr.Row():

@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "climate_machine_learning"
 MODEL_FILES = ("crop_yield_pipeline.joblib", "reference.json", "metrics.json")
 CODE_FILES = ("__init__.py", "features.py", "inference.py")
+SPACE_ONLY_CODE = ("presentation.py",)  # UI text and tables: the Space needs them, the model repo does not
 
 
 def _table(met: dict) -> str:
@@ -192,9 +193,9 @@ Model card and files: see the model repository linked from this Space. Licence: 
 """
 
 
-def _copy_code(dest: Path) -> None:
+def _copy_code(dest: Path, extra: tuple = ()) -> None:
     (dest / "climate_machine_learning").mkdir(parents=True, exist_ok=True)
-    for name in CODE_FILES:
+    for name in CODE_FILES + extra:
         shutil.copy2(PACKAGE / name, dest / "climate_machine_learning" / name)
 
 
@@ -223,7 +224,7 @@ def build(out: Path) -> Path:
     for name in MODEL_FILES:
         shutil.copy2(ROOT / "models" / name, space / "models" / name)
     shutil.copy2(ROOT / "data" / "reference" / "fao_crop_water_needs.json", space / "data" / "reference")
-    _copy_code(space)
+    _copy_code(space, SPACE_ONLY_CODE)
     shutil.copy2(ROOT / "hf_space" / "app.py", space / "app.py")
     shutil.copy2(ROOT / "hf_space" / "requirements.txt", space / "requirements.txt")
     (space / "README.md").write_text(space_readme(pins["gradio"]), encoding="utf-8")

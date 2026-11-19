@@ -107,8 +107,11 @@ def space_config_is_a_native_gradio_space():
 @test
 def space_is_self_contained_and_small_enough():
     for name in ("app.py", "models/crop_yield_pipeline.joblib", "models/reference.json", "models/metrics.json",
-                 "data/reference/fao_crop_water_needs.json", "climate_machine_learning/inference.py"):
+                 "data/reference/fao_crop_water_needs.json", "climate_machine_learning/inference.py",
+                 "climate_machine_learning/presentation.py"):
         assert (SPACE_DIR / name).exists(), name
+    # the model repo is already published and does not need UI code: it must stay as it is
+    assert not (MODEL_DIR / "climate_machine_learning" / "presentation.py").exists()
     assert sha(SPACE_DIR / "models" / "crop_yield_pipeline.joblib") == sha(ROOT / "models" / "crop_yield_pipeline.joblib")
     biggest = max(p.stat().st_size for p in OUT.rglob("*") if p.is_file())
     assert biggest < 50 * 1024 * 1024, biggest
