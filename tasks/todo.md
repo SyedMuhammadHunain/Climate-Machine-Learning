@@ -221,11 +221,13 @@ Viva Q&A: why aggregate to yearly rows, leakage and the GroupKFold choice, why R
 0.892, % of normal ranking, model choice, limits.
 
 **Acceptance criteria:**
-- [ ] Every demo step works on the current app
-- [ ] Covers each rubric item (lifecycle, deployment, results)
+- [x] Every demo step works on the current app
+- [x] Covers each rubric item (lifecycle, deployment, results)
 
 **Verification:**
-- [ ] Dry-run the demo path on :8000
+- [x] Dry-run the demo path on :8000
+
+**Notes (done 2026-11-19):** Guide is `docs/demo_and_viva_guide.md`: before-you-present checklist, 3/4/3 script, viva Q&A by topic (data, pipeline/leakage/tuning, results and the baseline, backend/API) with straight answers including 'does the model beat a smarter baseline' and 'why 0.892 became 0.795'; the 'who answers what' table is left for the group to fill (we do not know who wrote what). `scripts/verify_guide.py` recomputes every demo number from the API and fails if the guide drifts. `scripts/dryrun_demo.js` runs the real page JS against a live server (stub DOM, no browser) and checks the numbers on screen equal the API. The dry run found and fixed: page rounded 105.0 to 105 and yields to 1 decimal (now 1-decimal percent and 2-decimal yields), and the crop dropdown still carried hand-made '(Low Water)/(High Water)' labels, including onion as low water (now plain names, guarded against the trained crop list). Open items for the group: Streamlit and Hugging Face deployments, report PDF, fill the who-answers table.
 
 **Dependencies:** T8
 **Files:** `docs/demo_and_viva_guide.md`

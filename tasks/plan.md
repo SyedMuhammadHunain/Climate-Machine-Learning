@@ -79,7 +79,7 @@ T2 features.py + yearly table ──► T3 train.py + artifacts ──► CHECKP
 
 ### Phase 3: Deliverables (from old plan, rewritten)
 - [x] **T8** README with honest metrics from `metrics.json`, data unit, aggregation, limits (S)
-- [ ] **T9** `docs/demo_and_viva_guide.md` with 3/4/3 minute script on the real app (S)
+- [x] **T9** `docs/demo_and_viva_guide.md` with 3/4/3 minute script on the real app (S)
 
 ### Checkpoint C: Submission ready
 - [ ] Repo has data/, notebooks/, app/, models/, requirements.txt, README, guide

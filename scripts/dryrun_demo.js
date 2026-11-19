@@ -1,0 +1,74 @@
+// Dry run of the demo click path: runs the real predict.html JavaScript against a live server
+// (with a stub DOM, no browser) and checks that the numbers on screen equal the API's numbers.
+//
+// Usage:  uvicorn app.main:app --port 8000   (in another terminal)
+//         node scripts/dryrun_demo.js http://127.0.0.1:8000
+const fs = require("fs"), vm = require("vm"), path = require("path");
+const BASE = process.argv[2] || "http://127.0.0.1:8000";
+const html = fs.readFileSync(path.join(__dirname, "..", "frontend", "climate-resilient-frontend", "predict.html"), "utf8");
+const js = [...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).join("\n");
+
+const els = {};
+const mk = (init = "") => { let v = init; return {
+    get value() { return v; }, set value(x) { v = String(x); },
+    style: {}, innerHTML: "", textContent: "", dataset: {}, placeholder: "", onclick: null,
+    classList: { add() {}, remove() {}, toggle() {} }, addEventListener() {}, scrollIntoView() {} }; };
+const el = id => els[id] || (els[id] = mk());
+el("field-province").value = "Punjab";   // the page's default
+el("field-crop").value = "ALL";
+const document = { getElementById: el, querySelector: () => el("heading"), querySelectorAll: () => [], addEventListener() {} };
+const ctx = { document, fetch: (u, o) => fetch(BASE + String(u).replace(/^https?:\/\/[^/]+/, ""), o),
+    console: { error() {}, log() {} }, performance, AbortSignal, AbortController, setTimeout, clearTimeout };
+ctx.window = ctx; ctx.window.API_BASE = ""; ctx.location = { origin: "http://x" };
+vm.createContext(ctx); vm.runInContext(js, ctx);
+
+const strip = h => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const post = async (p, body) => (await fetch(BASE + p, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
+let failures = 0;
+const check = (ok, msg) => { console.log((ok ? "  ok   " : "  FAIL ") + msg); if (!ok) failures++; };
+const run = async () => { await ctx.submitPredictionForm(); await sleep(700); };
+
+(async () => {
+    await sleep(1500);
+    const meta = await (await fetch(BASE + "/api/v1/metadata")).json();
+    const dry = meta.scenarios.find(s => s.province === "Sindh" && s.kind === "driest");
+    console.log(`1. Sindh, Driest real year (${dry.year}), all crops`);
+    el("field-province").value = "Sindh";
+    ctx.applyPreset("driest");
+    check(strip(el("presets-pills").innerHTML).includes(`Driest real year (${dry.year})`), "preset pill label shows the real year");
+    check(Number(el("field-precipitation").value) === dry.inputs.precipitation_sum, "rain field filled from the real year");
+    await run();
+    let api = await post("/api/v1/recommend", { province: "Sindh", ...dry.inputs });
+    let text = strip(el("team-items-1").innerHTML);
+    api.ranked_crops.forEach(i => check(text.includes(`${i.crop} Rank #${i.rank} • ${i.pct_of_normal.toFixed(1)}% of a typical year`), `rank ${i.rank} ${i.crop} ${i.pct_of_normal.toFixed(1)}%`));
+
+    console.log("2. Typical (median) year, all crops");
+    ctx.applyPreset("median");
+    await run();
+    const med = meta.reference.Sindh.median;
+    api = await post("/api/v1/recommend", { province: "Sindh", precipitation_sum: Number(med.precipitation_sum.toFixed(1)), temperature_2m_mean: Number(med.temperature_2m_mean.toFixed(1)) });
+    text = strip(el("team-items-1").innerHTML);
+    [api.ranked_crops[0], api.ranked_crops[12]].forEach(i => check(text.includes(`${i.crop} Rank #${i.rank} • ${i.pct_of_normal.toFixed(1)}% of a typical year`), `rank ${i.rank} ${i.crop} ${i.pct_of_normal.toFixed(1)}%`));
+
+    console.log("3. Rice, Driest real year");
+    el("field-crop").value = "rice";
+    ctx.applyPreset("driest");
+    await run();
+    const one = await post("/api/v1/predict", { province: "Sindh", crop: "rice", ...dry.inputs });
+    text = strip(el("single-crop-items").innerHTML);
+    check(text.includes(`Predicted yield: ${one.predicted_yield.toFixed(2)}`), `predicted yield ${one.predicted_yield.toFixed(2)}`);
+    check(text.includes(`Typical year in Sindh: ${one.normal_yield.toFixed(2)}`), `typical yield ${one.normal_yield.toFixed(2)}`);
+    check(text.includes(`${one.pct_of_normal.toFixed(1)}% of typical`), `${one.pct_of_normal.toFixed(1)}% of typical`);
+
+    console.log("4. Rain 5 mm (outside the trained range)");
+    el("field-precipitation").value = "5";
+    el("validation-alert").style.display = "none";
+    await run();
+    const bad = await post("/api/v1/predict", { province: "Sindh", crop: "rice", ...dry.inputs, precipitation_sum: 5 });
+    check(el("validation-alert").style.display === "flex", "alert is shown");
+    check(el("validation-msg").textContent === bad.message, "alert text equals the API message");
+
+    console.log(failures ? `\nFAILED: ${failures} check(s)` : "\nPASSED: demo click path matches the API.");
+    process.exit(failures ? 1 : 0);
+})();

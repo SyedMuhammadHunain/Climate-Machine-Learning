@@ -53,7 +53,11 @@ python scripts/verify_model.py      # features, artifacts, sensitivity, determin
 python scripts/verify_backend.py    # API contract, model equality, no hardcoded numbers
 python scripts/verify_frontend.py   # no fake data or demo wording in the pages
 python scripts/verify_readme.py     # README matches metrics.json and the real endpoints
+python scripts/verify_guide.py      # demo/viva guide numbers match the live app
+node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
+
+For the 10-minute presentation see [docs/demo_and_viva_guide.md](docs/demo_and_viva_guide.md).
 
 The notebook `notebooks/01_low_water_crop_selection.ipynb` holds the EDA, the aggregation, and the evaluation plots. It reads `models/metrics.json`, so its numbers match this README.
 
@@ -69,7 +73,8 @@ data/raw/             dataset (parquet + csv)
 data/reference/       FAO crop water needs (cited context)
 models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
-scripts/              train.py and the verify_*.py checks
+scripts/              train.py, the verify_*.py checks and dryrun_demo.js
+docs/                 demo script and viva preparation
 SPEC-model-only-output.md, tasks/   spec, plan and task list for the model-only-output work
 ```
 

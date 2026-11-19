@@ -2,6 +2,7 @@
 
 Run: .venv/bin/python scripts/verify_frontend.py
 """
+import json
 import re
 import sys
 from pathlib import Path
@@ -59,13 +60,23 @@ def main() -> int:
     for name in PAGES:
         text = (FRONTEND / name).read_text(encoding="utf-8").lower()
         for word in ("simulat", "demo", "dummy", "mock", "illustrat", "kg/ha", "physiolog", "elasticit",
-                     "low-water, climate-resilient crops"):
+                     "low-water, climate-resilient crops", "(low water)", "(high water)"):
             if word in text:
                 failures.append(f"{name}: banned wording {word!r}")
     if "driest real year" not in predict.lower() or "scenarios" not in predict:
         failures.append("predict.html: quick-fill must use real-year scenarios from /metadata")
     if "training_rows_possible" not in predict:
         failures.append("predict.html: training row completeness not shown")
+
+    # crop dropdown must list exactly the trained crops, with plain names
+    ref_crops = json.loads((ROOT / "models" / "reference.json").read_text())["crops"]
+    select = re.search(r'<select id="field-crop".*?</select>', predict, re.S).group(0)
+    options = [v for v in re.findall(r'<option value="([^"]+)"', select) if v != "ALL"]
+    if sorted(options) != sorted(ref_crops):
+        failures.append(f"predict.html crop dropdown {sorted(options)} differs from trained crops {sorted(ref_crops)}")
+    for value, label in re.findall(r'<option value="([^"]+)"[^>]*>([^<]*)</option>', select):
+        if value != "ALL" and label.strip().lower() != value:
+            failures.append(f"predict.html crop option label {label!r} is not the plain crop name {value!r}")
 
     if failures:
         print("FAILED:")

@@ -495,20 +495,20 @@
                     <label class="input-label" for="field-crop">Target Crop Selection</label>
                     <div class="input-wrapper">
                         <select id="field-crop" class="select-input">
-                            <option value="ALL" selected>All Crops (Ranked Recommendation)</option>
-                            <option value="wheat">Wheat</option>
-                            <option value="onion">Onion (Low Water)</option>
-                            <option value="pomegranate">Pomegranate (Low Water)</option>
-                            <option value="dates">Dates (Low Water)</option>
-                            <option value="grapes">Grapes (Low Water)</option>
-                            <option value="potato">Potato</option>
-                            <option value="tomato">Tomato</option>
-                            <option value="mango">Mango</option>
+                            <option value="ALL" selected>All Crops (Ranked)</option>
                             <option value="apple">Apple</option>
-                            <option value="cotton">Cotton (High Water)</option>
-                            <option value="rice">Rice (High Water)</option>
-                            <option value="sugarcane">Sugarcane (High Water)</option>
-                            <option value="banana">Banana (High Water)</option>
+                            <option value="banana">Banana</option>
+                            <option value="cotton">Cotton</option>
+                            <option value="dates">Dates</option>
+                            <option value="grapes">Grapes</option>
+                            <option value="mango">Mango</option>
+                            <option value="onion">Onion</option>
+                            <option value="pomegranate">Pomegranate</option>
+                            <option value="potato">Potato</option>
+                            <option value="rice">Rice</option>
+                            <option value="sugarcane">Sugarcane</option>
+                            <option value="tomato">Tomato</option>
+                            <option value="wheat">Wheat</option>
                         </select>
                         <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
                             <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -920,7 +920,8 @@
             const boardHeading = document.querySelector(".board-heading");
 
             if (isAllCrops) {
-                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                const pct = x => Number(x).toFixed(1);
+                const yl = x => Number(x).toFixed(2);
                 const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
                 singleSection.style.display = "none";
                 resilientSection.style.display = "block";
@@ -933,7 +934,7 @@
                     return `
                         <div class="job-post-item">
                             <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
-                            <div class="job-metadata">Rank #${item.rank} • ${fmt(item.pct_of_normal)}% of a typical year • Predicted yield ${fmt(item.predicted_yield)} (typical ${fmt(item.normal_yield)}) ${esc(data.yield_unit)}</div>
+                            <div class="job-metadata">Rank #${item.rank} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}</div>
                             <div class="job-metadata">${fao} • ${item.training_rows_for_crop} of ${item.training_rows_possible} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
                         </div>`;
                 }).join("");
@@ -946,6 +947,8 @@
                 const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
                 boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
                 const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                const pct = x => Number(x).toFixed(1);
+                const yl = x => Number(x).toFixed(2);
                 const sourceLabel = {
                     user: "entered by you",
                     province_median_training_years: "province median",
@@ -964,8 +967,8 @@
                 document.getElementById("single-crop-items").innerHTML = `
                     <div class="job-post-item">
                         <a href="javascript:void(0)" class="job-title">${cropDisplay} (${data.province})</a>
-                        <div class="job-metadata">Predicted yield: ${fmt(data.predicted_yield)} (${data.yield_unit})</div>
-                        <div class="job-metadata">Typical year in ${data.province}: ${fmt(data.normal_yield)} • This scenario: ${fmt(data.pct_of_normal)}% of typical</div>
+                        <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${data.yield_unit})</div>
+                        <div class="job-metadata">Typical year in ${data.province}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
                         <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
                         <div class="job-metadata" style="margin-top: 4px;">Model: ${data.model_name} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
                     </div>
