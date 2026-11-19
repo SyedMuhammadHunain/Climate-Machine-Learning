@@ -482,6 +482,29 @@ def run_verification():
         assert ".claude/" in gitignore, ".claude/ must be ignored as a whole (it can hold history and tokens)"
         print("  -> PASSED: name order inside every tie, for every province and both real years.")
 
+    # 35. Every app module imports on its own without the package being pip-installed. An editable install
+    # (climate_machine_learning.pth in .venv) once hid an import-order bug that broke a fresh clone (T8).
+    print("\n[TEST 35] app modules import on their own when climate_machine_learning is not installed")
+    import subprocess
+    probe = (
+        "import sys, importlib\n"
+        "sys.path = [p for p in sys.path if not p.rstrip('/').endswith('/src')]\n"
+        "for name in list(sys.modules):\n"
+        "    if name.startswith('climate_machine_learning'): del sys.modules[name]\n"
+        "class Block:\n"
+        "    def find_spec(self, name, path=None, target=None):\n"
+        "        if name.startswith('climate_machine_learning') and not any(p.rstrip('/').endswith('/src') for p in sys.path):\n"
+        "            raise ModuleNotFoundError(name)\n"
+        "sys.meta_path.insert(0, Block())\n"
+        f"sys.path.insert(0, {str(ROOT_DIR)!r})\n"
+        "importlib.import_module(sys.argv[1])\n"
+    )
+    for module in ("app.services.model_service", "app.api.v1.endpoints", "app.main"):
+        done = subprocess.run([sys.executable, "-c", probe, module], cwd=str(ROOT_DIR / "scripts"),
+                              capture_output=True, text=True, timeout=120)
+        assert done.returncode == 0, f"{module} does not import on its own: {done.stderr.strip().splitlines()[-1:]}"
+    print("  -> PASSED: model_service, endpoints and main import with src/ added only by app.core.config.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)

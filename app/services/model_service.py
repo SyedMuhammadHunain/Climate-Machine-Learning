@@ -4,9 +4,10 @@ from typing import Any, Dict
 
 import joblib
 
+# app.core.config first: it puts src/ on sys.path, so climate_machine_learning imports without being pip-installed.
+from app.core.config import FAO_WATER_PATH, METRICS_PATH, MODEL_PATH, REFERENCE_PATH
 from climate_machine_learning import features as F
 from climate_machine_learning import inference as I
-from app.core.config import FAO_WATER_PATH, METRICS_PATH, MODEL_PATH, REFERENCE_PATH
 from app.core.exceptions import AgronomicValidationError
 from app.schemas.predict import InputValue, SinglePredictionRequest, SinglePredictionResponse
 from app.schemas.recommend import (

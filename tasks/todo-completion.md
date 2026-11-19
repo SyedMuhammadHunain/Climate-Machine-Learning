@@ -69,7 +69,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
 
 ## Phase 4: submission
 
-- [ ] **T8: push and fresh-clone test** (S, ask before push)
+- [x] **T8: push and fresh-clone test** (S, ask before push) (done 2026-11-19: fresh clone of `hunain-deploy` at `5882ebf`, new Python 3.13 venv: model 51/51, backend, frontend, readme, guide, report 13/13, dry run, Streamlit 11/11 and Hugging Face 12/12 in their own venvs passed; `verify_vercel_bundle.py` failed 6/7 and found a real bug: `app/services/model_service.py` imported `climate_machine_learning` before `app.core.config` put `src/` on `sys.path`, hidden in the main `.venv` by an editable install; fixed by import order, guarded by `verify_backend.py` TEST 35 (fails on the old order), 7/7 with the clean venv; live apps unaffected (they import `app.main`, which loads config first); no tokens or secret files in history)
   - Acceptance: work committed on local `Hunain`, pushed to `origin/hunain-deploy` (fast-forward only; never to remote `Hunain`, `main`, `afzal`). Fresh clone of `hunain-deploy`, new Python 3.13 venv, `pip install -r requirements.txt`, every check in `CLAUDE.md` table passes. `git log -p` has no `hf_` token strings. Streamlit app still loads after the push.
   - Verify: output of the clone run; headless Chrome on Streamlit URL.
   - Files: none new
