@@ -115,39 +115,47 @@ def triangulate(glyph_contours):
     return mesh["positions"], mesh["indices"]
 
 
-def write_glb(path: Path, positions, indices):
-    """Scale to the width the page expects, centre it, lay it flat in XZ (text up = -z, as the old mesh), write a GLB."""
+def place_text_flat(positions):
+    """Scale the outline to the width the page expects, centre it, lay it flat in XZ (text up = -z, as the old mesh).
+
+    Returns the vertices and the outline size in font units, before scaling.
+    """
     xs, ys = positions[0::2], positions[1::2]
-    s = MESH_WIDTH / (max(xs) - min(xs))
+    scale = MESH_WIDTH / (max(xs) - min(xs))
     cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
-    verts = [((x - cx) * s, 0.0, -(y - cy) * s) for x, y in zip(xs, ys)]
-    tris = [tuple(indices[i:i + 3]) for i in range(0, len(indices), 3)]
+    verts = [((x - cx) * scale, 0.0, -(y - cy) * scale) for x, y in zip(xs, ys)]
+    return verts, [max(xs) - min(xs), max(ys) - min(ys)]
 
-    def normal_y(a, b, c):
-        ux, uz, vx, vz = b[0] - a[0], b[2] - a[2], c[0] - a[0], c[2] - a[2]
-        return uz * vx - ux * vz   # y component of (b-a) x (c-a)
 
-    # keep the winding the old mesh had, so the page's single-sided shader draws the front face
-    old = path.read_bytes() if path.exists() else None
-    want = 1
-    if old:
-        jlen = struct.unpack("<I", old[12:16])[0]
-        gltf = json.loads(old[20:20 + jlen])
-        blen = struct.unpack("<I", old[20 + jlen:24 + jlen])[0]
-        binary = old[28 + jlen:28 + jlen + blen]
-        v, i = gltf["bufferViews"][0], gltf["bufferViews"][1]
-        pos = struct.unpack(f"<{v['byteLength'] // 4}f", binary[v.get("byteOffset", 0):v.get("byteOffset", 0) + v["byteLength"]])
-        ctype = gltf["accessors"][1]["componentType"]
-        fmt, size = {5123: ("H", 2), 5125: ("I", 4)}[ctype]
-        idx = struct.unpack(f"<{i['byteLength'] // size}{fmt}", binary[i.get("byteOffset", 0):i.get("byteOffset", 0) + i["byteLength"]])
-        p = [(pos[k], pos[k + 1], pos[k + 2]) for k in range(0, len(pos), 3)]
-        want = 1 if normal_y(p[idx[0]], p[idx[1]], p[idx[2]]) > 0 else -1
-    if (1 if normal_y(*(verts[k] for k in tris[0])) > 0 else -1) != want:
-        tris = [(a, c, b) for a, b, c in tris]
-    flat = [k for t in tris for k in t]
+def facing(a, b, c) -> int:
+    """+1 if the triangle's normal points up the y axis (towards the camera once the page rotates the mesh), else -1."""
+    ux, uz, vx, vz = b[0] - a[0], b[2] - a[2], c[0] - a[0], c[2] - a[2]
+    return 1 if uz * vx - ux * vz > 0 else -1
 
+
+def existing_facing(glb: bytes) -> int:
+    """The winding of the first triangle of an existing GLB made by this script or by the old mesh."""
+    json_len = struct.unpack("<I", glb[12:16])[0]
+    gltf = json.loads(glb[20:20 + json_len])
+    bin_len = struct.unpack("<I", glb[20 + json_len:24 + json_len])[0]
+    binary = glb[28 + json_len:28 + json_len + bin_len]
+    pos_view, idx_view = gltf["bufferViews"][0], gltf["bufferViews"][1]
+
+    def view_bytes(view):
+        start = view.get("byteOffset", 0)
+        return binary[start:start + view["byteLength"]]
+
+    floats = struct.unpack(f"<{pos_view['byteLength'] // 4}f", view_bytes(pos_view))
+    code, size = {5123: ("H", 2), 5125: ("I", 4)}[gltf["accessors"][1]["componentType"]]
+    first = struct.unpack(f"<{idx_view['byteLength'] // size}{code}", view_bytes(idx_view))[:3]
+    a, b, c = ((floats[3 * k], floats[3 * k + 1], floats[3 * k + 2]) for k in first)
+    return facing(a, b, c)
+
+
+def pack_glb(verts, flat_indices) -> bytes:
+    """One node, one mesh, POSITION plus a triangle list, in the layout of the mesh this replaces."""
     pos_bytes = struct.pack(f"<{len(verts) * 3}f", *(c for v in verts for c in v))
-    idx_bytes = struct.pack(f"<{len(flat)}I", *flat)
+    idx_bytes = struct.pack(f"<{len(flat_indices)}I", *flat_indices)
     binary = pos_bytes + idx_bytes
     mins = [min(v[k] for v in verts) for k in range(3)]
     maxs = [max(v[k] for v in verts) for k in range(3)]
@@ -158,7 +166,7 @@ def write_glb(path: Path, positions, indices):
         "meshes": [{"name": "SiteName", "primitives": [{"attributes": {"POSITION": 0}, "indices": 1}]}],
         "accessors": [
             {"bufferView": 0, "componentType": 5126, "count": len(verts), "type": "VEC3", "min": mins, "max": maxs},
-            {"bufferView": 1, "componentType": 5125, "count": len(flat), "type": "SCALAR"},
+            {"bufferView": 1, "componentType": 5125, "count": len(flat_indices), "type": "SCALAR"},
         ],
         "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": len(pos_bytes), "target": 34962},
                         {"buffer": 0, "byteOffset": len(pos_bytes), "byteLength": len(idx_bytes), "target": 34963}],
@@ -167,9 +175,20 @@ def write_glb(path: Path, positions, indices):
     js = json.dumps(meta, separators=(",", ":")).encode()
     js += b" " * (-len(js) % 4)
     binary += b"\0" * (-len(binary) % 4)
-    path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + 8 + len(js) + 8 + len(binary))
-                     + struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(binary), b"BIN\0") + binary)
-    return len(verts), len(flat) // 3, [max(xs) - min(xs), max(ys) - min(ys)]
+    return (b"glTF" + struct.pack("<II", 2, 12 + 8 + len(js) + 8 + len(binary))
+            + struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(binary), b"BIN\0") + binary)
+
+
+def write_glb(path: Path, positions, indices):
+    """Write the name mesh to `path`, keeping the winding of the mesh already there so the page's single-sided shader
+    still draws the front face."""
+    verts, outline_size = place_text_flat(positions)
+    tris = [tuple(indices[i:i + 3]) for i in range(0, len(indices), 3)]
+    wanted = existing_facing(path.read_bytes()) if path.exists() else 1
+    if facing(*(verts[k] for k in tris[0])) != wanted:
+        tris = [(a, c, b) for a, b, c in tris]
+    path.write_bytes(pack_glb(verts, [k for tri in tris for k in tri]))
+    return len(verts), len(tris), outline_size
 
 
 def chrome_png(html: str, size, out: Path, tmp: Path):
