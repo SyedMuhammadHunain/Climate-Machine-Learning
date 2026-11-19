@@ -57,14 +57,14 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Files: none in repo (generated `hf_bundle/` is git-ignored)
   - Depends on: user supplies write token
 
-- [ ] **T7: docs and checkers for final deployment status** (M)
+- [x] **T7: docs and checkers for final deployment status** (M) (done 2026-11-19: README, deployment guide, demo checklist and `CLAUDE.md` say model repo current, no Space by group decision; report checklist item ticked; `verify_readme.py` and `verify_guide.py` rules changed first and failed, then passed; putting 'not deployed yet' back fails)
   - Acceptance: README deployment table, `docs/deployment_guide.md`, demo checklist in `docs/demo_and_viva_guide.md`, `CLAUDE.md` say: model repo live with the promoted model; no Space, by the group's decision (model repo plus Streamlit plus FastAPI app are the deployments). `verify_readme.py` and `verify_guide.py` rules updated to match (no longer require "not deployed yet" as pending; no longer say "earlier model").
   - Verify: both checkers pass; change the README row back by hand, checker fails.
   - Files: `README.md`, `docs/deployment_guide.md`, `docs/demo_and_viva_guide.md`, `CLAUDE.md`, `scripts/verify_readme.py`, `scripts/verify_guide.py` (6 files, docs only, one consistency change)
   - Depends on: T6
 
 ### Checkpoint 2
-- [ ] Every main-venv check passes; `node scripts/dryrun_demo.js` passes against local server
+- [x] Every main-venv check passes; `node scripts/dryrun_demo.js` passes against local server (2026-11-19: model 51/51, backend, frontend, readme, guide, report 13/13, vercel bundle 7/7, dry run; `verify_hf_bundle.py` 12/12 in T6; `verify_streamlit.py` not re-run, `streamlit_app/` unchanged)
 - [ ] README links open logged out
 
 ## Phase 4: submission

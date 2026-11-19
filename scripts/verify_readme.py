@@ -142,8 +142,12 @@ def main() -> int:
         failures.append("README Streamlit row must show the live URL and must not say 'not deployed'")
     if "https://climate-machine-learning.vercel.app/" not in rows["Vercel"] or "not deployed" in rows["Vercel"].lower():
         failures.append("README Vercel row must show the live URL and must not say 'not deployed'")
-    if "SMHunain/crop-yield-drought-pakistan" not in rows["Hugging Face"] or "not deployed yet" not in rows["Hugging Face"].lower():
-        failures.append("README Hugging Face row must link the live model repo and say the Space is 'not deployed yet' (free plan)")
+    # SPEC-project-completion.md: model repo live with the current model; no Space, by the group's decision
+    hf = rows["Hugging Face"].lower()
+    if ("smhunain/crop-yield-drought-pakistan" not in hf or "no space" not in hf or "group decision" not in hf
+            or "not deployed yet" in hf or "earlier model" in hf):
+        failures.append("README Hugging Face row must link the live model repo, say 'No Space' and 'group decision', "
+                        "and must not say 'not deployed yet' or 'earlier model'")
 
     # no fake / demo wording, no old model numbers
     for word in ("bajra", "jowar", "0.892", "elasticity", "simulation", "demo mode", "fallback"):

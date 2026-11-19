@@ -54,7 +54,7 @@ Then put the URL in the README deployment table.
 
 ## 2. Hugging Face (model repo + Space)
 
-**Status 2026-11-19:** the model repo is **live** at <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (uploaded and checked with a token-less download). Creating the Space was **refused**: the Hub says hosting Gradio and Docker Spaces on free cpu-basic requires a PRO subscription (the account is on the free plan; static Spaces are free). The Space bundle is ready, so the steps below for the Space work as soon as that is settled.
+**Status 2026-11-19:** the model repo is **live** at <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> and was republished with the current model the same day (Hub commit `056ccbd`; a token-less download is identical to `hf_bundle/model/` and gives rice in Sindh, driest real year, 40.85 and 89.3%). **No Space, by group decision:** the model repo plus the Streamlit app and the FastAPI app are the deployments. Creating a Gradio Space had been refused (the Hub requires a PRO subscription for Gradio and Docker Spaces on free cpu-basic; static Spaces are free). The Space bundle is built and tested, so the Space steps below still work if the group changes its mind.
 
 You need a Hugging Face account and an access token with **write** permission (Settings, Access Tokens). Keep the token secret: do not paste it into chat, commit it, or put it in a file in the repo.
 
@@ -92,11 +92,11 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 
 **Decide a licence.** The model card has no `license` field on purpose: the group has not chosen one. Add `license: <id>` to the card's front matter in `build_hf_bundle.py` when you decide. The data licences are stated in the card (crop dataset MIT; NASA POWER "License not specified", citation requested).
 
-## 3. When the Hugging Face Space goes live (Streamlit is already done)
+## 3. If a Hugging Face Space is added later
 
 - Edit the Hugging Face row of the README deployment table with the Space URL and the date.
-- `scripts/verify_readme.py` requires the Vercel row to show the live URL and not say "not deployed", the Streamlit row to show the live URL and not say "not deployed", and the Hugging Face row to link the model repo and say the Space is "not deployed yet". Change that second rule at the same time, or it will fail. `scripts/verify_guide.py` likewise keeps the Hugging Face checklist item open until you tick it.
-- Tick the Hugging Face item in the "Before you present" list of `docs/demo_and_viva_guide.md`.
+- `scripts/verify_readme.py` requires the Vercel and Streamlit rows to show their live URLs and not say "not deployed", and the Hugging Face row to link the model repo and say "No Space" and "group decision". `scripts/verify_guide.py` requires the ticked Hugging Face checklist item to say the same. Change those rules together with the docs, or they will fail.
+- Update the Hugging Face item in the "Before you present" list of `docs/demo_and_viva_guide.md` with the Space URL.
 - Rehearse the live demo with the three URLs open.
 
 ## 4. Vercel (FastAPI app and HTML pages)

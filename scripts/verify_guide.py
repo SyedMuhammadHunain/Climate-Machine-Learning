@@ -124,8 +124,12 @@ def main() -> int:
         failures.append("Streamlit checklist item must be ticked and show the live streamlit.app URL")
     if not re.search(r"- \[x\][^\n]*vercel[^\n]*vercel\.app", low):
         failures.append("Vercel checklist item must be ticked and show the live vercel.app URL")
-    if not re.search(r"- \[ \][^\n]*hugging face", low):
-        failures.append("Hugging Face checklist item must stay open (the Space is not deployed)")
+    hf_item = re.search(r"- \[(x| )\][^\n]*hugging face[^\n]*", low)
+    if not hf_item or hf_item.group(1) != "x" or "huggingface.co/smhunain/crop-yield-drought-pakistan" not in hf_item.group(0) \
+            or "group decision" not in hf_item.group(0) or "earlier model" in hf_item.group(0):
+        failures.append("Hugging Face checklist item must be ticked, link the live model repo and say no Space by group decision")
+    if not re.search(r"- \[x\][^\n]*report pdf", low):
+        failures.append("Report PDF checklist item must be ticked (docs/report/report.pdf exists and is checked)")
     for word in ("bajra", "jowar"):
         if word in low:
             failures.append(f"banned wording: {word}")

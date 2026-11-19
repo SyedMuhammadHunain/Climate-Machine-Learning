@@ -63,6 +63,7 @@ python scripts/verify_guide.py      # demo/viva guide numbers match the live app
 python scripts/verify_streamlit.py  # Streamlit app: numbers on screen equal the model (needs streamlit_app/requirements.txt, own venv)
 python scripts/verify_vercel_bundle.py  # Vercel bundle: what is in it, lean pinned requirements, runs on its own
 python scripts/verify_hf_bundle.py  # Hugging Face bundle and Gradio Space (needs hf_space/requirements.txt and pyyaml, own venv)
+python scripts/verify_report.py     # report PDF: sections, 3-4 pages, every number equals metrics.json, roles, figures
 node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
 
@@ -89,6 +90,7 @@ models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
 scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, build_vercel_bundle.py, the verify_*.py checks and dryrun_demo.js
 docs/                 demo script and viva preparation, deployment guide
+docs/report/          report.pdf (3-4 pages), report.html and figures/; built by scripts/build_report.py, checked by scripts/verify_report.py
 SPEC-*.md, tasks/     specs, plan and task list (model-only output; second data source)
 ```
 
@@ -251,9 +253,9 @@ The course guidelines ask for three deployments. Status:
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
 | Streamlit Community Cloud | **Live:** <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> (deployed from branch `hunain-deploy`; app code in `streamlit_app/app.py`, own `streamlit_app/requirements.txt`). Input form, prediction with a likely range, one chart. Tested in a real browser on 2026-11-19: it loads for a logged-out visitor in about 20 to 30 seconds, its numbers equal the local model, and the chart draws all 13 crops. Free apps may sleep when idle, so open it before a demo. |
 | Vercel (the same FastAPI app and HTML pages, hosted) | **Live:** <https://climate-machine-learning.vercel.app/> (deployed on 2026-11-19 with the Vercel CLI from the generated bundle, `python scripts/build_vercel_bundle.py`). Checked on the live site: the pages load for a logged-out visitor, `/api/v1/recommend` for Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the same as the local app; redeployed with the promoted model the same day, after an earlier deployment of the previous model), a rain value outside the trained range is refused with a 422 that states the range, and `scripts/dryrun_demo.js` passes against it. The first request after an idle period can take a few seconds while the model loads. |
-| Hugging Face (model card + Space) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code; a token-less download runs the bundled example). It still holds the earlier model (Random Forest, no offset) until it is republished from `hf_bundle/model/`. **Space: not deployed yet.** The bundle (`python scripts/build_hf_bundle.py`, Space app in `hf_space/app.py`) is built and tested, but the Hub refuses Gradio Spaces on a free account (free CPU hosting of Gradio and Docker Spaces needs a PRO subscription; only static Spaces are free). |
+| Hugging Face (model card + pipeline) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code). Republished with the current model on 2026-11-19 (Hub commit `056ccbd`); a token-less download is identical to `hf_bundle/model/` and gives rice in Sindh, driest real year, 40.85 and 89.3%. **No Space, by group decision (2026-11-19):** the model repo plus the Streamlit app and the FastAPI app (local and Vercel) are the deployments. A Gradio Space app is built and tested (`hf_space/app.py`, `python scripts/build_hf_bundle.py`), but the Hub refuses Gradio Spaces on a free account; steps to publish it later are in the deployment guide. |
 
-Streamlit and Vercel are deployed (both from clean code; branches `main`, remote `Hunain` and `afzal` contain a malicious loader and must not be merged or run, see the branch table in [docs/deployment_guide.md](docs/deployment_guide.md)). Only the Hugging Face Space is still to do (blocked by the free plan, see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
+Streamlit and Vercel are deployed (both from clean code; branches `main`, remote `Hunain` and `afzal` contain a malicious loader and must not be merged or run, see the branch table in [docs/deployment_guide.md](docs/deployment_guide.md)). The Hugging Face model repo is live; no Space is deployed, by the group's decision (see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
 
 The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 
