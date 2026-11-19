@@ -39,10 +39,7 @@ class ModelService:
     """
 
     YIELD_UNIT = "dataset yield units (unit not confirmed)"
-    RANKING_BASIS = (
-        "Model-predicted yield for your scenario divided by the model-predicted yield for a "
-        "typical (median) year in the same province, as a percentage. Crops with the same share at one decimal share one rank."
-    )
+    RANKING_BASIS = I.RANKING_BASIS
 
     def __init__(self, model_path: Path = MODEL_PATH):
         self.model_path = model_path

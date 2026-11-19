@@ -66,6 +66,12 @@ def tied_with(items: Sequence[CropResult], digits: int = TIE_DIGITS) -> Dict[str
     return {i.crop: shown.count(s) - 1 for i, s in zip(items, shown)}
 
 
+RANKING_BASIS = (
+    "Model-predicted yield for your scenario divided by the model-predicted yield for a "
+    "typical (median) year in the same province, as a percentage. Crops with the same share at one decimal share one rank."
+)
+
+
 @dataclass
 class TieGroup:
     """Crops that show the same share of a typical year. Their order carries no information, so they share one rank."""

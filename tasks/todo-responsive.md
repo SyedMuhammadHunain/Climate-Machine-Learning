@@ -188,7 +188,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     Now all 3 provinces show 100.0% for every crop. 23/23 responsive, 8/8 checks. Tests written first: `advisory_card_is_structured`,
     dryrun median and advisory checks, backend `model_caveat` asserts. Streamlit still shows its own text (T9).
 
-- [ ] **T9: Streamlit ranking view** (module `ranking`, S)
+- [x] **T9: Streamlit ranking view** (module `ranking`, S)
   - Description: `presentation.py` ranking table grouped by `inference.tie_groups` with
     barely-grown tag; app shows headline, facts, ranking rule, caveats (full, visible); median
     preset exact; dataframes `width="stretch"`; no sideways page scroll at 360 px.
@@ -198,6 +198,15 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `.venv-streamlit/bin/python scripts/verify_streamlit.py`; `verify_responsive.py --streamlit`.
   - Files: `src/climate_machine_learning/presentation.py`, `streamlit_app/app.py`, `scripts/verify_streamlit.py`, `scripts/verify_responsive.py`.
   - Depends on: T6.
+  - Done 2026-11-19. Streamlit shows the headline (subheader), the facts list, the chart, the table with tied crops
+    sharing one rank plus a "Note" column ("barely grown here"), then "How crops are ranked" and "About these numbers"
+    (model caveat and pinned-year caveat in full, always visible). `presentation.preset_inputs` typical year = all nine
+    exact medians (Gradio gets the same); `I.RANKING_BASIS` is now the one source for the ranking sentence (API and
+    Streamlit). Tests first: `verify_model` (table, presets), `verify_streamlit` (3 new/changed), and
+    `verify_responsive.py --streamlit` (no sideways scroll at 320, 360, 412 px; needs `.venv-streamlit`). `run_checks.sh --all`
+    10/10; adding the Streamlit responsive test to `run_checks.sh --all` is left to T13. Left for T12: the pinned-year
+    caveat now appears twice on the page (under the prediction and in the new block), and the model caveat moved out of
+    the "About this model" expander. The deployed Streamlit and Vercel apps are unchanged until redeployed.
 
 ### Checkpoint B (after T6-T9)
 - [ ] 9 province x preset cases verified against direct `predict_crops`

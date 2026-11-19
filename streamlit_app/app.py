@@ -132,6 +132,9 @@ st.caption(P.interval_note(met))
 
 # ---------------------------------------------------------------- explanatory chart + ranking
 st.header("3. How the crops compare in this scenario")
+chosen_label = met["models"][met["chosen"]["name"]]["label"]
+st.subheader(I.ranking_headline(result.items))
+st.markdown("\n".join(f"- **{f['label']}:** {f['value']}" for f in I.scenario_facts(province, result.inputs, result.sources, chosen_label)))
 frame = pd.DataFrame(
     {
         "Crop": [i.crop for i in result.items],
@@ -159,6 +162,12 @@ table = P.ranking_table(result, ref, fao)
 st.dataframe(table, hide_index=True, width="stretch")
 st.caption("FAO water needs (Brouwer and Heibloem 1986, Table 14) are context only. They do not change the ranking.")
 
+st.markdown("**How crops are ranked**")
+st.write(I.RANKING_BASIS)
+st.markdown("**About these numbers**")
+st.write(I.model_caveat(met))
+st.write(I.absolute_yield_caveat(met))
+
 with st.expander("Inputs used (and where each came from)"):
     labels = {k: label for k, label, _, _ in FIELDS}
     source_text = {
@@ -181,7 +190,7 @@ with st.expander("Inputs used (and where each came from)"):
 # ---------------------------------------------------------------- about
 with st.expander("About this model and its limits"):
     chosen_model = met["models"][met["chosen"]["name"]]
-    st.write(f"**{chosen_model['label']}**, chosen on the validation years. " + I.model_caveat(met))
+    st.write(f"**{chosen_model['label']}**, chosen on the validation years. The win and its limits are stated under the ranking above.")
     st.write(
         "Most of what the model knows is which crop it is. Weather and soil wetness change predictions only a little. "
         "It trains on one row per crop, province and year. Year is not an input: each model starts from the crop-province "

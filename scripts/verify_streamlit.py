@@ -68,8 +68,7 @@ def default_numbers_equal_the_model():
     province = at.selectbox(key="province").value
     crop = at.selectbox(key="crop").value.lower()
     med = REF["provinces"][province]["median"]
-    supplied = {"precipitation_sum": round(med["precipitation_sum"], 1),
-                "temperature_2m_mean": round(med["temperature_2m_mean"], 1)}
+    supplied = {k: med[k] for k in F.BASE_INPUTS}   # the typical year: every input at its exact province median
     res = I.predict_crops(PIPE, REF, province, supplied, log_quantiles=Q)
     item = next(i for i in res.items if i.crop == crop)
     vals = metric_values(at)
@@ -95,9 +94,49 @@ def real_driest_year_fills_every_input_and_ranking_matches():
     ties = I.tied_with(res.items)
     assert list(df["Tied with"]) == [ties[i.crop] for i in res.items]
     assert max(ties.values()) >= 2, "this demo ranking has ties; the table must mark them"
+    group_rank = {c: g.rank for g in I.tie_groups(res.items) for c in g.crops}
+    assert list(df["Rank"]) == [group_rank[i.crop] for i in res.items], "tied crops share one rank"
+    assert list(df[df.Crop == "apple"]["Note"]) == ["barely grown here"], "apple in Sindh has typical yield 0.01"
     crop = at.selectbox(key="crop").value.lower()
     item = next(i for i in res.items if i.crop == crop)
     assert metric_values(at)["Predicted yield"] == f"{item.predicted_yield:.2f}"
+
+
+def _page_text(at):
+    return " ".join([m.value for m in at.markdown] + [c.value for c in at.caption] + [s.value for s in at.subheader])
+
+
+@test
+def ranking_summary_has_headline_facts_rule_and_caveats_from_the_model():
+    """SPEC-responsive.md R10: headline, facts, how crops are ranked, and both caveats are shown, in full, from the shared
+    functions; the typical year is one tie group and the headline says so."""
+    at = fresh()
+    assert not at.exception, at.exception
+    province = at.selectbox(key="province").value
+    inputs = {k: REF["provinces"][province]["median"][k] for k in F.BASE_INPUTS}
+    res = I.predict_crops(PIPE, REF, province, inputs, log_quantiles=Q)
+    text = _page_text(at)
+    headline = I.ranking_headline(res.items)
+    assert "no difference" in headline, headline
+    assert headline in [s.value for s in at.subheader], [s.value for s in at.subheader]
+    chosen_label = MET["models"][MET["chosen"]["name"]]["label"]
+    for fact in I.scenario_facts(province, res.inputs, res.sources, chosen_label):
+        assert f"**{fact['label']}:** {fact['value']}" in text, fact
+    assert I.RANKING_BASIS in text
+    assert I.model_caveat(MET) in text and I.absolute_yield_caveat(MET) in text
+    assert [h.value for h in at.markdown if h.value in ("**How crops are ranked**", "**About these numbers**")] == [
+        "**How crops are ranked**", "**About these numbers**"]
+
+
+@test
+def ranking_headline_follows_the_scenario():
+    at = fresh()
+    at.selectbox(key="province").select("Sindh").run()
+    at.radio(key="preset").set_value("Driest real year").run()
+    res = I.predict_crops(PIPE, REF, "Sindh", REF["historical_years"]["Sindh"]["driest"]["inputs"], log_quantiles=Q)
+    headline = I.ranking_headline(res.items)
+    assert "POMEGRANATE" in headline and "RICE" in headline and "no difference" not in headline, headline
+    assert headline in [s.value for s in at.subheader], [s.value for s in at.subheader]
 
 
 @test

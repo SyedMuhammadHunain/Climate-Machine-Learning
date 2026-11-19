@@ -33,8 +33,9 @@ FIELDS: List[Tuple[str, str, bool]] = [(k, _LABELS[k], k not in F.REQUIRED_INPUT
 def preset_inputs(reference: Dict[str, Any], province: str, preset: str) -> Dict[str, float]:
     """Form values for a preset: a typical year (rain and temperature only) or every input of a real year."""
     if preset == TYPICAL:
+        # every input at its exact province median: that is the scenario the typical year is measured against
         median = reference["provinces"][province]["median"]
-        return {k: round(median[k], 1) for k in F.REQUIRED_INPUTS}
+        return {k: median[k] for k in F.BASE_INPUTS}
     kind = "driest" if preset == DRIEST else "wettest"
     return dict(reference["historical_years"][province][kind]["inputs"])
 
@@ -52,12 +53,15 @@ def ranking_table(result, reference: Dict[str, Any], fao: Dict[str, Any]) -> pd.
     possible = len(reference["provinces"]) * (last - first + 1)
     items = result.items
     ties = I.tied_with(items)
+    group_rank = {crop: g.rank for g in I.tie_groups(items) for crop in g.crops}  # tied crops share one rank
+    grown = I.barely_grown(items)
     return pd.DataFrame(
         {
-            "Rank": range(1, len(items) + 1),
+            "Rank": [group_rank[i.crop] for i in items],
             "Crop": [i.crop for i in items],
             "% of typical year": [round(i.pct_of_normal, 1) for i in items],
             "Tied with": [ties[i.crop] for i in items],
+            "Note": ["barely grown here" if grown[i.crop] else "" for i in items],
             "Predicted yield": [round(i.predicted_yield, 2) for i in items],
             "Likely range": [f"{i.low:.2f} to {i.high:.2f}" for i in items],
             "Training rows": [f"{reference['train_rows_per_crop'][i.crop]} of {possible}" for i in items],

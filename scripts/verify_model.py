@@ -374,11 +374,15 @@ def presentation_ranking_table_is_built_from_the_model_output():
     res = I.predict_crops(pipe, ref, "Sindh", {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5},
                           log_quantiles=m["prediction_interval"]["log_residual_quantiles"])
     table = P.ranking_table(res, ref, fao)
-    assert list(table.columns) == ["Rank", "Crop", "% of typical year", "Tied with", "Predicted yield", "Likely range",
+    assert list(table.columns) == ["Rank", "Crop", "% of typical year", "Tied with", "Note", "Predicted yield", "Likely range",
                                    "Training rows", "FAO water need"]
     ties = I.tied_with(res.items)
     assert list(table["Tied with"]) == [ties[i.crop] for i in res.items]
-    assert list(table["Rank"]) == list(range(1, 14))
+    group_rank = {c: g.rank for g in I.tie_groups(res.items) for c in g.crops}
+    assert list(table["Rank"]) == [group_rank[i.crop] for i in res.items], "tied crops share one rank"
+    assert max(table["Rank"]) < 13, "this scenario has ties, so fewer ranks than crops"
+    grown = I.barely_grown(res.items)
+    assert list(table["Note"]) == ["barely grown here" if grown[i.crop] else "" for i in res.items]
     assert list(table["Crop"]) == [i.crop for i in res.items]
     assert list(table["% of typical year"]) == [round(i.pct_of_normal, 1) for i in res.items]
     rice, apple = table[table.Crop == "rice"].iloc[0], table[table.Crop == "apple"].iloc[0]
@@ -394,8 +398,7 @@ def presentation_presets_fill_typical_or_real_years():
 
     _, _, ref = _load_artifacts()
     med = ref["provinces"]["Punjab"]["median"]
-    assert P.preset_inputs(ref, "Punjab", P.TYPICAL) == {
-        "precipitation_sum": round(med["precipitation_sum"], 1), "temperature_2m_mean": round(med["temperature_2m_mean"], 1)}
+    assert P.preset_inputs(ref, "Punjab", P.TYPICAL) == {k: med[k] for k in F.BASE_INPUTS}, "the typical year is all nine exact medians"
     assert P.preset_inputs(ref, "Sindh", P.DRIEST) == ref["historical_years"]["Sindh"]["driest"]["inputs"]
     assert P.preset_inputs(ref, "Sindh", P.WETTEST) == ref["historical_years"]["Sindh"]["wettest"]["inputs"]
     assert P.preset_inputs(ref, "Sindh", P.DRIEST) is not ref["historical_years"]["Sindh"]["driest"]["inputs"], "must be a copy"

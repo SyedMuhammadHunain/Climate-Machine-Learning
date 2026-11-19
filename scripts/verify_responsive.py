@@ -794,6 +794,51 @@ def landing_has_one_start_button():
     _fail(problems, "landing Start button")
 
 
+# --------------------------------------------------------------------------- Streamlit app (R4.11)
+STREAMLIT_PYTHON = ROOT / ".venv-streamlit" / "bin" / "python"
+STREAMLIT_SIZES = [s for s in SIZES if s[0] in ("320x568", "360x800", "412x915")]
+
+
+def streamlit_page_has_no_sideways_scroll():
+    """The Streamlit app at phone sizes: neither the document nor Streamlit's own scrolling containers scroll sideways
+    (tables and charts scroll inside their own frames) (R4.11). Needs .venv-streamlit (run_checks.sh --all creates it)."""
+    import subprocess
+    assert STREAMLIT_PYTHON.exists(), f"{STREAMLIT_PYTHON} not found: run ./run_checks.sh --all once to create it"
+    port = free_port()
+    server = subprocess.Popen(
+        [str(STREAMLIT_PYTHON), "-m", "streamlit", "run", str(ROOT / "streamlit_app" / "app.py"), "--server.headless", "true",
+         "--server.port", str(port), "--server.address", "127.0.0.1", "--browser.gatherUsageStats", "false"],
+        cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    problems = []
+    chrome = RUN.browser()
+    try:
+        for _ in range(120):
+            try:
+                urllib.request.urlopen(f"http://127.0.0.1:{port}/_stcore/health", timeout=1)
+                break
+            except Exception:  # noqa: BLE001 - still starting
+                time.sleep(0.5)
+        else:
+            raise AssertionError("Streamlit did not start")
+        for name, w, h, dpr, phone in STREAMLIT_SIZES:
+            chrome.emulate(w, h, dpr=dpr, mobile=True, touch=True)
+            chrome.goto(f"http://127.0.0.1:{port}/")
+            chrome.wait_for("document.body.innerText.includes('How crops are ranked')", 120, f"the Streamlit app at {name}")
+            time.sleep(1.5)  # the chart and tables draw after the text
+            m = chrome.eval("""(() => {
+                const els = [["document", document.documentElement], ["stMain", document.querySelector('[data-testid="stMain"]')],
+                             ["stApp", document.querySelector('[data-testid="stApp"]')]];
+                return els.filter(([, el]) => el).map(([n, el]) => ({ n, sw: el.scrollWidth, cw: el.clientWidth }));
+            })()""")
+            problems += [f"{name}: {e['n']} is {e['sw']} px wide in {e['cw']} px" for e in m if e["sw"] > e["cw"] + 1]
+            RUN.shots.mkdir(parents=True, exist_ok=True)
+            chrome.screenshot(RUN.shots / f"streamlit_{name}.png")
+    finally:
+        server.terminate()
+        server.wait(timeout=15)
+    _fail(problems, "Streamlit sideways scroll")
+
+
 TESTS = [
     no_horizontal_page_scroll,
     boxes_stay_inside_viewport,
@@ -827,6 +872,7 @@ def main() -> int:
     ap.add_argument("--size", help="comma-separated sizes, e.g. 360x800,1920x1080")
     ap.add_argument("--page", help="comma-separated pages: " + ",".join(PAGES))
     ap.add_argument("--shots", help="folder for screenshots (default build/responsive/)")
+    ap.add_argument("--streamlit", action="store_true", help="check the Streamlit app instead of the HTML pages (needs .venv-streamlit)")
     args = ap.parse_args()
     if args.size:
         wanted = args.size.split(",")
@@ -837,7 +883,7 @@ def main() -> int:
         assert RUN.pages, f"unknown page {args.page}; choose from {list(PAGES)}"
     if args.shots:
         RUN.shots = Path(args.shots)
-    tests = TESTS
+    tests = [streamlit_page_has_no_sideways_scroll] if args.streamlit else TESTS
     if args.only:
         names = args.only.split(",")
         tests = [t for t in TESTS if t.__name__ in names]
