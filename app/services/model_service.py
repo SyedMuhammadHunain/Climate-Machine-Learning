@@ -17,6 +17,17 @@ from app.schemas.recommend import (
 )
 
 
+def tie_notes(top, bottom) -> str:
+    """One sentence for each end of the ranking that is tied (one in total when both ends are the same tie)."""
+    same_tie = round(top.pct_of_normal, I.TIE_DIGITS) == round(bottom.pct_of_normal, I.TIE_DIGITS)
+    ends = [("largest", top)] if same_tie else [("largest", top), ("smallest", bottom)]
+    return "".join(
+        f" The {label} share is tied: {end.crop.upper()} shares it with {end.tied_with} other "
+        f"crop{'s' if end.tied_with > 1 else ''}, and tied crops are ordered by name only."
+        for label, end in ends if end.tied_with
+    )
+
+
 class ModelService:
     """Serves the trained scikit-learn pipeline. Every yield returned is raw model output.
 
@@ -103,12 +114,14 @@ class ModelService:
             training_rows_possible=self.training_rows_possible,
             inputs=self._inputs(result),
             model_name=self.model_name,
+            absolute_yield_note=I.absolute_yield_caveat(self.metrics),
         )
 
     # ------------------------------------------------------------------ /recommend
     def recommend_crops(self, request: DroughtScenarioRequest) -> RecommendationResponse:
         province = request.province.value
         result = self._predict(province, self._supplied(request))
+        ties = I.tied_with(result.items)
         items = [
             CropRecommendationItem(
                 rank=i + 1,
@@ -116,6 +129,7 @@ class ModelService:
                 predicted_yield=r.predicted_yield,
                 normal_yield=r.normal_yield,
                 pct_of_normal=r.pct_of_normal,
+                tied_with=ties[r.crop],
                 training_rows_for_crop=int(self.reference["train_rows_per_crop"][r.crop]),
                 training_rows_possible=self.training_rows_possible,
                 fao_water_need=self._fao_item(r.crop),
@@ -131,7 +145,7 @@ class ModelService:
             f"({bottom.pct_of_normal:.1f}% of typical). "
             "These are model outputs, not adjusted by hand."
         )
-        summary += " " + I.model_caveat(self.metrics)
+        summary += tie_notes(top, bottom) + " " + I.model_caveat(self.metrics)
         return RecommendationResponse(
             scenario_name=request.scenario_name or "Custom scenario",
             province=province,
@@ -142,4 +156,5 @@ class ModelService:
             ranked_crops=items,
             recommendation_summary=summary,
             model_name=self.model_name,
+            absolute_yield_note=I.absolute_yield_caveat(self.metrics),
         )
