@@ -91,6 +91,62 @@ def public_pages_contain_no_roll_numbers_or_secrets():
 
 
 @test
+def build_refuses_a_folder_it_did_not_create():
+    """Abuse case: `--out` pointed at a folder that holds someone's files must never delete them."""
+    with tempfile.TemporaryDirectory() as tmp:
+        victim = Path(tmp) / "my_documents"
+        (victim / "important_subdir").mkdir(parents=True)
+        (victim / "notes.txt").write_text("precious")
+        (victim / "important_subdir" / "data.csv").write_text("more")
+        (victim / "model").mkdir()                       # even a folder named like ours must not be deleted
+        (victim / "model" / "mine.txt").write_text("not yours")
+        try:
+            B.build(victim)
+        except B.UnsafeOutputDir as err:
+            assert "not empty" in str(err) and "Refusing" in str(err), err
+        else:
+            raise AssertionError("build() accepted a foreign, non-empty folder")
+        assert (victim / "notes.txt").read_text() == "precious"
+        assert (victim / "important_subdir" / "data.csv").exists() and (victim / "model" / "mine.txt").exists()
+
+
+@test
+def build_rebuilds_its_own_folder_and_touches_only_model_and_space():
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "bundle"
+        B.build(out)
+        (out / "model" / "stale_file.txt").write_text("left over from an older build")
+        (out / "README_mine.txt").write_text("a foreign file next to our folders")
+        B.build(out)                                     # rebuild into our own folder is allowed
+        assert not (out / "model" / "stale_file.txt").exists(), "rebuild must replace model/ completely"
+        assert (out / "README_mine.txt").exists(), "only model/ and space/ may be removed"
+        assert (out / "model" / "README.md").exists() and (out / "space" / "app.py").exists()
+        empty = Path(tmp) / "empty_dir"
+        empty.mkdir()
+        B.build(empty)                                   # an existing EMPTY folder is fine
+        assert (empty / "model" / "README.md").exists()
+
+
+@test
+def build_refuses_symlinked_targets():
+    with tempfile.TemporaryDirectory() as tmp:
+        out, elsewhere = Path(tmp) / "bundle", Path(tmp) / "elsewhere"
+        B.build(out)
+        elsewhere.mkdir()
+        (elsewhere / "keep.txt").write_text("outside the bundle")
+        import shutil
+        shutil.rmtree(out / "model")
+        (out / "model").symlink_to(elsewhere, target_is_directory=True)
+        try:
+            B.build(out)
+        except B.UnsafeOutputDir as err:
+            assert "symlink" in str(err), err
+        else:
+            raise AssertionError("build() followed a symlink")
+        assert (elsewhere / "keep.txt").read_text() == "outside the bundle"
+
+
+@test
 def space_config_is_a_native_gradio_space():
     meta = front_matter(SPACE_DIR / "README.md")
     assert meta["sdk"] == "gradio" and meta["app_file"] == "app.py"

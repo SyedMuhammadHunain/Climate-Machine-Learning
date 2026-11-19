@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PACKAGE = ROOT / "src" / "climate_machine_learning"
 MODEL_FILES = ("crop_yield_pipeline.joblib", "reference.json", "metrics.json")
 CODE_FILES = ("__init__.py", "features.py", "inference.py")
+MARKER = ".built-by-build_hf_bundle"  # ownership evidence: written by build(), read before any deletion
 SPACE_ONLY_CODE = ("presentation.py",)  # UI text and tables: the Space needs them, the model repo does not
 
 
@@ -199,10 +200,39 @@ def _copy_code(dest: Path, extra: tuple = ()) -> None:
         shutil.copy2(PACKAGE / name, dest / "climate_machine_learning" / name)
 
 
-def build(out: Path) -> Path:
-    out = Path(out)
+class UnsafeOutputDir(Exception):
+    """The output folder is not one this script may clear."""
+
+
+def _prepare_out(out: Path) -> Path:
+    """Make `out` ready for a fresh build without ever deleting something that is not ours.
+
+    The folder itself is never deleted. Existing content is only touched when the folder is empty or
+    carries our marker file, and then only its model/ and space/ subfolders are replaced. Symlinks are
+    refused, so a link cannot point the deletion somewhere else.
+    """
+    out = Path(out).expanduser().resolve()
     if out.exists():
-        shutil.rmtree(out)
+        if not out.is_dir():
+            raise UnsafeOutputDir(f"{out} exists and is not a folder.")
+        if any(out.iterdir()) and not (out / MARKER).is_file():
+            raise UnsafeOutputDir(
+                f"{out} is not empty and was not created by this script (no {MARKER} file). "
+                "Refusing to delete anything there. Choose a new or empty folder."
+            )
+        for name in ("model", "space"):
+            target = out / name
+            if target.is_symlink():
+                raise UnsafeOutputDir(f"{target} is a symlink. Refusing to follow it.")
+            if target.exists():
+                shutil.rmtree(target)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / MARKER).write_text("This folder is rebuilt by scripts/build_hf_bundle.py (model/ and space/ only).\n")
+    return out
+
+
+def build(out: Path) -> Path:
+    out = _prepare_out(out)
     met = json.loads((ROOT / "models" / "metrics.json").read_text())
     ref = json.loads((ROOT / "models" / "reference.json").read_text())
     pins = dict(line.split("==") for line in (ROOT / "hf_space" / "requirements.txt").read_text().splitlines()
@@ -233,7 +263,10 @@ def build(out: Path) -> Path:
 
 if __name__ == "__main__":
     target = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else ROOT / "hf_bundle"
-    build(target)
+    try:
+        build(target)
+    except UnsafeOutputDir as err:
+        sys.exit(f"error: {err}")
     print(f"built {target}/model and {target}/space")
     for path in sorted(target.rglob("*")):
         if path.is_file():
