@@ -147,6 +147,19 @@ def one_explanatory_chart_is_shown():
 
 
 @test
+def about_section_states_the_win_with_the_caveat():
+    """SPEC-promote-offset-model.md: the win is never shown without the log-MAE loss and the after-the-fact choice."""
+    at = fresh()
+    text = " ".join(m.value for m in at.markdown)
+    assert I.model_caveat(MET) in text, text[-900:]
+    ch = MET["chosen"]
+    assert ch["beats_by_metric"]["log_mae"] is False and "log-MAE" in text
+    assert "after seeing the test results" in text
+    assert "no trend over time" not in text, "the old 'no trend' sentence is no longer true"
+    assert f"{MET['inference_year']}" in text, "the pinned year must be stated"
+
+
+@test
 def app_source_has_no_fake_data_and_no_hardcoded_model_numbers():
     text = APP.read_text(encoding="utf-8")
     for word in ("bajra", "jowar", "fallback", "simulat", "dummy", "mock", "elasticit", "0.892"):

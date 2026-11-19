@@ -198,6 +198,7 @@ def space_functions_equal_the_model():
     import matplotlib.figure
     assert isinstance(fig, matplotlib.figure.Figure)
     assert f"{MET['prediction_interval']['test_coverage']:.0%}" in summary
+    assert I.model_caveat(MET) in summary, "the win must come with the log-MAE loss and the after-the-fact note"
 
 
 @test

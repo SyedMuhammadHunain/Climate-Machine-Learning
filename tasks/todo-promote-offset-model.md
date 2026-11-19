@@ -32,7 +32,7 @@
     stated). Both checkers extended first.
   - Files: `app/services/model_service.py`, `frontend/climate-resilient-frontend/metrics.html`,
     `scripts/verify_backend.py`, `scripts/verify_frontend.py`.
-- [ ] **T4** Streamlit and Gradio.
+- [x] **T4** Streamlit and Gradio.
   - Do:
     - One caveat helper in `presentation.py`.
     - `streamlit_app/app.py` "About" text: drop the "no trend over time" sentence, state the win and the caveat.

@@ -180,17 +180,12 @@ with st.expander("Inputs used (and where each came from)"):
 # ---------------------------------------------------------------- about
 with st.expander("About this model and its limits"):
     chosen_model = met["models"][met["chosen"]["name"]]
-    test_years = met["split"]["test_years"]
-    base = met["baselines"]["crop_province_mean"]["test"]
-    st.write(
-        f"**{chosen_model['label']}**, chosen on the validation years. Test years {test_years[0]}-{test_years[1]}: "
-        f"R² {chosen_model['test']['r2']:.3f}, mean absolute error {chosen_model['test']['mae']:.1f}. "
-        f"A baseline that predicts each crop's average yield per province scores R² {base['r2']:.3f} on the same years, "
-        f"and the skill of the model against it is {chosen_model['test']['skill_vs_crop_province_mean_log']:+.2f} (above 0 is better)."
-    )
+    st.write(f"**{chosen_model['label']}**, chosen on the validation years. " + I.model_caveat(met))
     st.write(
         "Most of what the model knows is which crop it is. Weather and soil wetness change predictions only a little. "
-        "It trains on one row per crop, province and year, so there is no trend over time and no district or farm detail. "
+        "It trains on one row per crop, province and year. Year is not an input: each model starts from the crop-province "
+        f"average of the training years with a year trend, pinned to {met['inference_year']} at prediction, which does not "
+        "change the ranking. There is no district or farm detail. "
         "Inputs outside the trained range are not allowed because the model cannot extrapolate."
     )
     importance = met["permutation_importance_val_log_mae"]
