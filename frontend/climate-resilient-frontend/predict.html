@@ -604,9 +604,6 @@
                 </div>
 
             </div>
-                </div>
-
-            </div>
 
             <!-- Validation Alert Box -->
             <div id="validation-alert" class="validation-alert">
@@ -921,6 +918,8 @@
         }
 
         window.renderModelResults = function(data, isAllCrops) {
+            // API text goes into innerHTML, so escape it
+            const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
             const resultsContainer = document.getElementById("results-container");
             if (resultsContainer) resultsContainer.style.display = "block";
 
@@ -940,7 +939,6 @@
             if (isAllCrops) {
                 const pct = x => Number(x).toFixed(1);
                 const yl = x => Number(x).toFixed(2);
-                const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
                 singleSection.style.display = "none";
                 resilientSection.style.display = "block";
                 boardHeading.textContent = `Crop Ranking: ${data.province} (${data.ranked_crops.length} crops)`;
@@ -985,11 +983,11 @@
 
                 document.getElementById("single-crop-items").innerHTML = `
                     <div class="job-post-item">
-                        <a href="javascript:void(0)" class="job-title">${cropDisplay} (${data.province})</a>
-                        <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${data.yield_unit})</div>
-                        <div class="job-metadata">Typical year in ${data.province}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
+                        <a href="javascript:void(0)" class="job-title">${esc(cropDisplay)} (${esc(data.province)})</a>
+                        <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${esc(data.yield_unit)})</div>
+                        <div class="job-metadata">Typical year in ${esc(data.province)}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
                         <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
-                        <div class="job-metadata" style="margin-top: 4px;">Model: ${data.model_name} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
+                        <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
                     </div>
                 `;
 

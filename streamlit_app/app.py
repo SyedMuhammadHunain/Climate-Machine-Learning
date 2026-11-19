@@ -28,7 +28,8 @@ BASE = find_base()
 if BASE is not None:
     for cand in (BASE / "src", BASE):
         if (cand / "climate_machine_learning").is_dir():
-            sys.path.insert(0, str(cand))
+            if str(cand) not in sys.path:  # Streamlit re-runs this script on every click
+                sys.path.insert(0, str(cand))
             break
 
 st.set_page_config(page_title="Crop yield under drought", layout="wide")

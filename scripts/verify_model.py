@@ -258,9 +258,12 @@ def inference_ties_are_ordered_by_crop_name():
     from climate_machine_learning import inference as I
 
     pipe, _, ref = _load_artifacts()
-    res = I.predict_crops(pipe, ref, "Punjab", dict(ref["provinces"]["Punjab"]["median"]))
+    # crops go in REVERSE alphabetical order, so only the crop-name tie-break can put them right
+    # (reference["crops"] is already alphabetical, which hid a missing tie-break in an earlier version)
+    backwards = list(reversed(ref["crops"]))
+    res = I.predict_crops(pipe, ref, "Punjab", dict(ref["provinces"]["Punjab"]["median"]), crops=backwards)
     assert all(abs(i.pct_of_normal - 100.0) < 1e-9 for i in res.items)
-    assert [i.crop for i in res.items] == sorted(i.crop for i in res.items)
+    assert [i.crop for i in res.items] == sorted(backwards), [i.crop for i in res.items]
     assert res.items[0].low is None and res.items[0].high is None  # no interval without quantiles
 
 

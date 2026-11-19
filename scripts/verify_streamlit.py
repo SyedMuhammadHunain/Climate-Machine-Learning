@@ -130,6 +130,16 @@ def table_shows_fao_context_only_where_fao_lists_the_crop():
 
 
 @test
+def reruns_do_not_grow_sys_path():
+    src = str(BASE / "src") if (BASE / "src" / "climate_machine_learning").is_dir() else str(BASE)
+    at = fresh()
+    before = sys.path.count(src)
+    for _ in range(3):
+        at.run()
+    assert sys.path.count(src) == before, f"sys.path grew on rerun: {before} -> {sys.path.count(src)}"
+
+
+@test
 def one_explanatory_chart_is_shown():
     at = fresh()
     charts = at.get("arrow_vega_lite_chart") + at.get("vega_lite_chart")

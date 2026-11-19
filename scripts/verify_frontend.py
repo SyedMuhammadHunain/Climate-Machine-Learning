@@ -86,6 +86,55 @@ def main() -> int:
         if token not in metrics_page:
             failures.append(f"metrics.html: data sources section missing: {token!r}")
 
+    # HTML structure: unbalanced <div>s once pushed the buttons and results outside the centred column
+    from html.parser import HTMLParser
+
+    class Structure(HTMLParser):
+        skip = {"meta", "link", "input", "br", "img", "hr", "path", "circle", "line", "source", "area", "base", "col"}
+
+        def __init__(self):
+            super().__init__()
+            self.opened = self.closed = 0
+            self.stack = []
+            self.inside = {}
+
+        def handle_starttag(self, tag, attrs):
+            a = dict(attrs)
+            if tag in self.skip:
+                return
+            self.stack.append((tag, a.get("class", "")))
+            self.opened += tag == "div"
+            if a.get("id"):
+                self.inside[a["id"]] = any("job-board-container" in c.split() for _, c in self.stack)
+
+        def handle_endtag(self, tag):
+            if tag in self.skip:
+                return
+            self.closed += tag == "div"
+            for i in range(len(self.stack) - 1, -1, -1):
+                if self.stack[i][0] == tag:
+                    del self.stack[i:]
+                    break
+
+    for name in PAGES:
+        parser = Structure()
+        parser.feed((FRONTEND / name).read_text(encoding="utf-8"))
+        if parser.opened != parser.closed:
+            failures.append(f"{name}: unbalanced <div> tags ({parser.opened} opened, {parser.closed} closed)")
+        if name == "predict.html":
+            for element in ("field-province", "validation-alert", "btn-submit-prediction", "results-container"):
+                if not parser.inside.get(element):
+                    failures.append(f"predict.html: #{element} is outside the centred .job-board-container")
+
+    # API text must be escaped before it goes into innerHTML
+    for sink in ("single-crop-items", "team-items-1", "advisory-summary"):
+        for block in re.findall(r'getElementById\("' + sink + r'"\)\.innerHTML = `(.*?)`;', predict, re.S):
+            for raw in re.findall(r"\$\{([^}]*)\}", block):
+                bare = raw.strip()
+                safe = bare.startswith(("esc(", "pct(", "yl(", "fmt(", "inputsHtml", "item.rank", "fao", "data.training_rows", "item.training_rows"))
+                if not safe and ("data." in bare or "item." in bare or "cropDisplay" in bare):
+                    failures.append(f"predict.html: unescaped API text in {sink} innerHTML: ${{{bare}}}")
+
     if failures:
         print("FAILED:")
         for f in failures:

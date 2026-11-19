@@ -47,10 +47,20 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,  # no cookies or auth in this API; a credentialed wildcard is never wanted
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def revalidate_pages(request, call_next):
+    """HTML pages must be re-checked on every load: browsers otherwise reuse an edited page from cache."""
+    response = await call_next(request)
+    path = request.url.path
+    if path == "/" or path.endswith(".html"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
 
 # Register custom exception handlers for physical and schema validation errors
 app.add_exception_handler(AgronomicValidationError, agronomic_exception_handler)

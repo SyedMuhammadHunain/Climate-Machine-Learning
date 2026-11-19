@@ -16,7 +16,8 @@ HERE = Path(__file__).resolve().parent
 BASE = HERE if (HERE / "models" / "crop_yield_pipeline.joblib").exists() else HERE.parent
 for _cand in (BASE / "src", BASE):
     if (_cand / "climate_machine_learning").is_dir():
-        sys.path.insert(0, str(_cand))
+        if str(_cand) not in sys.path:
+            sys.path.insert(0, str(_cand))
         break
 
 from climate_machine_learning import features as F  # noqa: E402

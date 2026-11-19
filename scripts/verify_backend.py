@@ -351,6 +351,21 @@ def run_verification():
         assert r.status_code == 200
         print("  -> PASSED: soil wetness accepted, labelled, range-checked.")
 
+        # 25. CORS: no credentialed wildcard (the API has no cookies or auth)
+        print("\n[TEST 25] CORS does not allow credentials with a wildcard origin")
+        pre = client.options("/api/v1/predict", headers={"Origin": "http://example.com", "Access-Control-Request-Method": "POST"})
+        assert pre.headers.get("access-control-allow-credentials", "").lower() != "true", pre.headers
+        assert client.get("/health", headers={"Origin": "http://example.com"}).headers.get("access-control-allow-credentials", "").lower() != "true"
+        print("  -> PASSED: credentials are not allowed cross-origin.")
+
+        # 26. Pages are revalidated, so an edited page is never served stale (Chrome did exactly that)
+        print("\n[TEST 26] HTML pages carry Cache-Control: no-cache")
+        for path in ("/", "/predict.html", "/metrics.html"):
+            cc = client.get(path).headers.get("cache-control", "")
+            assert "no-cache" in cc, (path, cc)
+        assert "no-cache" not in client.get("/api/v1/metrics").headers.get("cache-control", ""), "API responses need no such header"
+        print("  -> PASSED: pages revalidate on every load.")
+
     print("\n" + "=" * 70)
     print("ALL BACKEND VERIFICATION TESTS PASSED SUCCESSFULLY!")
     print("=" * 70)
