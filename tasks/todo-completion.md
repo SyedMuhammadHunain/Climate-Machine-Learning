@@ -47,7 +47,7 @@ Plan: `tasks/plan-completion.md`. Spec: `SPEC-project-completion.md`.
   - Depends on: T1, T3, T4
 
 ### Checkpoint 1
-- [ ] User reads and accepts `docs/report/report.pdf`
+- [x] User reads and accepts `docs/report/report.pdf` (accepted 2026-11-19)
 
 ## Phase 3: Hugging Face and docs
 
