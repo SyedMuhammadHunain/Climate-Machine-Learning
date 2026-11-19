@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Infinite Field — Crop Yield Prediction & Drought Advisory</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
+
+    <style>
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Book_Web.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Medium_Web.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Whitney SSm';
+            src: url('assets/fonts/WhitneySSm-Semibold_Web.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        :root {
+            --fontFamily: "Whitney SSm", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --colorPrimary600: #FF7344;
+            --colorPrimary900: #232323;
+            --colorNeutral800: #373e4d;
+            --colorNeutral700: #545b6d;
+            --colorNeutral600: #7d8699;
+            --colorNeutral400: #c2c7d1;
+            --colorNeutral300: #d7dae0;
+            --colorNeutral200: #e5e6e8;
+            --colorNeutral100: #f7f8fa;
+            --widthMaxJobBoard: 720px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--fontFamily);
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--colorPrimary900);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: 80px;
+        }
+
+        .header-logo-container {
+            text-align: center;
+            padding-top: 52px;
+            padding-bottom: 48px;
+        }
+
+        .header-logo-container svg {
+            height: 38px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .site-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-pill:hover {
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral600);
+        }
+
+        .nav-pill.active {
+            background: var(--colorPrimary900);
+            color: #ffffff;
+            border-color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
+        .job-board-container {
+            max-width: var(--widthMaxJobBoard);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .board-heading {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        /* Preset Scenarios */
+        .presets-bar {
+            margin-bottom: 24px;
+        }
+
+        .presets-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .presets-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .preset-pill {
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 20px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            color: var(--colorNeutral800);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+
+        .preset-pill:hover {
+            border-color: var(--colorPrimary600);
+            color: var(--colorPrimary600);
+        }
+
+        .preset-pill.active {
+            border-color: var(--colorPrimary600);
+            background-color: #fff7f4;
+            color: var(--colorPrimary600);
+            font-weight: 600;
+        }
+
+        /* Form Grid */
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .inputs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .text-input,
+        .select-input {
+            width: 100%;
+            height: 40px;
+            padding: 0 14px;
+            background-color: #ffffff;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--colorNeutral800);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        .select-input {
+            padding-right: 32px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+        }
+
+        .text-input:hover,
+        .select-input:hover {
+            border-color: #b5bac5;
+        }
+
+        .text-input:focus,
+        .select-input:focus {
+            border-color: var(--colorPrimary600);
+        }
+
+        .select-chevron {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Submit Action Row */
+        .form-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            margin-bottom: 24px;
+        }
+
+        .btn-submit {
+            height: 42px;
+            padding: 0 28px;
+            background-color: var(--colorPrimary900);
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--colorPrimary600);
+            box-shadow: 0 4px 12px rgba(255, 115, 68, 0.25);
+        }
+
+        .btn-reset {
+            height: 42px;
+            padding: 0 20px;
+            background: transparent;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-reset:hover {
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral400);
+        }
+
+        .validation-alert {
+            display: none;
+            padding: 10px 16px;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #b91c1c;
+            margin-bottom: 16px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--colorNeutral600);
+            margin-top: 12px;
+        }
+
+        .loading-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--colorNeutral300);
+            border-top-color: var(--colorPrimary600);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Advanced Accordion Toggle */
+        .advanced-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--colorNeutral600);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+            padding: 0;
+            outline: none;
+            transition: color 0.15s ease;
+        }
+
+        .advanced-toggle-btn:hover {
+            color: var(--colorPrimary600);
+        }
+
+        .advanced-chevron {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .advanced-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .advanced-panel {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background-color: #fafbfc;
+            border: 1px solid var(--colorNeutral200);
+            border-radius: 8px;
+        }
+
+        .advanced-panel.open {
+            display: grid;
+        }
+
+        @media (max-width: 600px) {
+            .advanced-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Category Titles and Results */
+        .team-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            line-height: 1.4;
+            margin-top: 36px;
+            margin-bottom: 16px;
+        }
+
+        .job-post-item {
+            margin-bottom: 24px;
+            cursor: pointer;
+        }
+
+        .job-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--colorPrimary600);
+            line-height: 1.4;
+            margin-bottom: 4px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .job-title:hover {
+            text-decoration: underline;
+        }
+
+        .input-hint { font-size: 11px; color: var(--colorNeutral600); margin-top: 4px; }
+        .job-metadata {
+            font-size: 14px;
+            color: var(--colorNeutral600);
+            line-height: 1.4;
+        }
+
+        .bottom-divider {
+            border-top: 1px solid var(--colorNeutral200);
+            margin-top: 64px;
+        }
+
+        /* Advisory Summary Card */
+        .advisory-summary {
+            background-color: #f7f8fa;
+            border: 1px solid var(--colorNeutral200);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--colorNeutral800);
+            line-height: 1.5;
+            margin-top: 36px;
+        }
+
+        .advisory-summary strong {
+            color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Centered Infinite Field Wordmark Logo -->
+    <div class="header-logo-container">
+        <a href="index.html" title="Back to 3D Overview" style="display:inline-block; line-height:0;">
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2087.43 432.13">
+                <path d="M43.28,110.02h35.23v250.71h-35.23V110.02ZM95.46,177.78h35.23v182.95h-35.23v-182.95ZM229.62,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM281.79,174.4c0-20.55,5.93-36.42,17.79-47.6,11.86-11.18,28.51-16.77,49.97-16.77h88.42v33.88h-90.8c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v182.95h-35.23v-186h0ZM294.33,177.78h91.47v33.88h-91.47v-33.88ZM402.74,177.78h35.23v182.95h-35.23v-182.95ZM454.92,177.78h35.23v182.95h-35.23v-182.95ZM589.08,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM676.49,110.02v35.23h-35.23v-35.23h35.23ZM641.25,177.78h35.23v182.95h-35.23v-182.95ZM728.66,110.36v182.95c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h38.62v33.88h-36.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6V110.36h35.23ZM797.44,177.78v33.88h-91.47v-33.88h91.47ZM814.38,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM937.7,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1103.7,110.02v250.71h-35.23V110.02h35.23ZM1241.25,143.9h-153.47v-33.88h153.47v33.88ZM1241.25,252.32h-153.47v-33.88h153.47v33.88ZM1301.9,110.02v35.23h-35.23v-35.23h35.23ZM1266.67,177.78h35.23v182.95h-35.23v-182.95ZM1318.84,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM1442.16,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1505.18,110.02h35.23v250.71h-35.23V110.02ZM1621.73,360.73c-20.56,0-36.42-5.59-47.6-16.77-11.18-11.18-16.77-27.05-16.77-47.6v-54.21c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h80.29l2.37,33.88h-81.65c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.24,7.62,8.3,9.32s10.61,2.54,19.65,2.54h30.83v33.88h-31.85ZM1629.18,326.85h59.63c.68,0,1.3-.28,1.86-.85.56-.56.85-1.19.85-1.86V110.02h35.23v212.76c0,10.39-3.67,19.31-11.01,26.76-7.34,7.45-16.32,11.18-26.93,11.18h-59.63v-33.88Z" fill="#232323"/>
+                <path d="M1746.64,121.51c1.49-3.27,3.5-6.06,6.01-8.36,2.51-2.3,5.42-4.08,8.72-5.34,3.3-1.26,6.75-1.89,10.35-1.89s7.05.63,10.35,1.89c3.3,1.26,6.2,3.04,8.72,5.34,2.51,2.3,4.52,5.09,6.01,8.36s2.24,6.93,2.24,10.96-.75,7.76-2.24,11.03c-1.49,3.27-3.5,6.07-6.01,8.4-2.51,2.32-5.42,4.1-8.72,5.34-3.3,1.23-6.75,1.85-10.35,1.85s-7.06-.62-10.35-1.85-6.2-3.01-8.72-5.34c-2.51-2.32-4.52-5.12-6.01-8.4-1.49-3.27-2.24-6.95-2.24-11.03s.75-7.68,2.24-10.96ZM1753.23,140.87c1.04,2.56,2.47,4.78,4.27,6.65,1.8,1.87,3.92,3.33,6.37,4.38,2.44,1.04,5.06,1.56,7.86,1.56s5.35-.52,7.79-1.56c2.44-1.04,4.56-2.5,6.37-4.38,1.8-1.87,3.24-4.09,4.3-6.65s1.6-5.36,1.6-8.4-.53-5.82-1.6-8.36c-1.07-2.54-2.5-4.73-4.3-6.58-1.8-1.85-3.93-3.3-6.37-4.34-2.44-1.04-5.04-1.56-7.79-1.56s-5.42.52-7.86,1.56c-2.44,1.04-4.57,2.49-6.37,4.34-1.8,1.85-3.23,4.04-4.27,6.58-1.04,2.54-1.57,5.33-1.57,8.36s.52,5.83,1.57,8.4ZM1772.37,117.53c3.75,0,6.63.66,8.65,1.99,2.02,1.33,3.02,3.61,3.02,6.83,0,1.38-.2,2.55-.61,3.52-.4.97-.96,1.77-1.67,2.38-.71.62-1.54,1.09-2.49,1.42-.95.33-1.97.55-3.06.64l7.97,13.02h-6.19l-7.26-12.74h-3.7v12.74h-5.91v-29.81h11.24ZM1772.29,129.98c1.71,0,3.11-.24,4.2-.71,1.09-.47,1.64-1.61,1.64-3.42,0-.81-.19-1.45-.57-1.92-.38-.47-.87-.84-1.46-1.1-.59-.26-1.26-.44-1.99-.53-.74-.09-1.43-.14-2.1-.14h-4.98v7.83h5.26Z" fill="#232323"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Navigation Pills -->
+    <nav class="site-nav">
+        <a href="index.html" class="nav-pill">Overview</a>
+        <a href="predict.html" class="nav-pill active">Crop Predictor & Advisory</a>
+        <a href="metrics.html" class="nav-pill">Model & Benchmarks</a>
+    </nav>
+
+    <!-- Main Content Container (Ashby 720px) -->
+    <div class="job-board-container">
+
+        <!-- Heading -->
+        <h1 class="board-heading">Crop Yield Prediction & Drought Advisory</h1>
+
+        <!-- Quick fill from real training years (filled from /api/v1/metadata) -->
+        <div class="presets-bar">
+            <span class="presets-label">Quick fill from real years in the training data:</span>
+            <div class="presets-pills" id="presets-pills"></div>
+        </div>
+
+        <!-- Core Agricultural & Environmental Inputs Grid -->
+        <div class="inputs-container">
+            <span class="form-section-title">Core Agricultural & Climate Parameters:</span>
+            <div class="inputs-grid">
+
+                <!-- 1. Province -->
+                <div class="input-group">
+                    <label class="input-label" for="field-province">Province</label>
+                    <div class="input-wrapper">
+                        <select id="field-province" class="select-input">
+                            <option value="Punjab" selected>Punjab</option>
+                            <option value="Sindh">Sindh</option>
+                            <option value="Balochistan">Balochistan</option>
+                        </select>
+                        <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
+                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 2. Target Crop -->
+                <div class="input-group">
+                    <label class="input-label" for="field-crop">Target Crop Selection</label>
+                    <div class="input-wrapper">
+                        <select id="field-crop" class="select-input">
+                            <option value="ALL" selected>All Crops (Ranked)</option>
+                            <option value="apple">Apple</option>
+                            <option value="banana">Banana</option>
+                            <option value="cotton">Cotton</option>
+                            <option value="dates">Dates</option>
+                            <option value="grapes">Grapes</option>
+                            <option value="mango">Mango</option>
+                            <option value="onion">Onion</option>
+                            <option value="pomegranate">Pomegranate</option>
+                            <option value="potato">Potato</option>
+                            <option value="rice">Rice</option>
+                            <option value="sugarcane">Sugarcane</option>
+                            <option value="tomato">Tomato</option>
+                            <option value="wheat">Wheat</option>
+                        </select>
+                        <svg class="select-chevron" viewBox="0 0 12 12" fill="none">
+                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#7d8699" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 3. Annual Rainfall -->
+                <div class="input-group">
+                    <label class="input-label" for="field-precipitation">Annual Rainfall (mm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-precipitation" class="text-input" min="0" step="0.1" placeholder="total rain over the year">
+                    </div>
+                    <div class="input-hint" id="hint-precipitation"></div>
+                </div>
+
+                <!-- 4. Mean Temperature -->
+                <div class="input-group">
+                    <label class="input-label" for="field-temperature">Mean Annual Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-temperature" class="text-input" min="-5" max="55" step="0.1" placeholder="mean over the year">
+                    </div>
+                    <div class="input-hint" id="hint-temperature"></div>
+                </div>
+
+            </div>
+
+            <!-- Advanced Collapsible Toggle Button -->
+            <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" onclick="toggleAdvancedPanel()">
+                <span>Optional Climate and Soil Inputs (empty = province median)</span>
+                <svg class="advanced-chevron" id="advanced-chevron" viewBox="0 0 12 12" fill="none">
+                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <!-- Optional inputs: empty fields are filled by the server from province medians -->
+            <div class="advanced-panel" id="advanced-panel">
+
+                <!-- 1. Maximum Temperature -->
+                <div class="input-group">
+                    <label class="input-label" for="field-temp-max">Mean Monthly Maximum Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-temp-max" class="text-input" min="-5.0" max="60.0" step="0.5" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 2. Minimum Temperature -->
+                <div class="input-group">
+                    <label class="input-label" for="field-temp-min">Mean Monthly Minimum Temperature (°C)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-temp-min" class="text-input" min="-10.0" max="45.0" step="0.5" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 3. FAO Reference Evapotranspiration -->
+                <div class="input-group">
+                    <label class="input-label" for="field-et0">FAO Evapotranspiration, yearly mean (mm/day)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-et0" class="text-input" min="0.5" max="20.0" step="0.1" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 4. Solar Radiation -->
+                <div class="input-group">
+                    <label class="input-label" for="field-radiation">Solar Radiation, yearly mean (MJ/m²)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-radiation" class="text-input" min="5.0" max="40.0" step="0.5" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 5. Precipitation Hours -->
+                <div class="input-group">
+                    <label class="input-label" for="field-precip-hours">Hours with Rain, yearly total (hours)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-precip-hours" class="text-input" min="0.0" max="500.0" step="0.5" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 6. Soil wetness, mean (NASA POWER, second data source) -->
+                <div class="input-group">
+                    <label class="input-label" for="field-soil-mean">Root-Zone Soil Wetness, yearly mean (0-1, NASA POWER)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-soil-mean" class="text-input" min="0" max="1" step="0.01" placeholder="">
+                    </div>
+                </div>
+
+                <!-- 7. Soil wetness, wettest month -->
+                <div class="input-group">
+                    <label class="input-label" for="field-soil-max">Root-Zone Soil Wetness, wettest month (0-1, NASA POWER)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="field-soil-max" class="text-input" min="0" max="1" step="0.01" placeholder="">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Validation Alert Box -->
+            <div id="validation-alert" class="validation-alert">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span id="validation-msg">Validation error message</span>
+                <button type="button" id="btn-retry" style="display: none; margin-left: 12px; padding: 2px 10px; font-size: 12px; cursor: pointer;">Retry</button>
+            </div>
+
+            <!-- Primary Action Buttons Row -->
+            <div class="form-actions-row">
+                <button type="button" class="btn-submit" id="btn-submit-prediction" onclick="submitPredictionForm()">
+                    <span>Run Crop Yield Prediction</span>
+                </button>
+                <button type="button" class="btn-reset" onclick="resetFormToDefaults()">
+                    Reset
+                </button>
+            </div>
+
+            <!-- Loading Spinner State -->
+            <div id="loading-indicator" class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <span>Executing machine learning pipeline inference...</span>
+            </div>
+        </div>
+
+        <!-- Results Container (Hidden on initial load until prediction runs) -->
+        <div id="results-container" style="display: none; margin-top: 24px;">
+
+            <!-- Real-Time Inference Status & Verification Badge Row -->
+            <div class="inference-status-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--colorNeutral200);">
+                <div class="status-pill" id="inference-status-pill" style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--colorNeutral800); background-color: #f7f8fa; border: 1px solid var(--colorNeutral200); padding: 4px 12px; border-radius: 14px;">
+                    <span class="status-dot" id="status-dot" style="width: 7px; height: 7px; border-radius: 50%; background-color: #10b981;"></span>
+                    <span id="status-badge-text">Inference completed • Updated just now</span>
+                </div>
+                <span id="inference-timestamp" style="font-size: 12px; color: var(--colorNeutral600);"></span>
+            </div>
+
+            <!-- Single Crop Projection Section (Visible in Single Crop Mode) -->
+            <div class="team-section" id="single-crop-section" style="display: none;">
+                <h2 class="team-title" id="single-crop-title">Yield Forecast</h2>
+                <div id="single-crop-items">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Multi-Crop Category 1: Drought-Resilient Recommendations -->
+            <div class="team-section" id="team-section-1">
+                <h2 class="team-title" id="team-title-1">Crop Ranking (model output)</h2>
+                <div id="team-items-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Agronomic Advisory Narrative -->
+            <div class="advisory-summary" id="advisory-summary">
+                <!-- Populated dynamically -->
+            </div>
+
+        </div>
+
+        <!-- Faint bottom divider matching Ashby -->
+        <div class="bottom-divider"></div>
+
+    </div>
+
+    <script>
+        const API_BASE = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
+
+        // Province reference (training-year medians and ranges), loaded from the API. Nothing is hardcoded.
+        let REFERENCE = null;
+        let SCENARIOS = [];   // real driest / wettest training years per province, from /api/v1/metadata
+        let activePreset = "median";
+        const scenarioFor = (province, kind) => SCENARIOS.find(sc => sc.province === province && sc.kind === kind);
+        const OPTIONAL_FIELDS = [
+            { id: "field-temp-max", key: "temperature_2m_max", digits: 1 },
+            { id: "field-temp-min", key: "temperature_2m_min", digits: 1 },
+            { id: "field-et0", key: "fao_evapotranspiration", digits: 2 },
+            { id: "field-radiation", key: "shortwave_radiation", digits: 1 },
+            { id: "field-precip-hours", key: "precipitation_hours", digits: 0 },
+            { id: "field-soil-mean", key: "soil_wetness_mean", digits: 3 },
+            { id: "field-soil-max", key: "soil_wetness_max", digits: 3 },
+        ];
+
+        async function loadReference() {
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/metadata`, { signal: AbortSignal.timeout(30000) });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const meta = await res.json();
+                REFERENCE = meta.reference;
+                SCENARIOS = meta.scenarios;
+                applyPreset(activePreset);
+                clearValidationError();
+            } catch (err) {
+                console.error("Could not load province reference data", err);
+                showValidationError("Cannot reach the model server, so the valid input ranges could not be loaded.", true, loadReference);
+            }
+        }
+
+        function updateHints() {
+            if (!REFERENCE) return;
+            const ref = REFERENCE[document.getElementById("field-province").value];
+            const [rLo, rHi] = ref.range.precipitation_sum;
+            const [tLo, tHi] = ref.range.temperature_2m_mean;
+            document.getElementById("hint-precipitation").textContent =
+                `Model trained on ${rLo.toFixed(1)} to ${rHi.toFixed(1)} mm per year (median ${ref.median.precipitation_sum.toFixed(1)}). Other values are rejected.`;
+            document.getElementById("hint-temperature").textContent =
+                `Model trained on ${tLo.toFixed(1)} to ${tHi.toFixed(1)} °C (median ${ref.median.temperature_2m_mean.toFixed(1)}). Other values are rejected.`;
+            OPTIONAL_FIELDS.forEach(f => {
+                document.getElementById(f.id).placeholder = `province median ${ref.median[f.key].toFixed(f.digits)}`;
+            });
+        }
+
+        function buildPills() {
+            const province = document.getElementById("field-province").value;
+            const dry = scenarioFor(province, "driest"), wet = scenarioFor(province, "wettest");
+            const pills = [
+                { key: "driest", label: `Driest real year (${dry.year})` },
+                { key: "median", label: "Typical (median) year" },
+                { key: "wettest", label: `Wettest real year (${wet.year})` },
+            ];
+            document.getElementById("presets-pills").innerHTML = pills.map(p =>
+                `<button type="button" class="preset-pill" data-key="${p.key}" onclick="applyPreset('${p.key}')">${p.label}</button>`
+            ).join("");
+        }
+
+        function applyPreset(key) {
+            if (!REFERENCE) return;
+            activePreset = key;
+            const province = document.getElementById("field-province").value;
+            const ref = REFERENCE[province];
+            buildPills();
+            if (key === "median") {
+                document.getElementById("field-precipitation").value = Number(ref.median.precipitation_sum.toFixed(1));
+                document.getElementById("field-temperature").value = Number(ref.median.temperature_2m_mean.toFixed(1));
+                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = ""; });
+            } else {
+                // A real observed year: fill every input with that year's values (full precision, so they stay in range)
+                const sc = scenarioFor(province, key);
+                document.getElementById("field-precipitation").value = sc.inputs.precipitation_sum;
+                document.getElementById("field-temperature").value = sc.inputs.temperature_2m_mean;
+                OPTIONAL_FIELDS.forEach(f => { document.getElementById(f.id).value = sc.inputs[f.key]; });
+            }
+            updateHints();
+            document.querySelectorAll(".preset-pill").forEach(el => el.classList.toggle("active", el.dataset.key === key));
+        }
+
+        function showValidationError(message, canRetry = false, retryFn = submitPredictionForm) {
+            const alertBox = document.getElementById("validation-alert");
+            const msgEl = document.getElementById("validation-msg");
+            const retryBtn = document.getElementById("btn-retry");
+            msgEl.textContent = message;
+            if (retryBtn) {
+                retryBtn.style.display = canRetry ? "inline-block" : "none";
+                retryBtn.onclick = retryFn;
+            }
+            alertBox.style.display = "flex";
+        }
+
+        function clearValidationError() {
+            const alertBox = document.getElementById("validation-alert");
+            alertBox.style.display = "none";
+        }
+
+        function resetFormToDefaults() {
+            clearValidationError();
+            document.getElementById("field-province").value = "Punjab";
+            applyPreset('median');
+            document.getElementById("field-crop").value = "ALL";
+            const results = document.getElementById("results-container");
+            if (results) results.style.display = "none";
+            const heading = document.querySelector(".board-heading");
+            if (heading) heading.textContent = "Crop Yield Prediction & Drought Advisory";
+        }
+
+        async function submitPredictionForm() {
+            clearValidationError();
+
+            const province = document.getElementById("field-province").value;
+            const crop = document.getElementById("field-crop").value;
+            const precip = parseFloat(document.getElementById("field-precipitation").value);
+            const temp = parseFloat(document.getElementById("field-temperature").value);
+
+            // Optional inputs: empty means "use the province median" (decided by the server)
+            const optional = {};
+            OPTIONAL_FIELDS.forEach(f => {
+                const raw = document.getElementById(f.id).value.trim();
+                if (raw !== "") optional[f.key] = parseFloat(raw);
+            });
+
+            // Basic client-side checks; the server also checks the trained range and explains it
+            if (isNaN(precip) || precip < 0) {
+                showValidationError("Enter the total annual rainfall in mm (0 or more).");
+                return;
+            }
+            if (isNaN(temp) || temp < -5.0 || temp > 55.0) {
+                showValidationError("Enter the mean annual temperature in °C.");
+                return;
+            }
+            if (Object.values(optional).some(v => isNaN(v))) {
+                showValidationError("Optional inputs must be numbers or left empty.");
+                return;
+            }
+            const tmax = optional.temperature_2m_max, tmin = optional.temperature_2m_min;
+            if (tmax !== undefined && tmin !== undefined && tmax < tmin) {
+                showValidationError(`Maximum temperature (${tmax}°C) cannot be lower than minimum temperature (${tmin}°C).`);
+                return;
+            }
+
+            const startTime = performance.now();
+            const loadingEl = document.getElementById("loading-indicator");
+            const submitBtn = document.getElementById("btn-submit-prediction");
+            loadingEl.style.display = "inline-flex";
+            submitBtn.disabled = true;
+
+            try {
+                const isAllCrops = crop === "ALL";
+                const endpoint = isAllCrops ? `${API_BASE}/api/v1/recommend` : `${API_BASE}/api/v1/predict`;
+
+                const basePayload = {
+                    province,
+                    precipitation_sum: precip,
+                    temperature_2m_mean: temp,
+                    ...optional
+                };
+
+                const payload = isAllCrops
+                    ? { ...basePayload, scenario_name: `Crop ranking (${province})` }
+                    : { ...basePayload, crop: crop.toLowerCase() };
+
+                // Abort after 30s (first request loads the model and can be slow)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                let resultData = null;
+                let isLiveApi = false;
+
+                try {
+                    const response = await fetch(endpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        resultData = await response.json();
+                        isLiveApi = true;
+                    } else {
+                        const err = await response.json();
+                        let errorMsg = "API rejected input parameters.";
+                        if (err) {
+                            if (err.message && Array.isArray(err.details) && err.details.length > 0) {
+                                const first = err.details[0];
+                                const fieldName = first.field ? first.field.split("->").pop().trim() : "input";
+                                errorMsg = `${err.message} (${fieldName}: ${first.message})`;
+                            } else if (err.message) {
+                                errorMsg = err.message;
+                            } else if (typeof err.detail === "string") {
+                                errorMsg = err.detail;
+                            } else if (Array.isArray(err.detail) && err.detail.length > 0) {
+                                const first = err.detail[0];
+                                errorMsg = first.msg || JSON.stringify(first);
+                            }
+                        }
+                        showValidationError(errorMsg);
+                    }
+                } catch (networkErr) {
+                    clearTimeout(timeoutId);
+                    console.error("Backend API request failed or timed out.", networkErr);
+                    const timedOut = networkErr && networkErr.name === "AbortError";
+                    showValidationError(
+                        timedOut
+                            ? "The model server did not answer within 30 seconds. No result is shown."
+                            : "Cannot reach the model server. No result is shown.",
+                        true
+                    );
+                }
+
+                // Minimum 350ms loading duration for tactile feedback
+                const elapsed = performance.now() - startTime;
+                if (elapsed < 350) {
+                    await new Promise(r => setTimeout(r, 350 - elapsed));
+                }
+
+                if (resultData && isLiveApi) {
+                    if (window.renderModelResults) {
+                        window.renderModelResults(resultData, isAllCrops);
+                    }
+                } else {
+                    // No result: hide any older results so stale numbers are never shown
+                    const stale = document.getElementById("results-container");
+                    if (stale) stale.style.display = "none";
+                }
+
+                // Smooth scroll to results
+                const resultsContainer = document.getElementById("results-container");
+                if (resultsContainer && resultsContainer.style.display !== "none") {
+                    resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            } catch (unexpectedErr) {
+                console.error("Unexpected error in prediction pipeline:", unexpectedErr);
+                showValidationError("An unexpected error occurred while executing inference.");
+            } finally {
+                loadingEl.style.display = "none";
+                submitBtn.disabled = false;
+            }
+        }
+
+        window.renderModelResults = function(data, isAllCrops) {
+            // API text goes into innerHTML, so escape it
+            const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+            const resultsContainer = document.getElementById("results-container");
+            if (resultsContainer) resultsContainer.style.display = "block";
+
+            const statusDot = document.getElementById("status-dot");
+            const badgeText = document.getElementById("status-badge-text");
+            const timeText = document.getElementById("inference-timestamp");
+            const now = new Date().toLocaleTimeString();
+            if (statusDot) statusDot.style.backgroundColor = "#10b981";
+            if (badgeText) badgeText.textContent = "Live ML Model Pipeline (FastAPI / Scikit-Learn)";
+            if (timeText) timeText.textContent = `Updated at ${now}`;
+
+            const singleSection = document.getElementById("single-crop-section");
+            const resilientSection = document.getElementById("team-section-1");
+            const advisorySummary = document.getElementById("advisory-summary");
+            const boardHeading = document.querySelector(".board-heading");
+
+            if (isAllCrops) {
+                const pct = x => Number(x).toFixed(1);
+                const yl = x => Number(x).toFixed(2);
+                singleSection.style.display = "none";
+                resilientSection.style.display = "block";
+                boardHeading.textContent = `Crop Ranking: ${data.province} (${data.ranked_crops.length} crops)`;
+
+                document.getElementById("team-items-1").innerHTML = data.ranked_crops.map(item => {
+                    const fao = item.fao_water_need
+                        ? `FAO water need ${item.fao_water_need.mm_min}-${item.fao_water_need.mm_max} mm per growing period, drought sensitivity ${esc(item.fao_water_need.drought_sensitivity)}`
+                        : "not listed in the FAO table";
+                    return `
+                        <div class="job-post-item">
+                            <a href="javascript:void(0)" class="job-title">${esc(item.crop)}</a>
+                            <div class="job-metadata">Rank #${item.rank} • ${pct(item.pct_of_normal)}% of a typical year • Predicted yield ${yl(item.predicted_yield)} (typical ${yl(item.normal_yield)}) ${esc(data.yield_unit)}</div>
+                            <div class="job-metadata">${fao} • ${item.training_rows_for_crop} of ${item.training_rows_possible} possible training rows${item.training_rows_for_crop < item.training_rows_possible ? " (incomplete data for this crop)" : ""}</div>
+                        </div>`;
+                }).join("");
+
+                advisorySummary.innerHTML = `<strong>${esc(data.scenario_name)}:</strong> ${esc(data.recommendation_summary)}<br><small>${esc(data.ranking_basis)} Model: ${esc(data.model_name)}.</small>`;
+            } else {
+                singleSection.style.display = "block";
+                resilientSection.style.display = "none";
+
+                const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
+                boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
+                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
+                const pct = x => Number(x).toFixed(1);
+                const yl = x => Number(x).toFixed(2);
+                const sourceLabel = {
+                    user: "entered by you",
+                    province_median_training_years: "province median",
+                    user_mean_plus_province_median_offset: "your mean + province median offset",
+                };
+                const names = {
+                    precipitation_sum: "Annual rain (mm)", temperature_2m_mean: "Mean temp (°C)",
+                    temperature_2m_max: "Max temp (°C)", temperature_2m_min: "Min temp (°C)",
+                    fao_evapotranspiration: "ET0 (mm/day)", shortwave_radiation: "Radiation (MJ/m²)",
+                    precipitation_hours: "Rain hours",
+                    soil_wetness_mean: "Soil wetness, mean (0-1)", soil_wetness_max: "Soil wetness, max (0-1)",
+                };
+                const inputsHtml = Object.entries(data.inputs).map(([k, v]) =>
+                    `${names[k] || k}: ${fmt(v.value)} <em>(${sourceLabel[v.source] || v.source})</em>`
+                ).join(" • ");
+
+                document.getElementById("single-crop-items").innerHTML = `
+                    <div class="job-post-item">
+                        <a href="javascript:void(0)" class="job-title">${esc(cropDisplay)} (${esc(data.province)})</a>
+                        <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${esc(data.yield_unit)})</div>
+                        <div class="job-metadata">Typical year in ${esc(data.province)}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
+                        <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
+                        <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${data.training_rows_for_crop} of ${data.training_rows_possible} possible yearly rows of this crop</div>
+                    </div>
+                `;
+
+                advisorySummary.innerHTML = `<strong>How to read this:</strong> the number is the model's output for the inputs above. It was not adjusted by hand. Weather has a small effect in this model, so predictions stay close to each crop's typical yield (see the Model page).`;
+            }
+        };
+
+        document.getElementById("field-province").addEventListener("change", () => applyPreset(activePreset));
+        ["field-precipitation", "field-temperature"].forEach(id =>
+            document.getElementById(id).addEventListener("input", () => {
+                document.querySelectorAll(".preset-pill").forEach(el => el.classList.remove("active"));
+            })
+        );
+        loadReference();
+    </script>
+</body>
+</html>

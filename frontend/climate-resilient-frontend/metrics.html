@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Field — Machine Learning Metrics & Agroclimatic Benchmarks</title>
+    <meta name="description" content="Evaluation results of the trained crop-yield model and the climate ranges it was trained on.">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/infinite_field_favicon.png">
+
+    <style>
+        :root {
+            --fontFamily: "DenimINK-regular", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --fontFamilyMono: "LD_TechD-Regular", monospace;
+            --colorPrimary900: #232323;
+            --colorPrimary600: #ff7344;
+            --colorNeutral800: #2b303b;
+            --colorNeutral700: #4f5768;
+            --colorNeutral600: #7d8699;
+            --colorNeutral400: #c2c7d1;
+            --colorNeutral300: #d7dae0;
+            --colorNeutral200: #e5e6e8;
+            --colorNeutral100: #f7f8fa;
+            --widthMaxJobBoard: 780px;
+        }
+
+        @font-face {
+            font-family: "DenimINK-regular";
+            src: url("./assets/DenimINK-Regular.ttf") format("truetype");
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "LD_TechD-Regular";
+            src: url("./assets/LD_TechD-Regular.ttf") format("truetype");
+            font-display: swap;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--fontFamily);
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--colorPrimary900);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: 80px;
+        }
+
+        .header-logo-container {
+            text-align: center;
+            padding-top: 48px;
+            padding-bottom: 24px;
+        }
+
+        .header-logo-container svg {
+            height: 38px;
+            width: auto;
+            display: inline-block;
+        }
+
+        /* Top Navigation Bar */
+        .site-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 36px;
+        }
+
+        .nav-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--colorNeutral700);
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid var(--colorNeutral300);
+            background: #ffffff;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-pill:hover {
+            color: var(--colorPrimary900);
+            border-color: var(--colorNeutral600);
+        }
+
+        .nav-pill.active {
+            background: var(--colorPrimary900);
+            color: #ffffff;
+            border-color: var(--colorPrimary900);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: var(--widthMaxJobBoard);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--colorNeutral200);
+            padding-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--colorNeutral700);
+            line-height: 1.5;
+        }
+
+        /* Live Status Indicator */
+        .status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px;
+            background: var(--colorNeutral100);
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            margin-bottom: 28px;
+            font-size: 12.5px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #059669;
+        }
+
+        .status-dot.offline {
+            background-color: #d97706;
+        }
+
+        /* Metrics Summary Strip (Hierarchical, Not Template Grid) */
+        .metrics-summary-panel {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            background: #ffffff;
+            margin-bottom: 36px;
+        }
+
+        .metrics-primary-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr 1fr;
+            border-bottom: 1px solid var(--colorNeutral200);
+        }
+
+        @media (max-width: 650px) {
+            .metrics-primary-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .metric-cell {
+            padding: 16px 18px;
+            border-right: 1px solid var(--colorNeutral200);
+        }
+
+        .metric-cell:last-child {
+            border-right: none;
+        }
+
+        .metric-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--colorPrimary900);
+            margin-bottom: 3px;
+            font-family: var(--fontFamilyMono), monospace;
+            font-feature-settings: "tnum";
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--colorNeutral600);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 3px;
+        }
+
+        .metric-detail {
+            font-size: 11.5px;
+            color: var(--colorNeutral700);
+            line-height: 1.35;
+        }
+
+        .metrics-meta-footer {
+            padding: 10px 18px;
+            background: var(--colorNeutral100);
+            font-size: 12px;
+            color: var(--colorNeutral700);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Section Styling */
+        .section-block {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            margin-bottom: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        .section-desc {
+            font-size: 13.5px;
+            color: var(--colorNeutral700);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        /* Table Styling */
+        .data-table-wrapper {
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            overflow-x: auto;
+            background: #ffffff;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: var(--colorNeutral100);
+            padding: 10px 14px;
+            font-weight: 600;
+            color: var(--colorPrimary900);
+            border-bottom: 1px solid var(--colorNeutral300);
+            white-space: nowrap;
+        }
+
+        .data-table th.num,
+        .data-table td.num {
+            text-align: right;
+            font-feature-settings: "tnum";
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--colorNeutral200);
+            color: var(--colorPrimary900);
+            vertical-align: middle;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background-color: #fcfcfd;
+        }
+
+        .mono {
+            font-family: var(--fontFamilyMono), monospace;
+            font-size: 12px;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .tag-resilient {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .tag-intensive {
+            background-color: #fff1f2;
+            color: #9f1239;
+            border: 1px solid #fecdd3;
+        }
+
+        /* Technical Equation Block (No Slop Left-Stripe) */
+        .equation-box {
+            background: #fbfbfc;
+            border: 1px solid var(--colorNeutral300);
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            font-family: var(--fontFamilyMono), monospace;
+            font-size: 12px;
+            color: var(--colorPrimary900);
+            line-height: 1.6;
+        }
+
+        .equation-box strong {
+            font-family: var(--fontFamily);
+            color: var(--colorPrimary900);
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--colorNeutral600);
+            padding-top: 28px;
+            border-top: 1px solid var(--colorNeutral200);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Logo -->
+    <div class="header-logo-container">
+        <a href="index.html" title="Back to 3D Overview" style="display:inline-block; line-height:0;">
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2087.43 432.13">
+                <path d="M43.28,110.02h35.23v250.71h-35.23V110.02ZM95.46,177.78h35.23v182.95h-35.23v-182.95ZM229.62,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM281.79,174.4c0-20.55,5.93-36.42,17.79-47.6,11.86-11.18,28.51-16.77,49.97-16.77h88.42v33.88h-90.8c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v182.95h-35.23v-186h0ZM294.33,177.78h91.47v33.88h-91.47v-33.88ZM402.74,177.78h35.23v182.95h-35.23v-182.95ZM454.92,177.78h35.23v182.95h-35.23v-182.95ZM589.08,245.2c0-9.94-.74-17.16-2.2-21.68-1.47-4.52-4.23-7.62-8.3-9.32-4.07-1.69-10.62-2.54-19.65-2.54h-81.65l2.37-33.88h80.29c20.55,0,36.42,5.59,47.6,16.77,11.18,11.18,16.77,27.05,16.77,47.6v118.58h-35.23v-115.53h0ZM676.49,110.02v35.23h-35.23v-35.23h35.23ZM641.25,177.78h35.23v182.95h-35.23v-182.95ZM728.66,110.36v182.95c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h38.62v33.88h-36.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6V110.36h35.23ZM797.44,177.78v33.88h-91.47v-33.88h91.47ZM814.38,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM937.7,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1103.7,110.02v250.71h-35.23V110.02h35.23ZM1241.25,143.9h-153.47v-33.88h153.47v33.88ZM1241.25,252.32h-153.47v-33.88h153.47v33.88ZM1301.9,110.02v35.23h-35.23v-35.23h35.23ZM1266.67,177.78h35.23v182.95h-35.23v-182.95ZM1318.84,242.15c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h27.1v33.88h-26.09c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.23,7.62,8.3,9.32,4.07,1.69,10.61,2.54,19.65,2.54h100.62v33.88h-98.25c-21.46,0-38.11-5.59-49.97-16.77-11.86-11.18-17.79-27.05-17.79-47.6v-54.21h0ZM1442.16,177.78c8.35,0,16.03,2.09,23.04,6.27,7,4.18,12.59,9.77,16.77,16.77,4.18,7,6.27,14.68,6.27,23.04,0,9.49-2.71,18.18-8.13,26.09-5.42,7.91-12.54,13.55-21.34,16.94l-112.14,43.03-12.54-32.86,111.8-43.03c3.16-1.13,5.13-2.37,5.93-3.73.79-1.36,1.19-3.84,1.19-7.45,0-4.74-.68-7.79-2.03-9.15-1.36-1.36-4.29-2.03-8.81-2.03h-31.85v-33.88h31.85ZM1505.18,110.02h35.23v250.71h-35.23V110.02ZM1621.73,360.73c-20.56,0-36.42-5.59-47.6-16.77-11.18-11.18-16.77-27.05-16.77-47.6v-54.21c0-20.55,5.59-36.42,16.77-47.6,11.18-11.18,27.05-16.77,47.6-16.77h80.29l2.37,33.88h-81.65c-9.04,0-15.58.85-19.65,2.54-4.07,1.69-6.83,4.8-8.3,9.32-1.47,4.52-2.2,11.75-2.2,21.68v48.11c0,9.94.73,17.17,2.2,21.68,1.47,4.52,4.24,7.62,8.3,9.32s10.61,2.54,19.65,2.54h30.83v33.88h-31.85ZM1629.18,326.85h59.63c.68,0,1.3-.28,1.86-.85.56-.56.85-1.19.85-1.86V110.02h35.23v212.76c0,10.39-3.67,19.31-11.01,26.76-7.34,7.45-16.32,11.18-26.93,11.18h-59.63v-33.88Z" fill="#232323"/>
+                <path d="M1746.64,121.51c1.49-3.27,3.5-6.06,6.01-8.36,2.51-2.3,5.42-4.08,8.72-5.34,3.3-1.26,6.75-1.89,10.35-1.89s7.05.63,10.35,1.89c3.3,1.26,6.2,3.04,8.72,5.34,2.51,2.3,4.52,5.09,6.01,8.36s2.24,6.93,2.24,10.96-.75,7.76-2.24,11.03c-1.49,3.27-3.5,6.07-6.01,8.4-2.51,2.32-5.42,4.1-8.72,5.34-3.3,1.23-6.75,1.85-10.35,1.85s-7.06-.62-10.35-1.85-6.2-3.01-8.72-5.34c-2.51-2.32-4.52-5.12-6.01-8.4-1.49-3.27-2.24-6.95-2.24-11.03s.75-7.68,2.24-10.96ZM1753.23,140.87c1.04,2.56,2.47,4.78,4.27,6.65,1.8,1.87,3.92,3.33,6.37,4.38,2.44,1.04,5.06,1.56,7.86,1.56s5.35-.52,7.79-1.56c2.44-1.04,4.56-2.5,6.37-4.38,1.8-1.87,3.24-4.09,4.3-6.65s1.6-5.36,1.6-8.4-.53-5.82-1.6-8.36c-1.07-2.54-2.5-4.73-4.3-6.58-1.8-1.85-3.93-3.3-6.37-4.34-2.44-1.04-5.04-1.56-7.79-1.56s-5.42.52-7.86,1.56c-2.44,1.04-4.57,2.49-6.37,4.34-1.8,1.85-3.23,4.04-4.27,6.58-1.04,2.54-1.57,5.33-1.57,8.36s.52,5.83,1.57,8.4ZM1772.37,117.53c3.75,0,6.63.66,8.65,1.99,2.02,1.33,3.02,3.61,3.02,6.83,0,1.38-.2,2.55-.61,3.52-.4.97-.96,1.77-1.67,2.38-.71.62-1.54,1.09-2.49,1.42-.95.33-1.97.55-3.06.64l7.97,13.02h-6.19l-7.26-12.74h-3.7v12.74h-5.91v-29.81h11.24ZM1772.29,129.98c1.71,0,3.11-.24,4.2-.71,1.09-.47,1.64-1.61,1.64-3.42,0-.81-.19-1.45-.57-1.92-.38-.47-.87-.84-1.46-1.1-.59-.26-1.26-.44-1.99-.53-.74-.09-1.43-.14-2.1-.14h-4.98v7.83h5.26Z" fill="#232323"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Navigation Pills -->
+    <nav class="site-nav">
+        <a href="index.html" class="nav-pill">Overview</a>
+        <a href="predict.html" class="nav-pill">Crop Predictor & Advisory</a>
+        <a href="metrics.html" class="nav-pill active">Model & Benchmarks</a>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1 class="page-title">Model Performance & Agroclimatic Benchmarks</h1>
+            <p class="page-subtitle">
+                Evaluation results of the trained model, read from the saved file <code>models/metrics.json</code>, and the climate ranges it was trained on. Nothing on this page is typed in by hand.
+            </p>
+        </header>
+
+        <!-- Live Status Strip -->
+        <div class="status-strip">
+            <div class="status-badge">
+                <span id="api-status-dot" class="status-dot"></span>
+                <span id="api-status-text">Backend Pipeline: checking...</span>
+            </div>
+            <div class="mono" id="model-version-text" style="color:var(--colorNeutral600);"></div>
+        </div>
+
+        <!-- Load error (no numbers are shown when the backend cannot be reached) -->
+        <div id="load-error" style="display:none; border:1px solid #d97706; background:#fffbeb; color:#92400e; border-radius:6px; padding:12px 16px; margin-bottom:24px; font-size:13.5px;">
+            <span id="load-error-text"></span>
+            <button type="button" id="btn-retry" style="margin-left:12px; padding:2px 10px; font-size:12px; cursor:pointer;">Retry</button>
+        </div>
+
+        <div id="content" style="display:none;">
+
+        <!-- Summary of the chosen model on the held-out test years -->
+        <section class="metrics-summary-panel">
+            <div class="metrics-primary-row" id="summary-cells"></div>
+            <div class="metrics-meta-footer" id="summary-footer"></div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">1. Model comparison</h2>
+            <p class="section-desc" id="cmp-desc"></p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th class="num">Val R²</th>
+                            <th class="num">Val MAE</th>
+                            <th class="num">Test R²</th>
+                            <th class="num">Test MAE</th>
+                            <th class="num">Test RMSE</th>
+                            <th class="num">Test skill vs crop mean</th>
+                            <th class="num">CV log-MAE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmp-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">2. What the chosen model relies on</h2>
+            <p class="section-desc">
+                Permutation importance on the validation years: how much the error grows when one input column is shuffled. A larger bar means the model depends on that column more.
+            </p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Input</th><th class="num">Error increase (log-MAE)</th><th style="width:40%;"></th></tr></thead>
+                    <tbody id="imp-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">3. Data sources</h2>
+            <p class="section-desc">Two public sources are merged by province and year.</p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Role</th><th>Source</th><th>Licence</th><th>Accessed</th><th>SHA-256</th></tr></thead>
+                    <tbody id="sources-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">4. Data and split</h2>
+            <p class="section-desc" id="data-desc"></p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead><tr><th>Crop</th><th class="num">Training rows (crop-province-years)</th></tr></thead>
+                    <tbody id="rows-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">5. Climate and soil ranges the model was trained on</h2>
+            <p class="section-desc">
+                Annual values from the training years, shown as median (minimum to maximum). Inputs outside these ranges are rejected by the API because the model cannot extrapolate.
+            </p>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Province</th>
+                            <th class="num">Annual rain (mm)</th>
+                            <th class="num">Mean temp (°C)</th>
+                            <th class="num">ET₀ (mm/day)</th>
+                            <th class="num">Radiation (MJ/m²)</th>
+                            <th class="num">Rain hours</th>
+                            <th class="num">Soil wetness, mean</th>
+                            <th class="num">Soil wetness, max</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prov-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-block">
+            <h2 class="section-title">6. Limits</h2>
+            <ul class="section-desc" id="notes-list"></ul>
+        </section>
+
+        </div>
+
+        <!-- Footer Note -->
+        <footer class="footer-note">
+            Infinite Field — Climate Intelligence Engine • CT-378 Machine Learning Project
+        </footer>
+
+    </main>
+
+    <script>
+        const apiBase = window.API_BASE || (window.location.origin && window.location.origin.startsWith("http") ? window.location.origin : "http://127.0.0.1:8000");
+        const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        const f = (x, d = 3) => Number(x).toFixed(d);
+        const sf = (x, d = 2) => (x >= 0 ? "+" : "") + Number(x).toFixed(d);
+        const $ = id => document.getElementById(id);
+
+        function renderMetrics(m, meta) {
+            const chosen = m.models[m.chosen.name];
+            const base = m.baselines.crop_province_mean.test;
+            const beats = m.chosen.beats_crop_province_mean_on_test;
+            const t = chosen.test;
+
+            $("summary-cells").innerHTML = [
+                ["Test R²", f(t.r2), `${esc(chosen.label)}, test years ${m.split.test_years[0]}-${m.split.test_years[1]}.`],
+                ["Test MAE", f(t.mae, 1), "Average absolute error in dataset yield units."],
+                ["Test RMSE", f(t.rmse, 1), "Like MAE but punishes large misses."],
+                ["Vs crop-average baseline", sf(t.skill_vs_crop_province_mean_log),
+                    `${beats ? "Better than" : "Not better than"} using each crop's average yield per province (baseline test R² ${f(base.r2)}). Above 0 means better.`],
+            ].map(([label, val, detail]) =>
+                `<div class="metric-cell"><div class="metric-label">${esc(label)}</div><div class="metric-val">${esc(val)}</div><div class="metric-detail">${detail}</div></div>`
+            ).join("");
+
+            $("summary-footer").innerHTML =
+                `<span><strong>Chosen:</strong> ${esc(chosen.label)} (${esc(m.chosen.selected_on)})</span>` +
+                `<span><strong>Trained:</strong> ${esc(m.trained_at)} • scikit-learn ${esc(m.versions.scikit_learn)}</span>`;
+
+            $("cmp-desc").textContent =
+                `Train ${m.split.train_years.join("-")}, validation ${m.split.val_years.join("-")}, test ${m.split.test_years.join("-")}. ` +
+                `Models were tuned with 5-fold cross-validation grouped by year and chosen on validation. The test years were scored once. ` +
+                `Skill above 0 means better than the crop-province mean baseline.`;
+
+            const rows = [];
+            const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield" };
+            Object.entries(m.baselines).forEach(([k, v]) => rows.push([baseLabels[k] || k, v.val, v.test, null, false]));
+            Object.entries(m.models).forEach(([k, v]) => rows.push([v.label, v.val, v.test, v.cv_log_mae, k === m.chosen.name]));
+            $("cmp-body").innerHTML = rows.map(([name, val, test, cv, isChosen]) => `
+                <tr${isChosen ? ' style="font-weight:600;"' : ""}>
+                    <td>${esc(name)}${isChosen ? " (chosen)" : ""}</td>
+                    <td class="num">${f(val.r2)}</td><td class="num">${f(val.mae, 1)}</td>
+                    <td class="num">${f(test.r2)}</td><td class="num">${f(test.mae, 1)}</td><td class="num">${f(test.rmse, 1)}</td>
+                    <td class="num">${sf(test.skill_vs_crop_province_mean_log)}</td>
+                    <td class="num">${cv === null ? "-" : f(cv)}</td>
+                </tr>`).join("");
+
+            const imp = Object.entries(m.permutation_importance_val_log_mae);
+            const top = Math.max(...imp.map(([, v]) => v.mean), 1e-9);
+            $("imp-body").innerHTML = imp.map(([k, v]) => `
+                <tr><td>${esc(k)}</td><td class="num">${f(v.mean, 4)}</td>
+                <td><div style="height:8px; border-radius:4px; background:#3a7d44; width:${Math.max(0, v.mean) / top * 100}%;"></div></td></tr>`).join("");
+
+            const d = m.data;
+            $("sources-body").innerHTML = m.data.sources.map(s => `
+                <tr><td>${esc(s.role)}</td><td>${esc(s.name)}</td><td>${esc(s.licence)}</td>
+                <td>${esc(s.accessed || "see README")}</td><td><code>${esc(s.sha256.slice(0, 16))}...</code></td></tr>`).join("");
+            const dropped = Object.entries(d.dropped_zero_yield_rows).map(([c, n]) => `${esc(c)} ${n}`).join(", ");
+            $("data-desc").innerHTML =
+                `The source file has ${d.raw_monthly_rows.toLocaleString()} monthly rows. Yield is one yearly number repeated on 12 rows, so the model trains on one row per crop, province and year: ` +
+                `${d.yearly_rows_after_drop} rows after dropping ${dropped} rows with zero area (not grown or not reported). ` +
+                `Split: ${d.n_train} train, ${d.n_val} validation, ${d.n_test} test. File <code>${esc(d.file)}</code>, SHA-256 <code>${esc(d.sha256.slice(0, 16))}...</code>. ` +
+                `Inputs: ${m.features.map(esc).join(", ")}.`;
+
+            $("rows-body").innerHTML = Object.entries(meta.train_rows_per_crop).sort((a, b) => a[1] - b[1])
+                .map(([c, n]) => `<tr><td>${esc(c)}</td><td class="num">${n}</td></tr>`).join("");
+
+            const rng = (r, k, dg) => `${f(r.median[k], dg)} (${f(r.range[k][0], dg)} to ${f(r.range[k][1], dg)})`;
+            $("prov-body").innerHTML = Object.entries(meta.reference).map(([p, r]) => `
+                <tr><td>${esc(p)}</td><td class="num">${rng(r, "precipitation_sum", 0)}</td><td class="num">${rng(r, "temperature_2m_mean", 1)}</td>
+                <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td>
+                <td class="num">${rng(r, "soil_wetness_mean", 3)}</td><td class="num">${rng(r, "soil_wetness_max", 3)}</td></tr>`).join("");
+
+            $("notes-list").innerHTML = m.notes.map(n => `<li>${esc(n)}</li>`).join("") +
+                `<li>${esc(m.target)}.</li>`;
+        }
+
+        async function loadMetrics() {
+            const dot = $("api-status-dot"), text = $("api-status-text");
+            try {
+                const [mRes, metaRes] = await Promise.all([
+                    fetch(`${apiBase}/api/v1/metrics`, { signal: AbortSignal.timeout(30000) }),
+                    fetch(`${apiBase}/api/v1/metadata`, { signal: AbortSignal.timeout(30000) }),
+                ]);
+                if (!mRes.ok || !metaRes.ok) throw new Error(`HTTP ${mRes.status}/${metaRes.status}`);
+                const [m, meta] = [await mRes.json(), await metaRes.json()];
+                renderMetrics(m, meta);
+                dot.classList.remove("offline");
+                text.textContent = "Backend Pipeline: Live";
+                $("model-version-text").textContent = `Model: ${meta.model_version} (${meta.features_count} features)`;
+                $("load-error").style.display = "none";
+                $("content").style.display = "block";
+            } catch (err) {
+                console.error("Could not load metrics", err);
+                dot.classList.add("offline");
+                text.textContent = "Backend Pipeline: Offline";
+                $("content").style.display = "none";
+                $("load-error-text").textContent = "Cannot reach the model server. No results are shown.";
+                $("load-error").style.display = "block";
+            }
+        }
+        $("btn-retry").onclick = loadMetrics;
+        loadMetrics();
+    </script>
+</body>
+</html>
