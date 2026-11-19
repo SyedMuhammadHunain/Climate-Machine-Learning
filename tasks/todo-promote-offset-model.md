@@ -57,7 +57,7 @@
     - `tasks/todo-completion.md` Checkpoint 2 numbers.
   - Verify: `verify_guide.py`, extended first.
   - Files: `docs/demo_and_viva_guide.md`, `scripts/verify_guide.py`, `CLAUDE.md`, `tasks/todo-completion.md`.
-- [ ] **T7** Bundles.
+- [x] **T7** Bundles.
   - Do:
     - `scripts/build_hf_bundle.py` model card: candidates line 87, trend line 132, caveat, and "HF model repo holds
       the earlier model" unless you choose to republish.

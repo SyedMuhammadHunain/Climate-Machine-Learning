@@ -77,6 +77,12 @@ def model_card_metadata_and_honest_content():
     base = MET["baselines"]["crop_province_mean"]["test"]
     assert f"{base['r2']:.3f}" in text, "the crop-average baseline must be in the card"
     assert f"{MET['prediction_interval']['test_coverage']:.0%}" in text, "interval coverage must be stated"
+    # SPEC-promote-offset-model.md: the win is stated with the log-MAE loss and the after-the-fact metric choice
+    assert I.model_caveat(MET) in text, "the card must carry the generated caveat"
+    trend = MET["baselines"]["crop_province_mean_plus_trend"]["test"]
+    assert f"{trend['r2']:.3f}" in text, "the trend-only baseline row must be in the card"
+    assert "no yearly trend" not in text.lower(), "stale limitation"
+    assert "gap" in text and str(MET["inference_year"]) in text, "card must say how year is handled"
     for word in ("bajra", "0.892", "simulation", "fallback"):
         assert word not in text.lower(), word
 

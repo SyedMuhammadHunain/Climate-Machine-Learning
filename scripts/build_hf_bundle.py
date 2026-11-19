@@ -24,7 +24,8 @@ SPACE_ONLY_CODE = ("presentation.py",)  # UI text and tables: the Space needs th
 
 def _table(met: dict) -> str:
     """Evaluation table, generated from metrics.json only."""
-    names = {"global_mean": "Baseline: overall mean yield", "crop_province_mean": "Baseline: crop-province mean yield"}
+    names = {"global_mean": "Baseline: overall mean yield", "crop_province_mean": "Baseline: crop-province mean yield",
+             "crop_province_mean_plus_trend": "Baseline: crop-province mean + year trend (no climate)"}
     lines = [
         "| Model | Val R² | Val MAE | Test R² | Test MAE | Test RMSE | Test skill vs crop-province mean |",
         "|---|---:|---:|---:|---:|---:|---:|",
@@ -41,6 +42,10 @@ def _table(met: dict) -> str:
 
 
 def model_card(met: dict, ref: dict) -> str:
+    sys.path.insert(0, str(ROOT / "src"))
+    from climate_machine_learning import inference as I  # same sentence the apps and README show
+
+    caveat = I.model_caveat(met)
     chosen = met["models"][met["chosen"]["name"]]
     d, pi, split = met["data"], met["prediction_interval"], met["split"]
     sources = "\n".join(
@@ -84,13 +89,15 @@ The source file has 12 monthly rows per crop, province and year with one yearly 
 
 ## Training procedure
 
-`GridSearchCV` with 5-fold `GroupKFold` grouped by year, so a year never appears in two folds. Candidates: Ridge, Random Forest, Gradient Boosting, plus two baselines. The model was chosen on the validation years; the test years were scored once and not used to choose. Random seed {met['seed']}. Trained {met['trained_at']} with scikit-learn {met['versions']['scikit_learn']}.
+`GridSearchCV` with 5-fold `GroupKFold` grouped by year, so a year never appears in two folds. Candidates: Ridge, Random Forest, Gradient Boosting, plus three baselines (overall mean, crop-province mean, and crop-province mean plus a year trend with no climate). Each model learns the log-scale gap between a year's yield and the crop-province average of the training years, plus a straight-line year trend picked on the validation years (chosen: {met['chosen']['trend'].replace('_', ' ')}). Year is not a model input: it is pinned to {met['inference_year']} at prediction, which cancels out of the crop ranking. The model was chosen on the validation years; the test years were scored once and not used to choose. Random seed {met['seed']}. Trained {met['trained_at']} with scikit-learn {met['versions']['scikit_learn']}.
 
 ## Evaluation
 
 Yields are in dataset yield units.
 
 {_table(met)}
+
+{caveat}
 
 "Skill" compares a model with the crop-province mean baseline on a log scale; above 0 means better than that baseline. Read the baseline row and the skill column before treating small differences between crops as meaningful. Most of the model's signal is which crop it is.
 
@@ -129,7 +136,7 @@ Inputs outside the range seen in training are refused (`OutOfRangeError`) becaus
 
 - Few rows: {d['yearly_rows_after_drop']} usable yearly rows from 22 years and 3 provinces.
 - Crop identity dominates; weather and soil wetness change predictions only a little. The soil wetness source adds little.
-- No yearly trend in the model, so growth in yields over time is not modelled; this affects the test years.
+- The win is narrower than it looks (see the paragraph under the evaluation table): a year trend alone, with no climate inputs, scores almost the same R², so the weather inputs add little beyond it.
 - Weather and soil wetness are province-level (soil wetness from 3 hand-picked farming-area points per province), the same for every crop. There is no district or farm detail.
 - Annual mean temperature varies by only about 1.5 deg C within a province in training, so many inputs fall outside the trained range and are refused.
 - Some crops are missing years (grapes, pomegranate, apple) and are noisier.
