@@ -624,7 +624,6 @@ def offset_model_year_comes_from_the_year_column_or_the_pinned_year():
 @test
 def offset_model_predicts_exp_of_offset_plus_inner_gap_on_real_data():
     """Fitted on the real training years; the ratio of two scenarios must not depend on the pinned year."""
-    import joblib
     from sklearn.compose import ColumnTransformer
     from sklearn.linear_model import Ridge
     from sklearn.pipeline import make_pipeline
@@ -846,7 +845,6 @@ _CANDIDATE = {}
 
 
 def _models_dir_hash():
-    import hashlib
     d = ROOT / "models"
     return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(d.iterdir()) if p.is_file()}
 
@@ -901,7 +899,6 @@ def candidate_metrics_report_trend_baseline_and_selection_on_validation():
 
 @test
 def candidate_pipeline_is_an_offset_model_with_the_pinned_year_everywhere():
-    import joblib
 
     c = _candidate()
     pipe = joblib.load(c["dir"] / "crop_yield_pipeline.joblib")

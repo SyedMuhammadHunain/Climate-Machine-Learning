@@ -14,7 +14,6 @@ triangulation: a variable font's "W" came out as a solid block). Nothing here is
 """
 import json
 import re
-import shutil
 import struct
 import subprocess
 import sys

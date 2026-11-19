@@ -251,8 +251,6 @@ def prediction_interval(pred, log_quantiles):
     The two numbers are quantiles of log(actual / predicted) on the validation years,
     saved in metrics.json. It is an empirical range, not a model-based probability.
     """
-    import numpy as np
-
     lo_q, hi_q = log_quantiles
     pred = np.asarray(pred, dtype=float)
     return pred * np.exp(lo_q), pred * np.exp(hi_q)
