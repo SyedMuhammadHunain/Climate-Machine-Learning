@@ -116,6 +116,62 @@ def inference_row_equals_training_row():
 
 
 @test
+def engineered_features_match_hand_computed_values():
+    """The three drought features, worked out by hand. The training and inference paths share one
+    formula, so comparing them to each other proves nothing: pin the numbers instead."""
+    _, ref = _train_reference()
+    mean_rain = ref["provinces"]["Sindh"]["mean_annual_rain"]
+    # one request: rain 150 mm, evapotranspiration 6 mm/day -> 2190 mm a year
+    row, _ = F.build_inference_row("Sindh", "rice", {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5,
+                                                     "fao_evapotranspiration": 6.0}, ref)
+    got = row.iloc[0]
+    assert got["water_balance_mm"] == 150.0 - 2190.0 == -2040.0
+    assert np.isclose(got["aridity_index"], 150.0 / 2190.0) and np.isclose(got["aridity_index"], 0.0684931506849315)
+    assert np.isclose(got["rain_deficit_pct"], (mean_rain - 150.0) / mean_rain * 100.0)
+    # the training table: each row uses ITS province's long-term mean rain
+    frame = pd.DataFrame({"Province": ["Punjab", "Sindh"], "precipitation_sum": [300.0, 100.0],
+                          "fao_evapotranspiration": [4.0, 8.0]})
+    out = F.add_engineered(frame, ref)
+    for i, prov in enumerate(("Punjab", "Sindh")):
+        m, rain, et = ref["provinces"][prov]["mean_annual_rain"], frame.precipitation_sum[i], frame.fao_evapotranspiration[i]
+        assert np.isclose(out.rain_deficit_pct[i], (m - rain) / m * 100.0), prov
+        assert out.water_balance_mm[i] == rain - et * 365.0, prov
+        assert np.isclose(out.aridity_index[i], rain / (et * 365.0)), prov
+    assert list(out.columns[-3:]) == F.ENGINEERED, "new columns must follow F.ENGINEERED order"
+
+
+def _train_reference():
+    table, _ = F.build_yearly_table(RAW)
+    return table, F.build_reference(table[table.Year <= 2016])
+
+
+@test
+def row_building_stays_close_to_the_cost_of_one_frame():
+    """Speed guard for the hot path (a recommendation builds 26 rows). Self-calibrating, so it does not
+    depend on how fast the machine is: the row builder is timed against one bare pandas frame.
+    Measured: about 1.0x when the formulas are plain arithmetic, about 2.8x when each row goes through
+    pandas column operations (that version made a recommendation about 25 ms slower)."""
+    import time
+
+    _, ref = _train_reference()
+    inputs = {"precipitation_sum": 150.0, "temperature_2m_mean": 27.5}
+    values = F.build_inference_row("Sindh", "rice", inputs, ref)[0].iloc[0].to_dict()
+
+    def per_call(fn, n=200):
+        start = time.perf_counter()
+        for _ in range(n):
+            fn()
+        return (time.perf_counter() - start) / n
+
+    build = lambda: F.build_inference_row("Sindh", "rice", inputs, ref)
+    bare = lambda: pd.DataFrame([values])[F.FEATURE_COLS]
+    for _ in range(40):
+        build(), bare()
+    ratio = min(per_call(build) / per_call(bare) for _ in range(7))   # min of 7: noise only ever adds time
+    assert ratio < 1.8, f"building one row costs {ratio:.1f}x a bare frame (expected about 1.0x)"
+
+
+@test
 def missing_inputs_come_from_reference_and_are_labeled():
     table, _ = F.build_yearly_table(RAW)
     ref = F.build_reference(table[table.Year <= 2016])

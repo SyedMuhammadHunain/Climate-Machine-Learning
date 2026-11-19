@@ -177,14 +177,23 @@ def build_reference(train: pd.DataFrame) -> Dict[str, Any]:
 
 
 # --------------------------------------------------------------------------- engineered
+def engineered(rain, et0, mean_annual_rain) -> Dict[str, Any]:
+    """The three drought features, written once. Works on plain floats (one API request) and on
+    pandas columns (the training table), so both paths use the same formulas."""
+    et_year = et0 * 365.0
+    return {
+        "rain_deficit_pct": (mean_annual_rain - rain) / mean_annual_rain * 100.0,
+        "water_balance_mm": rain - et_year,
+        "aridity_index": rain / et_year,
+    }
+
+
 def add_engineered(table: pd.DataFrame, reference: Dict[str, Any]) -> pd.DataFrame:
     """Add engineered columns to a yearly table (training path)."""
     out = table.copy()
     mean_rain = out["Province"].map(lambda p: reference["provinces"][p]["mean_annual_rain"])
-    et_year = out["fao_evapotranspiration"] * 365.0
-    out["rain_deficit_pct"] = (mean_rain - out["precipitation_sum"]) / mean_rain * 100.0
-    out["water_balance_mm"] = out["precipitation_sum"] - et_year
-    out["aridity_index"] = out["precipitation_sum"] / et_year
+    for name, column in engineered(out["precipitation_sum"], out["fao_evapotranspiration"], mean_rain).items():
+        out[name] = column
     return out
 
 
@@ -228,9 +237,9 @@ def build_inference_row(
         else:
             values[name], sources[name] = prov["median"][name], SRC_MEDIAN
 
+    values.update(engineered(values["precipitation_sum"], values["fao_evapotranspiration"], prov["mean_annual_rain"]))
     values["Crop"], values["Province"] = crop, province
-    row = add_engineered(pd.DataFrame([values]), reference)  # the same formulas the training table uses
-    return row[FEATURE_COLS], sources
+    return pd.DataFrame([values])[FEATURE_COLS], sources
 
 
 # --------------------------------------------------------------------------- prediction interval
