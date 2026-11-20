@@ -7,3 +7,4 @@ scikit-learn==1.9.1
 joblib==1.6.0
 # 2026-11-19: model replaced (offset model, SPEC-promote-offset-model.md); this line only forces a clean restart on Streamlit Cloud.
 # 2026-11-19 (second redeploy: rename, tie order, caveats): touched again so Streamlit Cloud rebuilds the process instead of keeping old modules in memory.
+# 2026-11-20 (third redeploy: responsive pages, tie groups, crop pages): touched again so Streamlit Cloud rebuilds the process instead of keeping old inference.py in memory.
