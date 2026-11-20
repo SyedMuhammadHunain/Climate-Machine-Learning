@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 400" width="1100" height="400" role="img" aria-labelledby="at ad">
+  <title id="at">Architecture</title>
+  <desc id="ad">Two data sources feed one shared package that trains, saves and serves the model; the FastAPI pages on Vercel, the Streamlit app and the Hugging Face model repo all use that package.</desc>
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8b949e"/></marker></defs>
+  <rect width="1100" height="400" rx="16" fill="#f6f8fa" stroke="#d0d7de"/>
+  
+  <g><rect x="30" y="70" width="260" height="110" rx="12" fill="#ffffff" stroke="#2f9e82" stroke-width="2.5"/>
+  <rect x="30" y="70" width="260" height="8" rx="4" fill="#2f9e82"/>
+  <text x="160.0" y="108" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Crop yield and climate</text><text x="160.0" y="134" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">Zenodo 15486470 (MIT)</text><text x="160.0" y="156" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">monthly rows, 3 provinces</text></g>
+  
+  <g><rect x="30" y="220" width="260" height="110" rx="12" fill="#ffffff" stroke="#2f9e82" stroke-width="2.5"/>
+  <rect x="30" y="220" width="260" height="8" rx="4" fill="#2f9e82"/>
+  <text x="160.0" y="258" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">NASA POWER</text><text x="160.0" y="284" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">soil wetness by province</text><text x="160.0" y="306" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">and year (second source)</text></g>
+  
+  <g><rect x="380" y="40" width="340" height="320" rx="14" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"/>
+  <rect x="380" y="40" width="340" height="8" rx="4" fill="#e8590c"/>
+  <text x="550" y="82" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#1f2328">One shared package</text>
+  <text x="550" y="104" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6e7781">src/climate_machine_learning + models/</text><text x="404" y="140" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#b4400a">features.py</text><text x="404" y="162" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#444c56">yearly table, one row per crop-province-year</text><text x="404" y="196" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#b4400a">training.py</text><text x="404" y="218" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#444c56">split by year, GroupKFold, 3 models + baselines</text><text x="404" y="252" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#b4400a">models/</text><text x="404" y="274" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#444c56">pipeline.joblib, metrics.json, reference.json</text><text x="404" y="308" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#b4400a">inference.py</text><text x="404" y="330" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#444c56">ranking by share of a typical year, tie groups,</text><text x="404" y="350" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#444c56">refuses inputs outside the trained range</text></g>
+  
+  <g><rect x="810" y="40" width="260" height="100" rx="12" fill="#ffffff" stroke="#3b82a0" stroke-width="2.5"/>
+  <rect x="810" y="40" width="260" height="8" rx="4" fill="#3b82a0"/>
+  <text x="940.0" y="78" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">FastAPI + HTML pages</text><text x="940.0" y="104" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">Vercel, crop pages</text><text x="940.0" y="126" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">phone to 4K screens</text></g>
+  
+  <g><rect x="810" y="150" width="260" height="100" rx="12" fill="#ffffff" stroke="#3b82a0" stroke-width="2.5"/>
+  <rect x="810" y="150" width="260" height="8" rx="4" fill="#3b82a0"/>
+  <text x="940.0" y="188" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Streamlit app</text><text x="940.0" y="214" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">Streamlit Community Cloud</text><text x="940.0" y="236" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">same ranking and caveats</text></g>
+  
+  <g><rect x="810" y="260" width="260" height="100" rx="12" fill="#ffffff" stroke="#3b82a0" stroke-width="2.5"/>
+  <rect x="810" y="260" width="260" height="8" rx="4" fill="#3b82a0"/>
+  <text x="940.0" y="298" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1f2328">Hugging Face</text><text x="940.0" y="324" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">model repo (no Space)</text><text x="940.0" y="346" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" fill="#444c56">model card + pipeline</text></g>
+  
+  <path d="M290 125 L376 170" stroke="#2f9e82" stroke-width="2.5" stroke-dasharray="7 6" fill="none" marker-end="url(#ah)"><animate attributeName="stroke-dashoffset" values="26;0" dur="1.6s" repeatCount="indefinite"/></path>
+  <path d="M290 275 L376 230" stroke="#2f9e82" stroke-width="2.5" stroke-dasharray="7 6" fill="none" marker-end="url(#ah)"><animate attributeName="stroke-dashoffset" values="26;0" dur="1.6s" repeatCount="indefinite"/></path>
+  
+  <path d="M722 150 L806 90" stroke="#3b82a0" stroke-width="2.5" stroke-dasharray="7 6" fill="none" marker-end="url(#ah)"><animate attributeName="stroke-dashoffset" values="26;0" dur="1.6s" repeatCount="indefinite"/></path>
+  <path d="M722 200 L806 200" stroke="#3b82a0" stroke-width="2.5" stroke-dasharray="7 6" fill="none" marker-end="url(#ah)"><animate attributeName="stroke-dashoffset" values="26;0" dur="1.6s" repeatCount="indefinite"/></path>
+  <path d="M722 250 L806 310" stroke="#3b82a0" stroke-width="2.5" stroke-dasharray="7 6" fill="none" marker-end="url(#ah)"><animate attributeName="stroke-dashoffset" values="26;0" dur="1.6s" repeatCount="indefinite"/></path>
+</svg>

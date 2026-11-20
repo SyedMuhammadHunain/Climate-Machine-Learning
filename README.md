@@ -1,8 +1,43 @@
+<div align="center">
+
+<img src="docs/assets/banner.svg" alt="Low-Water Crops: climate-resilient crop selection under drought in Punjab, Sindh and Balochistan" width="100%">
+
+<img src="docs/assets/typing.svg" alt="Rank 13 crops by how much of a typical year they keep. Every number is model output, never typed in." width="680">
+
+<p><a href="https://climate-machine-learning.vercel.app/"><img src="https://img.shields.io/badge/Web_app-open-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Open the web app on Vercel"></a> <a href="https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/"><img src="https://img.shields.io/badge/Streamlit_app-open-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Open the Streamlit app"></a> <a href="https://huggingface.co/SMHunain/crop-yield-drought-pakistan"><img src="https://img.shields.io/badge/Model-Hugging_Face-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Model repo on Hugging Face"></a></p>
+
+<p><img src="https://img.shields.io/badge/Python-3.13-3776AB?style=flat&logo=python&logoColor=white" alt="Python-3.13"> <img src="https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white" alt="FastAPI"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat&logo=scikitlearn&logoColor=white" alt="scikit-learn"> <img src="https://img.shields.io/badge/pandas-150458?style=flat&logo=pandas&logoColor=white" alt="pandas"> <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white" alt="Streamlit"> <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel"> <img src="https://img.shields.io/badge/Hugging_Face-FFD21E?style=flat&logo=huggingface&logoColor=black" alt="Hugging Face"> <img src="https://img.shields.io/badge/responsive-320_to_2560_px-2f9e82?style=flat" alt="responsive, 320 to 2560 px"> <img src="https://img.shields.io/badge/data-MIT_+_NASA_POWER-3b82a0?style=flat" alt="data: MIT and NASA POWER"> <img src="https://img.shields.io/badge/course-CT--378-7c5cbf?style=flat" alt="course CT-378"></p>
+
+<p><a href="#quick-start">Quick start</a> &nbsp;·&nbsp; <a href="#data">Data</a> &nbsp;·&nbsp; <a href="#method">Method</a> &nbsp;·&nbsp; <a href="#results">Results</a> &nbsp;·&nbsp; <a href="#how-the-ranking-works">How the ranking works</a> &nbsp;·&nbsp; <a href="#api">API</a> &nbsp;·&nbsp; <a href="#deployment-status">Deployment status</a> &nbsp;·&nbsp; <a href="#limitations">Limitations</a></p>
+
+</div>
+
 # Climate-Resilient and Low-Water Crop Selection Under Drought
 
 CT-378 Machine Learning semester project. A farmer or extension officer in Punjab, Sindh or Balochistan enters annual climate conditions. The app returns the yield a trained model predicts for each of 13 crops and ranks the crops by how much of a typical year's yield the model expects them to keep in that scenario.
 
 Every number the app shows is model output, a value from the dataset, or a saved evaluation result. The app contains no placeholder results and no hand-written yield formula. If the server cannot be reached, the pages show an error and no numbers.
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
+## At a glance
+
+<p align="center"><img src="docs/assets/features.svg" alt="Ranks 13 crops, phone to monitor, honest by design, one shared core" width="100%"></p>
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="docs/assets/screens/ranking-desktop.jpg" alt="The ranking for Sindh in its driest real year: one crop at rank 1, a group of eleven tied crops at rank 2, one crop at rank 3"><br><sub><b>Ranking.</b> Crops that keep the same share of a typical year share one rank instead of an alphabetical list.</sub></td>
+<td width="50%" valign="top"><img src="docs/assets/screens/crop-desktop.jpg" alt="The page of one crop with its result, water need, driest typical and wettest year, inputs used and caveats"><br><sub><b>One page per crop.</b> Result, FAO water need, three real years, the inputs used and the caveats.</sub></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="docs/assets/screens/metrics-desktop.jpg" alt="The model results page with test R-squared, MAE, RMSE and the comparison against the baselines"><br><sub><b>Model results.</b> Read from <code>models/metrics.json</code>, with the baselines and the loss on log-MAE in view.</sub></td>
+<td width="50%" align="center" valign="top"><img src="docs/assets/screens/ranking-phone.jpg" alt="The ranking on a phone" width="46%"> <img src="docs/assets/screens/crop-phone.jpg" alt="A crop page on a phone" width="46%"><br><sub><b>On a phone.</b> Tabs stack, tap targets are 44 px, wide tables become cards.</sub></td>
+</tr>
+</table>
+
+<p align="center"><img src="docs/assets/architecture.svg" alt="Two data sources feed one shared package that trains, saves and serves the model; FastAPI pages on Vercel, the Streamlit app and the Hugging Face model repo all use it" width="100%"></p>
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## Group
 
@@ -15,6 +50,8 @@ Every number the app shows is model output, a value from the dataset, or a saved
 ### Contributors besides the group
 
 - **Claude** (an AI assistant made by Anthropic, used through Claude Code) wrote and tested parts of the code and docs, among them the responsive layout of the pages, the single Start button, tie groups in the ranking, the crop pages (`crop.html`), `scripts/checks/verify_responsive.py` and the text cuts (`SPEC-responsive.md`). Every commit it took part in ends with a `Co-Authored-By: Claude` line; list them with `git log --grep "Co-Authored-By: Claude"`. The group members are the authors of record and remain responsible for the project.
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## Quick start
 
@@ -34,7 +71,7 @@ Run the app (the trained model files in `models/` are already in the repo):
 uvicorn app.main:app --port 8000
 ```
 
-Or use the scripts in the repository root. They create the virtual environment and install the requirements on first run (they use `uv` if it is installed, otherwise `python3.13`):
+Or use the scripts in `scripts/run/`. They create the virtual environment and install the requirements on first run (they use `uv` if it is installed, otherwise `python3.13`):
 
 ```bash
 ./scripts/run/run_app.sh          # API + HTML pages on http://127.0.0.1:8000 (PORT=8080 ./scripts/run/run_app.sh for another port, --reload for development)
@@ -86,15 +123,17 @@ For the 10-minute presentation see [docs/guides/demo_and_viva_guide.md](docs/gui
 
 The notebook `notebooks/01_low_water_crop_selection.ipynb` holds the EDA, the aggregation, and the evaluation plots. It reads `models/metrics.json`, so its numbers match this README.
 
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
 ## Project structure
 
 ```
 app/                  FastAPI backend (api, schemas, services, core)
-frontend/climate-resilient-frontend/   HTML pages served by FastAPI
+frontend/climate-resilient-frontend/   HTML pages served by FastAPI: index (landing), predict, metrics, crop
 src/climate_machine_learning/
     features.py       yearly aggregation, merge of both sources, engineered features, inference rows (shared by training and API)
     training.py       split, tuning, evaluation, saving
-    inference.py      prediction and ranking from the trained pipeline (shared by the API, Streamlit and Gradio apps)
+    inference.py      prediction and ranking from the trained pipeline: tie groups, headline, range check (shared by the API, Streamlit and Gradio apps)
     presentation.py   tables and wording shown by the Streamlit and Gradio apps (one copy, so both say the same)
 streamlit_app/        Streamlit app (app.py) and its own minimal requirements.txt
 hf_space/             Gradio app (app.py) and requirements for the Hugging Face Space
@@ -103,11 +142,22 @@ data/raw/nasa_power/  raw NASA POWER API responses (9 points), plus nasa_power_m
 data/reference/       NASA POWER source facts, FAO crop water needs (cited context)
 models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
-scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, build_vercel_bundle.py, the verify_*.py checks and dryrun_demo.js
-docs/                 demo script and viva preparation, deployment guide
-docs/report/          report.pdf (3-4 pages), report.html and figures/; built by scripts/build/build_report.py, checked by scripts/checks/verify_report.py
-SPEC-*.md, tasks/     specs, plan and task list (model-only output; second data source)
+scripts/
+    run/              run_app.sh, run_backend.sh, run_frontend.sh, run_streamlit.sh, run_checks.sh, lib_env.sh
+    ml/               train.py, fetch_nasa_power.py
+    build/            build_vercel_bundle.py, build_hf_bundle.py, build_report.py, build_report_figures.py, capture_screenshots.py, build_brand_assets.py
+    checks/           the verify_*.py checks and dryrun_demo.js
+    lib/              helpers shared by the scripts: chrome_cdp.py, bundle_util.py, group_roles.py
+docs/
+    guides/           demo and viva guide, deployment guide
+    specs/            SPEC.md and the SPEC-*.md delta specs
+    plans/            plans and task lists for each spec
+    course/           course guidelines and the project proposal
+    report/           report.pdf (3-4 pages), report.html and figures/; built by scripts/build/build_report.py, checked by scripts/checks/verify_report.py
+    assets/           banner, diagrams and screenshots used by this README
 ```
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## Data
 
@@ -153,6 +203,8 @@ Other sources listed in the project proposal were checked on 2026-11-19 and not 
 
 Crop water needs shown next to the ranking come from FAO Irrigation Water Management Training Manual no. 3 (Brouwer and Heibloem, 1986), Table 14, <https://www.fao.org/4/s2022e/s2022e07.htm>, accessed 2026-11-18. The table lists 8 of the 13 crops. The other 5 show "not listed in the FAO table".
 
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
 ## Method
 
 1. **Aggregate** monthly rows to yearly rows and merge the soil wetness by province and year (773 usable rows). The merge stops with an error if any province-year is missing.
@@ -163,6 +215,8 @@ Crop water needs shown next to the ranking come from FAO Irrigation Water Manage
 6. **Tuning**: `GridSearchCV` with 5-fold `GroupKFold` grouped by year, so a year never appears in two folds.
 7. **Selection** on the validation years. The test years were scored once and not used to choose anything.
 8. **Save** with `joblib`; versions pinned in `requirements.txt`.
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## Results
 
@@ -191,11 +245,15 @@ Chosen on the validation years: **Gradient Boosting**. Trained 2026-11-19T09:24:
 
 "Skill" compares the model to the crop-province mean baseline on a log scale. Above 0 means better than that baseline. The model is judged against that baseline on test R² and MAE, the metrics the proposal names. That choice was made after the test results had been seen; on log-MAE, where every crop counts equally, the model is not better, and most of the gain over the plain crop-province mean comes from the year trend (see the trend-only baseline row). The proposal's success target was R² above 0.7 on the test set and a clear margin over a mean-yield baseline.
 
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
 ## How the ranking works
 
 For each crop the API makes two predictions with the trained pipeline: one for your scenario and one for a typical (median) year in the same province. The crop's score is the first divided by the second, as a percentage. Crops are sorted by that score, and exact ties are ordered by crop name. Crops that show the same share at one decimal are marked as tied: `tied_with` in the `/api/v1/recommend` items gives the number of other crops with that share, the HTML page shows "tied with N other crops", the Streamlit and Gradio tables have a "Tied with" column, and the response summary says so. Tied crops are in name order only, so that order means nothing. Nothing is added or multiplied by hand. Inputs you leave empty are filled from the province's training-year medians, and the response labels the source of every input.
 
 The API refuses inputs outside the range seen in training (it returns 422 with the allowed range), because the model cannot extrapolate.
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## API
 
@@ -259,6 +317,8 @@ Out-of-range input:
 
 `/recommend` returns `ranked_crops` (13 items with `rank`, `predicted_yield`, `normal_yield`, `pct_of_normal`, row counts, `barely_grown` and the optional `fao_water_need`), `groups` (crops that show the same share at one decimal share one rank), `headline`, `scenario_facts`, `top_crop`, `ranking_basis`, `model_caveat` and a `recommendation_summary` built from those values.
 
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
 ## Deployment status
 
 The course guidelines ask for three deployments. Status:
@@ -274,6 +334,8 @@ Streamlit and Vercel are deployed (both from clean code; branches `main`, remote
 
 The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
+
 ## Limitations
 
 - **Few rows.** After aggregating to yearly rows there are 773 usable rows (565 for training), from 22 years and 3 provinces.
@@ -285,6 +347,8 @@ The Streamlit and Gradio apps use the same trained model and the same shared cod
 - **Province-level weather and soil.** Weather in the file, and the soil wetness we merged, are the same for every crop in a province. There is no district or farm level data.
 - **Yield unit not confirmed.** The source does not state it.
 - **FAO table** covers 8 of the 13 crops and is context only. It does not change the ranking.
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 ## References and licences
 
