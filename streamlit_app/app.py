@@ -83,10 +83,10 @@ with right:
     preset = st.radio("Fill the form from", P.PRESETS, key="preset")
     hist = ref["historical_years"][province]
     st.caption(
-        f"Real years in the training data for {province}: driest {hist['driest']['year']} "
+        f"Real years in {province}: driest {hist['driest']['year']} "
         f"({hist['driest']['inputs']['precipitation_sum']:.1f} mm of rain), "
         f"wettest {hist['wettest']['year']} ({hist['wettest']['inputs']['precipitation_sum']:.1f} mm). "
-        "Real years fill every input from that year. Empty optional inputs use the province median."
+        "Each fills every input; empty optional inputs use the province median."
     )
 
 info = ref["provinces"][province]
@@ -165,8 +165,7 @@ st.caption("FAO water needs (Brouwer and Heibloem 1986, Table 14) are context on
 st.markdown("**How crops are ranked**")
 st.write(I.RANKING_BASIS)
 st.markdown("**About these numbers**")
-st.write(I.model_caveat(met))
-st.write(I.absolute_yield_caveat(met))
+st.write(I.model_caveat(met))  # the pinned-year note stays under the predicted yield above, once
 
 with st.expander("Inputs used (and where each came from)"):
     labels = {k: label for k, label, _, _ in FIELDS}

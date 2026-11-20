@@ -212,7 +212,7 @@
             min-width: 0;
         }
 
-        .metric-val--text {
+        .metric-val.metric-val--text {
             font-family: var(--fontFamily);
             font-size: 16px;
             line-height: 1.3;
@@ -578,7 +578,7 @@
         <header class="page-header">
             <h1 class="page-title">Model Performance & Agroclimatic Benchmarks</h1>
             <p class="page-subtitle">
-                Evaluation results of the trained model, read from the saved file <code>models/metrics.json</code>, and the climate ranges it was trained on. Nothing on this page is typed in by hand.
+                Saved evaluation results of the trained model, read from <code>models/metrics.json</code>.
             </p>
         </header>
 
@@ -586,9 +586,8 @@
         <div class="status-strip">
             <div class="status-badge">
                 <span id="api-status-dot" class="status-dot"></span>
-                <span id="api-status-text">Backend Pipeline: checking...</span>
+                <span id="api-status-text">Server: checking…</span>
             </div>
-            <div class="mono" id="model-version-text" style="color:var(--colorNeutral600);"></div>
         </div>
 
         <!-- Load error (no numbers are shown when the backend cannot be reached) -->
@@ -637,9 +636,7 @@
 
         <section class="section-block">
             <h2 class="section-title">2. What the chosen model relies on</h2>
-            <p class="section-desc">
-                Permutation importance on the validation years: how much the error grows when one input column is shuffled. A larger bar means the model depends on that column more.
-            </p>
+            <p class="section-desc">Permutation importance on the validation years.</p>
             <div class="data-table-wrapper">
                 <table class="data-table keep-names">
                     <thead><tr><th>Input</th><th class="num">Error increase (log-MAE)</th><th class="bar-col">Relative weight</th></tr></thead>
@@ -676,9 +673,7 @@
 
         <section class="section-block">
             <h2 class="section-title">5. Climate and soil ranges the model was trained on</h2>
-            <p class="section-desc">
-                Annual values from the training years, shown as median (minimum to maximum). Inputs outside these ranges are rejected by the API because the model cannot extrapolate.
-            </p>
+            <p class="section-desc">Median (minimum to maximum) of the annual training values. Inputs outside a range are refused: the model cannot extrapolate.</p>
             <div class="data-table-wrapper">
                 <table class="data-table cards">
                     <thead>
@@ -707,7 +702,7 @@
 
         <!-- Footer Note -->
         <footer class="footer-note">
-            Low-Water Crops — Climate Intelligence Engine • CT-378 Machine Learning Project
+            CT-378 Machine Learning Project
         </footer>
 
     </main>
@@ -754,9 +749,7 @@
                 `<span><strong>Trained:</strong> ${esc(m.trained_at)} • scikit-learn ${esc(m.versions.scikit_learn)}</span>`;
 
             $("cmp-desc").textContent =
-                `Train ${m.split.train_years.join("-")}, validation ${m.split.val_years.join("-")}, test ${m.split.test_years.join("-")}. ` +
-                `Models were tuned with 5-fold cross-validation grouped by year and chosen on validation. The test years were scored once. ` +
-                `Skill is on a log scale: above 0 means better than the crop-province mean baseline. The model is judged on R² and MAE; see the per-metric comparison above and the notes below.`;
+                `Train ${m.split.train_years.join("-")}, validation ${m.split.val_years.join("-")}, test ${m.split.test_years.join("-")}; tuned with 5-fold cross-validation grouped by year, test years scored once.`;
 
             const rows = [];
             const baseLabels = { global_mean: "Baseline: overall mean yield", crop_province_mean: "Baseline: crop-province mean yield",
@@ -784,10 +777,9 @@
                 <td>${esc(s.accessed || "see README")}</td><td><code>${esc(s.sha256.slice(0, 16))}...</code></td></tr>`).join("");
             const dropped = Object.entries(d.dropped_zero_yield_rows).map(([c, n]) => `${esc(c)} ${n}`).join(", ");
             $("data-desc").innerHTML =
-                `The source file has ${d.raw_monthly_rows.toLocaleString()} monthly rows. Yield is one yearly number repeated on 12 rows, so the model trains on one row per crop, province and year: ` +
-                `${d.yearly_rows_after_drop} rows after dropping ${dropped} rows with zero area (not grown or not reported). ` +
-                `Split: ${d.n_train} train, ${d.n_val} validation, ${d.n_test} test. File <code>${esc(d.file)}</code>, SHA-256 <code>${esc(d.sha256.slice(0, 16))}...</code>. ` +
-                `Inputs: ${m.features.map(esc).join(", ")}.`;
+                `${d.raw_monthly_rows.toLocaleString()} monthly rows become one row per crop, province and year (yield is one yearly number repeated on 12 rows): ` +
+                `${d.yearly_rows_after_drop} rows after dropping ${dropped} rows with zero area. ` +
+                `Split: ${d.n_train} train, ${d.n_val} validation, ${d.n_test} test.`;
 
             $("rows-body").innerHTML = Object.entries(meta.train_rows_per_crop).sort((a, b) => a[1] - b[1])
                 .map(([c, n]) => `<tr><td>${esc(c)}</td><td class="num">${n}</td></tr>`).join("");
@@ -798,7 +790,10 @@
                 <td class="num">${rng(r, "fao_evapotranspiration", 2)}</td><td class="num">${rng(r, "shortwave_radiation", 1)}</td><td class="num">${rng(r, "precipitation_hours", 0)}</td>
                 <td class="num">${rng(r, "soil_wetness_mean", 3)}</td><td class="num">${rng(r, "soil_wetness_max", 3)}</td></tr>`).join("");
 
-            $("notes-list").innerHTML = m.notes.map(n => `<li>${esc(n)}</li>`).join("") +
+            // Notes already said above are left out: the once-scored test years (comparison text), the pass test chosen after
+            // seeing the results (summary card) and what skill means (legend under the comparison table)
+            const saidAbove = ["Metrics on the test years", "chosen after seeing", "skill_vs_crop_province_mean_log"];
+            $("notes-list").innerHTML = m.notes.filter(n => !saidAbove.some(s => n.includes(s))).map(n => `<li>${esc(n)}</li>`).join("") +
                 `<li>${esc(m.target)}.</li>`;
 
             // Label every value with its column header, for the one-card-per-row layout on phones
@@ -819,14 +814,13 @@
                 const [m, meta] = [await mRes.json(), await metaRes.json()];
                 renderMetrics(m, meta);
                 dot.classList.remove("offline");
-                text.textContent = "Backend Pipeline: Live";
-                $("model-version-text").textContent = `Model: ${meta.model_version} (${meta.features_count} features)`;
+                text.textContent = "Server: online";
                 $("load-error").style.display = "none";
                 $("content").style.display = "block";
             } catch (err) {
                 console.error("Could not load metrics", err);
                 dot.classList.add("offline");
-                text.textContent = "Backend Pipeline: Offline";
+                text.textContent = "Server: offline";
                 $("content").style.display = "none";
                 $("load-error-text").textContent = "Cannot reach the model server. No results are shown.";
                 $("load-error").style.display = "block";

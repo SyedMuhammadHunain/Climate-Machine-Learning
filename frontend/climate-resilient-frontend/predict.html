@@ -656,13 +656,13 @@
 
         <!-- Quick fill from real training years (filled from /api/v1/metadata) -->
         <div class="presets-bar">
-            <span class="presets-label">Quick fill from real years in the training data:</span>
+            <span class="presets-label">Quick fill from a real year:</span>
             <div class="presets-pills" id="presets-pills"></div>
         </div>
 
         <!-- Core Agricultural & Environmental Inputs Grid -->
         <div class="inputs-container">
-            <span class="form-section-title">Core Agricultural & Climate Parameters:</span>
+            <span class="form-section-title">Climate inputs</span>
             <div class="inputs-grid">
 
                 <!-- 1. Province -->
@@ -728,7 +728,7 @@
 
             <!-- Advanced Collapsible Toggle Button -->
             <button type="button" class="advanced-toggle-btn" id="toggle-advanced-btn" aria-expanded="false" aria-controls="advanced-panel" onclick="toggleAdvancedPanel()">
-                <span>Optional Climate and Soil Inputs (empty = province median)</span>
+                <span>Optional inputs (blank = province median)</span>
                 <svg class="advanced-chevron" id="advanced-chevron" viewBox="0 0 12 12" fill="none">
                     <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -819,7 +819,7 @@
             <!-- Loading Spinner State -->
             <div id="loading-indicator" class="loading-indicator">
                 <div class="loading-spinner"></div>
-                <span>Executing machine learning pipeline inference...</span>
+                <span>Predicting…</span>
             </div>
         </div>
 
@@ -830,7 +830,7 @@
             <div class="inference-status-row" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--colorNeutral200);">
                 <div class="status-pill" id="inference-status-pill" style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: var(--colorNeutral800); background-color: #f7f8fa; border: 1px solid var(--colorNeutral200); padding: 4px 12px; border-radius: 14px;">
                     <span class="status-dot" id="status-dot" style="width: 7px; height: 7px; border-radius: 50%; background-color: #10b981;"></span>
-                    <span id="status-badge-text">Inference completed • Updated just now</span>
+                    <span id="status-badge-text">Model output</span>
                 </div>
                 <span id="inference-timestamp" style="font-size: 12px; color: var(--colorNeutral600);"></span>
             </div>
@@ -902,9 +902,9 @@
             const [rLo, rHi] = ref.range.precipitation_sum;
             const [tLo, tHi] = ref.range.temperature_2m_mean;
             document.getElementById("hint-precipitation").textContent =
-                `Model trained on ${rLo.toFixed(1)} to ${rHi.toFixed(1)} mm per year (median ${ref.median.precipitation_sum.toFixed(1)}). Other values are rejected.`;
+                `Allowed: ${rLo.toFixed(1)} to ${rHi.toFixed(1)} mm per year (median ${ref.median.precipitation_sum.toFixed(1)}).`;
             document.getElementById("hint-temperature").textContent =
-                `Model trained on ${tLo.toFixed(1)} to ${tHi.toFixed(1)} °C (median ${ref.median.temperature_2m_mean.toFixed(1)}). Other values are rejected.`;
+                `Allowed: ${tLo.toFixed(1)} to ${tHi.toFixed(1)} °C (median ${ref.median.temperature_2m_mean.toFixed(1)}).`;
             OPTIONAL_FIELDS.forEach(f => {
                 document.getElementById(f.id).placeholder = `province median ${ref.median[f.key].toFixed(f.digits)}`;
             });
@@ -1143,8 +1143,8 @@
             const timeText = document.getElementById("inference-timestamp");
             const now = new Date().toLocaleTimeString();
             if (statusDot) statusDot.style.backgroundColor = "#10b981";
-            if (badgeText) badgeText.textContent = "Live ML Model Pipeline (FastAPI / Scikit-Learn)";
-            if (timeText) timeText.textContent = `Updated at ${now}`;
+            if (badgeText) badgeText.textContent = "Model output";
+            if (timeText) timeText.textContent = `Updated ${now}`;
 
             const singleSection = document.getElementById("single-crop-section");
             const resilientSection = document.getElementById("team-section-1");
@@ -1193,38 +1193,19 @@
 
                 const cropDisplay = data.crop.charAt(0).toUpperCase() + data.crop.slice(1);
                 boardHeading.textContent = `Crop Yield Forecast: ${cropDisplay}`;
-                const fmt = x => Number(x).toLocaleString(undefined, { maximumFractionDigits: 3 });
                 const pct = x => Number(x).toFixed(1);
                 const yl = x => Number(x).toFixed(2);
-                const sourceLabel = {
-                    user: "entered by you",
-                    province_median_training_years: "province median",
-                    user_mean_plus_province_median_offset: "your mean + province median offset",
-                };
-                const names = {
-                    precipitation_sum: "Annual rain (mm)", temperature_2m_mean: "Mean temp (°C)",
-                    temperature_2m_max: "Max temp (°C)", temperature_2m_min: "Min temp (°C)",
-                    fao_evapotranspiration: "ET0 (mm/day)", shortwave_radiation: "Radiation (MJ/m²)",
-                    precipitation_hours: "Rain hours",
-                    soil_wetness_mean: "Soil wetness, mean (0-1)", soil_wetness_max: "Soil wetness, max (0-1)",
-                };
-                const inputsHtml = Object.entries(data.inputs).map(([k, v]) =>
-                    `${esc(names[k] || k)}: ${fmt(v.value)} <em>(${esc(sourceLabel[v.source] || v.source)})</em>`
-                ).join(" • ");
-
                 document.getElementById("single-crop-items").innerHTML = `
                     <div class="job-post-item">
                         <a href="javascript:void(0)" class="job-title">${esc(cropDisplay)} (${esc(data.province)})</a>
                         <div class="job-metadata">Predicted yield: ${yl(data.predicted_yield)} (${esc(data.yield_unit)})</div>
                         <div class="job-metadata">Typical year in ${esc(data.province)}: ${yl(data.normal_yield)} • This scenario: ${pct(data.pct_of_normal)}% of typical</div>
-                        <div class="job-metadata" style="margin-top: 4px;">${inputsHtml}</div>
-                        <div class="job-metadata" style="margin-top: 4px;">Model: ${esc(data.model_name)} • trained on ${esc(data.training_rows_for_crop)} of ${esc(data.training_rows_possible)} possible yearly rows of this crop</div>
                         <div class="job-metadata" style="margin-top: 4px;">${esc(data.absolute_yield_note)}</div>
                         <a class="detail-link" href="${esc(cropHref(data.crop, data.province, Object.fromEntries(Object.entries(data.inputs).map(([k, v]) => [k, v.value]))))}">Details for ${esc(data.crop)}</a>
                     </div>
                 `;
 
-                advisorySummary.innerHTML = `<strong>How to read this:</strong> the number is the model's output for the inputs above. It was not adjusted by hand. Weather has a small effect in this model, so predictions stay close to each crop's typical yield (see the Model page).`;
+                advisorySummary.innerHTML = `Model output, not adjusted by hand. Weather has a small effect in this model: predictions stay close to each crop's typical yield (see Model &amp; Benchmarks).`;
             }
         };
 

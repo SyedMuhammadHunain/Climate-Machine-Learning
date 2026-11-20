@@ -266,7 +266,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
 
 ## Phase 5: Text
 
-- [ ] **T12: Text cuts** (module `copy`, M)
+- [x] **T12: Text cuts** (module `copy`, M)
   - Description: Apply R7 on `index.html`, `predict.html`, `metrics.html`, `crop.html`: plain
     labels ("Predicting…", "Updated", "Server: online/offline", "Climate inputs", "Optional inputs
     (blank = province median)", footer "CT-378 Machine Learning Project"); one-sentence intro and
@@ -279,6 +279,17 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `verify_responsive.py --only copy`; `scripts/verify_frontend.py`; `scripts/verify_backend.py`; `node scripts/dryrun_demo.js http://127.0.0.1:8000`.
   - Files: the 4 HTML pages, `scripts/verify_responsive.py`.
   - Depends on: T7, T8, T10.
+  - Done 2026-11-19. Visible words at 1440 px before and after: predict 111 to 90, ranking result 413 to 386, single-crop result 337
+    to 210, metrics 944 to 737, crop 290 (new, unchanged); caps in `verify_responsive.py` are those counts plus about 5%. Plain labels
+    ("Climate inputs", "Optional inputs (blank = province median)", "Predicting...", "Model output", "Server: online", footer
+    "CT-378 Machine Learning Project"); metrics: one-sentence intro and descriptions, status strip and duplicate notes cut (said above:
+    once-scored test years, the pass test chosen after seeing results, what skill means); single-crop card keeps forecast, typical
+    year and share, the pinned-year note and the Details link. Required text kept and tested: pinned-year note beside a single
+    predicted yield, "dataset yield units", the log-MAE loss and the after-the-fact choice on the metrics page. Streamlit: the
+    pinned-year note appears once (under the prediction), the model caveat once (under the ranking), shorter real-years caption.
+    Found and fixed: the metrics summary text cell kept the 24 px display font because `.metric-val` came later in the CSS than
+    `.metric-val--text` (a T3 miss). `verify_frontend.py` now looks for training-row completeness on `crop.html`. The ranking
+    result still carries about 140 required caveat words, which is why its cap is the highest. Docs quoting old wording are T13.
 
 - [ ] **T13: Docs, run_checks, close-out** (module `copy`, S)
   - Description: Add `verify_responsive.py` to `run_checks.sh` (and `--streamlit` under

@@ -129,6 +129,17 @@ def ranking_summary_has_headline_facts_rule_and_caveats_from_the_model():
 
 
 @test
+def the_pinned_year_caveat_is_shown_once_next_to_the_predicted_yield():
+    """SPEC-responsive.md R7: one copy of each caveat on the page. The pinned-year note stays under the prediction."""
+    at = fresh()
+    text = _page_text(at)
+    assert text.count(I.absolute_yield_caveat(MET)) == 1, text.count(I.absolute_yield_caveat(MET))
+    assert text.count(I.model_caveat(MET)) == 1, text.count(I.model_caveat(MET))
+    captions = [c.value for c in at.caption]
+    assert I.absolute_yield_caveat(MET) in captions, "the note belongs to the predicted yield, not to the ranking block"
+
+
+@test
 def ranking_headline_follows_the_scenario():
     at = fresh()
     at.selectbox(key="province").select("Sindh").run()

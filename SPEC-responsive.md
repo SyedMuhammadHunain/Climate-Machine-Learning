@@ -358,7 +358,8 @@ New layout, top to bottom:
   Streamlit through `presentation.py`), never compose numbers in page JS beyond formatting.
 - `recommendation_summary` stays in the API response unchanged (checks and other clients rely on
   it); the page shows its parts in structure instead of the one paragraph.
-- Streamlit shows the same four parts (headline, facts, ranking rule, caveats).
+- Streamlit shows the same four parts (headline, facts, ranking rule, caveats); there the pinned-year note stays under the
+  predicted yield and the model caveat sits under the ranking, one copy of each (decided in T12).
 
 ### All HTML pages (`index.html`, `predict.html`, `metrics.html`, `crop.html`)
 

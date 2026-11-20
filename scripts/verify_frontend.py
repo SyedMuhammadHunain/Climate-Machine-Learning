@@ -198,8 +198,8 @@ def main() -> int:
                 failures.append(f"{name}: banned wording {word!r}")
     if "driest real year" not in predict.lower() or "scenarios" not in predict:
         failures.append("predict.html: quick-fill must use real-year scenarios from /metadata")
-    if "training_rows_possible" not in predict:
-        failures.append("predict.html: training row completeness not shown")
+    if "training_rows_possible" not in crop:   # moved off the ranking rows and the single-crop card to the crop page
+        failures.append("crop.html: training row completeness not shown")
 
     # crop dropdown must list exactly the trained crops, with plain names
     ref_crops = json.loads((ROOT / "models" / "reference.json").read_text())["crops"]

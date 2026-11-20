@@ -195,7 +195,7 @@ MEASURE_JS = r"""
     footer2: (el => { if (!el) return null; const r = document.createRange(); r.selectNodeContents(el); return rect(r); })(document.querySelectorAll(".white-footer-typer")[1]),
     footerLine: (el => el && getComputedStyle(el).display !== "none" ? rect(el) : null)(document.querySelector(".white-footer-horizontal-line")),
   } : null;
-  return { vw, vh, actions, gridLefts, results, landing, cropTable, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
+  return { vw, vh, actions, gridLefts, results, landing, cropTable, bodyText: document.body.innerText, innerWidth: window.innerWidth, scrollWidth: document.documentElement.scrollWidth, boxes, offscreen, clipped, lowContrast, targets, formFonts, tabs, startButtons };
 })()
 """
 
@@ -917,6 +917,61 @@ def crop_page_refuses_bad_addresses_without_showing_numbers():
     _fail(problems, "bad crop addresses")
 
 
+# Visible words per page at 1440 px, counted by the browser (innerText). Set from the counts after the text cuts of
+# SPEC-responsive.md R7, with a few percent of room; a page that grows past its cap has gained text nobody asked for.
+WORD_CAPS = {"predict": 95, "predict-result": 405, "predict-single": 221, "metrics": 775, "crop": 305}  # counts after the cuts: 90, 386, 210, 737, 290
+DEVELOPER_PHRASES = ("Executing machine learning pipeline", "Backend Pipeline", "Climate Intelligence Engine", "Live ML Model Pipeline",
+                     "FastAPI", "Inference completed", "Core Agricultural", "Nothing on this page is typed in by hand",
+                     "Optional Climate and Soil Inputs")
+
+
+def _text_at_1440(page):
+    size = next(s for s in SIZES if s[0] == "1440x900")
+    return RUN.measure(page, size)["bodyText"]
+
+
+def pages_stay_under_their_word_caps():
+    """No page carries more visible text than its cap (R7)."""
+    problems = []
+    for page, cap in WORD_CAPS.items():
+        words = len(_text_at_1440(page).split())
+        if words > cap:
+            problems.append(f"{page}: {words} words, cap {cap}")
+    _fail(problems, "word caps")
+
+
+def pages_use_plain_labels_not_developer_wording():
+    """Plain labels instead of pipeline and framework names; the footer is the course name only (R7)."""
+    problems = []
+    for page in WORD_CAPS:
+        text = _text_at_1440(page)
+        problems += [f"{page}: still says {phrase!r}" for phrase in DEVELOPER_PHRASES if phrase.lower() in text.lower()]
+    for page, wanted in (("predict", ["Climate inputs", "Optional inputs (blank = province median)"]),
+                         ("metrics", ["Server: online", "CT-378 Machine Learning Project"])):
+        text = _text_at_1440(page)
+        problems += [f"{page}: label {w!r} missing" for w in wanted if w not in text]
+    if "Climate Intelligence" in _text_at_1440("metrics") or not _text_at_1440("metrics").rstrip().endswith("CT-378 Machine Learning Project"):
+        problems.append("metrics: the footer must be exactly 'CT-378 Machine Learning Project'")
+    _fail(problems, "wording")
+
+
+def required_caveats_survive_the_text_cuts():
+    """The words the project requires stay: the pinned-year note next to a single predicted yield, the unit label, and on
+    the metrics page the loss on log-MAE and the after-the-fact choice of the pass test (R7, CLAUDE.md)."""
+    problems = []
+    single = _api_post(f"{RUN.base()}/api/v1/predict", {"province": "Sindh", "crop": "rice", **_api_scenarios(RUN.base())["driest"]["inputs"]})[1]
+    text = " ".join(_text_at_1440("predict-single").split())
+    if " ".join(single["absolute_yield_note"].split()) not in text:
+        problems.append("predict-single: the pinned-year note is missing next to the predicted yield")
+    if "dataset yield units" not in text:
+        problems.append("predict-single: the 'dataset yield units' label is missing")
+    metrics = " ".join(_text_at_1440("metrics").split())
+    for needle in ("(not better)", "log-MAE", "chosen after seeing the test results", "dataset yield units"):
+        if needle not in metrics:
+            problems.append(f"metrics: {needle!r} is missing")
+    _fail(problems, "required caveats")
+
+
 def landing_text_phase_fits():
     """When the paragraph and the Start button are shown (scrolled intro, or reduced motion), header, paragraph, button
     and footer sit in that order without overlapping, all inside the screen (R4.8)."""
@@ -1086,6 +1141,9 @@ TESTS = [
     predictor_form_layout,
     prediction_results_are_drawn_at_every_size,
     result_rows_show_only_crop_rank_share_and_yield,
+    pages_stay_under_their_word_caps,
+    pages_use_plain_labels_not_developer_wording,
+    required_caveats_survive_the_text_cuts,
     ranking_rows_link_to_the_crop_page,
     crop_page_shows_the_apis_numbers,
     crop_years_table_fits_its_box_at_every_size,
