@@ -14,7 +14,7 @@ Every number the app shows is model output, a value from the dataset, or a saved
 
 ### Contributors besides the group
 
-- **Claude** (an AI assistant made by Anthropic, used through Claude Code) wrote and tested parts of the code and docs, among them the responsive layout of the pages, the single Start button, tie groups in the ranking, the crop pages (`crop.html`), `scripts/verify_responsive.py` and the text cuts (`SPEC-responsive.md`). Every commit it took part in ends with a `Co-Authored-By: Claude` line; list them with `git log --grep "Co-Authored-By: Claude"`. The group members are the authors of record and remain responsible for the project.
+- **Claude** (an AI assistant made by Anthropic, used through Claude Code) wrote and tested parts of the code and docs, among them the responsive layout of the pages, the single Start button, tie groups in the ranking, the crop pages (`crop.html`), `scripts/checks/verify_responsive.py` and the text cuts (`SPEC-responsive.md`). Every commit it took part in ends with a `Co-Authored-By: Claude` line; list them with `git log --grep "Co-Authored-By: Claude"`. The group members are the authors of record and remain responsible for the project.
 
 ## Quick start
 
@@ -37,12 +37,12 @@ uvicorn app.main:app --port 8000
 Or use the scripts in the repository root. They create the virtual environment and install the requirements on first run (they use `uv` if it is installed, otherwise `python3.13`):
 
 ```bash
-./run_app.sh          # API + HTML pages on http://127.0.0.1:8000 (PORT=8080 ./run_app.sh for another port, --reload for development)
-./run_streamlit.sh    # the Streamlit app on http://127.0.0.1:8501, in its own .venv-streamlit
-./run_checks.sh       # every check that uses .venv, plus the page dry run; --all adds the Streamlit and Hugging Face checks
+./scripts/run/run_app.sh          # API + HTML pages on http://127.0.0.1:8000 (PORT=8080 ./scripts/run/run_app.sh for another port, --reload for development)
+./scripts/run/run_streamlit.sh    # the Streamlit app on http://127.0.0.1:8501, in its own .venv-streamlit
+./scripts/run/run_checks.sh       # every check that uses .venv, plus the page dry run; --all adds the Streamlit and Hugging Face checks
 ```
 
-There is no separate frontend server: the pages call the API on their own address, so the backend serves them (`run_frontend.sh` and `run_backend.sh` start the same server).
+There is no separate frontend server: the pages call the API on their own address, so the backend serves them (`scripts/run/run_frontend.sh` and `scripts/run/run_backend.sh` start the same server).
 
 Open <http://127.0.0.1:8000>. The pages are served by the same server as the API:
 
@@ -57,29 +57,29 @@ Open <http://127.0.0.1:8000>. The pages are served by the same server as the API
 Re-download the second data source (optional; needs internet; the downloaded files are already in the repo, so training and the app need no network):
 
 ```bash
-python scripts/fetch_nasa_power.py
+python scripts/ml/fetch_nasa_power.py
 ```
 
 Retrain (about 1 minute; rewrites `models/crop_yield_pipeline.joblib`, `models/metrics.json`, `models/reference.json`):
 
 ```bash
-python scripts/train.py
-python scripts/verify_readme.py --write   # refresh the Results table below from metrics.json
+python scripts/ml/train.py
+python scripts/checks/verify_readme.py --write   # refresh the Results table below from metrics.json
 ```
 
 Checks:
 
 ```bash
-python scripts/verify_model.py      # features, artifacts, sensitivity, deterministic retraining
-python scripts/verify_backend.py    # API contract, model equality, no hardcoded numbers
-python scripts/verify_frontend.py   # no fake data or demo wording in the pages
-python scripts/verify_readme.py     # README matches metrics.json and the real endpoints
-python scripts/verify_guide.py      # demo/viva guide numbers match the live app
-python scripts/verify_streamlit.py  # Streamlit app: numbers on screen equal the model (needs streamlit_app/requirements.txt, own venv)
-python scripts/verify_vercel_bundle.py  # Vercel bundle: what is in it, lean pinned requirements, runs on its own
-python scripts/verify_hf_bundle.py  # Hugging Face bundle and Gradio Space (needs hf_space/requirements.txt and pyyaml, own venv)
-python scripts/verify_report.py     # report PDF: sections, 3-4 pages, every number equals metrics.json, roles, figures
-node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
+python scripts/checks/verify_model.py      # features, artifacts, sensitivity, deterministic retraining
+python scripts/checks/verify_backend.py    # API contract, model equality, no hardcoded numbers
+python scripts/checks/verify_frontend.py   # no fake data or demo wording in the pages
+python scripts/checks/verify_readme.py     # README matches metrics.json and the real endpoints
+python scripts/checks/verify_guide.py      # demo/viva guide numbers match the live app
+python scripts/checks/verify_streamlit.py  # Streamlit app: numbers on screen equal the model (needs streamlit_app/requirements.txt, own venv)
+python scripts/checks/verify_vercel_bundle.py  # Vercel bundle: what is in it, lean pinned requirements, runs on its own
+python scripts/checks/verify_hf_bundle.py  # Hugging Face bundle and Gradio Space (needs hf_space/requirements.txt and pyyaml, own venv)
+python scripts/checks/verify_report.py     # report PDF: sections, 3-4 pages, every number equals metrics.json, roles, figures
+node scripts/checks/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
 
 For the 10-minute presentation see [docs/guides/demo_and_viva_guide.md](docs/guides/demo_and_viva_guide.md).
@@ -105,7 +105,7 @@ models/               pipeline, metrics.json, reference.json
 notebooks/            EDA and evaluation
 scripts/              fetch_nasa_power.py, train.py, build_hf_bundle.py, build_vercel_bundle.py, the verify_*.py checks and dryrun_demo.js
 docs/                 demo script and viva preparation, deployment guide
-docs/report/          report.pdf (3-4 pages), report.html and figures/; built by scripts/build_report.py, checked by scripts/verify_report.py
+docs/report/          report.pdf (3-4 pages), report.html and figures/; built by scripts/build/build_report.py, checked by scripts/checks/verify_report.py
 SPEC-*.md, tasks/     specs, plan and task list (model-only output; second data source)
 ```
 
@@ -143,7 +143,7 @@ What we checked ourselves:
 | Source | NASA POWER (Prediction Of Worldwide Energy Resources), monthly point API v2.10.1, data from MERRA-2, <https://power.larc.nasa.gov/> |
 | What we take | `GWETROOT` root-zone soil wetness (0 to 1) and `PRECTOTCORR` rain, monthly, 2001-2022 |
 | Where | 3 farming-area points per province, equal weight: Punjab (Lahore, Faisalabad, Multan), Sindh (Sukkur, Hyderabad, Mirpurkhas), Balochistan (Quetta, Jaffarabad, Turbat). This is a judgment, not a measurement of a whole province. |
-| Accessed | 2026-11-19, with `scripts/fetch_nasa_power.py` |
+| Accessed | 2026-11-19, with `scripts/ml/fetch_nasa_power.py` |
 | Licence | **Not specified** in the POWER catalog entry. Free to use. POWER asks users to cite its Reference and Data Reference (see References). We do not call it CC0. |
 | Stored in the repo | raw responses in `data/raw/nasa_power/`, tidy table `data/raw/nasa_power_monthly.csv` (SHA-256 `30646a48ac2e35e2...`), source facts in `data/reference/nasa_power_source.json` |
 
@@ -166,7 +166,7 @@ Crop water needs shown next to the ranking come from FAO Irrigation Water Manage
 
 ## Results
 
-All numbers below are generated from `models/metrics.json` by `scripts/verify_readme.py --write`.
+All numbers below are generated from `models/metrics.json` by `scripts/checks/verify_readme.py --write`.
 
 <!-- METRICS:START -->
 Train 2001-2016 (565 rows), validation 2017-2019 (106 rows), test 2020-2022 (102 rows). Yields are in dataset yield units.
@@ -267,8 +267,8 @@ The course guidelines ask for three deployments. Status:
 |---|---|
 | Local web app (FastAPI + HTML, run on localhost) | Working. See Quick start. |
 | Streamlit Community Cloud | **Live:** <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> (deployed from branch `hunain-deploy`; app code in `streamlit_app/app.py`, own `streamlit_app/requirements.txt`). Input form, prediction with a likely range, one chart. Tested in a real browser on 2026-11-19: it loads for a logged-out visitor in about 20 to 30 seconds, its numbers equal the local model, and the chart draws all 13 crops. Free apps may sleep when idle, so open it before a demo. |
-| Vercel (the same FastAPI app and HTML pages, hosted) | **Live:** <https://climate-machine-learning.vercel.app/> (deployed on 2026-11-19 with the Vercel CLI from the generated bundle, `python scripts/build_vercel_bundle.py`). Checked on the live site: the pages load for a logged-out visitor, `/api/v1/recommend` for Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the same as the local app; redeployed with the promoted model the same day, after an earlier deployment of the previous model), a rain value outside the trained range is refused with a 422 that states the range, and `scripts/dryrun_demo.js` passes against it. The first request after an idle period can take a few seconds while the model loads. |
-| Hugging Face (model card + pipeline) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code). Republished with the current model on 2026-11-19 (Hub commit `056ccbd`); a token-less download is identical to `hf_bundle/model/` and gives rice in Sindh, driest real year, 40.85 and 89.3%. **No Space, by group decision (2026-11-19):** the model repo plus the Streamlit app and the FastAPI app (local and Vercel) are the deployments. A Gradio Space app is built and tested (`hf_space/app.py`, `python scripts/build_hf_bundle.py`), but the Hub refuses Gradio Spaces on a free account; steps to publish it later are in the deployment guide. |
+| Vercel (the same FastAPI app and HTML pages, hosted) | **Live:** <https://climate-machine-learning.vercel.app/> (deployed on 2026-11-19 with the Vercel CLI from the generated bundle, `python scripts/build/build_vercel_bundle.py`). Checked on the live site: the pages load for a logged-out visitor, `/api/v1/recommend` for Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the same as the local app; redeployed with the promoted model the same day, after an earlier deployment of the previous model), a rain value outside the trained range is refused with a 422 that states the range, and `scripts/checks/dryrun_demo.js` passes against it. The first request after an idle period can take a few seconds while the model loads. |
+| Hugging Face (model card + pipeline) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code). Republished with the current model on 2026-11-19 (Hub commit `056ccbd`); a token-less download is identical to `hf_bundle/model/` and gives rice in Sindh, driest real year, 40.85 and 89.3%. **No Space, by group decision (2026-11-19):** the model repo plus the Streamlit app and the FastAPI app (local and Vercel) are the deployments. A Gradio Space app is built and tested (`hf_space/app.py`, `python scripts/build/build_hf_bundle.py`), but the Hub refuses Gradio Spaces on a free account; steps to publish it later are in the deployment guide. |
 
 Streamlit and Vercel are deployed (both from clean code; branches `main`, remote `Hunain` and `afzal` contain a malicious loader and must not be merged or run, see the branch table in [docs/guides/deployment_guide.md](docs/guides/deployment_guide.md)). The Hugging Face model repo is live; no Space is deployed, by the group's decision (see the table). Exact steps, what was tested here and what was not: [docs/guides/deployment_guide.md](docs/guides/deployment_guide.md).
 

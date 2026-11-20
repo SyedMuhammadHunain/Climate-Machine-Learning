@@ -19,7 +19,7 @@ Before you start, push the branch that contains these files to GitHub. The repos
 | Branch | What it is | Use |
 |---|---|---|
 | `hunain-deploy` | The project code. Streamlit Community Cloud builds from it: repository `SyedMuhammadHunain/Climate-Machine-Learning`, main file `streamlit_app/app.py`, dependencies from `streamlit_app/requirements.txt` (read first, in the main file's folder). | Clean. Work and deploy from here. |
-| `vercel-deploy` | An orphan branch holding only the generated Vercel bundle (`python scripts/build_vercel_bundle.py`). The live Vercel site was deployed with the Vercel CLI from the same bundle, not from this branch. | Clean. Needed only for GitHub-driven Vercel deploys. |
+| `vercel-deploy` | An orphan branch holding only the generated Vercel bundle (`python scripts/build/build_vercel_bundle.py`). The live Vercel site was deployed with the Vercel CLI from the same bundle, not from this branch. | Clean. Needed only for GitHub-driven Vercel deploys. |
 | `Hunain` on GitHub, `main`, `afzal` | **Contain a malicious loader** added on 2026-11-15: `frontend/climate-resilient-frontend/init` (hidden obfuscated JavaScript), `src/climate_machine_learning/utils/session.py` (downloads code from an Ethereum transaction and runs it with `node`), an `import utils.session` line in the package `__init__.py`, and a frontend `dev` script that runs `node init`. | **Do not merge, check out or run these.** Do not run `npm run dev` or `node init` from them. `main` has deliberately not been merged yet; the group decides how to clean it. |
 
 `hunain-deploy`, `vercel-deploy` and the local `Hunain` branch were checked and contain none of those files. The Streamlit and Vercel deployments were built from clean code.
@@ -28,7 +28,7 @@ Before you start, push the branch that contains these files to GitHub. The repos
 
 **Status 2026-11-19: deployed and checked, then redeployed with the promoted model (see the note at the end of this section).** Live at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> from branch `hunain-deploy` (the remote `Hunain` and `main` were rewritten and contain a malicious loader, see the branch table above, so they are not used). A real headless Chrome with a clean profile (not logged in to Streamlit) loaded it in 19 to 28 seconds. The default view showed rice in Punjab at 18.55 (range 13.88 to 25.90, 100.1% of a typical year), and after real clicks on Sindh and Driest real year it showed 19.71 (14.75 to 27.51, 58.5%), both equal to the local model of that day (the earlier one; the promoted model shows 40.85 and 89.3% for the same click). The chart drew all 13 crops in the model's order and the page had no exceptions or console errors. If you later merge into `main`, change the app's branch in the Streamlit settings *before* deleting `hunain-deploy`.
 
-**Second redeploy (2026-11-19), with the rename to Low-Water Crops, the performance fixes, the tie-order fix and the caveats.** Pushed to `hunain-deploy` at `63616ce` (a requirements-file touch is included so Streamlit Cloud rebuilds the process); a real headless Chrome with a clean profile showed the "Tied with" column, the "Absolute yields are rough" sentence and the 58% range note about 3.5 minutes later. Vercel: deployment `dpl_B7hJbTXGYi7DDomQQomgTquFoHZF` (bundle at `vercel-deploy` `dc8e000`), checked logged out: pages, `/health`, `/api/v1/metrics` answer 200, `/package.json` and a missing asset answer 404 (the missing asset has no one-day cache header), `node scripts/dryrun_demo.js` passes, and the tie order is by name in all six real-year scenarios.
+**Second redeploy (2026-11-19), with the rename to Low-Water Crops, the performance fixes, the tie-order fix and the caveats.** Pushed to `hunain-deploy` at `63616ce` (a requirements-file touch is included so Streamlit Cloud rebuilds the process); a real headless Chrome with a clean profile showed the "Tied with" column, the "Absolute yields are rough" sentence and the 58% range note about 3.5 minutes later. Vercel: deployment `dpl_B7hJbTXGYi7DDomQQomgTquFoHZF` (bundle at `vercel-deploy` `dc8e000`), checked logged out: pages, `/health`, `/api/v1/metrics` answer 200, `/package.json` and a missing asset answer 404 (the missing asset has no one-day cache header), `node scripts/checks/dryrun_demo.js` passes, and the tie order is by name in all six real-year scenarios.
 
 **Redeploy note (2026-11-19).** After a plain push to `hunain-deploy` the app did not restart: it ran the new `streamlit_app/app.py` against the old `inference` module and the old cached model, and showed an `AttributeError` for `I.model_caveat` at the bottom of the page (the rest still showed the old numbers). Touching `streamlit_app/requirements.txt` (commit `1ea700f`) made Streamlit Cloud rebuild the process, and a real headless Chrome with a clean profile then showed the promoted model (rice, Punjab, typical year: 21.10, range 17.34 to 28.23, 100.0%, range note 58%). Next time a code change must reach the running app: push, then use **Manage app, Reboot app** in the Streamlit dashboard, or touch the requirements file again.
 
@@ -61,7 +61,7 @@ You need a Hugging Face account and an access token with **write** permission (S
 ```bash
 pip install huggingface_hub
 hf auth login                                   # paste the token when asked
-python scripts/build_hf_bundle.py               # writes hf_bundle/model and hf_bundle/space (git-ignored)
+python scripts/build/build_hf_bundle.py               # writes hf_bundle/model and hf_bundle/space (git-ignored)
 ```
 
 The builder only replaces `model/` and `space/` inside its output folder, and refuses a folder that is not empty and was not made by it (it never deletes anything else). If you built a bundle with an older version of the script, delete that `hf_bundle` folder once, or pass a new folder with `--out`.
@@ -88,14 +88,14 @@ The Space builds for a few minutes. Open its **Logs** tab if it fails. Then chec
 - Province Sindh, "Driest real year", crop rice gives the same 40.85 and 89.3% as above.
 - Typing rain 5 for Sindh shows the "outside the range the model was trained on" message.
 
-The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version: 6.32.0` and `python_version: "3.13"`. If the build rejects the Python version, change it in `space_readme()` in `scripts/build_hf_bundle.py` (3.12 also resolves), rebuild and upload again.
+The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version: 6.32.0` and `python_version: "3.13"`. If the build rejects the Python version, change it in `space_readme()` in `scripts/build/build_hf_bundle.py` (3.12 also resolves), rebuild and upload again.
 
 **Decide a licence.** The model card has no `license` field on purpose: the group has not chosen one. Add `license: <id>` to the card's front matter in `build_hf_bundle.py` when you decide. The data licences are stated in the card (crop dataset MIT; NASA POWER "License not specified", citation requested).
 
 ## 3. If a Hugging Face Space is added later
 
 - Edit the Hugging Face row of the README deployment table with the Space URL and the date.
-- `scripts/verify_readme.py` requires the Vercel and Streamlit rows to show their live URLs and not say "not deployed", and the Hugging Face row to link the model repo and say "No Space" and "group decision". `scripts/verify_guide.py` requires the ticked Hugging Face checklist item to say the same. Change those rules together with the docs, or they will fail.
+- `scripts/checks/verify_readme.py` requires the Vercel and Streamlit rows to show their live URLs and not say "not deployed", and the Hugging Face row to link the model repo and say "No Space" and "group decision". `scripts/checks/verify_guide.py` requires the ticked Hugging Face checklist item to say the same. Change those rules together with the docs, or they will fail.
 - Update the Hugging Face item in the "Before you present" list of `docs/guides/demo_and_viva_guide.md` with the Space URL.
 - Rehearse the live demo with the three URLs open.
 
@@ -105,17 +105,17 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 
 **Not yet redeployed with `SPEC-responsive.md`:** the code since then has the responsive layout, one Start button, tie groups, the crop page (`crop.html`) and shorter text. The live site shows the older pages until you redeploy with the commands below. After redeploying, also check that `/crop.html?crop=rice&province=Sindh` answers 200 and that a crop in the ranking opens its page. The same applies to the Streamlit app (section 1): its ranking, headline and caveats changed, so redeploy `hunain-deploy`.
 
-What is deployed: the folder that `python scripts/build_vercel_bundle.py` writes (git-ignored, default `vercel_bundle/`). It holds `app/`, three modules of `src/climate_machine_learning/` (not `training.py` and not `presentation.py`), the three files in `models/`, the FAO table, the pages, a `requirements.txt` with 21 exactly pinned packages (taken from the tested root `requirements.txt`, no Jupyter, plotting, `pyarrow` or `uvicorn`) and `.python-version` (3.12). `python scripts/verify_vercel_bundle.py` checks all of this and starts the bundled app on its own.
+What is deployed: the folder that `python scripts/build/build_vercel_bundle.py` writes (git-ignored, default `vercel_bundle/`). It holds `app/`, three modules of `src/climate_machine_learning/` (not `training.py` and not `presentation.py`), the three files in `models/`, the FAO table, the pages, a `requirements.txt` with 21 exactly pinned packages (taken from the tested root `requirements.txt`, no Jupyter, plotting, `pyarrow` or `uvicorn`) and `.python-version` (3.12). `python scripts/checks/verify_vercel_bundle.py` checks all of this and starts the bundled app on its own.
 
 To deploy again (after a retrain or a code change), with the Vercel CLI logged in (`vercel login`):
 
 ```bash
-python scripts/build_vercel_bundle.py --out ~/vercel_bundle
+python scripts/build/build_vercel_bundle.py --out ~/vercel_bundle
 rm ~/vercel_bundle/.built-by-build_vercel_bundle
 cd ~/vercel_bundle && vercel deploy --prod --yes --name climate-machine-learning --scope hunains-projects-ff0a52fc
 ```
 
-What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the promoted model; the first deployment earlier the same day gave 19.71 and 58.5% with the earlier model, and was redeployed with the same CLI command on 2026-11-19, deployment `dpl_A6MBeZRggSgAE5y5JExybSf3MzaE`), rain of 5 mm is refused with a 422 that states the trained range, `node scripts/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
+What was checked on the live site: `/`, `/predict.html`, `/metrics.html`, `/health` and `/api/v1/metrics` answer 200 without a login, `/package.json` answers 404, Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the promoted model; the first deployment earlier the same day gave 19.71 and 58.5% with the earlier model, and was redeployed with the same CLI command on 2026-11-19, deployment `dpl_A6MBeZRggSgAE5y5JExybSf3MzaE`), rain of 5 mm is refused with a 422 that states the trained range, `node scripts/checks/dryrun_demo.js https://climate-machine-learning.vercel.app/` passes, and a headless Chrome screenshot of `/predict.html` shows the form filled with the trained ranges from the live API.
 
 Things to know:
 - The project has Vercel Authentication switched on, but the production address above is open to everyone. The per-deployment addresses (with a random suffix) probably ask for a Vercel login.
@@ -126,8 +126,8 @@ Things to know:
 ## Re-checking the local builds
 
 ```bash
-pip install -r streamlit_app/requirements.txt && python scripts/verify_streamlit.py
-pip install -r hf_space/requirements.txt pyyaml && python scripts/verify_hf_bundle.py
+pip install -r streamlit_app/requirements.txt && python scripts/checks/verify_streamlit.py
+pip install -r hf_space/requirements.txt pyyaml && python scripts/checks/verify_hf_bundle.py
 ```
 
 Use a separate virtual environment for these two (they need Streamlit and Gradio, which the main app does not).

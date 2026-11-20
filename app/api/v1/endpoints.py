@@ -70,7 +70,7 @@ async def get_metadata(svc=Depends(get_service)):
 @router.get(
     "/metrics",
     summary="Saved Model Evaluation Results",
-    description="Returns models/metrics.json exactly as written by scripts/train.py: baselines, all tuned models, "
+    description="Returns models/metrics.json exactly as written by scripts/ml/train.py: baselines, all tuned models, "
                 "validation and test scores, permutation importance, data hash and split.",
     tags=["Metadata"],
 )

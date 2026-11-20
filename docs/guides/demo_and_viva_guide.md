@@ -4,7 +4,7 @@ Group: Muhammad Afzal (CT-24263), Syed Muhammad Hunain (CT-24281), Ayesha (CT-24
 
 The marks (10 in total): demonstration 4 (ML lifecycle 2, all three deployments live 2), report 3, individual viva 3. The demo is 10 minutes: 3 min problem and data, 4 min live demo, 3 min results. Then the viva. Every member must be able to answer on any part.
 
-Every number in this guide was recomputed from the running app by `python scripts/verify_guide.py`, and `node scripts/dryrun_demo.js` checks that the page shows the same numbers. If you retrain, run both again and fix what they report.
+Every number in this guide was recomputed from the running app by `python scripts/checks/verify_guide.py`, and `node scripts/checks/dryrun_demo.js` checks that the page shows the same numbers. If you retrain, run both again and fix what they report.
 
 ## Before you present
 
@@ -13,10 +13,10 @@ Every number in this guide was recomputed from the running app by `python script
 - [ ] The live Streamlit and Vercel apps show the pages of the last redeploy: no responsive layout, Start button, tie groups or crop pages yet. Redeploy both (see the [deployment guide](deployment_guide.md)) before showing them, or demo the local app.
 - [ ] Notebook `notebooks/01_low_water_crop_selection.ipynb` open with outputs visible (5 or more EDA plots, evaluation plots).
 - [x] Streamlit Community Cloud deployment: **live** at <https://climate-machine-learning-nb5v2knz3htvseqqpuhvrk.streamlit.app/> (tested in a real browser on 2026-11-19: Sindh, Driest real year, rice shows 19.71 and 58.5%, the same as the local app **at that time**. Redeployed with the promoted model on 2026-11-19, and again later that day with the rename, performance and tie-order fixes (`hunain-deploy` at `63616ce`), each time checked in a real browser: the default view (Punjab, typical year, rice) shows 21.10, range 17.34 to 28.23, 100.0%, and the range note says 58%, all equal to the local app. The Sindh driest-year click (40.85 and 89.3%) was checked on the local app and on Vercel, not re-clicked on Streamlit). Open it a few minutes before presenting: free apps may sleep when idle and take 20 to 30 seconds to wake. It deploys from branch `hunain-deploy`, so do not delete or force-push that branch before the demo.
-- [x] Vercel deployment of the full app: **live** at <https://climate-machine-learning.vercel.app/> (redeployed with the promoted model on 2026-11-19, and again with the rename, performance and tie-order fixes, `dpl_B7hJbTXGYi7DDomQQomgTquFoHZF`: Sindh, Driest real year, rice shows 40.85 and 89.3%, the same as the local app; `scripts/dryrun_demo.js` passes against it). Open it a few minutes before presenting: the first request after an idle period is slower.
+- [x] Vercel deployment of the full app: **live** at <https://climate-machine-learning.vercel.app/> (redeployed with the promoted model on 2026-11-19, and again with the rename, performance and tie-order fixes, `dpl_B7hJbTXGYi7DDomQQomgTquFoHZF`: Sindh, Driest real year, rice shows 40.85 and 89.3%, the same as the local app; `scripts/checks/dryrun_demo.js` passes against it). Open it a few minutes before presenting: the first request after an idle period is slower.
 - [x] Hugging Face: the **model repo is live** at <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> with the current model (republished 2026-11-19; a token-less download gives rice in Sindh, driest real year, 40.85 and 89.3%). No Space, by group decision: the model repo plus Streamlit and the FastAPI app are the deployments. Show the model card page in the demo (see the [deployment guide](deployment_guide.md)).
-- [x] Report PDF: `docs/report/report.pdf`, 4 pages with the contribution table, accepted by the group on 2026-11-19. `python scripts/verify_report.py` checks that every number equals `models/metrics.json`; rebuild with `python scripts/build_report.py` after any retrain.
-- [ ] Dry-run the click path with the server up: `node scripts/dryrun_demo.js http://127.0.0.1:8000` (runs the real page code against the server and checks the numbers on screen equal the API's). Then rehearse once with a timer.
+- [x] Report PDF: `docs/report/report.pdf`, 4 pages with the contribution table, accepted by the group on 2026-11-19. `python scripts/checks/verify_report.py` checks that every number equals `models/metrics.json`; rebuild with `python scripts/build/build_report.py` after any retrain.
+- [ ] Dry-run the click path with the server up: `node scripts/checks/dryrun_demo.js http://127.0.0.1:8000` (runs the real page code against the server and checks the numbers on screen equal the API's). Then rehearse once with a timer.
 
 ## Part 1: Problem and data (3 min)
 
@@ -96,7 +96,7 @@ Each member may be asked about any part. Short answers below; know the reasoning
 
 ### Backend and API
 
-- **Does the site work on a phone and on a big monitor?** Yes. The three pages and the crop page are checked in headless Chrome at nine sizes, from a 320 px phone to a 2560 px monitor, with touch and reduced motion (`scripts/verify_responsive.py`, part of `./run_checks.sh`): no sideways page scroll, tabs always visible, tap targets at least 44 px, form text at least 16 px, tables as cards on phones, and the landing scene survives the Android address bar hiding. The Streamlit app is checked at phone width with `verify_responsive.py --streamlit`. A person should still try it once on a real Android phone.
+- **Does the site work on a phone and on a big monitor?** Yes. The three pages and the crop page are checked in headless Chrome at nine sizes, from a 320 px phone to a 2560 px monitor, with touch and reduced motion (`scripts/checks/verify_responsive.py`, part of `./scripts/run/run_checks.sh`): no sideways page scroll, tabs always visible, tap targets at least 44 px, form text at least 16 px, tables as cards on phones, and the landing scene survives the Android address bar hiding. The Streamlit app is checked at phone width with `verify_responsive.py --streamlit`. A person should still try it once on a real Android phone.
 
 - **Why FastAPI?** Typed request schemas (pydantic), automatic `/docs`, and the same server also serves the HTML pages.
 - **What validation do you have?** Schema checks (types, physical bounds, max not below min or mean, unknown fields rejected) and a model check (inside the trained range for that province). Both return 422 with a message and the field name, and the page shows it.
@@ -111,9 +111,9 @@ Roles: Syed Muhammad Hunain, model creation and documentation; Muhammad Afzal, f
 | Topic | Owner (by role) | Who explains it first |
 |---|---|---|
 | Data, EDA, aggregation (`features.py`, notebook) | Syed Muhammad Hunain | Syed Muhammad Hunain |
-| Pipeline, tuning, evaluation (`training.py`, `scripts/train.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
+| Pipeline, tuning, evaluation (`training.py`, `scripts/ml/train.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
 | Ranking and inference (`inference.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
 | API and validation (`app/`) | Ayesha | Ayesha |
 | Frontend pages (`frontend/`) | Muhammad Afzal | Muhammad Afzal |
 | Deployments (Streamlit, Vercel, Hugging Face model repo; `streamlit_app/`, `hf_space/`, bundle scripts) | Muhammad Afzal | Muhammad Afzal |
-| README, checks, report (`docs/`, `scripts/verify_*.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |
+| README, checks, report (`docs/`, `scripts/checks/verify_*.py`) | Syed Muhammad Hunain | Syed Muhammad Hunain |

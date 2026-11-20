@@ -35,7 +35,7 @@ if BASE is not None:
 st.set_page_config(page_title="Crop yield under drought", layout="wide")
 
 if BASE is None:
-    st.error("Model files not found. Run `python scripts/train.py` first (they are written to models/).")
+    st.error("Model files not found. Run `python scripts/ml/train.py` first (they are written to models/).")
     st.stop()
 
 from climate_machine_learning import features as F  # noqa: E402

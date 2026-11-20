@@ -1,4 +1,4 @@
-"""Training, tuning and evaluation. Used by scripts/train.py and the notebook.
+"""Training, tuning and evaluation. Used by scripts/ml/train.py and the notebook.
 
 Design (see SPEC-model-only-output.md):
 - one row per Crop x Province x Year (features.build_yearly_table)

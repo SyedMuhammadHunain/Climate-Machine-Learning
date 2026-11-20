@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 if str(BASE_DIR / "src") not in sys.path:
     sys.path.insert(0, str(BASE_DIR / "src"))
 
-# Everything the API serves comes from these files (written by scripts/train.py):
+# Everything the API serves comes from these files (written by scripts/ml/train.py):
 MODEL_PATH = BASE_DIR / "models" / "crop_yield_pipeline.joblib"
 REFERENCE_PATH = BASE_DIR / "models" / "reference.json"
 METRICS_PATH = BASE_DIR / "models" / "metrics.json"

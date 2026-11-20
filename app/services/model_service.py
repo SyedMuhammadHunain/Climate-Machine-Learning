@@ -53,7 +53,7 @@ class ModelService:
         for path in (self.model_path, REFERENCE_PATH, METRICS_PATH, FAO_WATER_PATH):
             if not Path(path).exists():
                 raise FileNotFoundError(
-                    f"Required artifact not found: {path}. Run scripts/train.py to create the model files."
+                    f"Required artifact not found: {path}. Run scripts/ml/train.py to create the model files."
                 )
         self.pipeline = joblib.load(self.model_path)
         I.single_thread(self.pipeline)
