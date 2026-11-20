@@ -12,6 +12,10 @@ Every number the app shows is model output, a value from the dataset, or a saved
 | Muhammad Afzal | CT-24263 | Frontend and deployments |
 | Ayesha | CT-24309 | Backend |
 
+### Contributors besides the group
+
+- **Claude** (an AI assistant made by Anthropic, used through Claude Code) wrote and tested parts of the code and docs, among them the responsive layout of the pages, the single Start button, tie groups in the ranking, the crop pages (`crop.html`), `scripts/verify_responsive.py` and the text cuts (`SPEC-responsive.md`). Every commit it took part in ends with a `Co-Authored-By: Claude` line; list them with `git log --grep "Co-Authored-By: Claude"`. The group members are the authors of record and remain responsible for the project.
+
 ## Quick start
 
 Needs Python 3.13 (see `.python-version`).
