@@ -210,7 +210,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
 
 ### Checkpoint B (after T6-T9)
 - [ ] 9 province x preset cases verified against direct `predict_crops`
-- [ ] `./run_checks.sh --all` PASS
+- [x] `./run_checks.sh --all` PASS (12/12, 2026-11-20)
 - [ ] Human review of grouped ranking and advisory
 
 ## Phase 4: Crop page
@@ -291,7 +291,7 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
     `.metric-val--text` (a T3 miss). `verify_frontend.py` now looks for training-row completeness on `crop.html`. The ranking
     result still carries about 140 required caveat words, which is why its cap is the highest. Docs quoting old wording are T13.
 
-- [ ] **T13: Docs, run_checks, close-out** (module `copy`, S)
+- [x] **T13: Docs, run_checks, close-out** (module `copy`, S)
   - Description: Add `verify_responsive.py` to `run_checks.sh` (and `--streamlit` under
     `--all`); add it to the CLAUDE.md checks table; update `docs/demo_and_viva_guide.md` click path
     (Start button, crop page, grouped ranking) and any README / guide text quoting changed
@@ -303,10 +303,14 @@ Server for browser checks: `uvicorn app.main:app --port 8000` (scripts start the
   - Verify: `./run_checks.sh --all`.
   - Files: `run_checks.sh`, `CLAUDE.md`, `docs/demo_and_viva_guide.md`, `SPEC-responsive.md`, `SPEC.md`.
   - Depends on: T12.
+  - Done 2026-11-20. `run_checks.sh` runs `verify_responsive` (and `verify_responsive_st` under `--all`); `CLAUDE.md` lists both and the four
+    pages; `verify_guide.py` and `docs/demo_and_viva_guide.md` updated together (landing Start button, tie groups, crop page, exact typical
+    year, a phone and big-screen viva answer, a checklist line that the live apps are not yet redeployed); README URLs and `/recommend` fields;
+    deployment guide says what to re-check after the redeploy; `SPEC.md` lists the delta. `./run_checks.sh --all`: 12 of 12 pass.
 
 ### Checkpoint D (complete)
-- [ ] All 18 success criteria in `SPEC-responsive.md` met
-- [ ] `./run_checks.sh --all` PASS
+- [x] All 18 success criteria in `SPEC-responsive.md` met (automated checks)
+- [x] `./run_checks.sh --all` PASS (12/12, 2026-11-20)
 - [ ] Manual check on real Android phone over LAN
 - [ ] Human review; redeploy Vercel and Streamlit as a separate step (Decision 3); report
       screenshots recaptured only after redeploy

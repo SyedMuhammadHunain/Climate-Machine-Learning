@@ -35,23 +35,27 @@ def main() -> int:
         ref = meta["reference"]["Sindh"]["median"]
 
         # --- demo step: driest real Sindh year, all crops
-        rec = client.post("/api/v1/recommend", json={"province": "Sindh", **dry["inputs"]}).json()["ranked_crops"]
+        driest = client.post("/api/v1/recommend", json={"province": "Sindh", **dry["inputs"]}).json()
+        rec = driest["ranked_crops"]
         need(f"Driest real year ({dry['year']})", "preset label")
         need(f"{dry['inputs']['precipitation_sum']:.1f} mm", "driest-year rain")
-        for item in rec[:3] + rec[-1:]:
-            need(f"{item['crop']} {item['pct_of_normal']:.1f}%", f"driest ranking row rank {item['rank']}")
-        shares = [round(i["pct_of_normal"], 1) for i in rec]
-        if len(set(shares)) < len(shares):
-            need("tied", "the demo ranking has crops with equal shares, so the guide must say so")
+        # the page groups crops that show the same share: one rank per group (SPEC-responsive.md R5, R8)
+        for group in driest["groups"]:
+            need(f"{group['pct_of_normal']:.1f}%", f"driest ranking group at rank {group['rank']}")
+            if len(group["crops"]) == 1:
+                need(f"{group['crops'][0]} {group['pct_of_normal']:.1f}%", f"driest ranking row rank {group['rank']}")
+            else:
+                need(f"{len(group['crops'])} crops tied", f"the tie group at rank {group['rank']} must be described as the page words it")
+        if any(i["barely_grown"] for i in rec):
+            need("barely grown here", "the page tags barely grown crops (apple in Sindh)")
+        need(driest["headline"].split(" keeps ")[0].lower(), "the headline names the best crop")
 
-        # --- demo step: typical year (median preset: rain and mean temperature only)
-        med = client.post("/api/v1/recommend", json={
-            "province": "Sindh",
-            "precipitation_sum": round(ref["precipitation_sum"], 1),
-            "temperature_2m_mean": round(ref["temperature_2m_mean"], 1),
-        }).json()["ranked_crops"]
-        need(f"{med[0]['crop']} {med[0]['pct_of_normal']:.1f}%", "typical-year top crop")
-        need(f"{med[-1]['crop']} {med[-1]['pct_of_normal']:.1f}%", "typical-year last crop")
+        # --- demo step: typical year (the preset fills all nine inputs with the exact province medians)
+        med = client.post("/api/v1/recommend", json={"province": "Sindh", **ref}).json()
+        assert len(med["groups"]) == 1, "the typical year is one tie group"
+        need(f"{med['groups'][0]['pct_of_normal']:.1f}%", "typical-year share")
+        need(f"{len(med['ranked_crops'])} crops tied", "typical-year tie group")
+        need("no difference between crops", "the headline the page shows for the typical year")
 
         # --- demo step: single crop
         one = client.post("/api/v1/predict", json={"province": "Sindh", "crop": "rice", **dry["inputs"]}).json()
@@ -91,7 +95,10 @@ def main() -> int:
     need(f"{spread['ratio_min']['value']:.2f}", "the pinned-year spread: lowest ratio")
     need(f"{spread['ratio_max']['value']:.2f}", "the pinned-year spread: highest ratio")
     need("point number", "the guide must say the point yield is rough")
-    need("tied with", "the pages mark tied crops (the guide may only claim what the pages do)")
+    need("crops tied", "the pages group tied crops (the guide may only claim what the pages do)")
+    need("Start", "the landing page has one Start button")
+    need("crop page", "the guide shows the page of one crop")
+    need("verify_responsive.py", "the guide says how phone and large-screen layouts are checked")
     need("log-MAE", "the log-MAE loss")
     need("after seeing the test results", "the metric choice came after the test results")
     for stale in ("0.794", "no yearly trend", "random forest, scores"):

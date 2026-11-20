@@ -2,8 +2,9 @@
 # Runs every check in the project and prints a summary. Exit code is non-zero if any check fails.
 #   ./run_checks.sh          checks that use the main .venv, plus the page dry run (needs node)
 #   ./run_checks.sh --all    also the Streamlit and Hugging Face checks, each in its own venv
-#                            (.venv-streamlit, .venv-hf; created on first use)
-# verify_model.py retrains once (about 1 minute); verify_report.py needs google-chrome, pdftotext, pdfinfo.
+#                            (.venv-streamlit, .venv-hf; created on first use) and the Streamlit layout check
+# verify_model.py retrains once (about 1 minute); verify_report.py needs google-chrome, pdftotext, pdfinfo;
+# verify_responsive.py needs google-chrome and renders every page at 9 screen sizes (about 3 minutes).
 set -uo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/lib_env.sh"
 ROOT="$(project_root)"
@@ -28,7 +29,7 @@ run() {  # run NAME COMMAND...
 }
 
 echo "Running checks (logs in $LOGS)..."
-for s in verify_model verify_backend verify_frontend verify_readme verify_guide verify_report verify_vercel_bundle; do
+for s in verify_model verify_backend verify_frontend verify_readme verify_guide verify_report verify_vercel_bundle verify_responsive; do
     run "$s" "$ROOT/.venv/bin/python" "scripts/$s.py"
 done
 
@@ -47,6 +48,7 @@ fi
 if [ "${1:-}" = "--all" ]; then
     ensure_venv "$ROOT/.venv-streamlit" "$ROOT/streamlit_app/requirements.txt" streamlit
     run verify_streamlit "$ROOT/.venv-streamlit/bin/python" scripts/verify_streamlit.py
+    run verify_responsive_st "$ROOT/.venv/bin/python" scripts/verify_responsive.py --streamlit
     ensure_venv "$ROOT/.venv-hf" "$ROOT/hf_space/requirements.txt" gradio
     "$ROOT/.venv-hf/bin/python" -c "import yaml" 2>/dev/null || \
         { command -v uv >/dev/null && uv pip install -q -p "$ROOT/.venv-hf/bin/python" pyyaml || "$ROOT/.venv-hf/bin/python" -m pip install -q pyyaml; }

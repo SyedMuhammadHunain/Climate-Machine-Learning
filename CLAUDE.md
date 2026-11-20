@@ -22,6 +22,8 @@ No pytest. Every check plain-assert script; each prints PASS/FAIL, exits non-zer
 | `scripts/verify_model.py` (features, artifacts, inference, presentation, speed guard; includes ~1 min retrain-determinism test) | main `.venv` |
 | `scripts/verify_backend.py` (one long function, API contract + scan of `app/` for banned words and hardcoded floats) | main `.venv` |
 | `scripts/verify_frontend.py`, `verify_readme.py`, `verify_guide.py`, `verify_vercel_bundle.py`, `verify_report.py` (report needs `google-chrome`, `pdftotext`, `pdfinfo`) | main `.venv` |
+| `scripts/verify_responsive.py` (headless Chrome renders every page and the predictor's states at 9 sizes, 320 to 2560 px: no sideways scroll, tabs, 44 px targets, 16 px form text, contrast, tables as cards on phones, the landing scene, ranking rows and crop pages against the API, word caps; about 3 minutes; `--only`, `--page`, `--size` narrow it) | main `.venv`, `google-chrome` |
+| `scripts/verify_responsive.py --streamlit` (the Streamlit app at phone widths) | main `.venv` plus `.venv-streamlit` |
 | `node scripts/dryrun_demo.js http://127.0.0.1:8000` (real page JS vs API, stub DOM) | server running |
 | `scripts/verify_streamlit.py` | own venv with `streamlit_app/requirements.txt` |
 | `scripts/verify_hf_bundle.py` | own venv with `hf_space/requirements.txt` + `pyyaml` |
@@ -60,5 +62,6 @@ EOF
 ## Repo state worth knowing
 
 - Remote `main`, remote `Hunain` and `afzal` contain malicious loader (commits `2eafc19`, `43ab724`: `frontend/climate-resilient-frontend/init`, `src/climate_machine_learning/utils/session.py`, `import utils.session`). Never merge, check out or run them (no `npm run dev`, no `node init`). Deploys use clean branches: `hunain-deploy` (Streamlit Cloud, main file `streamlit_app/app.py`, requirements `streamlit_app/requirements.txt`) and `vercel-deploy` (orphan branch holding only generated Vercel bundle; live Vercel site deployed with Vercel CLI from same bundle). Do not delete them.
-- Specs and history: `SPEC.md` and `SPEC-*.md` (deltas), plan in `tasks/`, deployment steps in `docs/deployment_guide.md`, demo and viva script in `docs/demo_and_viva_guide.md`.
+- Pages in `frontend/climate-resilient-frontend/`: `index.html` (landing, one Start button to `predict.html`), `predict.html`, `metrics.html`, and `crop.html` (one crop, scenario in the query string). All four are self-contained files with their own CSS; `crop.html` is guarded in `verify_frontend.py`, `dryrun_demo.js`, `verify_vercel_bundle.py`. The API's `/recommend` also returns `groups` (tied crops share one rank), `headline`, `scenario_facts`, `model_caveat` and per-crop `barely_grown`, all built in `inference.py`.
+- Specs and history: `SPEC.md` and `SPEC-*.md` (deltas, latest `SPEC-responsive.md`), plan in `tasks/`, deployment steps in `docs/deployment_guide.md`, demo and viva script in `docs/demo_and_viva_guide.md`.
 - `pyarrow` needed only to read training parquet; deployed API does not need it.

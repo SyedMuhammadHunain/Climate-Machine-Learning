@@ -44,8 +44,9 @@ Open <http://127.0.0.1:8000>. The pages are served by the same server as the API
 
 | Page | URL |
 |---|---|
-| Overview | `http://127.0.0.1:8000/` |
+| Overview (one Start button) | `http://127.0.0.1:8000/` |
 | Crop predictor and ranking | `http://127.0.0.1:8000/predict.html` |
+| One crop in detail | opened from a crop in the ranking: `http://127.0.0.1:8000/crop.html?crop=rice&province=Sindh&...` |
 | Model results | `http://127.0.0.1:8000/metrics.html` |
 | API docs (Swagger) | `http://127.0.0.1:8000/docs` |
 
@@ -252,7 +253,7 @@ Out-of-range input:
  "message": "precipitation_sum = 5 is outside the range the model was trained on for Sindh (14.7 to 398.6, annual values 2001-2016). The model cannot extrapolate, so no prediction is made."}
 ```
 
-`/recommend` returns `ranked_crops` (13 items with `rank`, `predicted_yield`, `normal_yield`, `pct_of_normal`, row counts and the optional `fao_water_need`), `top_crop`, `ranking_basis` and a `recommendation_summary` built from those values.
+`/recommend` returns `ranked_crops` (13 items with `rank`, `predicted_yield`, `normal_yield`, `pct_of_normal`, row counts, `barely_grown` and the optional `fao_water_need`), `groups` (crops that show the same share at one decimal share one rank), `headline`, `scenario_facts`, `top_crop`, `ranking_basis`, `model_caveat` and a `recommendation_summary` built from those values.
 
 ## Deployment status
 

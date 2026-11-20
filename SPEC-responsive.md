@@ -1,6 +1,6 @@
 # Spec Delta: Responsive pages, clearer ranking and crop detail pages
 
-Status: approved (2026-11-19, recommended answers to every open question)
+Status: implemented (2026-11-20: all 18 success criteria met by automated checks, `./run_checks.sh --all` 12/12; still open: a check on a real Android phone and the redeploy of Vercel and Streamlit, Decision 3)
 
 ## Objective
 

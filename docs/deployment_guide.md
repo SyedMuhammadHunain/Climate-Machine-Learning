@@ -103,6 +103,8 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 
 **Status 2026-11-19: deployed and checked.** Live at <https://climate-machine-learning.vercel.app/>. It is the same app as the local one: the pages are served by FastAPI and call the API on the same address.
 
+**Not yet redeployed with `SPEC-responsive.md`:** the code since then has the responsive layout, one Start button, tie groups, the crop page (`crop.html`) and shorter text. The live site shows the older pages until you redeploy with the commands below. After redeploying, also check that `/crop.html?crop=rice&province=Sindh` answers 200 and that a crop in the ranking opens its page. The same applies to the Streamlit app (section 1): its ranking, headline and caveats changed, so redeploy `hunain-deploy`.
+
 What is deployed: the folder that `python scripts/build_vercel_bundle.py` writes (git-ignored, default `vercel_bundle/`). It holds `app/`, three modules of `src/climate_machine_learning/` (not `training.py` and not `presentation.py`), the three files in `models/`, the FAO table, the pages, a `requirements.txt` with 21 exactly pinned packages (taken from the tested root `requirements.txt`, no Jupyter, plotting, `pyarrow` or `uvicorn`) and `.python-version` (3.12). `python scripts/verify_vercel_bundle.py` checks all of this and starts the bundled app on its own.
 
 To deploy again (after a retrain or a code change), with the Vercel CLI logged in (`vercel login`):
