@@ -16,8 +16,6 @@ wheels/
 hf_bundle/
 
 # secrets and local credentials: never commit these (rotate anything that was)
-.env
-.env.*
 !.env.example
 *.pem
 *.key
@@ -30,3 +28,5 @@ vercel_bundle/
 
 # per-app virtualenvs made by scripts/run/run_streamlit.sh and scripts/run/run_checks.sh --all
 .venv-*/
+config.bat
+node_modules

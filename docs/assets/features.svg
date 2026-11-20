@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 150" width="1180" height="150" role="img" aria-label="Four features: ranks 13 crops, phone to monitor, honest by design, one shared core">
+  <title>Features</title>
+  <g transform="translate(0 0)">
+    <rect width="280" height="150" rx="14" fill="#f6f8fa" stroke="#d0d7de"/>
+    <rect width="280" height="5" rx="2.5" fill="#2f9e82"/>
+    <g transform="translate(20 28) scale(0.9)"><path d="M16 44V28M28 44V18M40 44V32M52 44V10" stroke="#2f9e82" stroke-width="7" stroke-linecap="round"/><animateTransform attributeName="transform" type="translate" values="20 28;20 24;20 28" dur="4.0s" repeatCount="indefinite"/></g>
+    <text x="92" y="52" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#1f2328">Ranks 13 crops</text>
+    <text x="20" y="104" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">by the share of a typical</text>
+    <text x="20" y="126" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">year's yield each keeps</text>
+  </g>
+  <g transform="translate(300 0)">
+    <rect width="280" height="150" rx="14" fill="#f6f8fa" stroke="#d0d7de"/>
+    <rect width="280" height="5" rx="2.5" fill="#e8590c"/>
+    <g transform="translate(20 28) scale(0.9)"><rect x="10" y="16" width="30" height="40" rx="5" fill="none" stroke="#e8590c" stroke-width="4"/><rect x="34" y="8" width="30" height="22" rx="3" fill="none" stroke="#e8590c" stroke-width="4"/><animateTransform attributeName="transform" type="translate" values="20 28;20 24;20 28" dur="4.7s" repeatCount="indefinite"/></g>
+    <text x="92" y="52" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#1f2328">Phone to monitor</text>
+    <text x="20" y="104" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">320 px phones to 2560 px</text>
+    <text x="20" y="126" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">screens, checked in Chrome</text>
+  </g>
+  <g transform="translate(600 0)">
+    <rect width="280" height="150" rx="14" fill="#f6f8fa" stroke="#d0d7de"/>
+    <rect width="280" height="5" rx="2.5" fill="#3b82a0"/>
+    <g transform="translate(20 28) scale(0.9)"><path d="M32 8 L54 16 V32 C54 46 44 54 32 58 C20 54 10 46 10 32 V16 Z" fill="none" stroke="#3b82a0" stroke-width="4"/><path d="M22 33 L30 41 L44 24" fill="none" stroke="#3b82a0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><animateTransform attributeName="transform" type="translate" values="20 28;20 24;20 28" dur="5.4s" repeatCount="indefinite"/></g>
+    <text x="92" y="52" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#1f2328">Honest by design</text>
+    <text x="20" y="104" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">no demo numbers; caveats</text>
+    <text x="20" y="126" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">stay on screen</text>
+  </g>
+  <g transform="translate(900 0)">
+    <rect width="280" height="150" rx="14" fill="#f6f8fa" stroke="#d0d7de"/>
+    <rect width="280" height="5" rx="2.5" fill="#7c5cbf"/>
+    <g transform="translate(20 28) scale(0.9)"><circle cx="32" cy="32" r="9" fill="#7c5cbf"/><circle cx="12" cy="14" r="5" fill="none" stroke="#7c5cbf" stroke-width="4"/><circle cx="52" cy="14" r="5" fill="none" stroke="#7c5cbf" stroke-width="4"/><circle cx="32" cy="58" r="5" fill="none" stroke="#7c5cbf" stroke-width="4"/><path d="M16 17 L26 26 M48 17 L38 26 M32 41 V53" stroke="#7c5cbf" stroke-width="3"/><animateTransform attributeName="transform" type="translate" values="20 28;20 24;20 28" dur="6.1s" repeatCount="indefinite"/></g>
+    <text x="92" y="52" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#1f2328">One shared core</text>
+    <text x="20" y="104" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">API, Streamlit and Hugging</text>
+    <text x="20" y="126" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#444c56">Face use the same code</text>
+  </g>
+</svg>
