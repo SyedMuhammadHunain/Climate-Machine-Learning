@@ -82,7 +82,7 @@ python scripts/verify_report.py     # report PDF: sections, 3-4 pages, every num
 node scripts/dryrun_demo.js http://127.0.0.1:8000   # with the server running: demo click path, numbers on screen equal the API
 ```
 
-For the 10-minute presentation see [docs/demo_and_viva_guide.md](docs/demo_and_viva_guide.md).
+For the 10-minute presentation see [docs/guides/demo_and_viva_guide.md](docs/guides/demo_and_viva_guide.md).
 
 The notebook `notebooks/01_low_water_crop_selection.ipynb` holds the EDA, the aggregation, and the evaluation plots. It reads `models/metrics.json`, so its numbers match this README.
 
@@ -270,7 +270,7 @@ The course guidelines ask for three deployments. Status:
 | Vercel (the same FastAPI app and HTML pages, hosted) | **Live:** <https://climate-machine-learning.vercel.app/> (deployed on 2026-11-19 with the Vercel CLI from the generated bundle, `python scripts/build_vercel_bundle.py`). Checked on the live site: the pages load for a logged-out visitor, `/api/v1/recommend` for Sindh in its driest real year gives rice 40.85 and 89.3% of a typical year (the same as the local app; redeployed with the promoted model the same day, after an earlier deployment of the previous model), a rain value outside the trained range is refused with a 422 that states the range, and `scripts/dryrun_demo.js` passes against it. The first request after an idle period can take a few seconds while the model loads. |
 | Hugging Face (model card + pipeline) | **Model repo is live:** <https://huggingface.co/SMHunain/crop-yield-drought-pakistan> (model card, pipeline, reference, metrics, inference code). Republished with the current model on 2026-11-19 (Hub commit `056ccbd`); a token-less download is identical to `hf_bundle/model/` and gives rice in Sindh, driest real year, 40.85 and 89.3%. **No Space, by group decision (2026-11-19):** the model repo plus the Streamlit app and the FastAPI app (local and Vercel) are the deployments. A Gradio Space app is built and tested (`hf_space/app.py`, `python scripts/build_hf_bundle.py`), but the Hub refuses Gradio Spaces on a free account; steps to publish it later are in the deployment guide. |
 
-Streamlit and Vercel are deployed (both from clean code; branches `main`, remote `Hunain` and `afzal` contain a malicious loader and must not be merged or run, see the branch table in [docs/deployment_guide.md](docs/deployment_guide.md)). The Hugging Face model repo is live; no Space is deployed, by the group's decision (see the table). Exact steps, what was tested here and what was not: [docs/deployment_guide.md](docs/deployment_guide.md).
+Streamlit and Vercel are deployed (both from clean code; branches `main`, remote `Hunain` and `afzal` contain a malicious loader and must not be merged or run, see the branch table in [docs/guides/deployment_guide.md](docs/guides/deployment_guide.md)). The Hugging Face model repo is live; no Space is deployed, by the group's decision (see the table). Exact steps, what was tested here and what was not: [docs/guides/deployment_guide.md](docs/guides/deployment_guide.md).
 
 The Streamlit and Gradio apps use the same trained model and the same shared code (`src/climate_machine_learning/inference.py`) as the API. Besides the prediction they show a **likely range**: the empirical 10% to 90% spread of the model's errors on the validation years. It is optimistic, because it covered less than its nominal 80% of the test rows (the exact figure is in the Results block above).
 

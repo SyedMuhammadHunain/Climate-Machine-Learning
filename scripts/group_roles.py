@@ -11,7 +11,7 @@ MEMBERS = [
     ("Ayesha", "CT-24309", "Backend"),
 ]
 
-# Topic rows of the "Who answers what" table in docs/demo_and_viva_guide.md: topic -> owner name.
+# Topic rows of the "Who answers what" table in docs/guides/demo_and_viva_guide.md: topic -> owner name.
 # Each owner follows from the roles above; no authorship beyond those roles is claimed.
 TOPIC_OWNERS = {
     "Data, EDA, aggregation (`features.py`, notebook)": "Syed Muhammad Hunain",

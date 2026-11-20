@@ -1,4 +1,4 @@
-"""Checks docs/demo_and_viva_guide.md against the live app.
+"""Checks docs/guides/demo_and_viva_guide.md against the live app.
 
 Every number the demo script promises is recomputed from the API and must appear in the guide.
 Run: .venv/bin/python scripts/verify_guide.py
@@ -9,13 +9,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-GUIDE = ROOT / "docs" / "demo_and_viva_guide.md"
+GUIDE = ROOT / "docs" / "guides" / "demo_and_viva_guide.md"
 sys.path.insert(0, str(ROOT))
 
 
 def main() -> int:
     if not GUIDE.exists():
-        print("FAILED:\n  - docs/demo_and_viva_guide.md does not exist")
+        print("FAILED:\n  - docs/guides/demo_and_viva_guide.md does not exist")
         return 1
     text = GUIDE.read_text(encoding="utf-8")
     failures = []
@@ -69,10 +69,10 @@ def main() -> int:
         need(bad["message"], "422 message")
 
     # --- deployment guide: the numbers it tells you to expect on the live apps
-    dep = ROOT / "docs" / "deployment_guide.md"
+    dep = ROOT / "docs" / "guides" / "deployment_guide.md"
     dep_text = dep.read_text(encoding="utf-8") if dep.exists() else ""
     if not dep_text:
-        failures.append("docs/deployment_guide.md does not exist")
+        failures.append("docs/guides/deployment_guide.md does not exist")
     for snippet, why in ((f"{one['predicted_yield']:.2f}", "rice yield in deployment guide"),
                          (f"{one['pct_of_normal']:.1f}%", "rice share in deployment guide"),
                          (f"{metrics['prediction_interval']['test_coverage']:.0%}", "interval coverage in deployment guide")):

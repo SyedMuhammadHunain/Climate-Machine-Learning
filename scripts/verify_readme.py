@@ -176,11 +176,11 @@ def main() -> int:
     # the other two front ends and the deployment guide must be documented
     for needle in ("streamlit_app/app.py", "streamlit_app/requirements.txt", "hf_space/app.py",
                    "scripts/build_hf_bundle.py", "scripts/build_vercel_bundle.py", "scripts/verify_vercel_bundle.py", "scripts/verify_streamlit.py", "scripts/verify_hf_bundle.py",
-                   "docs/deployment_guide.md", "src/climate_machine_learning/inference.py"):
+                   "docs/guides/deployment_guide.md", "src/climate_machine_learning/inference.py"):
         if needle not in text:
             failures.append(f"not documented: {needle}")
-    if "(docs/deployment_guide.md)" not in text:
-        failures.append("README must link to docs/deployment_guide.md")
+    if "(docs/guides/deployment_guide.md)" not in text:
+        failures.append("README must link to docs/guides/deployment_guide.md")
 
     # relative links must point to real files
     for target in re.findall(r"\]\((?!https?://|#)([^)\s]+)\)", text):

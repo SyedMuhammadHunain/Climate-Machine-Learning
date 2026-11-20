@@ -96,7 +96,7 @@ The Space config (`hf_bundle/space/README.md`) sets `sdk: gradio`, `sdk_version:
 
 - Edit the Hugging Face row of the README deployment table with the Space URL and the date.
 - `scripts/verify_readme.py` requires the Vercel and Streamlit rows to show their live URLs and not say "not deployed", and the Hugging Face row to link the model repo and say "No Space" and "group decision". `scripts/verify_guide.py` requires the ticked Hugging Face checklist item to say the same. Change those rules together with the docs, or they will fail.
-- Update the Hugging Face item in the "Before you present" list of `docs/demo_and_viva_guide.md` with the Space URL.
+- Update the Hugging Face item in the "Before you present" list of `docs/guides/demo_and_viva_guide.md` with the Space URL.
 - Rehearse the live demo with the three URLs open.
 
 ## 4. Vercel (FastAPI app and HTML pages)

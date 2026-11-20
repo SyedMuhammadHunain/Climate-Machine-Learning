@@ -5,7 +5,7 @@ Writes (self-contained, nothing is downloaded or uploaded here):
   <out>/model/  model card (README.md), pipeline, reference.json, metrics.json, inference code, example
   <out>/space/  Space README.md (config), app.py, requirements.txt, model files, inference code
 The model card is generated from models/metrics.json, so its numbers always match the trained model.
-Uploading needs your own Hugging Face account: see docs/deployment_guide.md.
+Uploading needs your own Hugging Face account: see docs/guides/deployment_guide.md.
 """
 import json
 import shutil
